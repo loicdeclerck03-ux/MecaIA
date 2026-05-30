@@ -1,358 +1,403 @@
 // ============================================================
-// 🔧 MECAIA — BACKEND API PRINCIPAL
-// Diagnostic IA Dylan + RAG Supabase + Multi-langues
-// Créé par Loïc Declerck - Belgique
+// 🔧 MECAIA — BACKEND SÉCURISÉ (Netlify Function)
+// Fichier : netlify/functions/api.js
+// ------------------------------------------------------------
+// RÔLE DE CE FICHIER :
+//   1. Cacher la clé Anthropic (elle ne quitte JAMAIS le serveur).
+//   2. Gérer les crédits côté serveur (le client ne peut pas tricher).
+//   3. Vérifier l'identité de l'utilisateur via son jeton Supabase.
+//   4. Servir de point d'entrée unique pour : diagnostic, pièces,
+//      VIN, alertes, urgence, photo, chat.
+//
+// SÉCURITÉ :
+//   - Toutes les clés sont dans les VARIABLES D'ENVIRONNEMENT Netlify
+//     (jamais écrites ici). Voir la liste en bas du fichier.
+//   - Les actions payantes vérifient et décrémentent le crédit AVANT
+//     d'appeler l'IA. Impossible de falsifier depuis le navigateur.
+//
+// DÉPENDANCES : AUCUNE (on parle à Supabase via son API REST avec fetch).
+//   → Pas de npm install, pas de build. Plus simple, plus robuste.
 // ============================================================
 
-const headers = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
+// ------------------------------------------------------------
+// CONFIG (lue depuis les variables d'environnement Netlify)
+// ------------------------------------------------------------
+const SUPABASE_URL    = process.env.SUPABASE_URL;       // ex: https://xxxx.supabase.co
+const SUPABASE_SECRET = process.env.SUPABASE_SECRET;    // clé "service_role" (SECRÈTE)
+const ANTHROPIC_KEY   = process.env.ANTHROPIC_KEY;      // clé API Anthropic (SECRÈTE)
+const MODEL           = 'claude-haiku-4-5-20251001';    // modèle utilisé (économique)
+
+// En-têtes CORS : autorisent ton site à appeler ce backend.
+const HEADERS = {
+  'Access-Control-Allow-Origin': '*',                   // (à restreindre à ton domaine plus tard)
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Content-Type': 'application/json'
 };
 
+// Coût en crédits de chaque action (VIN et urgence = gratuits).
+const COUT = {
+  diagnostic: 1,
+  pieces: 1,
+  alertes: 1,
+  photo: 1,
+  chat: 1,
+  vin: 0,
+  urgence: 0
+};
+
 // ============================================================
-// PERSONNALITÉ DE DYLAN — Adapté selon niveau utilisateur
+// OUTILS SUPABASE (via API REST, avec la clé service_role)
 // ============================================================
-function buildDylanPersonality(userLevel, lang) {
-  const langInstructions = {
-    fr: "Tu réponds TOUJOURS en français belge naturel.",
-    nl: "Je antwoordt ALTIJD in natuurlijk Nederlands.",
-    en: "You ALWAYS respond in natural English.",
-    de: "Du antwortest IMMER auf natürlichem Deutsch."
-  };
 
-  const baseDylan = `Tu es Dylan, un mécanicien IA expert créé par Loïc Declerck (21 ans, mécano au Garage Mécapro à Barchon, Belgique). Tu as la personnalité d'un mécano belge sympa : direct, franc, avec un peu d'humour léger de garage (pas trop), honnête sur tes limites.
-
-RÈGLES ABSOLUES :
-1. ${langInstructions[lang] || langInstructions.fr}
-2. Tu es HONNÊTE : si tu n'es pas sûr, tu le dis. Tu donnes un % de confiance.
-3. Tu donnes JAMAIS un diagnostic à 100% sûr sans vérification physique.
-4. Tu suggères TOUJOURS de vérifier avec un mécano si c'est important.
-5. Tu n'inventes JAMAIS de codes OBD ou de pièces.
-6. Si la question n'est pas claire, tu poses 1 question pour préciser (pas 5).
-7. Tu n'es PAS un chatbot général — tu parles QUE de mécanique auto.
-8. Si on te demande autre chose, recadre poliment : "Moi je suis mécano hein, pour ça demande à Google !"
-
-TON HUMOUR (léger) :
-- Une petite blague de garage de temps en temps
-- Expressions imagées ("ta voiture elle fait la tête", "elle a chopé un coup de mou")
-- JAMAIS d'humour si c'est urgent ou si le client est inquiet
-- Pas d'emojis sauf 1 max par réponse
-
-ANTI-ARNAQUE :
-Tu défends le client. Si tu vois un truc qui sent l'arnaque garage, tu le dis :
-"Attention, certains garages te diraient X à 1500€, mais en vrai vérifie d'abord Y qui coûte 80€."`;
-
-  const levelAdjustments = {
-    debutant: `
-
-TU PARLES À UN DÉBUTANT (particulier qui s'y connaît pas) :
-- Langage SIMPLE, zéro jargon technique sans explication
-- Métaphores ("c'est comme..."), analogies du quotidien
-- Tu rassures : "pas de panique", "c'est courant"
-- Tu expliques le POURQUOI avec des mots simples
-- Tu donnes un ordre d'idée de prix
-- Tu dis si on peut continuer à rouler ou pas`,
-
-    apprenti: `
-
-TU PARLES À UN APPRENTI MÉCANO (veut apprendre) :
-- Langage mécanique mais TOUJOURS expliqué
-- Tu enseignes le RAISONNEMENT, pas juste la réponse
-- Tu donnes les valeurs de mesure attendues
-- Tu expliques les pièges courants
-- Tu cites les outils nécessaires
-- Tu compares les méthodes possibles`,
-
-    pro: `
-
-TU PARLES À UN MÉCANO PRO (expérimenté) :
-- Langage technique direct, pas de blabla
-- Valeurs précises (pression, tension, ohms)
-- Tu vas droit au but
-- Tu mentionnes les codes OBD spécifiques
-- Tu compares avec les autres pannes similaires
-- Tu peux te permettre du jargon
-- Pas de "fais-toi aider par un mécano"`
-  };
-
-  return baseDylan + (levelAdjustments[userLevel] || levelAdjustments.debutant);
+// Petit raccourci pour appeler l'API REST de Supabase.
+// `path` ex: "users?auth_id=eq.123&select=*"
+async function sb(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_SECRET,
+      'Authorization': `Bearer ${SUPABASE_SECRET}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation',
+      ...(options.headers || {})
+    }
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`Supabase ${res.status}: ${txt}`);
+  }
+  // 204 = pas de contenu (ex: PATCH sans retour)
+  return res.status === 204 ? null : res.json();
 }
 
-// ============================================================
-// DÉTECTION AUTO DU NIVEAU UTILISATEUR
-// ============================================================
-function detectUserLevel(text) {
-  if (!text) return 'debutant';
-  const lower = text.toLowerCase();
-  
-  // Mots techniques = pro
-  const proKeywords = ['actuateur', 'égr', 'fap', 'rampe commune', 'common rail', 'turbo géométrie variable',
-    'tgv', 'débitmètre', 'lambda', 'pmh', 'arbre à cames', 'ohms', 'multimètre', 'dtc', 
-    'mode dégradé', 'vanos', 'déphaseur', 'collecteur admission', 'cliquetis', 'détonation',
-    'segment', 'piston', 'bielle', 'distribution', 'culasse', 'joint culasse', 'compression',
-    'allumage', 'bougie', 'bobine'];
-  
-  // Mots techniques basiques = apprenti  
-  const apprentiKeywords = ['embrayage', 'alternateur', 'démarreur', 'batterie', 'filtre',
-    'plaquette', 'frein', 'cardan', 'rotule', 'amortisseur', 'voyant', 'fusible'];
-  
-  let proCount = 0, apprentiCount = 0;
-  proKeywords.forEach(k => { if (lower.includes(k)) proCount++; });
-  apprentiKeywords.forEach(k => { if (lower.includes(k)) apprentiCount++; });
-  
-  if (proCount >= 2) return 'pro';
-  if (proCount >= 1 || apprentiCount >= 2) return 'apprenti';
-  return 'debutant';
-}
-
-// ============================================================
-// RAG SUPABASE — Recherche d'expertise pertinente
-// ============================================================
-async function searchExpertise(query, supabaseUrl, supabaseKey) {
-  if (!supabaseUrl || !supabaseKey) return [];
-  
+// Vérifie le jeton de l'utilisateur et renvoie son compte Auth.
+// → Empêche quelqu'un de se faire passer pour un autre.
+async function verifierUtilisateur(token) {
+  if (!token) return null;
   try {
-    // Recherche simple par mots-clés dans expertise_loic
-    const lower = query.toLowerCase();
-    const keywords = lower.split(' ').filter(w => w.length > 3).slice(0, 5);
-    
-    if (keywords.length === 0) return [];
-    
-    const filter = keywords.map(k => `contenu.ilike.%${k}%`).join(',');
-    const url = `${supabaseUrl}/rest/v1/expertise_loic?or=(${filter})&limit=5`;
-    
-    const resp = await fetch(url, {
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`
-      }
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'apikey': SUPABASE_SECRET, 'Authorization': `Bearer ${token}` }
     });
-    
-    if (!resp.ok) return [];
-    const data = await resp.json();
-    return data || [];
+    if (!res.ok) return null;
+    return await res.json(); // { id, email, ... }
   } catch (e) {
-    console.log('RAG error:', e.message);
-    return [];
+    return null;
   }
 }
 
+// Charge le profil métier (crédits, type, etc.) à partir de l'auth_id.
+async function chargerProfil(authId) {
+  const rows = await sb(`users?auth_id=eq.${authId}&select=*`);
+  return rows && rows[0] ? rows[0] : null;
+}
+
+// Vérifie + décrémente un crédit de façon ATOMIQUE et sécurisée.
+// Renvoie { ok:true } ou { ok:false, raison:'...' }.
+async function consommerCredit(profil, cout) {
+  if (cout === 0) return { ok: true };                  // action gratuite
+
+  // Pack illimité encore valide ?
+  if (profil.unlimited_until && new Date(profil.unlimited_until) > new Date()) {
+    return { ok: true };
+  }
+  // Crédits suffisants ?
+  if ((profil.credits || 0) < cout) {
+    return { ok: false, raison: 'credits_insuffisants' };
+  }
+  // On décrémente (service_role → contourne la RLS en toute sécurité).
+  await sb(`users?id=eq.${profil.id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ credits: profil.credits - cout })
+  });
+  return { ok: true, credits_restants: profil.credits - cout };
+}
+
+// Rembourse un crédit si l'IA a échoué (pour ne pas léser l'utilisateur).
+async function rembourserCredit(profil, cout) {
+  if (cout === 0 || !profil) return;
+  try {
+    const frais = await chargerProfil(profil.auth_id);  // relit la valeur à jour
+    await sb(`users?id=eq.${profil.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ credits: (frais.credits || 0) + cout })
+    });
+  } catch (e) { /* on ignore : le remboursement est best-effort */ }
+}
+
+// Enregistre le diagnostic dans l'historique (table diagnostics).
+async function sauvegarderDiagnostic(profil, type, donnees) {
+  try {
+    await sb('diagnostics', {
+      method: 'POST',
+      prefer: 'return=minimal',
+      body: JSON.stringify({
+        user_id:       profil ? profil.id : null,
+        type:          type,
+        question:      donnees.question || null,
+        obd_code:      donnees.obd_code || null,
+        vehicule_desc: donnees.vehicule || null,
+        response:      donnees.response || null,
+        category:      donnees.category || null,
+        severity:      donnees.severity || null,
+        confidence:    donnees.confidence || null
+      })
+    });
+  } catch (e) { /* l'historique n'est pas critique : on n'interrompt pas */ }
+}
+
+// Incrémente un compteur (diagnostics ou pieces_searches) sur le profil.
+async function incrementerCompteur(profil, champ) {
+  if (!profil) return;
+  try {
+    const valeur = (profil[champ] || 0) + 1;
+    await sb(`users?id=eq.${profil.id}`, {
+      method: 'PATCH', body: JSON.stringify({ [champ]: valeur })
+    });
+  } catch (e) { /* non critique */ }
+}
+
 // ============================================================
-// HANDLER PRINCIPAL
+// APPEL À CLAUDE (Anthropic) — la clé reste côté serveur
+// ============================================================
+async function appelerClaude(system, messages, maxTokens = 1500) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, system, messages })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || 'Erreur API IA');
+  return data.content.map(b => b.text || '').join('');
+}
+
+// Force une réponse JSON propre (enlève les ```json éventuels).
+function parseJSON(txt) {
+  return JSON.parse(txt.replace(/```json|```/g, '').trim());
+}
+
+// ============================================================
+// 🔌 EMPLACEMENT FUTUR : RECHERCHE DANS LA BASE (RAG / agents)
+// Pour l'instant renvoie vide. À l'étape 3, on branchera ici la
+// recherche dans expertise_loic / pannes / obd_codes / cas_reels.
+// Le reste du code n'aura PAS besoin d'être modifié.
+// ============================================================
+async function chercherDansLaBase(/* question, categorie */) {
+  return []; // <- on remplira ça quand les 122 réponses + embeddings seront en base
+}
+
+// ============================================================
+// CONSTRUCTION DES PROMPTS (selon le niveau de l'utilisateur)
+// ============================================================
+function systemeDiagnostic(niveau) {
+  if (niveau === 'amateur' || niveau === 'debutant')
+    return "Tu es un expert mécanicien qui explique en langage simple aux particuliers. Utilise des analogies. Réponds UNIQUEMENT en JSON valide sans markdown.";
+  if (niveau === 'apprenti')
+    return "Tu es un formateur mécanicien pédagogique. Explique le pourquoi de chaque étape. Réponds UNIQUEMENT en JSON valide sans markdown.";
+  return "Tu es un expert mécanicien automobile avec 20 ans d'expérience. Diagnostics ultra précis. Réponds UNIQUEMENT en JSON valide sans markdown.";
+}
+
+// ============================================================
+// HANDLER PRINCIPAL — point d'entrée de la fonction
 // ============================================================
 exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
+  // Pré-vol CORS
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: HEADERS, body: '' };
+  if (event.httpMethod !== 'POST')
+    return { statusCode: 405, headers: HEADERS, body: JSON.stringify({ error: 'Méthode non autorisée' }) };
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+  // Vérifie que la config serveur est complète (évite les erreurs obscures)
+  if (!SUPABASE_URL || !SUPABASE_SECRET || !ANTHROPIC_KEY) {
+    return { statusCode: 500, headers: HEADERS,
+      body: JSON.stringify({ error: 'Configuration serveur incomplète (variables d\'environnement manquantes).' }) };
   }
 
   try {
-    const body = JSON.parse(event.body);
-    const { type, messages, system, max_tokens, lang, userLevel, userQuery, imageBase64, imageMediaType } = body;
+    const body   = JSON.parse(event.body || '{}');
+    const action = body.action;                              // 'diagnostic', 'pieces', ...
+    const cout   = COUT[action] ?? null;
 
-    // ====== TYPE : DIAGNOSTIC CLASSIQUE ======
-    if (type === 'claude' || type === 'diagnostic') {
-      // Détection du niveau si non fourni
-      const level = userLevel || detectUserLevel(userQuery || (messages && messages[0]?.content) || '');
-      const language = lang || 'fr';
-      
-      // Récupération de l'expertise pertinente (RAG)
-      const expertise = await searchExpertise(
-        userQuery || (messages && messages[0]?.content) || '',
-        process.env.SUPABASE_URL,
-        process.env.SUPABASE_SECRET
-      );
-      
-      // Construction du prompt système avec personnalité Dylan + expertise
-      let systemPrompt = system || buildDylanPersonality(level, language);
-      
-      if (expertise.length > 0) {
-        systemPrompt += `\n\n=== EXPERTISE LOÏC (utilise ces infos si pertinent) ===\n`;
-        expertise.forEach((e, i) => {
-          systemPrompt += `\n[${i+1}] ${e.sujet}: ${e.contenu}\n`;
-        });
-        systemPrompt += `\n=== FIN EXPERTISE ===\n\nUtilise ces astuces terrain si elles correspondent au problème, en les citant naturellement.`;
-      }
+    if (cout === null)
+      return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Action inconnue' }) };
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: max_tokens || 1500,
-          system: systemPrompt,
-          messages: messages
-        })
-      });
-      
-      const data = await response.json();
-      
-      // Log dans Supabase pour cas_reels (non bloquant)
-      if (process.env.SUPABASE_URL && process.env.SUPABASE_SECRET) {
-        try {
-          await fetch(`${process.env.SUPABASE_URL}/rest/v1/cas_reels`, {
-            method: 'POST',
-            headers: {
-              'apikey': process.env.SUPABASE_SECRET,
-              'Authorization': `Bearer ${process.env.SUPABASE_SECRET}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({
-              symptomes_decrits: userQuery || (messages && messages[0]?.content)?.substring(0, 500) || '',
-              diagnostic_ia: (data.content?.[0]?.text || '').substring(0, 1000),
-              succes: null,
-              confirme: false
-            })
+    // Identité de l'utilisateur (jeton envoyé dans l'en-tête Authorization)
+    const authHeader = event.headers.authorization || event.headers.Authorization || '';
+    const token      = authHeader.replace('Bearer ', '').trim();
+    const authUser   = await verifierUtilisateur(token);
+
+    // Les actions PAYANTES exigent une connexion.
+    let profil = null;
+    if (cout > 0) {
+      if (!authUser)
+        return { statusCode: 401, headers: HEADERS, body: JSON.stringify({ error: 'Connexion requise.' }) };
+      profil = await chargerProfil(authUser.id);
+      if (!profil)
+        return { statusCode: 403, headers: HEADERS, body: JSON.stringify({ error: 'Profil introuvable.' }) };
+
+      const credit = await consommerCredit(profil, cout);
+      if (!credit.ok)
+        return { statusCode: 402, headers: HEADERS, body: JSON.stringify({ error: 'Crédits insuffisants', code: 'NO_CREDITS' }) };
+    } else if (authUser) {
+      // Action gratuite mais utilisateur connecté → on charge quand même son profil
+      profil = await chargerProfil(authUser.id);
+    }
+
+    // --------------------------------------------------------
+    // AIGUILLAGE DES ACTIONS
+    // --------------------------------------------------------
+    let resultat;
+    try {
+      switch (action) {
+
+        // ----- DIAGNOSTIC -----
+        case 'diagnostic': {
+          const { code, vehicule, symptomes, niveau } = body;
+          const prompt =
+            `Code OBD: ${code || 'non fourni'}\nVéhicule: ${vehicule || 'non précisé'}\n` +
+            `Symptômes: ${symptomes || 'non précisés'}\nJSON:\n` +
+            `{"code":"${code || 'SYMPTÔMES'}","systeme":"système exact","titre":"titre précis",` +
+            `"description":"explication 3-4 phrases","severite":"HAUTE","rouler":true,` +
+            `"causes":["c1","c2","c3","c4"],"etapes":["e1 avec valeurs","e2","e3","e4","e5"],` +
+            `"outils":["outil1 avec taille","outil2","outil3"],"difficulte":2,` +
+            `"pieces":["p1","p2","p3"],"comment_tester":"avec valeurs exactes",` +
+            `"pannes_liees":"autres pannes liées","economie_diy":120,"temps":"estimation",` +
+            `"mo_min":50,"mo_max":200,"pieces_min":30,"pieces_max":400,` +
+            `"conseil":"conseil expert spécifique","prevention":"prévention futur"}`;
+          const txt = await appelerClaude(systemeDiagnostic(niveau), [{ role: 'user', content: prompt }], 1500);
+          resultat = parseJSON(txt);
+          await sauvegarderDiagnostic(profil, 'diagnostic', {
+            question: symptomes, obd_code: code, vehicule, response: resultat,
+            category: resultat.systeme, severity: resultat.severite
           });
-        } catch (e) { /* silently fail */ }
+          await incrementerCompteur(profil, 'diagnostics');
+          break;
+        }
+
+        // ----- RECHERCHE PIÈCES -----
+        case 'pieces': {
+          const { vehicule, piece } = body;
+          const prompt =
+            `Véhicule: ${vehicule}\nPièce: ${piece}\nJSON:\n` +
+            `{"pieces":[{"nom":"nom exact","marque":"NGK/Bosch/Valeo/Febi...",` +
+            `"reference":"réf précise","ref_origine":"réf constructeur","prix_min":15,"prix_max":45,` +
+            `"compatibilite":"note précise","qualite":"OEM ou Aftermarket ou Origine",` +
+            `"conseil":"conseil montage","urgence":"Immédiat ou Sous 1000km ou Entretien normal"}]}\n` +
+            `3-4 pièces de qualités différentes.`;
+          const txt = await appelerClaude(
+            "Expert pièces automobiles. Références aussi précises que possible. JSON uniquement sans markdown.",
+            [{ role: 'user', content: prompt }], 1500);
+          resultat = parseJSON(txt);
+          await sauvegarderDiagnostic(profil, 'pieces', { question: piece, vehicule, response: resultat });
+          await incrementerCompteur(profil, 'pieces_searches');
+          break;
+        }
+
+        // ----- DÉCODAGE VIN (gratuit) -----
+        case 'vin': {
+          const { vin } = body;
+          const prompt =
+            `Décode ce VIN: ${vin}\nWMI: ${vin.substring(0, 3)}\n` +
+            `Codes WMI: VF1=Renault,VF3=Peugeot,VF7=Citroën,WBA=BMW,WDB=Mercedes,WAU=Audi,` +
+            `WVW=VW,ZFA=Fiat,VSS=SEAT,TMB=Skoda,SAL=LandRover,JHM=Honda,JN1=Nissan,KNA=Kia,KMH=Hyundai\n` +
+            `JSON:\n{"pays":"","constructeur":"","modele":"","variante":"","annee":"","usine":"",` +
+            `"moteur":"","carburant":"","transmission":"","serie":"${vin.substring(9)}"}`;
+          const txt = await appelerClaude(
+            "Expert mondial décodage VIN. JSON uniquement sans markdown.",
+            [{ role: 'user', content: prompt }], 800);
+          resultat = parseJSON(txt);
+          await sauvegarderDiagnostic(profil, 'vin', { question: vin, response: resultat });
+          break;
+        }
+
+        // ----- ALERTES ENTRETIEN -----
+        case 'alertes': {
+          const { vehicule, km } = body;
+          const prompt =
+            `Véhicule: ${vehicule} à ${km} km\nJSON:\n` +
+            `{"alertes":[{"icon":"🔧","titre":"intervention","desc":"description précise",` +
+            `"km_next":170000,"urgence":"Immédiat ou Bientôt ou Préventif"}]}\n` +
+            `6-8 alertes basées sur le kilométrage réel.`;
+          const txt = await appelerClaude(
+            "Expert entretien automobile. JSON uniquement sans markdown.",
+            [{ role: 'user', content: prompt }], 1200);
+          resultat = parseJSON(txt);
+          await sauvegarderDiagnostic(profil, 'alerte', { question: km + ' km', vehicule, response: resultat });
+          break;
+        }
+
+        // ----- URGENCE "C'est grave docteur ?" (gratuit, sans connexion) -----
+        case 'urgence': {
+          const { description, vehicule } = body;
+          const prompt =
+            `Véhicule: ${vehicule || 'non précisé'}\nProblème: ${description}\nJSON:\n` +
+            `{"gravite":"STOP","rouler":false,"message":"explication courte","action":"quoi faire maintenant"}`;
+          const txt = await appelerClaude(
+            "Expert mécanicien. Analyse urgence rapide. JSON sans markdown.",
+            [{ role: 'user', content: prompt }], 600);
+          resultat = parseJSON(txt);
+          break;
+        }
+
+        // ----- ANALYSE PHOTO -----
+        case 'photo': {
+          const { image_base64, media_type } = body;
+          const txt = await appelerClaude(
+            "Tu es un expert mécanicien automobile. Tu analyses des photos avec précision. Réponds en français.",
+            [{ role: 'user', content: [
+              { type: 'image', source: { type: 'base64', media_type, data: image_base64 } },
+              { type: 'text', text:
+                "Analyse cette photo:\n1. Ce que tu vois précisément\n2. État de la pièce (bon/usé/défaillant)\n" +
+                "3. Problèmes ou défauts visibles\n4. Urgence: immédiat/bientôt/préventif\n" +
+                "5. Recommandations précises\n6. Pièces à commander si nécessaire" }
+            ] }], 1000);
+          resultat = { analyse: txt };
+          await sauvegarderDiagnostic(profil, 'photo', { question: 'Analyse photo', response: resultat });
+          break;
+        }
+
+        // ----- CHAT LIBRE (Dylan) -----
+        case 'chat': {
+          const { messages, niveau } = body;
+          const persona =
+            "Tu es Dylan, mécano IA belge : direct, franc, un peu d'humour, anti-arnaque. " +
+            "Tu donnes des conseils mécaniques honnêtes et clairs. " +
+            (niveau === 'pro' ? "L'utilisateur est un pro : sois technique."
+             : niveau === 'apprenti' ? "L'utilisateur apprend : explique le pourquoi."
+             : "L'utilisateur est un particulier : reste simple, évite le jargon.");
+          resultat = { reponse: await appelerClaude(persona, messages, 1200) };
+          await sauvegarderDiagnostic(profil, 'chat', {
+            question: messages[messages.length - 1]?.content, response: resultat
+          });
+          break;
+        }
+
+        default:
+          return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Action non gérée' }) };
       }
-      
-      return { statusCode: 200, headers, body: JSON.stringify(data) };
+    } catch (erreurIA) {
+      // L'IA a échoué APRÈS avoir pris le crédit → on rembourse.
+      await rembourserCredit(profil, cout);
+      throw erreurIA;
     }
 
-    // ====== TYPE : ANALYSE PHOTO ======
-    if (type === 'photo') {
-      const language = lang || 'fr';
-      const level = userLevel || 'debutant';
-      const systemPrompt = buildDylanPersonality(level, language) + `\n\nTu analyses une photo d'une pièce auto, d'un moteur, ou d'un défaut visible. Donne ton diagnostic avec ton niveau de confiance.`;
-      
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 1500,
-          system: systemPrompt,
-          messages: [{
-            role: 'user',
-            content: [
-              {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: imageMediaType || 'image/jpeg',
-                  data: imageBase64
-                }
-              },
-              {
-                type: 'text',
-                text: userQuery || 'Qu\'est-ce que tu vois sur cette photo ? Y a-t-il un problème ?'
-              }
-            ]
-          }]
-        })
-      });
-      
-      const data = await response.json();
-      return { statusCode: 200, headers, body: JSON.stringify(data) };
-    }
-
-    // ====== TYPE : VIN DECODER ======
-    if (type === 'vin') {
-      const { vin } = body;
-      if (!vin || vin.length < 11) {
-        return { statusCode: 400, headers, body: JSON.stringify({ error: 'VIN invalide' }) };
-      }
-      
-      // Appel API NHTSA vPIC (gratuit, officiel US gov, fiable)
-      const vinUrl = `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`;
-      const vinResp = await fetch(vinUrl);
-      const vinData = await vinResp.json();
-      
-      // Parser les résultats
-      const results = {};
-      if (vinData.Results) {
-        vinData.Results.forEach(r => {
-          if (r.Value && r.Value !== 'Not Applicable' && r.Value !== 'null') {
-            results[r.Variable] = r.Value;
-          }
-        });
-      }
-      
-      return { 
-        statusCode: 200, 
-        headers, 
-        body: JSON.stringify({ 
-          vin, 
-          marque: results['Make'] || 'Inconnu',
-          modele: results['Model'] || 'Inconnu',
-          annee: results['Model Year'] || 'Inconnu',
-          carrosserie: results['Body Class'] || '',
-          moteur: results['Engine Model'] || results['Displacement (L)'] || '',
-          carburant: results['Fuel Type - Primary'] || '',
-          transmission: results['Transmission Style'] || '',
-          pays: results['Plant Country'] || '',
-          usine: results['Plant City'] || '',
-          raw: results
-        }) 
-      };
-    }
-
-    // ====== TYPE : URGENCE "C'EST GRAVE DOCTEUR" ======
-    if (type === 'urgence') {
-      const { description, vehicule } = body;
-      const language = lang || 'fr';
-      
-      const systemPrompt = buildDylanPersonality('debutant', language) + `
-
-TU ES EN MODE URGENCE. Quelqu'un est paniqué (peut-être au bord de la route).
-- Réponse COURTE (max 4-5 phrases)
-- Direct : "Tu peux rouler" ou "Arrête-toi tout de suite"
-- Si grave : explique calmement le danger
-- Si pas grave : rassure et conseille
-- Pas d'humour ici, c'est sérieux
-- Format JSON OBLIGATOIRE :
-{
-  "gravite": "STOP" ou "ATTENTION" ou "OK",
-  "rouler": true ou false,
-  "message": "explication courte rassurante",
-  "action": "ce qu'il faut faire maintenant"
-}`;
-
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 800,
-          system: systemPrompt,
-          messages: [{
-            role: 'user',
-            content: `Véhicule: ${vehicule || 'non précisé'}\nProblème: ${description}\n\nRéponds en JSON.`
-          }]
-        })
-      });
-      
-      const data = await response.json();
-      return { statusCode: 200, headers, body: JSON.stringify(data) };
-    }
-
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Type inconnu: ' + type }) };
+    return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, data: resultat }) };
 
   } catch (error) {
-    console.error('API Error:', error);
-    return { 
-      statusCode: 500, 
-      headers, 
-      body: JSON.stringify({ error: error.message || 'Erreur serveur' }) 
-    };
+    return { statusCode: 500, headers: HEADERS, body: JSON.stringify({ error: error.message }) };
   }
 };
+
+// ============================================================
+// 📋 VARIABLES D'ENVIRONNEMENT À CONFIGURER DANS NETLIFY
+//    (Site settings → Environment variables)
+//
+//    SUPABASE_URL     = https://TON-PROJET.supabase.co
+//    SUPABASE_SECRET  = (Supabase → Project Settings → API → service_role  ⚠️ SECRÈTE)
+//    ANTHROPIC_KEY    = (ta clé sk-ant-...  ⚠️ SECRÈTE — à régénérer car l'ancienne a fuité)
+//
+// ⚠️ NE JAMAIS mettre ces valeurs dans le code ni sur GitHub.
+// ============================================================
