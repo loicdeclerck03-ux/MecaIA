@@ -1,24 +1,28 @@
+# ============================================================
+# 🔧 MECAIA — CONFIGURATION NETLIFY
+# Ce fichier dit à Netlify :
+#   - où trouver le backend (les "fonctions")
+#   - comment transformer l'adresse /api en appel à api.js
+# Place ce fichier à la RACINE de ton projet (à côté de index.html).
+# ============================================================
+
 [build]
-  publish = "."
+  # Dossier où vivent les fonctions backend.
   functions = "netlify/functions"
+  # Pas d'étape de build : c'est un site HTML simple.
+  publish = "."
 
-[functions]
-  node_bundler = "esbuild"
+# Raccourci d'adresse : appeler /api  →  exécute netlify/functions/api.js
+# (plus propre que /.netlify/functions/api dans le code du site)
+[[redirects]]
+  from = "/api"
+  to = "/.netlify/functions/api"
+  status = 200
 
-# Agent Scout lancé automatiquement chaque jour à 3h du matin
-[functions."scout"]
-  schedule = "0 3 * * *"
-
-# Headers de sécurité
+# Sécurité : quelques en-têtes de base pour le site.
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
+    X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-
-# Redirection pour le webhook Stripe (doit garder body brut)
-[[redirects]]
-  from = "/api/stripe-webhook"
-  to = "/.netlify/functions/stripe-webhook"
-  status = 200
