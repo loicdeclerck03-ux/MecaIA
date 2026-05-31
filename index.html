@@ -4,37 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MecaIA — L'Expert Automobile IA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080b0f;--s1:#0f1318;--s2:#151a21;--border:#1e2a3a;--accent:#f0a500;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--text:#c8d4e0;--muted:#4a5a6e}
+:root{--bg:#080b0f;--s1:#0f1318;--s2:#151a21;--border:#1e2a3a;--accent:#f0a500;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--text:#c8d4e0;--muted:#4a5a6e}
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
 .screen{display:none}.screen.on{display:block}
 #s-land.on{display:flex;flex-direction:column;min-height:100vh}
 #s-auth.on{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
 #s-app.on{display:flex;flex-direction:column;min-height:100vh}
 .glow::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 90% 55% at 50% -5%,rgba(240,165,0,0.09),transparent 55%);pointer-events:none;z-index:0}
+.glow::after{content:'';position:fixed;inset:0;background:linear-gradient(rgba(240,165,0,0.01) 1px,transparent 1px),linear-gradient(90deg,rgba(240,165,0,0.01) 1px,transparent 1px);background-size:55px 55px;pointer-events:none;z-index:0}
 .l-nav{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;position:relative;z-index:10}
 .logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:9px}
 .logo-i{width:34px;height:34px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#000}
 .logo span{color:var(--accent)}
 .l-nav-r{display:flex;align-items:center;gap:9px}
-.btn-gh{padding:8px 18px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.btn-gh{padding:8px 18px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s}
 .btn-gh:hover{border-color:var(--accent);color:var(--accent)}
-.btn-ac{padding:8px 18px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.btn-ac{padding:8px 18px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s}
 .btn-ac:hover{background:#ffb830}
-.lang-s{background:var(--s2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:5px 8px;font-size:11px}
 .l-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:44px 24px 28px;position:relative;z-index:1}
-.l-pre{display:inline-flex;align-items:center;gap:8px;background:rgba(240,165,0,0.08);border:1px solid rgba(240,165,0,0.2);padding:6px 16px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:22px}
+.l-pre{display:inline-flex;align-items:center;gap:8px;background:rgba(240,165,0,0.08);border:1px solid rgba(240,165,0,0.2);padding:6px 16px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;margin-bottom:22px}
 .l-h1{font-family:'Rajdhani',sans-serif;font-size:clamp(32px,7vw,64px);font-weight:700;color:#fff;line-height:1.1;margin-bottom:16px}
 .l-h1 span{color:var(--accent)}
 .l-sub{font-size:15px;color:var(--muted);max-width:500px;line-height:1.75;margin-bottom:30px}
 .l-btns{display:flex;gap:11px;flex-wrap:wrap;justify-content:center;margin-bottom:36px}
-.btn-hero{padding:14px 36px;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 0 28px rgba(240,165,0,0.18)}
+.btn-hero{padding:14px 36px;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s;box-shadow:0 0 28px rgba(240,165,0,0.18)}
 .btn-hero:hover{background:#ffb830;transform:translateY(-2px)}
-.btn-hero2{padding:14px 36px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;cursor:pointer}
+.btn-hero2{padding:14px 36px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s}
 .btn-hero2:hover{border-color:var(--accent);color:var(--accent)}
+.l-feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px;max-width:940px;width:100%;margin:0 auto 44px;padding:0 24px;position:relative;z-index:1}
+.feat{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color .2s}
+.feat:hover{border-color:rgba(240,165,0,0.25)}
 .l-stats{display:flex;justify-content:center;gap:44px;padding:16px 24px 44px;position:relative;z-index:1;flex-wrap:wrap}
 .stat-n{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--accent)}
 .stat-l{font-size:11px;color:var(--muted);margin-top:2px;font-family:'IBM Plex Mono',monospace}
@@ -45,125 +48,255 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .a-logo span{color:var(--accent)}
 .a-sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:22px}
 .a-tabs{display:flex;background:var(--s2);border-radius:6px;padding:3px;margin-bottom:20px;gap:3px}
-.atab{flex:1;padding:8px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:var(--muted);border-radius:4px;cursor:pointer;border:none;background:none}
+.atab{flex:1;padding:8px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--muted);border-radius:4px;cursor:pointer;border:none;background:none;transition:all .2s}
 .atab.on{background:var(--accent);color:#000}
 .af{margin-bottom:12px}
-.abtn{width:100%;padding:12px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
+.abtn{width:100%;padding:12px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;margin-top:4px;transition:all .2s}
 .abtn:hover:not(:disabled){background:#ffb830}
 .abtn:disabled{background:#2a3548;color:var(--muted);cursor:not-allowed}
 .amsg{font-size:11px;text-align:center;margin-top:9px;font-family:'IBM Plex Mono',monospace;min-height:15px}
 .amsg.err{color:var(--red)}.amsg.ok{color:var(--green)}
-.afg{text-align:center;margin-top:9px;font-size:12px;color:var(--muted);cursor:pointer}
-.afg:hover{color:var(--accent)}
 .abk{text-align:center;margin-top:12px;font-size:12px;color:var(--muted);cursor:pointer}
-.app-h{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:54px;background:rgba(8,11,15,0.97);border-bottom:1px solid var(--border)}
+.abk:hover{color:var(--accent)}
+.app-h{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:54px;background:rgba(8,11,15,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(14px)}
 .app-logo{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:7px}
 .app-li{width:26px;height:26px;background:var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#000}
 .app-logo span{color:var(--accent)}
 .app-hr{display:flex;align-items:center;gap:5px}
+.cpill{display:flex;align-items:center;gap:5px;background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.25);padding:4px 10px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;transition:all .2s}
+.cpill:hover{background:rgba(240,165,0,0.18)}
 .vpill{display:flex;align-items:center;gap:5px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);padding:4px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green)}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.icb{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:4px}
+.icb{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:4px;transition:color .2s}
 .icb:hover{color:var(--accent)}
-.toast-c{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:7px;align-items:center;pointer-events:none}
-.toast{background:var(--s1);border:1px solid var(--border);border-radius:7px;padding:9px 17px;font-size:13px;color:var(--text);white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,0.4)}
-.toast.ok{border-color:rgba(16,185,129,0.4);color:var(--green)}.toast.er{border-color:rgba(239,68,68,0.4);color:var(--red)}
-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:5px}
-input,select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
-input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(240,165,0,0.05)}
-input::placeholder{color:var(--muted)}
+.app-tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{flex:1;min-width:60px;padding:11px 3px;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;text-align:center;text-transform:uppercase;white-space:nowrap;transition:all .2s}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.pg{display:none}.pg.on{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.wrap{max-width:880px;margin:0 auto;padding:16px 13px 80px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:13px}
+.ch{padding:12px 17px;background:var(--s2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:7px}
+.ct::before{content:'';width:3px;height:12px;background:var(--accent);border-radius:2px}
+.cb{padding:17px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.f{margin-bottom:12px}
+label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(240,165,0,0.05)}
+input::placeholder,textarea::placeholder{color:var(--muted)}
 select option{background:var(--s2)}
-.btn{width:100%;padding:11px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-transform:uppercase;margin-top:5px}
+textarea{resize:vertical;min-height:68px}
+.btn{width:100%;padding:11px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;margin-top:5px;transition:all .2s}
 .btn:hover:not(:disabled){background:#ffb830;transform:translateY(-1px)}
-.btn:disabled{background:#2a3548;color:var(--muted);cursor:not-allowed}
-@media(max-width:600px){.l-nav{padding:15px 18px}.l-hero{padding:34px 18px 22px}.l-stats{gap:22px}}
+.btn:disabled{background:#2a3548;color:var(--muted);cursor:not-allowed;transform:none}
+.bsm{padding:5px 11px;background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.3);color:var(--accent);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+.bsm:hover{background:rgba(240,165,0,0.2)}
+.bbuy{padding:6px 14px;background:var(--accent);color:#000;border:none;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.bbuy:hover{background:#ffb830}
+.banner{background:rgba(240,165,0,0.06);border:1px solid rgba(240,165,0,0.2);border-radius:8px;padding:11px 15px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
+.btxt{font-size:12px}.btxt strong{color:var(--accent)}
+.ubar{display:flex;align-items:center;gap:8px;background:rgba(240,165,0,0.04);border:1px solid rgba(240,165,0,0.12);border-radius:6px;padding:6px 11px;margin-bottom:13px;font-size:11px;color:var(--muted)}
+.ubar strong{color:var(--accent)}
+.fbadge{font-family:'IBM Plex Mono',monospace;font-size:9px;background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3);padding:3px 7px;border-radius:3px;letter-spacing:1px}
+.err-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:6px;padding:11px 14px;color:#f87171;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;margin-top:11px}
+.loader{text-align:center;padding:46px 20px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:3px}
+.lbar{width:180px;height:2px;background:var(--border);border-radius:2px;margin:13px auto 0;overflow:hidden}
+.lfill{height:100%;background:var(--accent);animation:lrun 1.8s ease-in-out infinite}
+@keyframes lrun{0%{width:0;margin-left:0}50%{width:70%;margin-left:0}100%{width:0;margin-left:100%}}
+.sev{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 8px;border-radius:3px;letter-spacing:1px}
+.sevH{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.sevM{background:rgba(240,165,0,.15);color:var(--accent);border:1px solid rgba(240,165,0,.3)}
+.sevF{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.slbl{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin:13px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.slist{display:flex;flex-direction:column;gap:7px}
+.si{display:flex;gap:10px;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:9px 12px}
+.sn{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);min-width:18px}
+.st{font-size:13px;line-height:1.6}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.tag{background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.2);color:var(--accent);padding:4px 9px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:10px}
+.cons{background:var(--s2);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:11px 14px;font-size:13px;line-height:1.7;margin-top:11px}
+.cons strong{color:var(--accent)}.cg{border-color:var(--green)}.cg strong{color:var(--green)}.cb2{border-color:var(--blue)}.cb2 strong{color:var(--blue)}
+.rfooter{display:flex;align-items:center;justify-content:space-between;padding:9px 17px;border-top:1px solid var(--border);background:var(--s2);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)}
+.diff-row{display:flex;gap:8px;align-items:center;margin-top:9px}
+.di{font-size:15px;opacity:.22}.di.on{opacity:1}
+.dv-box{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px;margin-top:11px}
+.dv-t{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:9px}
+.dv-r{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.dv-r:last-of-type{border-bottom:none;font-weight:700;color:#fff;font-size:13px;padding-top:9px}
+.dv-tot{color:var(--accent)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:8px;padding:15px 17px}
+.vc{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:9px 11px}
+.vcl{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1.5px;margin-bottom:2px}
+.vcv{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff}
+.plist{display:flex;flex-direction:column;gap:8px;padding:15px 17px}
+.pi{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:10px 13px;flex-wrap:wrap}
+.pm{flex:1;min-width:125px}
+.pn{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
+.pr{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)}
+.pp{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--accent);white-space:nowrap}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:11px}
+.plan{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:19px 15px;position:relative;transition:all .2s}
+.plan:hover{transform:translateY(-2px)}.plan.star{border-color:var(--accent)}
+.pbadge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:8px;background:var(--accent);color:#000;padding:3px 9px;border-radius:3px;letter-spacing:1px;white-space:nowrap}
+.pname{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--muted);margin-bottom:6px}
+.pprice{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;color:#fff;line-height:1}
+.pprice sub{font-size:12px;color:var(--muted);font-weight:400}
+.pfeats{margin-top:11px;display:flex;flex-direction:column;gap:6px}
+.pfeat{font-size:12px;color:var(--text);display:flex;gap:6px}.pfeat::before{content:'✓';color:var(--green)}
+.bplan{width:100%;margin-top:13px;padding:8px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s}
+.bplan:hover{border-color:var(--accent);color:var(--accent)}.plan.star .bplan{background:var(--accent);border-color:var(--accent);color:#000}
+.faq-i{background:var(--s2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.faq-q{padding:13px 15px;cursor:pointer;font-weight:500;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.faq-q:hover{color:var(--accent)}
+.faq-a{display:none;padding:0 15px 13px;font-size:12px;color:var(--muted);line-height:1.75}
+.faq-a.on{display:block}
+.ali{display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:11px 14px;margin-bottom:8px}
+.toast-c{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:7px;align-items:center;pointer-events:none}
+.toast{background:var(--s1);border:1px solid var(--border);border-radius:7px;padding:9px 17px;font-size:13px;color:var(--text);animation:fadeIn .3s ease;white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,0.4)}
+.toast.ok{border-color:rgba(16,185,129,0.4);color:var(--green)}.toast.er{border-color:rgba(239,68,68,0.4);color:var(--red)}
+@media(max-width:600px){.r2{grid-template-columns:1fr}.wrap{padding:13px 10px 70px}.app-h{padding:0 11px}.l-nav{padding:15px 18px}.l-hero{padding:34px 18px 22px}.l-stats{gap:22px}}
 </style>
 </head>
 <body>
-<div id="s-loading" style="position:fixed;inset:0;background:#080b0f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999"><div style="font-family:Rajdhani,sans-serif;font-size:28px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:32px"><div style="width:40px;height:40px;background:#f0a500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000">⚙</div>MECA<span style="color:#f0a500">IA</span></div></div>
+<div id="s-loading" style="position:fixed;inset:0;background:#080b0f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999"><div style="font-family:Rajdhani,sans-serif;font-size:28px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:32px"><div style="width:40px;height:40px;background:#f0a500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000">⚙</div>MECA<span style="color:#f0a500">IA</span></div><div style="width:200px;height:2px;background:#1e2a3a;border-radius:2px;overflow:hidden"><div style="height:100%;background:#f0a500;animation:lrun 1.8s ease-in-out infinite"></div></div></div>
 <div class="toast-c" id="toasts"></div>
 
+<!-- LANDING -->
 <div id="s-land" class="screen glow">
-  <nav class="l-nav">
-    <div class="logo"><div class="logo-i">⚙</div>MECA<span>IA</span></div>
-    <div class="l-nav-r">
-      <button class="btn-gh" onclick="goAuth('login')">CONNEXION</button>
-      <button class="btn-ac" onclick="goAuth('register')">COMMENCER</button>
-    </div>
-  </nav>
+  <nav class="l-nav"><div class="logo"><div class="logo-i">⚙</div>MECA<span>IA</span></div><div class="l-nav-r"><button class="btn-gh" onclick="goAuth('login')">CONNEXION</button><button class="btn-ac" onclick="goAuth('register')">COMMENCER</button></div></nav>
   <div class="l-hero">
-    <div class="l-pre">⚙ DIAGNOSTIC AUTOMOBILE</div>
-    <h1 class="l-h1">L'expert IA<br>dans votre <span>poche</span></h1>
-    <p class="l-sub">Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien 24h/24.</p>
-    <div class="l-btns">
-      <button class="btn-hero" onclick="goAuth('register')">🚀 DÉMARRER</button>
-      <button class="btn-hero2" onclick="goAuth('login')">CONNEXION</button>
-    </div>
+    <div class="l-pre">⚙ DIAGNOSTIC AUTOMOBILE INTELLIGENT</div>
+    <h1 class="l-h1">L'expert automobile IA<br>dans votre <span>poche</span></h1>
+    <p class="l-sub">Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien. Disponible 24h/24.</p>
+    <div class="l-btns"><button class="btn-hero" onclick="goAuth('register')">🚀 DÉMARRER GRATUITEMENT</button><button class="btn-hero2" onclick="goAuth('login')">CONNEXION</button></div>
   </div>
-  <div class="l-stats">
-    <div><div class="stat-n">1000+</div><div class="stat-l">DIAGNOSTICS</div></div>
-    <div><div class="stat-n">3</div><div class="stat-l">CRÉDITS</div></div>
-    <div><div class="stat-n">4</div><div class="stat-l">LANGUES</div></div>
-    <div><div class="stat-n">24/7</div><div class="stat-l">DISPONIBLE</div></div>
+  <div class="l-feats">
+    <div class="feat"><div style="font-size:24px;margin-bottom:10px">⚡</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Diagnostic IA Expert</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Code OBD ou symptômes — rapport complet avec procédure, outils et coût estimé.</div></div>
+    <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔩</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Recherche Pièces</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Pièces compatibles avec références et lien de commande direct.</div></div>
+    <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔔</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Alertes Entretien</div><div style="font-size:12px;color:var(--muted);line-height:1.65">L'IA anticipe les interventions selon votre kilométrage.</div></div>
+    <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔍</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Décodeur VIN</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Décodez votre VIN gratuitement — marque, modèle, moteur.</div></div>
   </div>
-  <div class="l-foot">MecaIA © 2025 · Créé par <strong style="color:var(--accent)">Loïc Declerck</strong></div>
+  <div class="l-stats"><div><div class="stat-n">1000+</div><div class="stat-l">DIAGNOSTICS</div></div><div><div class="stat-n">3</div><div class="stat-l">CRÉDITS OFFERTS</div></div><div><div class="stat-n">24/7</div><div class="stat-l">DISPONIBLE</div></div></div>
+  <div class="l-foot">MecaIA © 2025 — Créé par <strong style="color:var(--accent)">Loïc Declerck</strong> · Belgique · <a href="mailto:loicdeclerck4020@gmail.com">loicdeclerck4020@gmail.com</a></div>
 </div>
 
+<!-- AUTH -->
 <div id="s-auth" class="screen glow">
 <div class="a-box">
   <div class="a-logo">MECA<span>IA</span></div>
-  <div class="a-sub">Diagnostic automobile IA</div>
+  <div class="a-sub">L'expert automobile IA</div>
   <div class="a-tabs"><button class="atab on" id="at-l" onclick="swTab('login')">CONNEXION</button><button class="atab" id="at-r" onclick="swTab('register')">INSCRIPTION</button></div>
-  
-  <div id="af-l">
-    <div class="af"><label>EMAIL</label><input type="email" id="l-em" placeholder="votre@email.com"></div>
-    <div class="af"><label>MOT DE PASSE</label><input type="password" id="l-pw" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()"></div>
-    <button class="abtn" onclick="doLogin()">CONNEXION</button>
-  </div>
-  
-  <div id="af-r" style="display:none">
-    <div class="af"><label>NOM</label><input type="text" id="r-nm" placeholder="Votre nom"></div>
-    <div class="af"><label>EMAIL</label><input type="email" id="r-em" placeholder="votre@email.com"></div>
-    <div class="af"><label>MOT DE PASSE</label><input type="password" id="r-pw" placeholder="••••••••"></div>
-    <div class="af"><label>VOUS ÊTES</label><select id="r-ty"><option>🔧 Mécanicien</option><option>🚗 Particulier</option><option>📚 Apprenti</option><option>🏢 Garage</option></select></div>
-    <button class="abtn" onclick="doReg()">CRÉER COMPTE</button>
-  </div>
-  
+  <div id="af-l"><div class="af"><label>EMAIL</label><input type="email" id="l-em" placeholder="votre@email.com"></div><div class="af"><label>MOT DE PASSE</label><input type="password" id="l-pw" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()"></div><button class="abtn" onclick="doLogin()">SE CONNECTER</button></div>
+  <div id="af-r" style="display:none"><div class="af"><label>NOM COMPLET</label><input type="text" id="r-nm" placeholder="Votre nom"></div><div class="af"><label>EMAIL</label><input type="email" id="r-em" placeholder="votre@email.com"></div><div class="af"><label>MOT DE PASSE (min. 6)</label><input type="password" id="r-pw" placeholder="••••••••"></div><div class="af"><label>VOUS ÊTES</label><select id="r-ty"><option value="mechanic">🔧 Mécanicien</option><option value="amateur">🚗 Particulier</option><option value="apprenti">📚 Apprenti</option><option value="garage">🏢 Garage</option></select></div><button class="abtn" onclick="doReg()">CRÉER MON COMPTE</button></div>
   <div class="amsg" id="a-msg"></div>
   <div class="abk" onclick="goLand()">← Accueil</div>
 </div></div>
 
+<!-- APP -->
 <div id="s-app" class="screen">
 <header class="app-h">
   <div class="app-logo"><div class="app-li">⚙</div>MECA<span>IA</span></div>
   <div class="app-hr">
-    <div class="vpill"><span class="dot"></span>OK</div>
+    <div class="cpill" id="cpill">🪙 <span id="cdis">3</span></div>
+    <div class="vpill"><span class="dot"></span>ON</div>
     <button class="icb" onclick="doOut()">⏻</button>
   </div>
 </header>
-<div style="text-align:center;padding:60px 20px;color:var(--muted)">
-  <div style="font-size:28px;margin-bottom:20px">🚀</div>
-  <div style="font-size:18px;margin-bottom:10px;font-family:'Rajdhani',sans-serif;font-weight:700">Bienvenue !</div>
-  <div>Vous êtes connecté. Les fonctionnalités arrivent bientôt.</div>
-  <button class="btn" style="max-width:200px;margin:30px auto 0" onclick="doOut()">Déconnexion</button>
+<div class="app-tabs">
+  <button class="tab on" onclick="showPg('diag')">DIAGNOSTIC</button>
+  <button class="tab" onclick="showPg('vin')">VIN</button>
+  <button class="tab" onclick="showPg('pieces')">PIÈCES</button>
+  <button class="tab" onclick="showPg('alertes')">ALERTES</button>
+  <button class="tab" onclick="showPg('faq')">FAQ</button>
+  <button class="tab" onclick="showPg('tarifs')">TARIFS</button>
 </div>
+
+<!-- DIAGNOSTIC -->
+<div class="pg on" id="pg-diag"><div class="wrap">
+  <div class="ubar">👤 <strong id="u-nm">Utilisateur</strong> · <span id="u-ty">Mécanicien</span></div>
+  <div class="banner"><div class="btxt">Crédits : <strong id="cd1">3</strong> · 1 crédit/utilisation · VIN gratuit</div></div>
+  <div class="card"><div class="ch"><div class="ct">Diagnostic IA Expert</div></div><div class="cb">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:13px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:9px 12px;line-height:1.6">💬 Entrez un code OBD ou décrivez votre panne.</div>
+    <div class="r2"><div><label>Code OBD (optionnel)</label><input type="text" id="d-code" placeholder="P0300, DTC..." oninput="chkD()"></div><div><label>Marque *</label><select id="d-mk" onchange="chkD()"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Dacia</option><option>Autre</option></select></div></div>
+    <div class="r2"><div><label>Modèle *</label><input type="text" id="d-mo" placeholder="Clio, Golf..." oninput="chkD()"></div><div><label>Année *</label><select id="d-an" onchange="chkD()"><option value="">Année...</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option><option>2020</option><option>2019</option><option>2018</option><option>2017</option><option>2016</option><option>2015</option><option>Avant 2015</option></select></div></div>
+    <div class="r2"><div><label>Carburant *</label><select id="d-cb" onchange="chkD()"><option value="">Carburant...</option><option>Essence</option><option>Diesel</option><option>Hybride</option><option>Électrique</option><option>GPL</option></select></div><div><label>Kilométrage</label><input type="text" id="d-km" placeholder="150 000 km"></div></div>
+    <div class="f"><label>Symptômes observés</label><textarea id="d-sy" placeholder="Décrivez : voyant, bruit, fumée, vibration..."></textarea></div>
+    <button class="btn" id="btn-d" onclick="doDiag()" disabled>⚡ DIAGNOSTIC IA (1 crédit)</button>
+  </div></div>
+  <div id="zd"></div>
+</div></div>
+
+<!-- VIN -->
+<div class="pg" id="pg-vin"><div class="wrap">
+  <div class="card"><div class="ch"><div class="ct">Décodeur VIN</div><span class="fbadge">GRATUIT</span></div><div class="cb">
+    <div class="f"><label>Numéro VIN / Châssis</label><input type="text" id="v-n" placeholder="VF1JZS0AE51140932" maxlength="17" oninput="this.value=this.value.toUpperCase()" style="text-transform:uppercase;letter-spacing:2px;font-family:'IBM Plex Mono',monospace"></div>
+    <button class="btn" onclick="doVIN()">🔍 DÉCODER — GRATUIT</button>
+  </div></div>
+  <div id="zv"></div>
+</div></div>
+
+<!-- PIÈCES -->
+<div class="pg" id="pg-pieces"><div class="wrap">
+  <div class="banner"><div class="btxt">Crédits : <strong id="cd2">3</strong> · 1 crédit/recherche</div></div>
+  <div class="card"><div class="ch"><div class="ct">Recherche pièces compatibles</div></div><div class="cb">
+    <div class="r2"><div><label>Marque *</label><select id="p-mk"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Dacia</option><option>Autre</option></select></div><div><label>Modèle *</label><input type="text" id="p-mo" placeholder="Clio, Golf..."></div></div>
+    <div class="r2"><div><label>Année</label><input type="text" id="p-an" placeholder="2018"></div><div><label>Carburant</label><select id="p-cb"><option value="">Carburant...</option><option>Essence</option><option>Diesel</option><option>Hybride</option><option>Électrique</option></select></div></div>
+    <div class="f"><label>Pièce recherchée *</label><input type="text" id="p-pc" placeholder="bougie, plaquettes, courroie, alternateur..."></div>
+    <button class="btn" onclick="doPieces()">🔧 TROUVER LES PIÈCES (1 crédit)</button>
+  </div></div>
+  <div id="zp"></div>
+</div></div>
+
+<!-- ALERTES -->
+<div class="pg" id="pg-alertes"><div class="wrap">
+  <div class="banner"><div class="btxt">Crédits : <strong id="cd3">3</strong> · 1 crédit/génération</div></div>
+  <div class="card"><div class="ch"><div class="ct">Alertes entretien</div></div><div class="cb">
+    <div class="r2"><div><label>Marque</label><input type="text" id="a-mk" placeholder="Renault"></div><div><label>Modèle</label><input type="text" id="a-mo" placeholder="Clio"></div></div>
+    <div class="r2"><div><label>Année</label><input type="text" id="a-an" placeholder="2018"></div><div><label>Kilométrage *</label><input type="text" id="a-km" placeholder="153 000"></div></div>
+    <button class="btn" onclick="doAlertes()">🔔 GÉNÉRER LES ALERTES (1 crédit)</button>
+  </div></div>
+  <div id="za"></div>
+</div></div>
+
+<!-- FAQ -->
+<div class="pg" id="pg-faq"><div class="wrap">
+  <div class="card"><div class="ch"><div class="ct">Questions fréquentes</div></div><div class="cb">
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionnent les crédits ?</span><span>▼</span></div><div class="faq-a">1 crédit = 1 diagnostic OBD, 1 recherche pièces ou 1 alerte entretien. Le décodeur VIN est toujours gratuit. 3 crédits offerts à l'inscription.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Les diagnostics sont-ils fiables ?</span><span>▼</span></div><div class="faq-a">L'IA analyse le code OBD, les symptômes et le véhicule pour un diagnostic précis. Les résultats sont indicatifs — consultez un professionnel pour les interventions critiques.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Le paiement est-il sécurisé ?</span><span>▼</span></div><div class="faq-a">100% sécurisé par Stripe. Votre carte n'est jamais stockée sur nos serveurs.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment nous contacter ?</span><span>▼</span></div><div class="faq-a">Email : loicdeclerck4020@gmail.com — réponse sous 24h.</div></div>
+  </div></div>
+</div></div>
+
+<!-- TARIFS -->
+<div class="pg" id="pg-tarifs"><div class="wrap">
+  <div class="card"><div class="ch"><div class="ct">Tarifs MecaIA</div></div><div class="cb">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:17px">Pas d'abonnement. Achetez quand vous en avez besoin. <strong style="color:var(--accent)">VIN toujours gratuit.</strong></p>
+    <div class="plans">
+      <div class="plan"><div class="pname">À LA CARTE</div><div class="pprice">1<sub>€</sub></div><div class="pfeats"><div class="pfeat">1 diagnostic IA</div><div class="pfeat">1 recherche pièces</div></div><button class="bplan">ACHETER</button></div>
+      <div class="plan"><div class="pname">PACK 25</div><div class="pprice">5<sub>€</sub></div><div class="pfeats"><div class="pfeat">25 crédits</div><div class="pfeat">0,20€/utilisation</div></div><button class="bplan">ACHETER</button></div>
+      <div class="plan star"><div class="pbadge">⭐ MEILLEURE VALEUR</div><div class="pname">PACK 60</div><div class="pprice">10<sub>€</sub></div><div class="pfeats"><div class="pfeat">60 crédits</div><div class="pfeat">0,17€/utilisation</div></div><button class="bplan">ACHETER</button></div>
+      <div class="plan"><div class="pname">ILLIMITÉ</div><div class="pprice">15<sub>€/mois</sub></div><div class="pfeats"><div class="pfeat">Tout illimité 30j</div><div class="pfeat">Idéal garage</div></div><button class="bplan">ACHETER</button></div>
+    </div>
+  </div></div>
+  <div style="text-align:center;padding:15px;font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace">MecaIA © 2025 — Loïc Declerck · Belgique</div>
+</div></div>
 </div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
 
-let sb = null;
+let sb = null, CR = 3, CU = null, UT = 'mechanic', lastD = null;
 
+// === CONFIG ===
 async function loadConfig() {
   try {
     const r = await fetch('/.netlify/functions/api?action=config');
     return await r.json();
-  } catch (e) {
-    console.error(e);
-    toast('Erreur connexion', 'er');
-    return null;
-  }
+  } catch (e) { console.error(e); return null; }
 }
 
 async function initSupabase() {
@@ -174,6 +307,7 @@ async function initSupabase() {
   return sb;
 }
 
+// === UTILS ===
 function toast(m, t = '') {
   const el = document.createElement('div');
   el.className = 'toast ' + (t === 'ok' ? 'ok' : t === 'er' ? 'er' : '');
@@ -185,8 +319,40 @@ function toast(m, t = '') {
 function showSc(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
+  window.scrollTo(0, 0);
 }
 
+function hideLoad() {
+  const el = document.getElementById('s-loading');
+  if (el) { el.style.opacity = '0'; setTimeout(() => el.style.display = 'none', 500); }
+}
+
+function ss(id, v) { const e = document.getElementById(id); if (e) e.innerHTML = v; }
+
+function majC() {
+  const v = CR === 999 ? '∞' : String(CR);
+  ss('cdis', v);
+  ['cd1','cd2','cd3'].forEach(id => ss(id, v));
+}
+
+function useC() {
+  if (CR === 999) return true;
+  if (CR <= 0) { toast('Plus de crédits !', 'er'); return false; }
+  CR--;
+  majC();
+  saveCredits();
+  return true;
+}
+
+async function saveCredits() {
+  if (!CU || !sb) return;
+  try { await sb.from('users').update({ credits: CR }).eq('id', CU.id); } catch (e) {}
+}
+
+function loader(id) { document.getElementById(id).innerHTML = '<div class="loader">ANALYSE EN COURS<div class="lbar"><div class="lfill"></div></div></div>'; }
+function errB(id, m) { document.getElementById(id).innerHTML = '<div class="err-box">⚠ ' + m + '</div>'; }
+
+// === AUTH ===
 window.goLand = () => showSc('s-land');
 window.goAuth = (m) => { showSc('s-auth'); window.swTab(m); };
 window.swTab = (m) => {
@@ -208,15 +374,11 @@ window.doLogin = async function() {
   const em = document.getElementById('l-em').value.trim();
   const pw = document.getElementById('l-pw').value;
   if (!em || !pw) { setMsg('Remplir tous les champs', 'err'); return; }
-  
   try {
     const { error } = await sb.auth.signInWithPassword({ email: em, password: pw });
     if (error) throw error;
     setMsg('✅ Connecté !', 'ok');
-    setTimeout(() => showSc('s-app'), 1000);
-  } catch (e) {
-    setMsg(e.message || 'Erreur', 'err');
-  }
+  } catch (e) { setMsg(e.message || 'Erreur', 'err'); }
 };
 
 window.doReg = async function() {
@@ -224,75 +386,172 @@ window.doReg = async function() {
   const nm = document.getElementById('r-nm').value.trim();
   const em = document.getElementById('r-em').value.trim();
   const pw = document.getElementById('r-pw').value;
-  
+  const ty = document.getElementById('r-ty').value;
   if (!nm || !em || !pw) { setMsg('Remplir tous les champs', 'err'); return; }
   if (pw.length < 6) { setMsg('Min 6 caractères', 'err'); return; }
-  
   try {
-    const { data, error } = await sb.auth.signUp({
-      email: em,
-      password: pw,
-      options: { data: { name: nm } }
-    });
+    const { data, error } = await sb.auth.signUp({ email: em, password: pw, options: { data: { name: nm } } });
     if (error) throw error;
-    
     const uid = data.user.id;
     const pc = 'CODE-' + uid.substring(0, 6).toUpperCase();
-    const ty = document.getElementById('r-ty').value.split(' ')[0] === '🔧' ? 'mechanic' : 'amateur';
-    
-    const { error: err2 } = await sb.from('users').insert([{
-      id: uid,
-      email: em,
-      name: nm,
-      type: ty,
-      credits: 3,
-      promo_code: pc,
-      created_at: new Date().toISOString(),
-      diagnostics: 0,
-      pieces_searches: 0,
-      is_owner: false
-    }]);
-    
-    if (err2) throw err2;
-    
-    setMsg('✅ Compte créé ! Vérifiez votre email.', 'ok');
-    setTimeout(() => {
-      document.getElementById('r-nm').value = '';
-      document.getElementById('r-em').value = '';
-      document.getElementById('r-pw').value = '';
-      window.swTab('login');
-    }, 1500);
-  } catch (e) {
-    console.error(e);
-    setMsg(e.message || 'Erreur', 'err');
-  }
+    await sb.from('users').upsert([{ id: uid, email: em, name: nm, type: ty, credits: 3, promo_code: pc, created_at: new Date().toISOString(), diagnostics: 0, pieces_searches: 0, is_owner: false }]);
+    setMsg('✅ Compte créé !', 'ok');
+    setTimeout(() => window.swTab('login'), 1500);
+  } catch (e) { console.error(e); setMsg(e.message || 'Erreur', 'err'); }
 };
 
 window.doOut = async function() {
   if (sb) await sb.auth.signOut();
+  CU = null;
   showSc('s-land');
   toast('Déconnecté', 'ok');
 };
 
+// === API CLAUDE ===
+async function callAPI(action, payload = {}) {
+  if (!sb || !CU) return null;
+  const { data: { session } } = await sb.auth.getSession();
+  const token = session?.access_token || '';
+  const r = await fetch('/.netlify/functions/api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ action, ...payload })
+  });
+  return await r.json();
+}
+
+// === DIAGNOSTIC ===
+window.chkD = function() {
+  const mk = document.getElementById('d-mk').value;
+  const mo = document.getElementById('d-mo').value.trim();
+  const an = document.getElementById('d-an').value;
+  const cb = document.getElementById('d-cb').value;
+  document.getElementById('btn-d').disabled = !(mk && mo && an && cb);
+};
+
+window.doDiag = async function() {
+  if (!useC()) return;
+  const code = document.getElementById('d-code').value.trim().toUpperCase();
+  const mk = document.getElementById('d-mk').value;
+  const mo = document.getElementById('d-mo').value.trim();
+  const an = document.getElementById('d-an').value;
+  const cb = document.getElementById('d-cb').value;
+  const km = document.getElementById('d-km').value.trim();
+  const sy = document.getElementById('d-sy').value.trim();
+  const btn = document.getElementById('btn-d');
+  btn.disabled = true; btn.textContent = '⏳ ANALYSE...';
+  loader('zd');
+  try {
+    const d = await callAPI('diagnostic', { code, marque: mk, modele: mo, annee: an, carburant: cb, km, symptomes: sy });
+    if (d.error) throw new Error(d.error);
+    lastD = d;
+    const sev = d.severite === 'HAUTE' ? 'sevH' : d.severite === 'MOYENNE' ? 'sevM' : 'sevF';
+    const df = d.difficulte || 2;
+    const causes = (d.causes||[]).map(x => '<div class="si"><span class="sn">→</span><span class="st">'+x+'</span></div>').join('');
+    const steps = (d.etapes||[]).map((x,i) => '<div class="si"><span class="sn">0'+(i+1)+'</span><span class="st">'+x+'</span></div>').join('');
+    const tags = (d.pieces||[]).map(x => '<span class="tag">'+x+'</span>').join('');
+    const mmi=d.mo_min||50,mma=d.mo_max||200,pmi=d.pieces_min||30,pma=d.pieces_max||300;
+    document.getElementById('zd').innerHTML = '<div class="card"><div class="ch"><div><div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--muted);margin-bottom:2px">'+d.systeme+'</div><div style="font-family:Rajdhani,sans-serif;font-size:16px;font-weight:700;color:#fff">'+d.code+' — '+d.titre+'</div></div><div style="display:flex;gap:5px"><span class="sev '+sev+'">'+d.severite+'</span></div></div><div class="cb"><p style="font-size:13px;line-height:1.75;margin-bottom:11px">'+d.description+'</p><div class="diff-row"><span style="font-size:12px;color:var(--muted)">Difficulté :</span>'+[1,2,3].map(n=>'<span class="di'+(n<=df?' on':'')+'">🔧</span>').join('')+'</div><div class="slbl">CAUSES PROBABLES</div><div class="slist">'+causes+'</div><div class="slbl">PROCÉDURE</div><div class="slist">'+steps+'</div>'+(tags?'<div class="slbl">PIÈCES</div><div class="tags">'+tags+'</div>':'')+(d.conseil?'<div class="cons"><strong>💡 Expert :</strong> '+d.conseil+'</div>':'')+'<div class="dv-box"><div class="dv-t">💶 ESTIMATION</div><div class="dv-r"><span>Main d\'œuvre</span><span>'+mmi+'€ — '+mma+'€</span></div><div class="dv-r"><span>Pièces</span><span>'+pmi+'€ — '+pma+'€</span></div><div class="dv-r"><span>TOTAL</span><span class="dv-tot">'+(mmi+pmi)+'€ — '+(mma+pma)+'€</span></div></div></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>MECA-IA</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
+  } catch (e) { CR++; majC(); saveCredits(); errB('zd', e.message); }
+  btn.disabled = false; btn.textContent = '⚡ DIAGNOSTIC IA (1 crédit)';
+};
+
+// === VIN ===
+window.doVIN = async function() {
+  const vin = document.getElementById('v-n').value.trim().toUpperCase();
+  if (vin.length < 5) { toast('VIN invalide', 'er'); return; }
+  loader('zv');
+  try {
+    const d = await callAPI('vin', { vin });
+    if (d.error) throw new Error(d.error);
+    const fl = [['PAYS',d.pays],['CONSTRUCTEUR',d.constructeur],['MODÈLE',d.modele],['ANNÉE',d.annee],['MOTEUR',d.moteur],['CARBURANT',d.carburant]];
+    document.getElementById('zv').innerHTML = '<div class="card"><div class="ch"><div class="ct">VIN DÉCODÉ</div><span style="font-family:IBM Plex Mono,monospace;font-size:10px;color:var(--accent)">'+vin+'</span></div><div class="vgrid">'+fl.map(f=>'<div class="vc"><div class="vcl">'+f[0]+'</div><div class="vcv">'+(f[1]||'—')+'</div></div>').join('')+'</div><div class="rfooter"><div>GRATUIT · MECA-IA</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
+  } catch (e) { errB('zv', e.message); }
+};
+
+// === PIÈCES ===
+window.doPieces = async function() {
+  if (!useC()) return;
+  const mk=document.getElementById('p-mk').value;
+  const mo=document.getElementById('p-mo').value.trim();
+  const pc=document.getElementById('p-pc').value.trim();
+  if (!mk||!mo||!pc) { toast('Remplir Marque, Modèle et Pièce','er'); CR++; majC(); return; }
+  loader('zp');
+  const an=document.getElementById('p-an').value.trim();
+  const cb=document.getElementById('p-cb').value;
+  try {
+    const d = await callAPI('pieces', { marque: mk, modele: mo, annee: an, carburant: cb, piece: pc });
+    if (d.error) throw new Error(d.error);
+    document.getElementById('zp').innerHTML = '<div class="card"><div class="ch"><div class="ct">'+pc.toUpperCase()+'</div></div><div class="plist">'+(d.pieces||[]).map(p=>{const url='https://www.autodoc.be/fr/search?query='+encodeURIComponent(p.reference||p.nom);return '<div class="pi"><div class="pm"><div class="pn">'+p.nom+'</div><div class="pr">'+p.marque+' · Réf: '+p.reference+' · '+p.qualite+'</div></div><div class="pp">~'+p.prix_min+'€ à '+p.prix_max+'€</div><a href="'+url+'" target="_blank" style="text-decoration:none"><button class="bsm">COMMANDER →</button></a></div>';}).join('')+'</div><div class="rfooter"><div>PIÈCES MECA-IA</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
+  } catch (e) { CR++; majC(); saveCredits(); errB('zp', e.message); }
+};
+
+// === ALERTES ===
+window.doAlertes = async function() {
+  if (!useC()) return;
+  const mk=document.getElementById('a-mk').value.trim();
+  const mo=document.getElementById('a-mo').value.trim();
+  const an=document.getElementById('a-an').value.trim();
+  const km=document.getElementById('a-km').value.trim();
+  if (!km) { toast('Entrer le kilométrage','er'); CR++; majC(); return; }
+  loader('za');
+  try {
+    const d = await callAPI('alertes', { marque: mk, modele: mo, annee: an, km });
+    if (d.error) throw new Error(d.error);
+    document.getElementById('za').innerHTML = '<div>'+(d.alertes||[]).map(a=>{const col=a.urgence==='Immédiat'?'var(--red)':a.urgence==='Bientôt'?'var(--accent)':'var(--green)';const sv=a.urgence==='Immédiat'?'sevH':a.urgence==='Bientôt'?'sevM':'sevF';return '<div class="ali" style="border-left:3px solid '+col+'"><div style="font-size:19px">'+a.icon+'</div><div style="flex:1"><div style="font-family:Rajdhani,sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">'+a.titre+'</div><div style="font-size:11px;color:var(--muted)">'+a.desc+'</div></div><span class="sev '+sv+'">'+a.urgence+'</span></div>';}).join('')+'</div>';
+  } catch (e) { CR++; majC(); errB('za', e.message); }
+};
+
+// === PAGES ===
+window.showPg = function(id) {
+  ['diag','vin','pieces','alertes','faq','tarifs'].forEach(p => {
+    const pg = document.getElementById('pg-'+p);
+    if (pg) pg.className = 'pg' + (p === id ? ' on' : '');
+  });
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const tabs = ['diag','vin','pieces','alertes','faq','tarifs'];
+    t.className = 'tab' + (tabs[i] === id ? ' on' : '');
+  });
+  window.scrollTo(0, 0);
+};
+
+window.togF = function(el) {
+  const a = el.nextElementSibling;
+  a.classList.toggle('on');
+  el.querySelector('span:last-child').textContent = a.classList.contains('on') ? '▲' : '▼';
+};
+
+// === INIT ===
 async function init() {
   await initSupabase();
-  if (sb) {
-    sb.auth.onAuthStateChange((_event, session) => {
-      const user = session?.user;
-      if (user) {
-        console.log('✅ Connecté:', user.email);
-        showSc('s-app');
-      } else {
-        console.log('❌ Déconnecté');
-        showSc('s-land');
-      }
-      const el = document.getElementById('s-loading');
-      if (el) el.style.display = 'none';
-    });
-  } else {
-    const el = document.getElementById('s-loading');
-    if (el) el.style.display = 'none';
-  }
+  if (!sb) { hideLoad(); return; }
+
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    const user = session?.user;
+    if (user) {
+      CU = user;
+      console.log('✅ Connecté:', user.email);
+
+      // Charger le profil
+      try {
+        const { data } = await sb.from('users').select('*').eq('id', user.id).single();
+        if (data) {
+          CR = data.credits !== undefined ? data.credits : 3;
+          UT = data.type || 'mechanic';
+          majC();
+          const tl = { mechanic: 'Mécanicien', amateur: 'Particulier', apprenti: 'Apprenti', garage: 'Garage' };
+          ss('u-nm', data.name || user.email);
+          ss('u-ty', tl[data.type] || 'Mécanicien');
+        }
+      } catch (e) { console.error('Profil:', e); }
+
+      showSc('s-app');
+    } else {
+      CU = null;
+      showSc('s-land');
+    }
+    hideLoad();
+  });
 }
 
 init();
