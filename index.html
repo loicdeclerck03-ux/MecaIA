@@ -5,12 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MecaIA — L'Expert Automobile IA</title>
 <meta name="description" content="MecaIA — Diagnostic OBD, garage virtuel, pièces auto et alertes entretien par IA. 24h/24.">
-<script src="https://js.stripe.com/v3/"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080b0f;--s1:#0f1318;--s2:#151a21;--border:#1e2a3a;--accent:#f0a500;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--text:#c8d4e0;--muted:#4a5a6e}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#080b0f;--s1:#0f1318;--s2:#151a21;--border:#1e2a3a;--accent:#f0a500;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--text:#c8d4e0;--muted:#4a5a6e}
+*{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
 .screen{display:none}.screen.on{display:block}
@@ -21,7 +19,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .glow::after{content:'';position:fixed;inset:0;background:linear-gradient(rgba(240,165,0,0.01) 1px,transparent 1px),linear-gradient(90deg,rgba(240,165,0,0.01) 1px,transparent 1px);background-size:55px 55px;pointer-events:none;z-index:0}
 .l-nav{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;position:relative;z-index:10}
 .logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:9px}
-.logo-i{width:34px;height:34px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#000;flex-shrink:0}
+.logo-i{width:34px;height:34px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#000}
 .logo span{color:var(--accent)}
 .l-nav-r{display:flex;align-items:center;gap:9px}
 .btn-gh{padding:8px 18px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s}
@@ -40,14 +38,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .btn-hero2{padding:14px 36px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s}
 .btn-hero2:hover{border-color:var(--accent);color:var(--accent)}
 .l-stats{display:flex;justify-content:center;gap:44px;padding:16px 24px 44px;position:relative;z-index:1;flex-wrap:wrap}
-.stat-n{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--accent);text-align:center}
-.stat-l{font-size:11px;color:var(--muted);margin-top:2px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-align:center}
-.l-feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px;max-width:940px;width:100%;margin:0 auto 44px;padding:0 24px;position:relative;z-index:1}
-.feat{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color .2s}
-.feat:hover{border-color:rgba(240,165,0,0.25)}
-.promo-b{max-width:580px;margin:0 auto 36px;padding:0 24px;position:relative;z-index:1}
-.promo-i{background:linear-gradient(135deg,rgba(240,165,0,0.09),rgba(240,165,0,0.04));border:1px solid rgba(240,165,0,0.28);border-radius:10px;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
-.l-foot{text-align:center;padding:22px;font-size:11px;color:var(--muted);position:relative;z-index:1;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px}
+.stat-n{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--accent)}
+.stat-l{font-size:11px;color:var(--muted);margin-top:2px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px}
+.l-foot{text-align:center;padding:22px;font-size:11px;color:var(--muted);position:relative;z-index:1;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace}
 .l-foot a{color:var(--accent);text-decoration:none}
 .a-box{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:34px 26px;max-width:400px;width:100%;position:relative;z-index:1}
 .a-logo{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;letter-spacing:3px;color:#fff;text-align:center;margin-bottom:4px}
@@ -58,7 +51,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .atab.on{background:var(--accent);color:#000}
 .af{margin-bottom:12px}
 .abtn{width:100%;padding:12px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;margin-top:4px;transition:all .2s}
-.abtn:hover{background:#ffb830}
+.abtn:hover:not(:disabled){background:#ffb830}
 .abtn:disabled{background:#2a3548;color:var(--muted);cursor:not-allowed}
 .amsg{font-size:11px;text-align:center;margin-top:9px;font-family:'IBM Plex Mono',monospace;min-height:15px}
 .amsg.err{color:var(--red)}.amsg.ok{color:var(--green)}
@@ -72,38 +65,35 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .app-logo span{color:var(--accent)}
 .app-hr{display:flex;align-items:center;gap:5px}
 .vpill{display:flex;align-items:center;gap:5px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);padding:4px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green)}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .icb{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:4px;transition:color .2s}
 .icb:hover{color:var(--accent)}
 .toast-c{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:7px;align-items:center;pointer-events:none}
 .toast{background:var(--s1);border:1px solid var(--border);border-radius:7px;padding:9px 17px;font-size:13px;color:var(--text);animation:fadeIn .3s ease;white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,0.4)}
 .toast.ok{border-color:rgba(16,185,129,0.4);color:var(--green)}.toast.er{border-color:rgba(239,68,68,0.4);color:var(--red)}
-.btn{width:100%;padding:11px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;margin-top:5px;transition:all .2s}
-.btn:hover:not(:disabled){background:#ffb830;transform:translateY(-1px)}
-.btn:disabled{background:#2a3548;color:var(--muted);cursor:not-allowed;transform:none}
 label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px}
-input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(240,165,0,0.05)}
 input::placeholder,textarea::placeholder{color:var(--muted)}
 select option{background:var(--s2)}
-.f{margin-bottom:12px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.stbtn{position:fixed;bottom:22px;right:18px;width:38px;height:38px;background:var(--accent);color:#000;border:none;border-radius:50%;font-size:17px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:500;box-shadow:0 4px 13px rgba(240,165,0,0.28);transition:all .2s}
-.stbtn.show{display:flex}.stbtn:hover{background:#ffb830;transform:translateY(-2px)}
+.btn{width:100%;padding:11px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;margin-top:5px;transition:all .2s}
+.btn:hover:not(:disabled){background:#ffb830;transform:translateY(-1px)}
+.btn:disabled{background:#2a3548;color:var(--muted);cursor:not-allowed}
 @media(max-width:600px){.l-nav{padding:15px 18px}.l-hero{padding:34px 18px 22px}.l-stats{gap:22px;padding:14px 18px 34px}}
 </style>
 </head>
 <body>
-<div id="s-loading" style="position:fixed;inset:0;background:#080b0f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s ease"><div style="font-family:Rajdhani,sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:32px"><div style="width:40px;height:40px;background:#f0a500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000">⚙</div>MECA<span style="color:#f0a500">IA</span></div><div style="width:200px;height:2px;background:#1e2a3a;border-radius:2px;overflow:hidden;margin-bottom:20px"><div style="height:100%;background:#f0a500;border-radius:2px;animation:lrun 1.8s ease-in-out infinite"></div></div><div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#4a5a6e;letter-spacing:2px">CHARGEMENT...</div></div><div class="toast-c" id="toasts"></div>
-<button class="stbtn" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<div id="s-loading" style="position:fixed;inset:0;background:#080b0f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999"><div style="font-family:Rajdhani,sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:32px"><div style="width:40px;height:40px;background:#f0a500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000">⚙</div>MECA<span style="color:#f0a500">IA</span></div><div style="width:200px;height:2px;background:#1e2a3a;border-radius:2px;overflow:hidden;margin-bottom:20px"><div style="height:100%;background:#f0a500;border-radius:2px;animation:lrun 1.8s ease-in-out infinite"></div></div><div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#4a5a6e;letter-spacing:2px">CHARGEMENT...</div></div>
+<div class="toast-c" id="toasts"></div>
 
 <!-- LANDING -->
-<div id="s-land" class="screen glow on">
+<div id="s-land" class="screen glow">
   <nav class="l-nav">
     <div class="logo"><div class="logo-i">⚙</div>MECA<span>IA</span></div>
     <div class="l-nav-r">
-      <select class="lang-s" onchange="setLang(this.value)" id="ll-s"><option value="fr">🇫🇷 FR</option><option value="nl">🇳🇱 NL</option><option value="en">🇬🇧 EN</option><option value="de">🇩🇪 DE</option></select>
+      <select class="lang-s" onchange="setLang(this.value)"><option value="fr">🇫🇷 FR</option><option value="nl">🇳🇱 NL</option><option value="en">🇬🇧 EN</option></select>
       <button class="btn-gh" onclick="goAuth('login')">CONNEXION</button>
       <button class="btn-ac" onclick="goAuth('register')">COMMENCER</button>
     </div>
@@ -119,39 +109,36 @@ select option{background:var(--s2)}
   </div>
   <div class="l-stats">
     <div><div class="stat-n">1000+</div><div class="stat-l">DIAGNOSTICS</div></div>
-    <div><div class="stat-n">3</div><div class="stat-l">CRÉDITS OFFERTS</div></div>
+    <div><div class="stat-n">3</div><div class="stat-l">CRÉDITS</div></div>
     <div><div class="stat-n">4</div><div class="stat-l">LANGUES</div></div>
     <div><div class="stat-n">24/7</div><div class="stat-l">DISPONIBLE</div></div>
   </div>
-  <div class="l-foot">MecaIA © 2025 — Créé par <strong style="color:var(--accent)">Loïc Declerck</strong> · Belgique · loicdeclerck4020@gmail.com</div>
+  <div class="l-foot">MecaIA © 2025 — Créé par <strong style="color:var(--accent)">Loïc Declerck</strong> · Belgique</div>
 </div>
 
 <!-- AUTH -->
 <div id="s-auth" class="screen glow">
 <div class="a-box">
   <div class="a-logo">MECA<span>IA</span></div>
-  <div class="a-sub">L'expert automobile IA dans votre poche</div>
+  <div class="a-sub">L'expert automobile IA</div>
   <div class="a-tabs"><button class="atab on" id="at-l" onclick="swTab('login')">CONNEXION</button><button class="atab" id="at-r" onclick="swTab('register')">INSCRIPTION</button></div>
   
   <div id="af-l">
     <div class="af"><label>EMAIL</label><input type="email" id="l-em" placeholder="votre@email.com"></div>
     <div class="af"><label>MOT DE PASSE</label><input type="password" id="l-pw" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()"></div>
     <button class="abtn" onclick="doLogin()">SE CONNECTER</button>
-    <div class="afg" onclick="doForgot()">Mot de passe oublié ?</div>
   </div>
   
   <div id="af-r" style="display:none">
-    <div class="af"><label>PRÉNOM & NOM</label><input type="text" id="r-nm" placeholder="Votre nom complet"></div>
+    <div class="af"><label>NOM COMPLET</label><input type="text" id="r-nm" placeholder="Votre nom"></div>
     <div class="af"><label>EMAIL</label><input type="email" id="r-em" placeholder="votre@email.com"></div>
-    <div class="af"><label>MOT DE PASSE (min. 6 caractères)</label><input type="password" id="r-pw" placeholder="••••••••"></div>
-    <div class="af"><label>VOUS ÊTES</label>
-      <select id="r-ty"><option value="mechanic">🔧 Mécanicien professionnel</option><option value="amateur">🚗 Particulier / Bricoleur</option><option value="apprenti">📚 Apprenti mécanicien</option><option value="garage">🏢 Garage / Équipe</option></select>
-    </div>
-    <button class="abtn" onclick="doReg()">CRÉER MON COMPTE GRATUIT</button>
+    <div class="af"><label>MOT DE PASSE (min. 6)</label><input type="password" id="r-pw" placeholder="••••••••"></div>
+    <div class="af"><label>VOUS ÊTES</label><select id="r-ty"><option value="mechanic">🔧 Mécanicien</option><option value="amateur">🚗 Particulier</option><option value="apprenti">📚 Apprenti</option><option value="garage">🏢 Garage</option></select></div>
+    <button class="abtn" onclick="doReg()">CRÉER COMPTE</button>
   </div>
   
   <div class="amsg" id="a-msg"></div>
-  <div class="abk" onclick="goLand()">← Retour à l'accueil</div>
+  <div class="abk" onclick="goLand()">← Accueil</div>
 </div></div>
 
 <!-- APP -->
@@ -160,149 +147,145 @@ select option{background:var(--s2)}
   <div class="app-logo"><div class="app-li">⚙</div>MECA<span>IA</span></div>
   <div class="app-hr">
     <div class="vpill"><span class="dot"></span>CONNECTÉ</div>
-    <button class="icb" onclick="doOut()" title="Déconnexion">⏻</button>
+    <button class="icb" onclick="doOut()">⏻</button>
   </div>
 </header>
 <div style="text-align:center;padding:60px 20px;color:var(--muted)">
   <div style="font-size:28px;margin-bottom:20px">🚀</div>
-  <div style="font-size:18px;margin-bottom:10px;font-family:'Rajdhani',sans-serif;font-weight:700">Bienvenue sur MecaIA !</div>
-  <div style="font-size:13px;line-height:1.6">Les fonctionnalités arrivent bientôt. Pour l'instant, vous êtes connecté et prêt à utiliser l'app.</div>
-  <button class="btn" style="max-width:200px;margin:30px auto 0" onclick="doOut()">Se déconnecter</button>
+  <div style="font-size:18px;margin-bottom:10px;font-family:'Rajdhani',sans-serif;font-weight:700">Bienvenue !</div>
+  <div>Les fonctionnalités arrivent bientôt.</div>
+  <button class="btn" style="max-width:200px;margin:30px auto 0" onclick="doOut()">Déconnexion</button>
 </div>
 </div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
 
-// Config Supabase
-let CONFIG = null;
 let sb = null;
 
-// Charger config au runtime
+// ✅ 1. CHARGER CONFIG AU RUNTIME
 async function loadConfig() {
   try {
-    const response = await fetch('/.netlify/functions/api?action=config');
-    CONFIG = await response.json();
+    const r = await fetch('/.netlify/functions/api?action=config');
+    const cfg = await r.json();
     console.log('✅ Config chargée');
-    return CONFIG;
-  } catch (error) {
-    console.error('❌ Erreur config:', error);
+    return cfg;
+  } catch (e) {
+    console.error('❌ Config error:', e);
+    toast('Erreur de connexion', 'er');
     return null;
   }
 }
 
-// Initialiser Supabase
+// ✅ 2. INITIALISER SUPABASE
 async function initSupabase() {
-  if (!CONFIG) await loadConfig();
-  if (!CONFIG || !CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_ANON) {
-    console.error('❌ Config Supabase manquante');
+  const cfg = await loadConfig();
+  if (!cfg?.SUPABASE_URL || !cfg?.SUPABASE_ANON) {
+    console.error('❌ Config incomplète');
     return null;
   }
-  sb = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON);
-  console.log('✅ Supabase initialisé');
+  sb = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON);
+  console.log('✅ Supabase OK');
   return sb;
 }
 
-// Utilitaires
+// ✅ 3. UTILITAIRES
 function toast(m, t = '') {
-  const c = document.getElementById('toasts');
   const el = document.createElement('div');
   el.className = 'toast ' + (t === 'ok' ? 'ok' : t === 'er' ? 'er' : '');
   el.textContent = m;
-  c.appendChild(el);
-  setTimeout(() => {
-    el.style.opacity = '0';
-    el.style.transition = 'opacity .3s';
-    setTimeout(() => el.remove(), 300);
-  }, 2500);
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 2500);
 }
 
 function showSc(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
-  window.scrollTo(0, 0);
 }
 
-function hideLoading() {
+function hideLoad() {
   const el = document.getElementById('s-loading');
   if (el) {
     el.style.opacity = '0';
-    setTimeout(() => (el.style.display = 'none'), 500);
+    setTimeout(() => el.style.display = 'none', 500);
   }
 }
 
-// Auth
+// ✅ 4. AUTH
 window.goLand = () => showSc('s-land');
-window.goAuth = function (m) {
-  showSc('s-auth');
-  window.swTab(m);
-};
-
-window.swTab = function (m) {
+window.goAuth = (m) => { showSc('s-auth'); window.swTab(m); };
+window.swTab = (m) => {
   document.getElementById('af-l').style.display = m === 'login' ? 'block' : 'none';
   document.getElementById('af-r').style.display = m === 'register' ? 'block' : 'none';
   document.getElementById('at-l').className = 'atab' + (m === 'login' ? ' on' : '');
   document.getElementById('at-r').className = 'atab' + (m === 'register' ? ' on' : '');
-  setAM('', '');
+  document.getElementById('a-msg').textContent = '';
 };
 
-function setAM(t, tp) {
-  const e = document.getElementById('a-msg');
-  e.textContent = t;
-  e.className = 'amsg' + (tp ? ' ' + tp : '');
+function setMsg(t, tp) {
+  const el = document.getElementById('a-msg');
+  el.textContent = t;
+  el.className = 'amsg' + (tp ? ' ' + tp : '');
 }
 
-window.doLogin = async function () {
+window.doLogin = async function() {
   if (!sb) await initSupabase();
   const em = document.getElementById('l-em').value.trim();
   const pw = document.getElementById('l-pw').value;
-  if (!em || !pw) {
-    setAM('Remplir tous les champs.', 'err');
-    return;
-  }
+  if (!em || !pw) { setMsg('Remplir tous les champs', 'err'); return; }
+  
   try {
-    const { data, error } = await sb.auth.signInWithPassword({ email: em, password: pw });
+    const { error } = await sb.auth.signInWithPassword({ email: em, password: pw });
     if (error) throw error;
-    setAM('✅ Connexion réussie !', 'ok');
+    setMsg('✅ Connecté !', 'ok');
     setTimeout(() => showSc('s-app'), 1000);
   } catch (e) {
-    setAM(e.message || 'Erreur de connexion', 'err');
+    setMsg(e.message || 'Erreur', 'err');
   }
 };
 
-window.doReg = async function () {
+window.doReg = async function() {
   if (!sb) await initSupabase();
   const nm = document.getElementById('r-nm').value.trim();
   const em = document.getElementById('r-em').value.trim();
   const pw = document.getElementById('r-pw').value;
   const ty = document.getElementById('r-ty').value;
   
-  if (!nm || !em || !pw) {
-    setAM('Remplir tous les champs.', 'err');
-    return;
-  }
-  if (pw.length < 6) {
-    setAM('Mot de passe minimum 6 caractères.', 'err');
-    return;
-  }
-
+  if (!nm || !em || !pw) { setMsg('Remplir tous les champs', 'err'); return; }
+  if (pw.length < 6) { setMsg('Min 6 caractères', 'err'); return; }
+  
   try {
     // Créer l'utilisateur Auth
-    const { data: authData, error: authError } = await sb.auth.signUp({
+    const { data, error } = await sb.auth.signUp({
       email: em,
       password: pw,
-      options: {
-        data: { name: nm }
-      }
+      options: { data: { name: nm } }
     });
-    if (authError) throw authError;
-
-    console.log('✅ Utilisateur créé:', authData.user.id);
-
-    // Créer le profil dans public.users
-    await createUserProfile(authData.user.id, em, nm, ty);
-
-    setAM('✅ Compte créé ! Vérifiez votre email et connectez-vous.', 'ok');
+    if (error) throw error;
+    
+    // Créer le profil APRÈS
+    const uid = data.user.id;
+    const pc = 'CODE-' + uid.substring(0, 6).toUpperCase();
+    
+    const { error: errProfile } = await sb.from('users').insert([{
+      id: uid,
+      email: em,
+      name: nm,
+      type: ty,
+      credits: 3,
+      promo_code: pc,
+      created_at: new Date().toISOString(),
+      diagnostics: 0,
+      pieces_searches: 0,
+      is_owner: false
+    }]);
+    
+    if (errProfile) {
+      console.error('Profile error:', errProfile);
+      throw errProfile;
+    }
+    
+    setMsg('✅ Compte créé ! Vérifiez votre email.', 'ok');
     setTimeout(() => {
       document.getElementById('r-em').value = '';
       document.getElementById('r-pw').value = '';
@@ -310,76 +293,35 @@ window.doReg = async function () {
       window.swTab('login');
     }, 1500);
   } catch (e) {
-    setAM(e.message || 'Erreur d\'inscription', 'err');
+    console.error(e);
+    setMsg(e.message || 'Erreur', 'err');
   }
 };
 
-async function createUserProfile(userId, email, name, type) {
-  if (!sb) return;
-  
-  try {
-    const promoCode = 'CODE-' + userId.substring(0, 6).toUpperCase();
-    
-    const { error } = await sb
-      .from('users')
-      .insert([
-        {
-          id: userId,
-          email: email,
-          name: name,
-          type: type,
-          credits: 3,
-          promo_code: promoCode,
-          created_at: new Date().toISOString(),
-          diagnostics: 0,
-          pieces_searches: 0,
-          is_owner: false
-        }
-      ]);
-
-    if (error) {
-      console.error('❌ Erreur création profil:', error);
-      throw error;
-    }
-    
-    console.log('✅ Profil créé');
-  } catch (e) {
-    console.error('❌ Erreur:', e);
-    throw e;
-  }
-}
-
-window.doForgot = async function () {
-  setAM('Fonction en développement', 'err');
-};
-
-window.doOut = async function () {
+window.doOut = async function() {
   if (sb) await sb.auth.signOut();
   showSc('s-land');
   toast('Déconnecté', 'ok');
 };
 
-window.setLang = function (l) {
-  localStorage.setItem('ml', l);
-};
+window.setLang = (l) => localStorage.setItem('ml', l);
 
-// Initialisation
+// ✅ 5. INIT
 async function init() {
-  await loadConfig();
   await initSupabase();
   
   if (sb) {
     sb.auth.onAuthStateChanged((user) => {
       if (user) {
-        console.log('✅ Connecté:', user.email);
+        console.log('✅ User:', user.email);
         showSc('s-app');
       } else {
         showSc('s-land');
       }
-      hideLoading();
+      hideLoad();
     });
   } else {
-    hideLoading();
+    hideLoad();
   }
 }
 
