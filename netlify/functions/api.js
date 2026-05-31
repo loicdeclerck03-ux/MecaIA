@@ -25,6 +25,7 @@
 const SUPABASE_URL    = process.env.SUPABASE_URL;       // ex: https://xxxx.supabase.co
 const SUPABASE_SECRET = process.env.SUPABASE_SECRET;    // clé "service_role" (SECRÈTE)
 const ANTHROPIC_KEY   = process.env.ANTHROPIC_KEY;      // clé API Anthropic (SECRÈTE)
+const OWNER_CODE      = process.env.OWNER_CODE || '';   // code secret propriétaire (active l'illimité)
 const MODEL           = 'claude-haiku-4-5-20251001';    // modèle utilisé (économique)
 
 // En-têtes CORS : autorisent ton site à appeler ce backend.
@@ -43,7 +44,12 @@ const COUT = {
   photo: 1,
   chat: 1,
   vin: 0,
-  urgence: 0
+  urgence: 0,
+  promo: 0,
+  owner: 0,
+  dashboard: 0,
+  gencode: 0,
+  set_profile: 0
 };
 
 // ============================================================
@@ -375,6 +381,82 @@ exports.handler = async (event) => {
           break;
         }
 
+        // ----- APPLIQUER UN CODE PROMO -----
+        case 'promo': {
+          if (!profil) return { statusCode: 401, headers: HEADERS, body: JSON.stringify({ error: 'Connexion requise.' }) };
+          const code = (body.code || '').trim().toUpperCase();
+          const rows = await sb(`promo_codes?code=eq.${encodeURIComponent(code)}&select=*`);
+          const promo = rows && rows[0];
+          if (!promo || (promo.uses_remaining || 0) <= 0)
+            return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Code invalide ou expiré.' }) };
+
+          if (promo.type === 'reduction') {
+            resultat = { type: 'reduction', value: promo.value };       // le client applique la remise à l'affichage
+          } else {
+            const dejaUtilises = profil.used_promos || [];
+            if (dejaUtilises.includes(code))
+              return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Code déjà utilisé.' }) };
+            const ajout = promo.credits || 5;
+            await sb(`users?id=eq.${profil.id}`, { method: 'PATCH',
+              body: JSON.stringify({ credits: (profil.credits || 0) + ajout, used_promos: [...dejaUtilises, code] }) });
+            await sb(`promo_codes?code=eq.${encodeURIComponent(code)}`, { method: 'PATCH',
+              body: JSON.stringify({ uses_remaining: promo.uses_remaining - 1 }) });
+            resultat = { type: 'credits', credits_ajoutes: ajout };
+          }
+          break;
+        }
+
+        // ----- ACTIVER LE CODE PROPRIÉTAIRE (illimité) -----
+        case 'owner': {
+          if (!profil) return { statusCode: 401, headers: HEADERS, body: JSON.stringify({ error: 'Connexion requise.' }) };
+          if (!OWNER_CODE || (body.code || '').trim().toUpperCase() !== OWNER_CODE.toUpperCase())
+            return { statusCode: 403, headers: HEADERS, body: JSON.stringify({ error: 'Code incorrect.' }) };
+          await sb(`users?id=eq.${profil.id}`, { method: 'PATCH', body: JSON.stringify({ credits: 999, is_owner: true }) });
+          resultat = { ok: true };
+          break;
+        }
+
+        // ----- METTRE À JOUR SON PROFIL (nom, type, langue, niveau) -----
+        case 'set_profile': {
+          if (!profil) return { statusCode: 401, headers: HEADERS, body: JSON.stringify({ error: 'Connexion requise.' }) };
+          const maj = {};
+          if (body.name) maj.name = String(body.name).slice(0, 80);
+          if (['mechanic','amateur','apprenti','garage'].includes(body.type)) maj.type = body.type;
+          if (['fr','nl','en','de'].includes(body.lang)) maj.lang = body.lang;
+          if (['auto','debutant','apprenti','pro'].includes(body.level)) maj.level = body.level;
+          if (Object.keys(maj).length) await sb(`users?id=eq.${profil.id}`, { method: 'PATCH', body: JSON.stringify(maj) });
+          resultat = maj;
+          break;
+        }
+
+        // ----- DASHBOARD PROPRIÉTAIRE (lecture de tous les utilisateurs) -----
+        case 'dashboard': {
+          if (!profil || !profil.is_owner)
+            return { statusCode: 403, headers: HEADERS, body: JSON.stringify({ error: 'Accès réservé au propriétaire.' }) };
+          const users = await sb('users?select=name,email,type,credits,diagnostics,total_paid,created_at,is_owner&order=created_at.desc&limit=100');
+          const recent = await sb('diagnostics?select=type,question,vehicule_desc,created_at&order=created_at.desc&limit=10');
+          const totalDiag = users.reduce((s, u) => s + (u.diagnostics || 0), 0);
+          const totalRevenue = users.reduce((s, u) => s + (parseFloat(u.total_paid) || 0), 0);
+          resultat = { users, recent, totalDiag, totalRevenue };
+          break;
+        }
+
+        // ----- GÉNÉRER UN CODE PROMO (propriétaire) -----
+        case 'gencode': {
+          if (!profil || !profil.is_owner)
+            return { statusCode: 403, headers: HEADERS, body: JSON.stringify({ error: 'Accès réservé au propriétaire.' }) };
+          const type = body.type === 'reduction' ? 'reduction' : 'credits';
+          const val  = parseInt(body.val) || (type === 'credits' ? 5 : 20);
+          const uses = parseInt(body.uses) || 1;
+          let code = (body.nm || '').trim().toUpperCase();
+          if (!code || code.length < 4) code = 'CODE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+          await sb('promo_codes', { method: 'POST', prefer: 'return=minimal',
+            body: JSON.stringify({ code, type, credits: type === 'credits' ? val : 5, value: type === 'reduction' ? val : 0,
+              uses_remaining: uses, owner_email: profil.email }) });
+          resultat = { code, type, val, uses };
+          break;
+        }
+
         default:
           return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Action non gérée' }) };
       }
@@ -398,6 +480,8 @@ exports.handler = async (event) => {
 //    SUPABASE_URL     = https://TON-PROJET.supabase.co
 //    SUPABASE_SECRET  = (Supabase → Project Settings → API → service_role  ⚠️ SECRÈTE)
 //    ANTHROPIC_KEY    = (ta clé sk-ant-...  ⚠️ SECRÈTE — à régénérer car l'ancienne a fuité)
+//    OWNER_CODE       = (un mot de passe secret que TOI seul connais, ex: MECA-LOIC-2026)
+//                        → permet d'activer les crédits illimités sur ton compte
 //
 // ⚠️ NE JAMAIS mettre ces valeurs dans le code ni sur GitHub.
 // ============================================================
