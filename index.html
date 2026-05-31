@@ -308,7 +308,7 @@ window.doLogin = async function() {
   if (!sb) await initSupabase();
   const em = document.getElementById('l-em').value.trim(), pw = document.getElementById('l-pw').value;
   if (!em || !pw) { setMsg('Remplir tous les champs', 'err'); return; }
-  try { const { error } = await sb.auth.signInWithPassword({ email: em, password: pw }); if (error) throw error; setMsg('✅ Connecté !', 'ok'); }
+ try { const { error } = await sb.auth.signInWithPassword({ email: em, password: pw }); if (error) throw error; setMsg('✅ Connecté !', 'ok'); setTimeout(() => showSc('s-app'), 500); }
   catch (e) { setMsg(e.message || 'Erreur', 'err'); }
 };
 
