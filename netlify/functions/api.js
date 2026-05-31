@@ -213,18 +213,16 @@ function systemeDiagnostic(niveau) {
 exports.handler = async (event) => {
   // Route publique : configuration (URLs publiques, clés ANON)
   // Cette route n'a besoin de POST → elle est accessible en GET
-  if (event.httpMethod === 'GET' && event.path === '/.netlify/functions/api') {
-    const action = event.queryStringParameters?.action;
-    if (action === 'config') {
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
-        body: JSON.stringify({
-          SUPABASE_URL: process.env.SUPABASE_URL,
-          SUPABASE_ANON: process.env.SUPABASE_ANON,
-        })
-      };
-    }
+  const action = event.queryStringParameters?.action;
+  if (event.httpMethod === 'GET' && action === 'config') {
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
+      body: JSON.stringify({
+        SUPABASE_URL: process.env.SUPABASE_URL,
+        SUPABASE_ANON: process.env.SUPABASE_ANON,
+      })
+    };
   }
 
   // Pré-vol CORS
