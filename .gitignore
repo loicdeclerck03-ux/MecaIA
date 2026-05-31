@@ -1,0 +1,33 @@
+# ⚠️ JAMAIS EN GIT - SECRETS ET CLÉS
+.env
+.env.local
+.env.production
+.env.*.local
+*.pem
+*.key
+
+# Node
+node_modules/
+package-lock.json
+
+# Netlify
+.netlify/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Build
+.cache/
+out/
