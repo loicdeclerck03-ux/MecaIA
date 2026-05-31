@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MecaIA — L'Expert Automobile IA</title>
+<meta name="description" content="MecaIA — Diagnostic OBD, garage virtuel, pièces auto et alertes entretien par IA. 24h/24.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -92,15 +94,15 @@ textarea{resize:vertical;min-height:68px}
 .btn{width:100%;padding:11px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;margin-top:5px;transition:all .2s}
 .btn:hover:not(:disabled){background:#ffb830;transform:translateY(-1px)}
 .btn:disabled{background:#2a3548;color:var(--muted);cursor:not-allowed;transform:none}
-.bsm{padding:5px 11px;background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.3);color:var(--accent);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+.bsm{padding:5px 11px;background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.3);color:var(--accent);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap}
 .bsm:hover{background:rgba(240,165,0,0.2)}
-.bbuy{padding:6px 14px;background:var(--accent);color:#000;border:none;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.bbuy{padding:6px 14px;background:var(--accent);color:#000;border:none;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;cursor:pointer}
 .bbuy:hover{background:#ffb830}
 .banner{background:rgba(240,165,0,0.06);border:1px solid rgba(240,165,0,0.2);border-radius:8px;padding:11px 15px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
 .btxt{font-size:12px}.btxt strong{color:var(--accent)}
 .ubar{display:flex;align-items:center;gap:8px;background:rgba(240,165,0,0.04);border:1px solid rgba(240,165,0,0.12);border-radius:6px;padding:6px 11px;margin-bottom:13px;font-size:11px;color:var(--muted)}
 .ubar strong{color:var(--accent)}
-.fbadge{font-family:'IBM Plex Mono',monospace;font-size:9px;background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3);padding:3px 7px;border-radius:3px;letter-spacing:1px}
+.fbadge{font-family:'IBM Plex Mono',monospace;font-size:9px;background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3);padding:3px 7px;border-radius:3px}
 .err-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:6px;padding:11px 14px;color:#f87171;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;margin-top:11px}
 .loader{text-align:center;padding:46px 20px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:3px}
 .lbar{width:180px;height:2px;background:var(--border);border-radius:2px;margin:13px auto 0;overflow:hidden}
@@ -140,13 +142,13 @@ textarea{resize:vertical;min-height:68px}
 .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:11px}
 .plan{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:19px 15px;position:relative;transition:all .2s}
 .plan:hover{transform:translateY(-2px)}.plan.star{border-color:var(--accent)}
-.pbadge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:8px;background:var(--accent);color:#000;padding:3px 9px;border-radius:3px;letter-spacing:1px;white-space:nowrap}
+.pbadge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:8px;background:var(--accent);color:#000;padding:3px 9px;border-radius:3px;white-space:nowrap}
 .pname{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--muted);margin-bottom:6px}
 .pprice{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;color:#fff;line-height:1}
 .pprice sub{font-size:12px;color:var(--muted);font-weight:400}
 .pfeats{margin-top:11px;display:flex;flex-direction:column;gap:6px}
 .pfeat{font-size:12px;color:var(--text);display:flex;gap:6px}.pfeat::before{content:'✓';color:var(--green)}
-.bplan{width:100%;margin-top:13px;padding:8px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s}
+.bplan{width:100%;margin-top:13px;padding:8px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer}
 .bplan:hover{border-color:var(--accent);color:var(--accent)}.plan.star .bplan{background:var(--accent);border-color:var(--accent);color:#000}
 .faq-i{background:var(--s2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
 .faq-q{padding:13px 15px;cursor:pointer;font-weight:500;font-size:13px;display:flex;justify-content:space-between;align-items:center}
@@ -161,10 +163,16 @@ textarea{resize:vertical;min-height:68px}
 </style>
 </head>
 <body>
-<div id="s-loading" style="position:fixed;inset:0;background:#080b0f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999"><div style="font-family:Rajdhani,sans-serif;font-size:28px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:32px"><div style="width:40px;height:40px;background:#f0a500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000">⚙</div>MECA<span style="color:#f0a500">IA</span></div><div style="width:200px;height:2px;background:#1e2a3a;border-radius:2px;overflow:hidden"><div style="height:100%;background:#f0a500;animation:lrun 1.8s ease-in-out infinite"></div></div></div>
+
+<!-- LOADING SCREEN -->
+<div id="s-loading" style="position:fixed;inset:0;background:#080b0f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s">
+  <div style="font-family:Rajdhani,sans-serif;font-size:28px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:32px"><div style="width:40px;height:40px;background:#f0a500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000">⚙</div>MECA<span style="color:#f0a500">IA</span></div>
+  <div style="width:200px;height:2px;background:#1e2a3a;border-radius:2px;overflow:hidden"><div style="height:100%;background:#f0a500;animation:lrun 1.8s ease-in-out infinite"></div></div>
+</div>
+
 <div class="toast-c" id="toasts"></div>
 
-<!-- LANDING -->
+<!-- ==================== LANDING ==================== -->
 <div id="s-land" class="screen glow">
   <nav class="l-nav"><div class="logo"><div class="logo-i">⚙</div>MECA<span>IA</span></div><div class="l-nav-r"><button class="btn-gh" onclick="goAuth('login')">CONNEXION</button><button class="btn-ac" onclick="goAuth('register')">COMMENCER</button></div></nav>
   <div class="l-hero">
@@ -174,8 +182,8 @@ textarea{resize:vertical;min-height:68px}
     <div class="l-btns"><button class="btn-hero" onclick="goAuth('register')">🚀 DÉMARRER GRATUITEMENT</button><button class="btn-hero2" onclick="goAuth('login')">CONNEXION</button></div>
   </div>
   <div class="l-feats">
-    <div class="feat"><div style="font-size:24px;margin-bottom:10px">⚡</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Diagnostic IA Expert</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Code OBD ou symptômes — rapport complet avec procédure, outils et coût estimé.</div></div>
-    <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔩</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Recherche Pièces</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Pièces compatibles avec références et lien de commande direct.</div></div>
+    <div class="feat"><div style="font-size:24px;margin-bottom:10px">⚡</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Diagnostic IA Expert</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Code OBD ou symptômes — rapport complet avec procédure et coût.</div></div>
+    <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔩</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Recherche Pièces</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Pièces compatibles avec références et commande directe.</div></div>
     <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔔</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Alertes Entretien</div><div style="font-size:12px;color:var(--muted);line-height:1.65">L'IA anticipe les interventions selon votre kilométrage.</div></div>
     <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔍</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Décodeur VIN</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Décodez votre VIN gratuitement — marque, modèle, moteur.</div></div>
   </div>
@@ -183,7 +191,7 @@ textarea{resize:vertical;min-height:68px}
   <div class="l-foot">MecaIA © 2025 — Créé par <strong style="color:var(--accent)">Loïc Declerck</strong> · Belgique · <a href="mailto:loicdeclerck4020@gmail.com">loicdeclerck4020@gmail.com</a></div>
 </div>
 
-<!-- AUTH -->
+<!-- ==================== AUTH ==================== -->
 <div id="s-auth" class="screen glow">
 <div class="a-box">
   <div class="a-logo">MECA<span>IA</span></div>
@@ -195,12 +203,12 @@ textarea{resize:vertical;min-height:68px}
   <div class="abk" onclick="goLand()">← Accueil</div>
 </div></div>
 
-<!-- APP -->
+<!-- ==================== APP ==================== -->
 <div id="s-app" class="screen">
 <header class="app-h">
   <div class="app-logo"><div class="app-li">⚙</div>MECA<span>IA</span></div>
   <div class="app-hr">
-    <div class="cpill" id="cpill">🪙 <span id="cdis">3</span></div>
+    <div class="cpill">🪙 <span id="cdis">3</span></div>
     <div class="vpill"><span class="dot"></span>ON</div>
     <button class="icb" onclick="doOut()">⏻</button>
   </div>
@@ -214,46 +222,48 @@ textarea{resize:vertical;min-height:68px}
   <button class="tab" onclick="showPg('tarifs')">TARIFS</button>
 </div>
 
-<!-- DIAGNOSTIC -->
+<!-- TAB: DIAGNOSTIC -->
 <div class="pg on" id="pg-diag"><div class="wrap">
   <div class="ubar">👤 <strong id="u-nm">Utilisateur</strong> · <span id="u-ty">Mécanicien</span></div>
   <div class="banner"><div class="btxt">Crédits : <strong id="cd1">3</strong> · 1 crédit/utilisation · VIN gratuit</div></div>
   <div class="card"><div class="ch"><div class="ct">Diagnostic IA Expert</div></div><div class="cb">
-    <div style="font-size:12px;color:var(--muted);margin-bottom:13px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:9px 12px;line-height:1.6">💬 Entrez un code OBD ou décrivez votre panne.</div>
-    <div class="r2"><div><label>Code OBD (optionnel)</label><input type="text" id="d-code" placeholder="P0300, DTC..." oninput="chkD()"></div><div><label>Marque *</label><select id="d-mk" onchange="chkD()"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Dacia</option><option>Autre</option></select></div></div>
-    <div class="r2"><div><label>Modèle *</label><input type="text" id="d-mo" placeholder="Clio, Golf..." oninput="chkD()"></div><div><label>Année *</label><select id="d-an" onchange="chkD()"><option value="">Année...</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option><option>2020</option><option>2019</option><option>2018</option><option>2017</option><option>2016</option><option>2015</option><option>Avant 2015</option></select></div></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:13px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:9px 12px;line-height:1.6">💬 Entrez un code OBD ou décrivez votre panne. L'IA analyse tout.</div>
+    <div class="r2"><div><label>Code OBD (optionnel)</label><input type="text" id="d-code" placeholder="P0300, DTC..." oninput="chkD()"></div><div><label>Marque *</label><select id="d-mk" onchange="chkD()"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Dacia</option><option>Hyundai</option><option>Kia</option><option>Autre</option></select></div></div>
+    <div class="r2"><div><label>Modèle *</label><input type="text" id="d-mo" placeholder="Clio, Golf, 308..." oninput="chkD()"></div><div><label>Année *</label><select id="d-an" onchange="chkD()"><option value="">Année...</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option><option>2020</option><option>2019</option><option>2018</option><option>2017</option><option>2016</option><option>2015</option><option>Avant 2015</option></select></div></div>
     <div class="r2"><div><label>Carburant *</label><select id="d-cb" onchange="chkD()"><option value="">Carburant...</option><option>Essence</option><option>Diesel</option><option>Hybride</option><option>Électrique</option><option>GPL</option></select></div><div><label>Kilométrage</label><input type="text" id="d-km" placeholder="150 000 km"></div></div>
-    <div class="f"><label>Symptômes observés</label><textarea id="d-sy" placeholder="Décrivez : voyant, bruit, fumée, vibration..."></textarea></div>
+    <div class="f"><label>Symptômes observés</label><textarea id="d-sy" placeholder="Décrivez : voyant allumé, bruit, fumée, vibration, perte de puissance..."></textarea></div>
     <button class="btn" id="btn-d" onclick="doDiag()" disabled>⚡ DIAGNOSTIC IA (1 crédit)</button>
   </div></div>
   <div id="zd"></div>
 </div></div>
 
-<!-- VIN -->
+<!-- TAB: VIN -->
 <div class="pg" id="pg-vin"><div class="wrap">
   <div class="card"><div class="ch"><div class="ct">Décodeur VIN</div><span class="fbadge">GRATUIT</span></div><div class="cb">
-    <div class="f"><label>Numéro VIN / Châssis</label><input type="text" id="v-n" placeholder="VF1JZS0AE51140932" maxlength="17" oninput="this.value=this.value.toUpperCase()" style="text-transform:uppercase;letter-spacing:2px;font-family:'IBM Plex Mono',monospace"></div>
-    <button class="btn" onclick="doVIN()">🔍 DÉCODER — GRATUIT</button>
+    <div class="f"><label>Numéro VIN / Châssis (17 caractères)</label><input type="text" id="v-n" placeholder="VF1JZS0AE51140932" maxlength="17" oninput="this.value=this.value.toUpperCase()" style="text-transform:uppercase;letter-spacing:2px;font-family:'IBM Plex Mono',monospace"></div>
+    <div style="background:rgba(240,165,0,0.05);border:1px solid rgba(240,165,0,0.15);border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:rgba(240,165,0,0.75);line-height:1.5">⚠️ Résultat approximatif basé sur l'IA. Toujours vérifier sur la carte grise.</div>
+    <button class="btn" onclick="doVIN()">🔍 DÉCODER CE VIN — GRATUIT</button>
   </div></div>
   <div id="zv"></div>
 </div></div>
 
-<!-- PIÈCES -->
+<!-- TAB: PIÈCES -->
 <div class="pg" id="pg-pieces"><div class="wrap">
   <div class="banner"><div class="btxt">Crédits : <strong id="cd2">3</strong> · 1 crédit/recherche</div></div>
   <div class="card"><div class="ch"><div class="ct">Recherche pièces compatibles</div></div><div class="cb">
     <div class="r2"><div><label>Marque *</label><select id="p-mk"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Dacia</option><option>Autre</option></select></div><div><label>Modèle *</label><input type="text" id="p-mo" placeholder="Clio, Golf..."></div></div>
     <div class="r2"><div><label>Année</label><input type="text" id="p-an" placeholder="2018"></div><div><label>Carburant</label><select id="p-cb"><option value="">Carburant...</option><option>Essence</option><option>Diesel</option><option>Hybride</option><option>Électrique</option></select></div></div>
-    <div class="f"><label>Pièce recherchée *</label><input type="text" id="p-pc" placeholder="bougie, plaquettes, courroie, alternateur..."></div>
+    <div class="f"><label>Pièce recherchée *</label><input type="text" id="p-pc" placeholder="bougie, plaquettes, courroie, alternateur, vanne EGR..."></div>
     <button class="btn" onclick="doPieces()">🔧 TROUVER LES PIÈCES (1 crédit)</button>
   </div></div>
   <div id="zp"></div>
 </div></div>
 
-<!-- ALERTES -->
+<!-- TAB: ALERTES -->
 <div class="pg" id="pg-alertes"><div class="wrap">
   <div class="banner"><div class="btxt">Crédits : <strong id="cd3">3</strong> · 1 crédit/génération</div></div>
   <div class="card"><div class="ch"><div class="ct">Alertes entretien</div></div><div class="cb">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:13px;line-height:1.6">Entrez les infos de votre véhicule. L'IA génère les alertes d'entretien personnalisées.</p>
     <div class="r2"><div><label>Marque</label><input type="text" id="a-mk" placeholder="Renault"></div><div><label>Modèle</label><input type="text" id="a-mo" placeholder="Clio"></div></div>
     <div class="r2"><div><label>Année</label><input type="text" id="a-an" placeholder="2018"></div><div><label>Kilométrage *</label><input type="text" id="a-km" placeholder="153 000"></div></div>
     <button class="btn" onclick="doAlertes()">🔔 GÉNÉRER LES ALERTES (1 crédit)</button>
@@ -261,53 +271,69 @@ textarea{resize:vertical;min-height:68px}
   <div id="za"></div>
 </div></div>
 
-<!-- FAQ -->
+<!-- TAB: FAQ -->
 <div class="pg" id="pg-faq"><div class="wrap">
   <div class="card"><div class="ch"><div class="ct">Questions fréquentes</div></div><div class="cb">
-    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionnent les crédits ?</span><span>▼</span></div><div class="faq-a">1 crédit = 1 diagnostic OBD, 1 recherche pièces ou 1 alerte entretien. Le décodeur VIN est toujours gratuit. 3 crédits offerts à l'inscription.</div></div>
-    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Les diagnostics sont-ils fiables ?</span><span>▼</span></div><div class="faq-a">L'IA analyse le code OBD, les symptômes et le véhicule pour un diagnostic précis. Les résultats sont indicatifs — consultez un professionnel pour les interventions critiques.</div></div>
-    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Le paiement est-il sécurisé ?</span><span>▼</span></div><div class="faq-a">100% sécurisé par Stripe. Votre carte n'est jamais stockée sur nos serveurs.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionnent les crédits ?</span><span>▼</span></div><div class="faq-a">1 crédit = 1 diagnostic OBD, 1 recherche pièces ou 1 alerte entretien. Le décodeur VIN est toujours gratuit. 3 crédits offerts à l'inscription. Les crédits n'expirent jamais.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Les diagnostics sont-ils fiables ?</span><span>▼</span></div><div class="faq-a">L'IA analyse le code OBD, les symptômes et le véhicule pour un diagnostic précis. Plus vous donnez d'infos, plus c'est précis. Consultez un professionnel pour les interventions critiques.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Le paiement est-il sécurisé ?</span><span>▼</span></div><div class="faq-a">100% sécurisé par Stripe, leader mondial du paiement. Votre carte n'est jamais stockée sur nos serveurs. Crédits activés immédiatement.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>MecaIA fonctionne sur mobile ?</span><span>▼</span></div><div class="faq-a">Oui — optimisé pour iPhone et Android. Installez-le comme une vraie app via "Ajouter à l'écran d'accueil".</div></div>
     <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment nous contacter ?</span><span>▼</span></div><div class="faq-a">Email : loicdeclerck4020@gmail.com — réponse sous 24h.</div></div>
+  </div></div>
+  <div class="card"><div class="ch"><div class="ct">Contact</div></div><div class="cb">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:11px 14px"><span style="font-size:19px">📧</span><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">Email</div><div style="font-size:12px;color:var(--muted)">loicdeclerck4020@gmail.com</div></div></div>
+      <div style="display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:11px 14px"><span style="font-size:19px">📍</span><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">Belgique</div></div></div>
+    </div>
   </div></div>
 </div></div>
 
-<!-- TARIFS -->
+<!-- TAB: TARIFS -->
 <div class="pg" id="pg-tarifs"><div class="wrap">
   <div class="card"><div class="ch"><div class="ct">Tarifs MecaIA</div></div><div class="cb">
-    <p style="font-size:13px;color:var(--muted);margin-bottom:17px">Pas d'abonnement. Achetez quand vous en avez besoin. <strong style="color:var(--accent)">VIN toujours gratuit.</strong></p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:17px;line-height:1.6">Pas d'abonnement. Achetez quand vous en avez besoin. <strong style="color:var(--accent)">VIN toujours gratuit.</strong></p>
     <div class="plans">
-      <div class="plan"><div class="pname">À LA CARTE</div><div class="pprice">1<sub>€</sub></div><div class="pfeats"><div class="pfeat">1 diagnostic IA</div><div class="pfeat">1 recherche pièces</div></div><button class="bplan">ACHETER</button></div>
-      <div class="plan"><div class="pname">PACK 25</div><div class="pprice">5<sub>€</sub></div><div class="pfeats"><div class="pfeat">25 crédits</div><div class="pfeat">0,20€/utilisation</div></div><button class="bplan">ACHETER</button></div>
-      <div class="plan star"><div class="pbadge">⭐ MEILLEURE VALEUR</div><div class="pname">PACK 60</div><div class="pprice">10<sub>€</sub></div><div class="pfeats"><div class="pfeat">60 crédits</div><div class="pfeat">0,17€/utilisation</div></div><button class="bplan">ACHETER</button></div>
-      <div class="plan"><div class="pname">ILLIMITÉ</div><div class="pprice">15<sub>€/mois</sub></div><div class="pfeats"><div class="pfeat">Tout illimité 30j</div><div class="pfeat">Idéal garage</div></div><button class="bplan">ACHETER</button></div>
+      <div class="plan"><div class="pname">À LA CARTE</div><div class="pprice">1<sub>€</sub></div><div class="pfeats"><div class="pfeat">1 diagnostic IA</div><div class="pfeat">1 recherche pièces</div><div class="pfeat">1 alerte entretien</div></div><button class="bplan">ACHETER</button></div>
+      <div class="plan"><div class="pname">PACK 25</div><div class="pprice">5<sub>€</sub></div><div class="pfeats"><div class="pfeat">25 crédits</div><div class="pfeat">0,20€/utilisation</div><div class="pfeat">Sans expiration</div></div><button class="bplan">ACHETER</button></div>
+      <div class="plan star"><div class="pbadge">⭐ MEILLEURE VALEUR</div><div class="pname">PACK 60</div><div class="pprice">10<sub>€</sub></div><div class="pfeats"><div class="pfeat">60 crédits</div><div class="pfeat">0,17€/utilisation</div><div class="pfeat">Sans expiration</div></div><button class="bplan">ACHETER</button></div>
+      <div class="plan"><div class="pname">ILLIMITÉ</div><div class="pprice">15<sub>€/mois</sub></div><div class="pfeats"><div class="pfeat">Tout illimité 30j</div><div class="pfeat">5 utilisateurs</div><div class="pfeat">Idéal garage</div></div><button class="bplan">ACHETER</button></div>
+    </div>
+    <div style="margin-top:17px;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px">
+      <div><div style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted)">VIN GRATUIT</div><div style="font-size:12px">Décodage VIN illimité et gratuit.</div></div>
+      <span class="fbadge">100% GRATUIT</span>
     </div>
   </div></div>
   <div style="text-align:center;padding:15px;font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace">MecaIA © 2025 — Loïc Declerck · Belgique</div>
 </div></div>
 </div>
 
+<!-- ==================== JAVASCRIPT ==================== -->
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
 
 let sb = null, CR = 3, CU = null, UT = 'mechanic', lastD = null;
 
-// === CONFIG ===
+// ===========================
+// CONFIG + SUPABASE
+// ===========================
 async function loadConfig() {
   try {
     const r = await fetch('/.netlify/functions/api?action=config');
     return await r.json();
-  } catch (e) { console.error(e); return null; }
+  } catch (e) { console.error('Config error:', e); return null; }
 }
 
 async function initSupabase() {
   const cfg = await loadConfig();
-  if (!cfg?.SUPABASE_URL || !cfg?.SUPABASE_ANON) return null;
+  if (!cfg?.SUPABASE_URL || !cfg?.SUPABASE_ANON) { console.error('❌ Config manquante'); return null; }
   sb = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON);
   console.log('✅ Supabase OK');
   return sb;
 }
 
-// === UTILS ===
+// ===========================
+// UTILITAIRES
+// ===========================
 function toast(m, t = '') {
   const el = document.createElement('div');
   el.className = 'toast ' + (t === 'ok' ? 'ok' : t === 'er' ? 'er' : '');
@@ -322,9 +348,10 @@ function showSc(id) {
   window.scrollTo(0, 0);
 }
 
+// Supprimer le loading screen
 function hideLoad() {
   const el = document.getElementById('s-loading');
-  if (el) { el.style.opacity = '0'; setTimeout(() => el.style.display = 'none', 500); }
+  if (el) el.remove();
 }
 
 function ss(id, v) { const e = document.getElementById(id); if (e) e.innerHTML = v; }
@@ -338,9 +365,7 @@ function majC() {
 function useC() {
   if (CR === 999) return true;
   if (CR <= 0) { toast('Plus de crédits !', 'er'); return false; }
-  CR--;
-  majC();
-  saveCredits();
+  CR--; majC(); saveCredits();
   return true;
 }
 
@@ -352,7 +377,9 @@ async function saveCredits() {
 function loader(id) { document.getElementById(id).innerHTML = '<div class="loader">ANALYSE EN COURS<div class="lbar"><div class="lfill"></div></div></div>'; }
 function errB(id, m) { document.getElementById(id).innerHTML = '<div class="err-box">⚠ ' + m + '</div>'; }
 
-// === AUTH ===
+// ===========================
+// AUTH
+// ===========================
 window.goLand = () => showSc('s-land');
 window.goAuth = (m) => { showSc('s-auth'); window.swTab(m); };
 window.swTab = (m) => {
@@ -395,7 +422,7 @@ window.doReg = async function() {
     const uid = data.user.id;
     const pc = 'CODE-' + uid.substring(0, 6).toUpperCase();
     await sb.from('users').upsert([{ id: uid, email: em, name: nm, type: ty, credits: 3, promo_code: pc, created_at: new Date().toISOString(), diagnostics: 0, pieces_searches: 0, is_owner: false }]);
-    setMsg('✅ Compte créé !', 'ok');
+    setMsg('✅ Compte créé ! Connectez-vous.', 'ok');
     setTimeout(() => window.swTab('login'), 1500);
   } catch (e) { console.error(e); setMsg(e.message || 'Erreur', 'err'); }
 };
@@ -407,9 +434,11 @@ window.doOut = async function() {
   toast('Déconnecté', 'ok');
 };
 
-// === API CLAUDE ===
+// ===========================
+// APPEL API BACKEND
+// ===========================
 async function callAPI(action, payload = {}) {
-  if (!sb || !CU) return null;
+  if (!sb || !CU) return { error: 'Non connecté' };
   const { data: { session } } = await sb.auth.getSession();
   const token = session?.access_token || '';
   const r = await fetch('/.netlify/functions/api', {
@@ -420,7 +449,9 @@ async function callAPI(action, payload = {}) {
   return await r.json();
 }
 
-// === DIAGNOSTIC ===
+// ===========================
+// DIAGNOSTIC
+// ===========================
 window.chkD = function() {
   const mk = document.getElementById('d-mk').value;
   const mo = document.getElementById('d-mo').value.trim();
@@ -432,15 +463,11 @@ window.chkD = function() {
 window.doDiag = async function() {
   if (!useC()) return;
   const code = document.getElementById('d-code').value.trim().toUpperCase();
-  const mk = document.getElementById('d-mk').value;
-  const mo = document.getElementById('d-mo').value.trim();
-  const an = document.getElementById('d-an').value;
-  const cb = document.getElementById('d-cb').value;
-  const km = document.getElementById('d-km').value.trim();
-  const sy = document.getElementById('d-sy').value.trim();
+  const mk = document.getElementById('d-mk').value, mo = document.getElementById('d-mo').value.trim();
+  const an = document.getElementById('d-an').value, cb = document.getElementById('d-cb').value;
+  const km = document.getElementById('d-km').value.trim(), sy = document.getElementById('d-sy').value.trim();
   const btn = document.getElementById('btn-d');
-  btn.disabled = true; btn.textContent = '⏳ ANALYSE...';
-  loader('zd');
+  btn.disabled = true; btn.textContent = '⏳ ANALYSE...'; loader('zd');
   try {
     const d = await callAPI('diagnostic', { code, marque: mk, modele: mo, annee: an, carburant: cb, km, symptomes: sy });
     if (d.error) throw new Error(d.error);
@@ -451,12 +478,14 @@ window.doDiag = async function() {
     const steps = (d.etapes||[]).map((x,i) => '<div class="si"><span class="sn">0'+(i+1)+'</span><span class="st">'+x+'</span></div>').join('');
     const tags = (d.pieces||[]).map(x => '<span class="tag">'+x+'</span>').join('');
     const mmi=d.mo_min||50,mma=d.mo_max||200,pmi=d.pieces_min||30,pma=d.pieces_max||300;
-    document.getElementById('zd').innerHTML = '<div class="card"><div class="ch"><div><div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--muted);margin-bottom:2px">'+d.systeme+'</div><div style="font-family:Rajdhani,sans-serif;font-size:16px;font-weight:700;color:#fff">'+d.code+' — '+d.titre+'</div></div><div style="display:flex;gap:5px"><span class="sev '+sev+'">'+d.severite+'</span></div></div><div class="cb"><p style="font-size:13px;line-height:1.75;margin-bottom:11px">'+d.description+'</p><div class="diff-row"><span style="font-size:12px;color:var(--muted)">Difficulté :</span>'+[1,2,3].map(n=>'<span class="di'+(n<=df?' on':'')+'">🔧</span>').join('')+'</div><div class="slbl">CAUSES PROBABLES</div><div class="slist">'+causes+'</div><div class="slbl">PROCÉDURE</div><div class="slist">'+steps+'</div>'+(tags?'<div class="slbl">PIÈCES</div><div class="tags">'+tags+'</div>':'')+(d.conseil?'<div class="cons"><strong>💡 Expert :</strong> '+d.conseil+'</div>':'')+'<div class="dv-box"><div class="dv-t">💶 ESTIMATION</div><div class="dv-r"><span>Main d\'œuvre</span><span>'+mmi+'€ — '+mma+'€</span></div><div class="dv-r"><span>Pièces</span><span>'+pmi+'€ — '+pma+'€</span></div><div class="dv-r"><span>TOTAL</span><span class="dv-tot">'+(mmi+pmi)+'€ — '+(mma+pma)+'€</span></div></div></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>MECA-IA</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
+    document.getElementById('zd').innerHTML = '<div class="card"><div class="ch"><div><div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--muted);margin-bottom:2px">'+(d.systeme||'Système')+'</div><div style="font-family:Rajdhani,sans-serif;font-size:16px;font-weight:700;color:#fff">'+(d.code||code||'SYMPTÔMES')+' — '+(d.titre||'Diagnostic')+'</div></div><div style="display:flex;gap:5px"><span class="sev '+sev+'">'+(d.severite||'MOYENNE')+'</span></div></div><div class="cb"><p style="font-size:13px;line-height:1.75;margin-bottom:11px">'+(d.description||'')+'</p><div class="diff-row"><span style="font-size:12px;color:var(--muted)">Difficulté :</span>'+[1,2,3].map(n=>'<span class="di'+(n<=df?' on':'')+'">🔧</span>').join('')+'</div>'+(causes?'<div class="slbl">CAUSES PROBABLES</div><div class="slist">'+causes+'</div>':'')+(steps?'<div class="slbl">PROCÉDURE</div><div class="slist">'+steps+'</div>':'')+(tags?'<div class="slbl">PIÈCES</div><div class="tags">'+tags+'</div>':'')+(d.conseil?'<div class="cons"><strong>💡 Expert :</strong> '+d.conseil+'</div>':'')+(d.prevention?'<div class="cons cg"><strong>🛡️ Prévention :</strong> '+d.prevention+'</div>':'')+'<div class="dv-box"><div class="dv-t">💶 ESTIMATION DU COÛT</div><div class="dv-r"><span>Main d\'œuvre</span><span>'+mmi+'€ — '+mma+'€</span></div><div class="dv-r"><span>Pièces estimées</span><span>'+pmi+'€ — '+pma+'€</span></div><div class="dv-r"><span>TOTAL ESTIMÉ</span><span class="dv-tot">'+(mmi+pmi)+'€ — '+(mma+pma)+'€</span></div><p style="font-size:10px;color:var(--muted);margin-top:5px">⚠️ Estimation indicative.</p></div></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>MECA-IA EXPERT</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
   } catch (e) { CR++; majC(); saveCredits(); errB('zd', e.message); }
   btn.disabled = false; btn.textContent = '⚡ DIAGNOSTIC IA (1 crédit)';
 };
 
-// === VIN ===
+// ===========================
+// VIN
+// ===========================
 window.doVIN = async function() {
   const vin = document.getElementById('v-n').value.trim().toUpperCase();
   if (vin.length < 5) { toast('VIN invalide', 'er'); return; }
@@ -464,52 +493,58 @@ window.doVIN = async function() {
   try {
     const d = await callAPI('vin', { vin });
     if (d.error) throw new Error(d.error);
-    const fl = [['PAYS',d.pays],['CONSTRUCTEUR',d.constructeur],['MODÈLE',d.modele],['ANNÉE',d.annee],['MOTEUR',d.moteur],['CARBURANT',d.carburant]];
-    document.getElementById('zv').innerHTML = '<div class="card"><div class="ch"><div class="ct">VIN DÉCODÉ</div><span style="font-family:IBM Plex Mono,monospace;font-size:10px;color:var(--accent)">'+vin+'</span></div><div class="vgrid">'+fl.map(f=>'<div class="vc"><div class="vcl">'+f[0]+'</div><div class="vcv">'+(f[1]||'—')+'</div></div>').join('')+'</div><div class="rfooter"><div>GRATUIT · MECA-IA</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
+    const fl = [['PAYS',d.pays],['CONSTRUCTEUR',d.constructeur],['MODÈLE',d.modele],['VARIANTE',d.variante],['ANNÉE',d.annee],['USINE',d.usine],['MOTEUR',d.moteur],['CARBURANT',d.carburant],['TRANSMISSION',d.transmission],['N° SÉRIE',d.serie]];
+    document.getElementById('zv').innerHTML = '<div class="card"><div class="ch"><div class="ct">VIN DÉCODÉ</div><span style="font-family:IBM Plex Mono,monospace;font-size:10px;color:var(--accent);letter-spacing:1px">'+vin+'</span></div><div class="vgrid">'+fl.map(f=>'<div class="vc"><div class="vcl">'+f[0]+'</div><div class="vcv">'+(f[1]||'—')+'</div></div>').join('')+'</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:IBM Plex Mono,monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Résultat approximatif — vérifier sur la carte grise</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>GRATUIT · MECA-IA</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
   } catch (e) { errB('zv', e.message); }
 };
 
-// === PIÈCES ===
+// ===========================
+// PIÈCES
+// ===========================
 window.doPieces = async function() {
   if (!useC()) return;
-  const mk=document.getElementById('p-mk').value;
-  const mo=document.getElementById('p-mo').value.trim();
-  const pc=document.getElementById('p-pc').value.trim();
-  if (!mk||!mo||!pc) { toast('Remplir Marque, Modèle et Pièce','er'); CR++; majC(); return; }
+  const mk = document.getElementById('p-mk').value, mo = document.getElementById('p-mo').value.trim();
+  const pc = document.getElementById('p-pc').value.trim();
+  if (!mk || !mo || !pc) { toast('Remplir Marque, Modèle et Pièce', 'er'); CR++; majC(); return; }
   loader('zp');
-  const an=document.getElementById('p-an').value.trim();
-  const cb=document.getElementById('p-cb').value;
+  const an = document.getElementById('p-an').value.trim(), cb = document.getElementById('p-cb').value;
   try {
     const d = await callAPI('pieces', { marque: mk, modele: mo, annee: an, carburant: cb, piece: pc });
     if (d.error) throw new Error(d.error);
-    document.getElementById('zp').innerHTML = '<div class="card"><div class="ch"><div class="ct">'+pc.toUpperCase()+'</div></div><div class="plist">'+(d.pieces||[]).map(p=>{const url='https://www.autodoc.be/fr/search?query='+encodeURIComponent(p.reference||p.nom);return '<div class="pi"><div class="pm"><div class="pn">'+p.nom+'</div><div class="pr">'+p.marque+' · Réf: '+p.reference+' · '+p.qualite+'</div></div><div class="pp">~'+p.prix_min+'€ à '+p.prix_max+'€</div><a href="'+url+'" target="_blank" style="text-decoration:none"><button class="bsm">COMMANDER →</button></a></div>';}).join('')+'</div><div class="rfooter"><div>PIÈCES MECA-IA</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
+    document.getElementById('zp').innerHTML = '<div class="card"><div class="ch"><div class="ct">'+pc.toUpperCase()+'</div><span style="font-family:IBM Plex Mono,monospace;font-size:10px;color:var(--muted)">'+(d.pieces||[]).length+' résultats</span></div><div class="plist">'+(d.pieces||[]).map(p=>{const url='https://www.autodoc.be/fr/search?query='+encodeURIComponent(p.reference||p.nom);return '<div class="pi"><div class="pm"><div class="pn">'+p.nom+'</div><div class="pr">'+p.marque+' · Réf: '+p.reference+' · '+p.qualite+'</div>'+(p.conseil?'<div style="font-size:11px;color:var(--muted);margin-top:2px">💬 '+p.conseil+'</div>':'')+'</div><div class="pp">~'+p.prix_min+'€<br><span style="font-size:10px;color:var(--muted)">à '+p.prix_max+'€</span></div><a href="'+url+'" target="_blank" style="text-decoration:none"><button class="bsm">COMMANDER →</button></a></div>';}).join('')+'</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:IBM Plex Mono,monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Références indicatives — vérifier compatibilité avant commande</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>PIÈCES MECA-IA</div><div>'+new Date().toLocaleString('fr-FR')+'</div></div></div>';
   } catch (e) { CR++; majC(); saveCredits(); errB('zp', e.message); }
 };
 
-// === ALERTES ===
+// ===========================
+// ALERTES
+// ===========================
 window.doAlertes = async function() {
   if (!useC()) return;
-  const mk=document.getElementById('a-mk').value.trim();
-  const mo=document.getElementById('a-mo').value.trim();
-  const an=document.getElementById('a-an').value.trim();
-  const km=document.getElementById('a-km').value.trim();
-  if (!km) { toast('Entrer le kilométrage','er'); CR++; majC(); return; }
+  const mk = document.getElementById('a-mk').value.trim(), mo = document.getElementById('a-mo').value.trim();
+  const an = document.getElementById('a-an').value.trim(), km = document.getElementById('a-km').value.trim();
+  if (!km) { toast('Entrer le kilométrage', 'er'); CR++; majC(); return; }
   loader('za');
   try {
     const d = await callAPI('alertes', { marque: mk, modele: mo, annee: an, km });
     if (d.error) throw new Error(d.error);
-    document.getElementById('za').innerHTML = '<div>'+(d.alertes||[]).map(a=>{const col=a.urgence==='Immédiat'?'var(--red)':a.urgence==='Bientôt'?'var(--accent)':'var(--green)';const sv=a.urgence==='Immédiat'?'sevH':a.urgence==='Bientôt'?'sevM':'sevF';return '<div class="ali" style="border-left:3px solid '+col+'"><div style="font-size:19px">'+a.icon+'</div><div style="flex:1"><div style="font-family:Rajdhani,sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">'+a.titre+'</div><div style="font-size:11px;color:var(--muted)">'+a.desc+'</div></div><span class="sev '+sv+'">'+a.urgence+'</span></div>';}).join('')+'</div>';
+    document.getElementById('za').innerHTML = '<div>'+(d.alertes||[]).map(a => {
+      const col = a.urgence === 'Immédiat' ? 'var(--red)' : a.urgence === 'Bientôt' ? 'var(--accent)' : 'var(--green)';
+      const sv = a.urgence === 'Immédiat' ? 'sevH' : a.urgence === 'Bientôt' ? 'sevM' : 'sevF';
+      return '<div class="ali" style="border-left:3px solid '+col+'"><div style="font-size:19px;flex-shrink:0">'+(a.icon||'🔧')+'</div><div style="flex:1"><div style="font-family:Rajdhani,sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">'+a.titre+'</div><div style="font-size:11px;color:var(--muted)">'+a.desc+'</div>'+(a.km_next?'<div style="font-family:IBM Plex Mono,monospace;font-size:10px;color:var(--accent);margin-top:2px">Prochain: '+a.km_next.toLocaleString()+' km</div>':'')+'</div><span class="sev '+sv+'">'+a.urgence+'</span></div>';
+    }).join('')+'</div>';
   } catch (e) { CR++; majC(); errB('za', e.message); }
 };
 
-// === PAGES ===
+// ===========================
+// NAVIGATION PAGES
+// ===========================
 window.showPg = function(id) {
-  ['diag','vin','pieces','alertes','faq','tarifs'].forEach(p => {
-    const pg = document.getElementById('pg-'+p);
+  const tabs = ['diag','vin','pieces','alertes','faq','tarifs'];
+  tabs.forEach(p => {
+    const pg = document.getElementById('pg-' + p);
     if (pg) pg.className = 'pg' + (p === id ? ' on' : '');
   });
   document.querySelectorAll('.tab').forEach((t, i) => {
-    const tabs = ['diag','vin','pieces','alertes','faq','tarifs'];
     t.className = 'tab' + (tabs[i] === id ? ' on' : '');
   });
   window.scrollTo(0, 0);
@@ -521,18 +556,25 @@ window.togF = function(el) {
   el.querySelector('span:last-child').textContent = a.classList.contains('on') ? '▲' : '▼';
 };
 
-// === INIT ===
+// ===========================
+// INIT - DÉMARRAGE
+// ===========================
+
+// Sécurité : cacher le loading après 3 secondes max
+setTimeout(hideLoad, 3000);
+
 async function init() {
   await initSupabase();
   if (!sb) { hideLoad(); return; }
 
+  // Écouter les changements d'état d'authentification
   sb.auth.onAuthStateChange(async (_event, session) => {
     const user = session?.user;
     if (user) {
       CU = user;
       console.log('✅ Connecté:', user.email);
 
-      // Charger le profil
+      // Charger le profil depuis Supabase
       try {
         const { data } = await sb.from('users').select('*').eq('id', user.id).single();
         if (data) {
