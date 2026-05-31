@@ -170,6 +170,7 @@ async function initSupabase() {
   const cfg = await loadConfig();
   if (!cfg?.SUPABASE_URL || !cfg?.SUPABASE_ANON) return null;
   sb = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON);
+  console.log('✅ Supabase OK');
   return sb;
 }
 
@@ -276,9 +277,15 @@ window.doOut = async function() {
 async function init() {
   await initSupabase();
   if (sb) {
-    sb.auth.onAuthStateChanged((user) => {
-      if (user) showSc('s-app');
-      else showSc('s-land');
+    sb.auth.onAuthStateChange((_event, session) => {
+      const user = session?.user;
+      if (user) {
+        console.log('✅ Connecté:', user.email);
+        showSc('s-app');
+      } else {
+        console.log('❌ Déconnecté');
+        showSc('s-land');
+      }
       const el = document.getElementById('s-loading');
       if (el) el.style.display = 'none';
     });
