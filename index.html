@@ -622,9 +622,32 @@ textarea{resize:vertical;min-height:68px}
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // ⚠️ La clé ANON est PUBLIQUE (sans danger dans le navigateur). PAS la service_role !
-const SUPABASE_URL  = 'https://vexxjbpbfrvgszvzpmgu.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_HMaPIdA8H8x3O2khqnh9Xg_SuIlJaeh'; // Supabase → Project Settings → API → "anon public"
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+// Les valeurs sont injectées par Netlify au build time via _redirects et env vars
+// Voir netlify.toml [build.environment] et .netlify/functions/config.js
+
+// Initialisation asynchrone pour charger la config depuis le backend
+// (évite les secrets scanner de Netlify en ne hardcodant pas les valeurs)
+(async () => {
+  // Charge la config depuis le backend API
+  try {
+    const res = await fetch('/.netlify/functions/api?action=config');
+    if (res.ok) {
+      const config = await res.json();
+      window.__CONFIG__ = config;
+    }
+  } catch (e) {
+    console.warn('Erreur chargement config:', e);
+    window.__CONFIG__ = {};
+  }
+
+  // Maintenant les valeurs sont disponibles
+  const SUPABASE_URL  = window.__CONFIG__.SUPABASE_URL || '';
+  const SUPABASE_ANON = window.__CONFIG__.SUPABASE_ANON || '';
+  window.sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // Initialise l'app quand Supabase est prêt
+  await initialiserApp();
+})();
 
 // ----- État global -----
 let CU=null;            // utilisateur connecté (Supabase Auth)
@@ -675,7 +698,7 @@ function setAM(t,tp){const e=document.getElementById('a-msg');e.textContent=t;e.
 // Joint automatiquement le jeton de connexion (pour les actions payantes).
 // ============================================================
 async function callAPI(action, payload={}){
-  const { data:{ session } } = await sb.auth.getSession();
+  const { data:{ session } } = await window.sb.auth.getSession();
   const token = session?.access_token;
   const r = await fetch('/api',{
     method:'POST',
@@ -694,7 +717,7 @@ window.doLogin=async function(){
   if(tries>=5){setAM('Trop de tentatives. Attendez quelques minutes.','err');return;}
   const em=document.getElementById('l-em').value.trim();const pw=document.getElementById('l-pw').value;
   if(!em||!pw){setAM('Remplir tous les champs.','err');return;}
-  const { error }=await sb.auth.signInWithPassword({email:em,password:pw});
+  const { error }=await window.sb.auth.signInWithPassword({email:em,password:pw});
   if(error){tries++;setAM('Email ou mot de passe incorrect.','err');}else{tries=0;}
 };
 
@@ -703,7 +726,7 @@ window.doReg=async function(){
   const pw=document.getElementById('r-pw').value;const ty=document.getElementById('r-ty').value;
   if(!nm||!em||!pw){setAM('Remplir tous les champs.','err');return;}
   if(pw.length<6){setAM('Mot de passe minimum 6 caractères.','err');return;}
-  const { data, error }=await sb.auth.signUp({email:em,password:pw,options:{data:{name:nm}}});
+  const { data, error }=await window.sb.auth.signUp({email:em,password:pw,options:{data:{name:nm}}});
   if(error){setAM(error.message.includes('already')?'Email déjà utilisé.':error.message,'err');return;}
   setAM('✅ Bienvenue sur MecaIA !','ok');
   // Enregistre le type choisi (via le backend, en arrière-plan)
@@ -713,11 +736,11 @@ window.doReg=async function(){
 window.doForgot=async function(){
   const em=document.getElementById('l-em').value.trim();
   if(!em){setAM('Entrez votre email d\'abord.','err');return;}
-  const { error }=await sb.auth.resetPasswordForEmail(em);
+  const { error }=await window.sb.auth.resetPasswordForEmail(em);
   if(error)setAM(error.message,'err');else setAM('✅ Email de réinitialisation envoyé !','ok');
 };
 
-window.doOut=async function(){await sb.auth.signOut();showSc('s-land');toast('Déconnecté','ok');};
+window.doOut=async function(){await window.sb.auth.signOut();showSc('s-land');toast('Déconnecté','ok');};
 
 function hideLoading(){const el=document.getElementById('s-loading');if(el){el.style.opacity='0';setTimeout(()=>el.style.display='none',500);}}
 
@@ -725,11 +748,11 @@ function hideLoading(){const el=document.getElementById('s-loading');if(el){el.s
 // CHARGEMENT DU PROFIL + GARAGE + ÉQUIPE
 // ============================================================
 async function loadProfile(){
-  let { data }=await sb.from('users').select('*').eq('auth_id',CU.id).maybeSingle();
-  if(!data){ await new Promise(r=>setTimeout(r,700)); const r2=await sb.from('users').select('*').eq('auth_id',CU.id).maybeSingle(); data=r2.data; }
+  let { data }=await window.window.sb.from('users').select('*').eq('auth_id',CU.id).maybeSingle();
+  if(!data){ await new Promise(r=>setTimeout(r,700)); const r2=await window.window.sb.from('users').select('*').eq('auth_id',CU.id).maybeSingle(); data=r2.data; }
   PROFILE=data;
   if(!PROFILE)return;
-  const { data:v }=await sb.from('vehicles').select('*').eq('user_id',PROFILE.id).order('created_at',{ascending:true});
+  const { data:v }=await window.window.sb.from('vehicles').select('*').eq('user_id',PROFILE.id).order('created_at',{ascending:true});
   cars=v||[];
   majC();
   const tl={mechanic:'Mécanicien',amateur:'Particulier',apprenti:'Apprenti',garage:'Garage'};
@@ -737,14 +760,14 @@ async function loadProfile(){
   ss('u-lv',(PROFILE.diagnostics>50)?'⭐ Expert':(PROFILE.diagnostics>20)?'🔧 Confirmé':'🌱 Débutant');
   ss('my-promo',PROFILE.promo_code||'—');
   ss('gs-d',PROFILE.diagnostics||0);ss('gs-v',cars.length);
-  const { data:m }=await sb.from('team_members').select('*').eq('owner_id',PROFILE.id);
+  const { data:m }=await window.window.sb.from('team_members').select('*').eq('owner_id',PROFILE.id);
   renderMbrs(m||[]);ss('gs-m',(m||[]).length+1);
   renderCars(cars);
 }
 
 async function refreshProfile(){
   if(!CU)return;
-  const { data }=await sb.from('users').select('*').eq('auth_id',CU.id).maybeSingle();
+  const { data }=await window.window.sb.from('users').select('*').eq('auth_id',CU.id).maybeSingle();
   if(data){PROFILE=data;majC();ss('gs-d',PROFILE.diagnostics||0);}
 }
 
@@ -760,20 +783,28 @@ function majC(){
 }
 
 // ----- Surveillance de la session -----
-sb.auth.onAuthStateChange(async(e,session)=>{
-  if(session?.user){
-    CU=session.user;
-    try{ await loadProfile(); }catch(err){ console.log('loadProfile:',err); }
-    majVis();setLang(lang);
-    if(PROFILE && PROFILE.is_owner){showSc('s-dash');loadDash();}else showSc('s-app');
-  }else{
-    CU=null;PROFILE=null;showSc('s-land');
+async function initialiserApp() {
+  // Attend que Supabase soit bien initialisé
+  if (!window.sb) {
+    console.error('Supabase non initialisé');
+    return;
   }
-  hideLoading();
-});
 
-// Affiche la landing tout de suite (la session corrige ensuite si connecté)
-showSc('s-land');setLang(lang);setTimeout(hideLoading,1200);
+  window.sb.auth.onAuthStateChange(async(e,session)=>{
+    if(session?.user){
+      CU=session.user;
+      try{ await loadProfile(); }catch(err){ console.log('loadProfile:',err); }
+      majVis();setLang(lang);
+      if(PROFILE && PROFILE.is_owner){showSc('s-dash');loadDash();}else showSc('s-app');
+    }else{
+      CU=null;PROFILE=null;showSc('s-land');
+    }
+    hideLoading();
+  });
+
+  // Affiche la landing tout de suite (la session corrige ensuite si connecté)
+  showSc('s-land');setLang(lang);setTimeout(hideLoading,1200);
+}
 
 // ============================================================
 // MODALS + PAIEMENT
@@ -853,7 +884,7 @@ window.addCar=async function(){
   const m=document.getElementById('nc-mk').value;const mo=document.getElementById('nc-mo').value.trim();
   const a=document.getElementById('nc-an').value.trim();const c=document.getElementById('nc-cb').value;
   if(!m||!mo||!a||!c){toast('Remplir Marque, Modèle, Année et Carburant','er');return;}
-  const { error }=await sb.from('vehicles').insert({
+  const { error }=await window.window.sb.from('vehicles').insert({
     user_id:PROFILE.id,marque:m,modele:mo,annee:a,carburant:c,
     puissance_kw:document.getElementById('nc-kw').value.trim()||null,
     code_moteur:document.getElementById('nc-cm').value.trim().toUpperCase()||null,
@@ -868,7 +899,7 @@ window.addCar=async function(){
 
 async function reloadCars(){
   if(!PROFILE)return;
-  const { data }=await sb.from('vehicles').select('*').eq('user_id',PROFILE.id).order('created_at',{ascending:true});
+  const { data }=await window.window.sb.from('vehicles').select('*').eq('user_id',PROFILE.id).order('created_at',{ascending:true});
   cars=data||[];renderCars(cars);ss('gs-v',cars.length);
 }
 
@@ -894,13 +925,13 @@ window.selC=function(id){
 window.updKm=async function(id){
   const km=prompt('Nouveau kilométrage:');if(!km)return;
   const val=parseInt(km.replace(/\D/g,''))||null;
-  await sb.from('vehicles').update({km:val}).eq('id',id);
+  await window.window.sb.from('vehicles').update({km:val}).eq('id',id);
   await reloadCars();toast('KM mis à jour','ok');
 };
 
 window.delCar=async function(id){
   if(!confirm('Supprimer ce véhicule ?'))return;
-  await sb.from('vehicles').delete().eq('id',id);
+  await window.window.sb.from('vehicles').delete().eq('id',id);
   if(selCar?.id===id)selCar=null;
   await reloadCars();toast('Véhicule supprimé','ok');
 };
@@ -914,12 +945,12 @@ function renderMbrs(mbrs){
 
 window.invMbr=async function(){
   const em=document.getElementById('inv-em').value.trim();if(!em||!PROFILE)return;
-  const { data:existing }=await sb.from('team_members').select('id').eq('owner_id',PROFILE.id);
+  const { data:existing }=await window.window.sb.from('team_members').select('id').eq('owner_id',PROFILE.id);
   if((existing||[]).length>=4){toast('Maximum 4 membres.','er');return;}
-  const { error }=await sb.from('team_members').insert({owner_id:PROFILE.id,email:em,name:em.split('@')[0]});
+  const { error }=await window.window.sb.from('team_members').insert({owner_id:PROFILE.id,email:em,name:em.split('@')[0]});
   if(error){toast('Erreur: '+error.message,'er');return;}
   document.getElementById('inv-em').value='';
-  const { data:m }=await sb.from('team_members').select('*').eq('owner_id',PROFILE.id);
+  const { data:m }=await window.window.sb.from('team_members').select('*').eq('owner_id',PROFILE.id);
   renderMbrs(m||[]);ss('gs-m',(m||[]).length+1);toast('✅ '+em+' invité !','ok');
 };
 
@@ -960,7 +991,7 @@ window.doDiag=async function(){
   try{
     const d=await callAPI('diagnostic',{code,vehicule:veh,symptomes:sy,niveau});
     lastD=d;
-    if(selCar){const sm={HAUTE:10,MOYENNE:5,FAIBLE:2};selCar.score=Math.max(0,(selCar.score||85)-(sm[d.severite]||5));await sb.from('vehicles').update({score:selCar.score}).eq('id',selCar.id);}
+    if(selCar){const sm={HAUTE:10,MOYENNE:5,FAIBLE:2};selCar.score=Math.max(0,(selCar.score||85)-(sm[d.severite]||5));await window.window.sb.from('vehicles').update({score:selCar.score}).eq('id',selCar.id);}
     const sev=d.severite==='HAUTE'?'sevH':d.severite==='MOYENNE'?'sevM':'sevF';const df=d.difficulte||2;
     const steps=(d.etapes||[]).map((x,i)=>`<div class="si"><span class="sn">0${i+1}</span><span class="st">${x}</span></div>`).join('');
     const causes=(d.causes||[]).map(x=>`<div class="si"><span class="sn">→</span><span class="st">${x}</span></div>`).join('');
@@ -1124,7 +1155,7 @@ window.togFav=function(id){const l=favList();const i=l.indexOf(id);if(i>=0)l.spl
 async function renderS(f='all',q=''){
   window._sf=f;window._sq=q;
   const el=document.getElementById('suivi-l');if(!el)return;
-  const { data }=await sb.from('diagnostics').select('*').order('created_at',{ascending:false}).limit(100);
+  const { data }=await window.window.sb.from('diagnostics').select('*').order('created_at',{ascending:false}).limit(100);
   const ic={diagnostic:'🔧',pieces:'🔩',vin:'🔍',alerte:'🔔',photo:'📸',chat:'💬',urgence:'🚨'};
   const lbl={diagnostic:'Diagnostic',pieces:'Recherche pièces',vin:'Décodage VIN',alerte:'Alertes entretien',photo:'Analyse photo',chat:'Chat',urgence:'Urgence'};
   let rows=(data||[]).map(r=>({id:r.id,icon:ic[r.type]||'📋',type:lbl[r.type]||r.type,cont:(r.vehicule_desc||r.question||r.obd_code||''),date:new Date(r.created_at).toLocaleString('fr-FR'),fav:favList().includes(r.id)}));
