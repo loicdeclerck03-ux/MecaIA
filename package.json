@@ -8,7 +8,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node test/test-api.mjs && node test/test-webhook.mjs && node test/test-checkout-email.mjs"
+    "test": "node test/test-api.mjs && node test/test-webhook.mjs && node test/test-checkout-email.mjs && node test/simulation.mjs"
   },
   "author": "Loïc Declerck",
   "license": "UNLICENSED"

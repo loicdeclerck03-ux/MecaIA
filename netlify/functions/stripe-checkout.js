@@ -5,7 +5,7 @@
 
 const STRIPE_SECRET  = process.env.STRIPE_SECRET_KEY;
 const SUPABASE_URL   = process.env.SUPABASE_URL;
-const SUPABASE_ANON  = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_ANON  = process.env.SUPABASE_ANON;
 const FRONTEND_URL   = process.env.FRONTEND_URL || 'https://euphonious-frangollo-da0cc1.netlify.app';
 
 const headers = {

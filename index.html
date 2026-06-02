@@ -440,14 +440,14 @@ textarea{resize:vertical;min-height:68px}
 
 <!-- CHAT DYLAN -->
 <div class="pg" id="pg-chat"><div class="wrap">
-  <div class="banner"><div class="btxt">Crédits : <strong id="cd-chat">3</strong> · 3 questions = 1 crédit</div><button class="bbuy" onclick="openM('m-pay')">+ ACHETER</button></div>
+  <div class="banner"><div class="btxt">Crédits : <strong id="cd-chat">3</strong> · 1 crédit = 15 min de chat</div><button class="bbuy" onclick="openM('m-pay')">+ ACHETER</button></div>
   <div class="card">
     <div class="ch">
       <div class="ct">💬 Chat avec Dylan</div>
       <div style="display:flex;align-items:center;gap:6px"><span class="dot"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green)">EN LIGNE</span></div>
     </div>
     <div style="padding:11px 15px;background:rgba(240,165,0,0.04);border-bottom:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.6">
-      🇧🇪 <strong style="color:var(--text)">Dylan</strong> — Mécanicien IA belge. Direct, franc, anti-arnaque. 3 questions = 1 crédit.
+      🇧🇪 <strong style="color:var(--text)">Dylan</strong> — Mécanicien IA belge. Direct, franc, anti-arnaque. 1 crédit = 15 min de chat illimité.
     </div>
     <div class="chat-wrap">
       <div class="chat-msgs" id="chat-msgs">
@@ -459,7 +459,7 @@ textarea{resize:vertical;min-height:68px}
       </div>
     </div>
     <div style="padding:9px 13px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);display:flex;justify-content:space-between">
-      <span>Question <span id="chat-q-n">1</span>/3 de cette session</span>
+      <span>⏱️ Temps restant : <span id="chat-q-n">--:--</span></span>
       <button onclick="resetChat()" style="background:none;border:none;color:var(--muted);font-size:9px;cursor:pointer;font-family:'IBM Plex Mono',monospace">NOUVELLE SESSION</button>
     </div>
   </div>
@@ -1032,7 +1032,6 @@ window.sendChat = async function() {
       message: msg,
       history: CHAT_HIST,
       sessionId: CHAT_SID,
-      questionNumber: CHAT_Q,
       vehicleInfo
     });
 
@@ -1043,14 +1042,16 @@ window.sendChat = async function() {
     addChatMsg('bot', result.reply);
     CHAT_HIST.push({ role: 'user', content: msg });
     CHAT_HIST.push({ role: 'assistant', content: result.reply });
-    CHAT_Q = result.questionNumber;
-    setText('chat-q-n', ((CHAT_Q - 1) % 3) + 1);
 
-    // Le backend renvoie le solde réel quand un crédit a été débité
-    if (result.creditsLeft !== null && result.creditsLeft !== undefined && PROFILE) {
+    // Nouveau modèle : 1 crédit = 15 min d'accès illimité
+    if (result.freshSession && PROFILE && result.creditsLeft !== undefined && !PROFILE.is_unlimited) {
       PROFILE.credits = result.creditsLeft;
       majC();
+      toast('💬 Session chat 15 min activée (1 crédit)', 'ok');
     }
+    // Démarrer / mettre à jour le minuteur de session
+    if (result.sessionEnds) startChatTimer(result.sessionEnds);
+
   } catch(e) {
     const loadingEl = document.querySelector('.chat-msg.bot.loading');
     if (loadingEl) loadingEl.remove();
@@ -1058,6 +1059,23 @@ window.sendChat = async function() {
     if (e.message.includes('crédits')) openM('m-pay');
   }
 };
+
+// Minuteur de session chat (15 min)
+let CHAT_TIMER = null;
+function startChatTimer(endsAt) {
+  const el = document.getElementById('chat-q-n');
+  if (!el) return;
+  if (CHAT_TIMER) clearInterval(CHAT_TIMER);
+  const update = () => {
+    const left = Math.max(0, endsAt - Date.now());
+    const min = Math.floor(left / 60000);
+    const sec = Math.floor((left % 60000) / 1000);
+    el.textContent = `${min}:${String(sec).padStart(2,'0')}`;
+    if (left <= 0) { clearInterval(CHAT_TIMER); el.textContent = '0:00'; }
+  };
+  update();
+  CHAT_TIMER = setInterval(update, 1000);
+}
 
 function addChatMsg(role, content, cls = '') {
   const msgs = document.getElementById('chat-msgs');
@@ -1070,10 +1088,10 @@ function addChatMsg(role, content, cls = '') {
 }
 
 window.resetChat = function() {
-  CHAT_HIST = []; CHAT_Q = 1;
+  CHAT_HIST = [];
   CHAT_SID  = Date.now().toString();
   document.getElementById('chat-msgs').innerHTML = '<div class="chat-msg bot"><div class="bot-name">DYLAN 🔧</div>Nouvelle session. Pose ta question !</div>';
-  setText('chat-q-n', '1');
+  setText('chat-q-n', '--:--');
 };
 
 // ============================================================

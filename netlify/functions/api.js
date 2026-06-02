@@ -6,7 +6,7 @@
 
 const ANTHROPIC_KEY     = process.env.ANTHROPIC_KEY;
 const SUPABASE_URL      = process.env.SUPABASE_URL;
-const SUPABASE_ANON     = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_ANON     = process.env.SUPABASE_ANON;
 const SUPABASE_SECRET   = process.env.SUPABASE_SECRET;
 const STRIPE_PUBLIC_KEY = process.env.STRIPE_PUBLIC_KEY;
 const OWNER_CODE        = process.env.OWNER_CODE;
@@ -331,16 +331,39 @@ JSON:
     const authUser = await getUserFromToken(token);
     if (!authUser?.id) return err('Non authentifié', 401);
 
-    const { message, history, sessionId, questionNumber, vehicleInfo } = body;
+    const { message, history, sessionId, vehicleInfo } = body;
     if (!message) return err('Message manquant');
 
-    // Débiter 1 crédit toutes les 3 questions (questions 1, 4, 7...)
-    let creditsLeft = null;
-    if (questionNumber % 3 === 1) {
-      const debit = await checkAndDebit(authUser.id);
-      if (!debit.ok) return err(debit.reason, 402);
-      creditsLeft = debit.credits;
+    // ── Modèle : 1 crédit = 15 minutes de chat illimité ──
+    const urows = await supaQuery(`users?id=eq.${authUser.id}&select=credits,is_unlimited,chat_session_start`);
+    const u = urows?.[0];
+    if (!u) return err('Utilisateur introuvable', 404);
+
+    const now = Date.now();
+    const FIFTEEN_MIN = 15 * 60 * 1000;
+    const sessionStart = u.chat_session_start ? new Date(u.chat_session_start).getTime() : 0;
+    const sessionExpired = (now - sessionStart) > FIFTEEN_MIN;
+
+    let creditsLeft = u.is_unlimited ? 999 : u.credits;
+    let sessionEnds = sessionStart + FIFTEEN_MIN;
+
+    if (sessionExpired) {
+      // Nouvelle fenêtre de 15 min → débiter 1 crédit (sauf illimité)
+      if (!u.is_unlimited) {
+        if (u.credits <= 0) return err('Plus de crédits', 402);
+        await supaQuery(`users?id=eq.${authUser.id}`, 'PATCH', {
+          credits: u.credits - 1,
+          chat_session_start: new Date(now).toISOString()
+        });
+        creditsLeft = u.credits - 1;
+      } else {
+        await supaQuery(`users?id=eq.${authUser.id}`, 'PATCH', {
+          chat_session_start: new Date(now).toISOString()
+        });
+      }
+      sessionEnds = now + FIFTEEN_MIN;
     }
+    // Sinon : dans la fenêtre de 15 min → message gratuit
 
     const system = `Tu es Dylan, mécanicien automobile belge de 25 ans. Direct, franc, humour léger, anti-arnaque. Tu parles comme un vrai mécano belge, pas comme un robot.
 Véhicule de l'utilisateur: ${vehicleInfo || 'non précisé'}
@@ -367,7 +390,6 @@ Règles:
         session_id: sessionId || 'default',
         role: 'user',
         content: message,
-        q_number: questionNumber,
         created_at: new Date().toISOString()
       });
       await supaQuery('chat_messages', 'POST', {
@@ -375,11 +397,10 @@ Règles:
         session_id: sessionId || 'default',
         role: 'assistant',
         content: text,
-        q_number: questionNumber,
         created_at: new Date().toISOString()
       });
 
-      return ok({ reply: text, questionNumber: (questionNumber || 1) + 1, creditsLeft });
+      return ok({ reply: text, creditsLeft, sessionEnds, freshSession: sessionExpired });
     } catch (e) { return err('Erreur chat: ' + e.message, 500); }
   }
 

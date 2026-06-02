@@ -6,7 +6,7 @@
 // --- 1. Variables d'environnement factices ---
 process.env.ANTHROPIC_KEY     = 'sk-ant-test-fake';
 process.env.SUPABASE_URL      = 'https://fake.supabase.co';
-process.env.SUPABASE_ANON_KEY = 'fake-anon';
+process.env.SUPABASE_ANON = 'fake-anon';
 process.env.SUPABASE_SECRET   = 'fake-secret';
 process.env.STRIPE_PUBLIC_KEY = 'pk_test_fake';
 process.env.OWNER_CODE        = 'LOIC-SECRET-2024';
