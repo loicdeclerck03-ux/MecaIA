@@ -1,0 +1,376 @@
+{
+  "metadata": {
+    "region": "France",
+    "market_share": "Top 30 vendues (2015-2020)",
+    "purpose": "Prédire pannes courantes par modèle",
+    "last_updated": "2025-06-02"
+  },
+  "vehicles": [
+    {
+      "id": "renault_clio_4",
+      "name": "Renault Clio IV",
+      "years": "2012-2019",
+      "engines": ["1.2 TCe 100", "1.5 dCi 75", "1.5 dCi 90"],
+      "market_prevalence": "très élevée",
+      "common_failures": [
+        {
+          "issue": "Débitmètre MAF encrassé",
+          "pct": 18,
+          "code": "P0101",
+          "cost": 200,
+          "km_range": [80000, 180000]
+        },
+        {
+          "issue": "Bougies usées (essence)",
+          "pct": 15,
+          "code": "P0300",
+          "cost": 150,
+          "km_range": [60000, 120000]
+        },
+        {
+          "issue": "Amortisseurs avant",
+          "pct": 22,
+          "code": null,
+          "cost": 250,
+          "km_range": [100000, 200000],
+          "visual": true
+        },
+        {
+          "issue": "Capteur PMH défaillant",
+          "pct": 12,
+          "code": "P0335",
+          "cost": 250,
+          "km_range": [120000, 240000]
+        },
+        {
+          "issue": "Alternateur",
+          "pct": 8,
+          "code": null,
+          "cost": 350,
+          "km_range": [150000, 250000]
+        }
+      ],
+      "maintenance_intervals": {
+        "oil_change": 15000,
+        "air_filter": 30000,
+        "cabin_filter": 20000,
+        "brake_fluid": 24000,
+        "spark_plugs": 30000,
+        "timing_belt": 120000
+      }
+    },
+    {
+      "id": "peugeot_206_207",
+      "name": "Peugeot 206/207",
+      "years": "2002-2014",
+      "engines": ["1.1", "1.4", "1.6", "2.0 HDi"],
+      "market_prevalence": "très élevée",
+      "common_failures": [
+        {
+          "issue": "Débitmètre MAF (diesel)",
+          "pct": 20,
+          "code": "P0101",
+          "cost": 250,
+          "km_range": [70000, 170000]
+        },
+        {
+          "issue": "Sonde lambda",
+          "pct": 16,
+          "code": "P0125",
+          "cost": 150,
+          "km_range": [80000, 160000]
+        },
+        {
+          "issue": "Embrayage usé",
+          "pct": 19,
+          "code": null,
+          "cost": 600,
+          "km_range": [120000, 200000]
+        },
+        {
+          "issue": "Courroie distribution",
+          "pct": 11,
+          "code": null,
+          "cost": 500,
+          "km_range": [120000, 160000],
+          "critical": true
+        },
+        {
+          "issue": "Suspension avant (ressort/amortisseur)",
+          "pct": 25,
+          "code": null,
+          "cost": 350,
+          "km_range": [100000, 200000],
+          "visual": true
+        }
+      ],
+      "maintenance_intervals": {
+        "oil_change": 15000,
+        "air_filter": 30000,
+        "brake_fluid": 24000,
+        "timing_belt": 120000
+      }
+    },
+    {
+      "id": "renault_logan",
+      "name": "Renault Logan/Sandero",
+      "years": "2004-2019",
+      "engines": ["1.4", "1.5 dCi", "1.6"],
+      "market_prevalence": "élevée",
+      "common_failures": [
+        {
+          "issue": "Débitmètre MAF",
+          "pct": 16,
+          "code": "P0101",
+          "cost": 200,
+          "km_range": [80000, 180000]
+        },
+        {
+          "issue": "Sonde lambda",
+          "pct": 14,
+          "code": "P0125",
+          "cost": 140,
+          "km_range": [90000, 170000]
+        },
+        {
+          "issue": "Batterie déchargée",
+          "pct": 12,
+          "code": null,
+          "cost": 130,
+          "km_range": [40000, 100000]
+        },
+        {
+          "issue": "Plaquettes usées",
+          "pct": 18,
+          "code": null,
+          "cost": 120,
+          "km_range": [80000, 150000],
+          "visual": true
+        }
+      ],
+      "maintenance_intervals": {
+        "oil_change": 15000,
+        "brake_fluid": 24000
+      }
+    },
+    {
+      "id": "peugeot_308_309",
+      "name": "Peugeot 308/309",
+      "years": "2007-2020",
+      "engines": ["1.4", "1.6", "2.0 HDi"],
+      "market_prevalence": "très élevée",
+      "common_failures": [
+        {
+          "issue": "Débitmètre MAF",
+          "pct": 17,
+          "code": "P0101",
+          "cost": 220,
+          "km_range": [75000, 175000]
+        },
+        {
+          "issue": "EGR valve (diesel)",
+          "pct": 14,
+          "code": "P0401",
+          "cost": 350,
+          "km_range": [100000, 200000]
+        },
+        {
+          "issue": "Injecteur diesel",
+          "pct": 12,
+          "code": "P0261",
+          "cost": 400,
+          "km_range": [120000, 220000]
+        },
+        {
+          "issue": "Amortisseurs avant",
+          "pct": 20,
+          "code": null,
+          "cost": 280,
+          "km_range": [100000, 190000],
+          "visual": true
+        }
+      ],
+      "maintenance_intervals": {
+        "oil_change": 15000,
+        "air_filter": 30000,
+        "timing_belt": 120000
+      }
+    },
+    {
+      "id": "citroen_c3_c4",
+      "name": "Citroën C3/C4",
+      "years": "2002-2020",
+      "engines": ["1.4", "1.6", "2.0 HDi"],
+      "market_prevalence": "très élevée",
+      "common_failures": [
+        {
+          "issue": "Débitmètre MAF",
+          "pct": 19,
+          "code": "P0101",
+          "cost": 230,
+          "km_range": [70000, 170000]
+        },
+        {
+          "issue": "Alternateur",
+          "pct": 13,
+          "code": null,
+          "cost": 380,
+          "km_range": [110000, 210000]
+        },
+        {
+          "issue": "Suspension dishydratée",
+          "pct": 22,
+          "code": null,
+          "cost": 600,
+          "km_range": [80000, 150000],
+          "visual": true,
+          "note": "Suspension hydro-pneumatique spécifique Citroën"
+        },
+        {
+          "issue": "Catalyseur",
+          "pct": 11,
+          "code": "P0420",
+          "cost": 700,
+          "km_range": [130000, 220000]
+        }
+      ],
+      "maintenance_intervals": {
+        "oil_change": 15000,
+        "air_filter": 30000,
+        "brake_fluid": 24000,
+        "timing_belt": 120000
+      }
+    },
+    {
+      "id": "volkswagen_golf_polo",
+      "name": "Volkswagen Golf / Polo",
+      "years": "2000-2020",
+      "engines": ["1.4", "1.6", "1.9 TDi", "2.0 TDi"],
+      "market_prevalence": "élevée",
+      "common_failures": [
+        {
+          "issue": "MAF / capteur air",
+          "pct": 15,
+          "code": "P0101",
+          "cost": 240,
+          "km_range": [90000, 190000]
+        },
+        {
+          "issue": "EGR defaillance (TDi)",
+          "pct": 16,
+          "code": "P0401",
+          "cost": 380,
+          "km_range": [110000, 210000]
+        },
+        {
+          "issue": "Turbo défaillant",
+          "pct": 9,
+          "code": "P0234",
+          "cost": 800,
+          "km_range": [150000, 250000]
+        },
+        {
+          "issue": "Courroie distribution",
+          "pct": 12,
+          "code": null,
+          "cost": 600,
+          "km_range": [120000, 160000],
+          "critical": true
+        }
+      ],
+      "maintenance_intervals": {
+        "oil_change": 15000,
+        "air_filter": 30000,
+        "timing_belt": 120000
+      }
+    },
+    {
+      "id": "fiat_500",
+      "name": "Fiat 500",
+      "years": "2007-2020",
+      "engines": ["1.2 8v", "1.3 Multijet"],
+      "market_prevalence": "moyen",
+      "common_failures": [
+        {
+          "issue": "MAF encrassé",
+          "pct": 17,
+          "code": "P0101",
+          "cost": 190,
+          "km_range": [75000, 165000]
+        },
+        {
+          "issue": "Amortisseurs usés",
+          "pct": 21,
+          "code": null,
+          "cost": 220,
+          "km_range": [80000, 160000],
+          "visual": true
+        },
+        {
+          "issue": "Batterie déchargée",
+          "pct": 14,
+          "code": null,
+          "cost": 110,
+          "km_range": [50000, 110000]
+        }
+      ],
+      "maintenance_intervals": {
+        "oil_change": 15000,
+        "air_filter": 30000
+      }
+    },
+    {
+      "id": "ford_fiesta_focus",
+      "name": "Ford Fiesta / Focus",
+      "years": "2005-2020",
+      "engines": ["1.4", "1.6", "1.6 TDci"],
+      "market_prevalence": "moyen-élevé",
+      "common_failures": [
+        {
+          "issue": "MAF",
+          "pct": 14,
+          "code": "P0101",
+          "cost": 210,
+          "km_range": [85000, 185000]
+        },
+        {
+          "issue": "Turbo (diesel)",
+          "pct": 10,
+          "code": "P0234",
+          "cost": 750,
+          "km_range": [140000, 240000]
+        },
+        {
+          "issue": "Suspension avant",
+          "pct": 19,
+          "code": null,
+          "cost": 300,
+          "km_range": [100000, 190000],
+          "visual": true
+        }
+      ],
+      "maintenance_intervals": {
+        "oil_change": 12000,
+        "brake_fluid": 24000,
+        "timing_belt": 100000
+      }
+    }
+  ],
+  "predictive_maintenance_alert_triggers": {
+    "by_km": {
+      "15000": "Vidange",
+      "30000": "Filtre à air + cabin filter",
+      "60000": "Vérifier plaquettes",
+      "80000": "Inspection suspension",
+      "90000": "Inspection freins complète",
+      "120000": "Courroie distribution (CRITIQUE)",
+      "150000": "Inspection embrayage"
+    },
+    "by_age": {
+      "3_years": "Vérifier batterie",
+      "5_years": "Liquide frein à vérifier",
+      "8_years": "Suspension majeure à prévoir",
+      "10_years": "Carrosserie : traitement rouille"
+    }
+  }
+}

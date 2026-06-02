@@ -1,15 +1,52 @@
+# netlify.toml — Configuration MecaIA
+# ⚠️ JAMAIS de clés secrètes dans ce fichier
+
 [build]
+  command   = "echo 'Frontend only — no build'"
+  publish   = "."
   functions = "netlify/functions"
-  publish = "."
+
+[build.environment]
+  SECRETS_SCAN_OMIT_PATHS = "README.md,.env.example"
+  NODE_VERSION = "18"
+
+# /api/* → Netlify Functions
+[[redirects]]
+  from   = "/api"
+  to     = "/.netlify/functions/api"
+  status = 200
 
 [[redirects]]
-  from = "/api"
-  to = "/.netlify/functions/api"
+  from   = "/api/*"
+  to     = "/.netlify/functions/api/:splat"
   status = 200
-  force = true
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
+  from   = "/stripe-webhook"
+  to     = "/.netlify/functions/stripe-webhook"
   status = 200
-  force = true
+
+[[redirects]]
+  from   = "/checkout"
+  to     = "/.netlify/functions/stripe-checkout"
+  status = 200
+
+# SPA fallback
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# Headers sécurité
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+    Permissions-Policy     = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store"

@@ -1,0 +1,15 @@
+{
+  "name": "mecaia",
+  "version": "1.0.0",
+  "description": "MecaIA - L'expert automobile IA",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node test/test-api.mjs && node test/test-webhook.mjs && node test/test-checkout-email.mjs"
+  },
+  "author": "Loïc Declerck",
+  "license": "UNLICENSED"
+}

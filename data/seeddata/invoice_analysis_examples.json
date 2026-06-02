@@ -1,0 +1,386 @@
+{
+  "metadata": {
+    "purpose": "Entraîner l'IA à analyser les devis garage (raisonnable vs surcoûts)",
+    "analysis_version": "v1.5",
+    "region": "France",
+    "samples": 25
+  },
+  "invoice_examples": [
+    {
+      "id": "devis_001",
+      "verdict": "RAISONNABLE",
+      "confidence": 0.92,
+      "vehicle": "Renault Clio IV, 2012, 125 000 km",
+      "problem": "Témoin moteur allumé + ratés",
+      "devis_items": [
+        {
+          "description": "Diagnostic complet + lecture codes",
+          "qty": 1,
+          "unit_price": 0,
+          "total": 0,
+          "note": "Inclus"
+        },
+        {
+          "description": "Jeu de bougies d'allumage (4)",
+          "qty": 1,
+          "unit_price": 45,
+          "total": 45,
+          "market_price": 40,
+          "margin_pct": 12.5
+        },
+        {
+          "description": "Main d'œuvre - changement bougies",
+          "qty": 1,
+          "unit_price": 65,
+          "total": 65,
+          "hours": 1
+        },
+        {
+          "description": "Bobine d'allumage (1)",
+          "qty": 1,
+          "unit_price": 85,
+          "total": 85,
+          "market_price": 75,
+          "margin_pct": 13.3
+        }
+      ],
+      "total": 195,
+      "analysis": {
+        "excessive_parts": false,
+        "excessive_labor": false,
+        "missing_items": ["Filtre à air (à vérifier)"],
+        "red_flags": 0,
+        "notes": "Diagnostic clair, pièces raisonnables, main d'œuvre correcte pour 2h travail"
+      }
+    },
+    {
+      "id": "devis_002",
+      "verdict": "SUSPECT",
+      "confidence": 0.88,
+      "vehicle": "Peugeot 206, 2005, 180 000 km",
+      "problem": "Bruit suspension avant + direction dur",
+      "devis_items": [
+        {
+          "description": "Changement 2 amortisseurs avant",
+          "qty": 1,
+          "unit_price": 450,
+          "total": 450,
+          "market_price": 280,
+          "margin_pct": 60.7
+        },
+        {
+          "description": "Changement 2 ressorts avant",
+          "qty": 1,
+          "unit_price": 320,
+          "total": 320,
+          "market_price": 200,
+          "margin_pct": 60
+        },
+        {
+          "description": "Main d'œuvre suspension avant",
+          "qty": 1,
+          "unit_price": 400,
+          "total": 400,
+          "hours": 6
+        },
+        {
+          "description": "Biellettes stabilisatrice",
+          "qty": 2,
+          "unit_price": 150,
+          "total": 300,
+          "market_price": 100,
+          "margin_pct": 150
+        }
+      ],
+      "total": 1470,
+      "analysis": {
+        "excessive_parts": true,
+        "excessive_labor": true,
+        "red_flags": 3,
+        "notes": [
+          "Biellettes marquage EXCESSIF (+150%)",
+          "Pièces suspension surcoûtées (+60%)",
+          "6h labor pour 2 amortisseurs (normal = 2-3h)",
+          "Pas de raison technique de changer ressorts + amortis + biellettes ensemble"
+        ],
+        "recommendation": "Demander diagnostic séparé ou avis 2e garage"
+      }
+    },
+    {
+      "id": "devis_003",
+      "verdict": "RAISONNABLE",
+      "confidence": 0.95,
+      "vehicle": "Dacia Sandero, 2010, 92 000 km",
+      "problem": "Freinage mou + témoin moteur",
+      "devis_items": [
+        {
+          "description": "Vidange liquide de frein complet",
+          "qty": 1,
+          "unit_price": 120,
+          "total": 120,
+          "market_price": 100,
+          "margin_pct": 20
+        },
+        {
+          "description": "Plaquettes frein avant",
+          "qty": 1,
+          "unit_price": 85,
+          "total": 85,
+          "market_price": 70,
+          "margin_pct": 21.4
+        },
+        {
+          "description": "Main d'œuvre pose plaquettes",
+          "qty": 1,
+          "unit_price": 65,
+          "total": 65,
+          "hours": 1
+        },
+        {
+          "description": "Sonde lambda avant",
+          "qty": 1,
+          "unit_price": 95,
+          "total": 95,
+          "market_price": 85,
+          "margin_pct": 11.8
+        }
+      ],
+      "total": 365,
+      "analysis": {
+        "excessive_parts": false,
+        "excessive_labor": false,
+        "red_flags": 0,
+        "notes": "Interventions justifiées, prix compétitifs, main d'œuvre honnête. Diagnostic liquide + sonde cohérent avec codes"
+      }
+    },
+    {
+      "id": "devis_004",
+      "verdict": "SUSPECT",
+      "confidence": 0.87,
+      "vehicle": "Citroën C3, 2008, 156 000 km",
+      "problem": "Catalyseur défaillant",
+      "devis_items": [
+        {
+          "description": "Catalyseur complet",
+          "qty": 1,
+          "unit_price": 950,
+          "total": 950,
+          "market_price": 450,
+          "margin_pct": 111
+        },
+        {
+          "description": "Main d'œuvre catalyseur",
+          "qty": 1,
+          "unit_price": 180,
+          "total": 180,
+          "hours": 2.5
+        }
+      ],
+      "total": 1130,
+      "analysis": {
+        "excessive_parts": true,
+        "excessive_labor": true,
+        "red_flags": 2,
+        "notes": [
+          "Catalyseur surcoûté de 111% (950€ vs 450€ marché)",
+          "Main d'œuvre 2.5h pour 1.5h travail (67% surcharge)",
+          "Pas de sonde lambda vérifiée avant de décider catalyseur"
+        ],
+        "recommendation": "Vérifier que c'est bien le catalyseur (tester sonde lambda d'abord). Prix trop élevé - chercher autre garage"
+      }
+    },
+    {
+      "id": "devis_005",
+      "verdict": "RAISONNABLE",
+      "confidence": 0.90,
+      "vehicle": "Peugeot 308, 2014, 67 000 km",
+      "problem": "Batterie déchargée + alternateur suspect",
+      "devis_items": [
+        {
+          "description": "Test alternateur + batterie",
+          "qty": 1,
+          "unit_price": 0,
+          "total": 0,
+          "note": "Diagnostic inclus"
+        },
+        {
+          "description": "Batterie 60Ah",
+          "qty": 1,
+          "unit_price": 120,
+          "total": 120,
+          "market_price": 110,
+          "margin_pct": 9.1
+        },
+        {
+          "description": "Main d'œuvre remplacement batterie",
+          "qty": 1,
+          "unit_price": 35,
+          "total": 35,
+          "hours": 0.5
+        }
+      ],
+      "total": 155,
+      "analysis": {
+        "excessive_parts": false,
+        "excessive_labor": false,
+        "red_flags": 0,
+        "notes": "Simple et transparent. Alternateur pas changé (bon diagnostic). Prix batterie fair."
+      }
+    },
+    {
+      "id": "devis_006",
+      "verdict": "SUSPECT",
+      "confidence": 0.93,
+      "vehicle": "Renault Mégane III, 2011, 98 000 km",
+      "problem": "Claquement moteur",
+      "devis_items": [
+        {
+          "description": "REMPLACEMENT MOTEUR COMPLET",
+          "qty": 1,
+          "unit_price": 4500,
+          "total": 4500,
+          "note": "Moteur d'occasion + main d'œuvre"
+        },
+        {
+          "description": "Joints moteur complets",
+          "qty": 1,
+          "unit_price": 800,
+          "total": 800
+        },
+        {
+          "description": "Main d'œuvre (16 heures)",
+          "qty": 1,
+          "unit_price": 65,
+          "total": 1040,
+          "hours": 16
+        }
+      ],
+      "total": 6340,
+      "analysis": {
+        "excessive_parts": true,
+        "excessive_labor": true,
+        "red_flags": 4,
+        "notes": [
+          "ÉNORME RED FLAG : changement moteur complet proposé sans diagnostic détaillé",
+          "Claquement peut être : tiges cassées (500€), capteur cliquetis (200€), jeu moteur (200€)",
+          "Moteur d'occasion risqué (99 000 km ?)",
+          "16h labor = installation moteur entièrement, non justifié pour un diag sommaire"
+        ],
+        "recommendation": "CHERCHER DEUXIÈME AVIS IMMÉDIATEMENT. C'est potentiellement du vol. Faire diagnostic OBD + compression avant de changer moteur"
+      }
+    },
+    {
+      "id": "devis_007",
+      "verdict": "RAISONNABLE",
+      "confidence": 0.88,
+      "vehicle": "Volkswagen Golf V, 2007, 146 000 km",
+      "problem": "Filtre à air + entretien périodique",
+      "devis_items": [
+        {
+          "description": "Filtre à air moteur",
+          "qty": 1,
+          "unit_price": 28,
+          "total": 28,
+          "market_price": 25,
+          "margin_pct": 12
+        },
+        {
+          "description": "Filtre habitacle",
+          "qty": 1,
+          "unit_price": 32,
+          "total": 32,
+          "market_price": 30,
+          "margin_pct": 6.7
+        },
+        {
+          "description": "Main d'œuvre - changement 2 filtres",
+          "qty": 1,
+          "unit_price": 30,
+          "total": 30,
+          "hours": 0.5
+        }
+      ],
+      "total": 90,
+      "analysis": {
+        "excessive_parts": false,
+        "excessive_labor": false,
+        "red_flags": 0,
+        "notes": "Entretien basique et correct. Marges très correctes (~10%). Travail rapide et honnête."
+      }
+    },
+    {
+      "id": "devis_008",
+      "verdict": "SUSPECT",
+      "confidence": 0.91,
+      "vehicle": "Fiat 500, 2013, 73 000 km",
+      "problem": "Usure plaquettes frein (normale)",
+      "devis_items": [
+        {
+          "description": "Plaquettes avant",
+          "qty": 1,
+          "unit_price": 95,
+          "total": 95,
+          "market_price": 50,
+          "margin_pct": 90
+        },
+        {
+          "description": "Disques frein avant (changement obligatoire)",
+          "qty": 1,
+          "unit_price": 280,
+          "total": 280,
+          "market_price": 120,
+          "margin_pct": 133
+        },
+        {
+          "description": "Liquide frein (purge obligatoire)",
+          "qty": 1,
+          "unit_price": 150,
+          "total": 150,
+          "market_price": 80,
+          "margin_pct": 87.5
+        },
+        {
+          "description": "Main d'œuvre 4h",
+          "qty": 1,
+          "unit_price": 260,
+          "total": 260,
+          "hours": 4
+        }
+      ],
+      "total": 785,
+      "analysis": {
+        "excessive_parts": true,
+        "excessive_labor": true,
+        "red_flags": 3,
+        "notes": [
+          "Disques : 90-133% de surcoût injustifié (surtout pour 73k km)",
+          "Purge liquide frein pas obligatoire avec simple changement plaquettes (surcharge 87%)",
+          "4h labor pour 2 plaquettes = absurde (normal = 1h)",
+          "Pression pour 'changer tout au même prix'"
+        ],
+        "recommendation": "Juste faire les plaquettes (95€ pièces + 65€ labor = 160€ total). Les disques à 73k km ne sont pas usés"
+      }
+    }
+  ],
+  "analysis_guide": {
+    "how_to_identify_overcharging": [
+      "Comparer les pièces aux prix de référence market (Amazon, eBay, Oscaro)",
+      "Vérifier que les réparations sont justifiées par le diagnostic (pas proposer 'au cas où')",
+      "Comparer main d'œuvre vs temps réel (1 claquement pneu = 0.3h, pas 1h)",
+      "Déceler patterns : toujours proposer disques + plaquettes ? électrovanne EVAP systématiquement ? C'est un signe",
+      "Regrouper les réparations raisonnables (amortisseurs + ressorts au besoin) vs abus (4 pièces pour 1 problème)"
+    ],
+    "red_flags_patterns": {
+      "parts_markup_over_100pct": "Très suspect",
+      "labor_over_50pct_above_standard": "Inspect closely",
+      "unnecessary_paired_repairs": "Souvent arnaque (disques + plaquettes + liquide frein)",
+      "no_diagnostic_before_expensive_repair": "Never change something without diagnosis first",
+      "vague_descriptions": "'Reparation moteur' sans détail = masquer les coûts"
+    },
+    "legitimate_markups": {
+      "parts": "15-35% est normal (stockage, logistique, délai)",
+      "labor": "Basé sur heures + taux (65€/h standard FR 2025)",
+      "paired_repairs": "Frein neuf + disques = logique. Batterie + alternateur = diagnostic obligatoire"
+    }
+  }
+}

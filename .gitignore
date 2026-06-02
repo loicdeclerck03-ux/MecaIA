@@ -1,21 +1,29 @@
-# ⚠️ JAMAIS EN GIT - SECRETS ET CLÉS
+# ============================================================
+# MECAIA — .gitignore
+# ⚠️ Ces fichiers ne vont JAMAIS sur GitHub
+# ============================================================
+
+# Variables d'environnement (SECRETS)
 .env
 .env.local
-.env.production
 .env.*.local
-*.pem
-*.key
+.env.production
 
 # Node
 node_modules/
-package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Netlify
-.netlify/
+# Build
 dist/
+build/
+.cache/
 
 # OS
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
 
 # IDE
@@ -24,10 +32,13 @@ Thumbs.db
 *.swp
 *.swo
 
-# Logs
-logs/
-*.log
+# Netlify (local)
+.netlify/
 
-# Build
-.cache/
-out/
+# Logs
+*.log
+logs/
+
+# Temp
+*.tmp
+*.temp
