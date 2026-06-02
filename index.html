@@ -800,7 +800,7 @@ async function loadProfile() {
     if (!data) {
       const meta = SESSION.user.user_metadata || {};
       const promoCode = 'CODE-' + SESSION.user.id.substring(0, 6).toUpperCase();
-      await SB.from('users').insert({
+      await SB.from('users').upsert({
         id: SESSION.user.id,
         email: SESSION.user.email,
         name: meta.name || SESSION.user.email.split('@')[0],
