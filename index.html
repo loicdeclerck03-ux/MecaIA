@@ -244,15 +244,15 @@ textarea{resize:vertical;min-height:68px}
     <div class="mh" style="margin-bottom:0">💳 Acheter des crédits</div>
   </div>
   <div class="ms">Paiement 100% sécurisé Stripe. Crédits activés immédiatement.</div>
-  <div class="pack on" id="pk1" onclick="selP(1,1,'1.00')"><div><div class="pkn">1 crédit</div><div class="pks">1 diagnostic ou recherche</div></div><div class="pkp">1€</div></div>
-  <div class="pack" id="pk2" onclick="selP(2,25,'5.00')"><div><div class="pkn">25 crédits</div><div class="pks">0,20€/utilisation — économisez 20%</div></div><div class="pkp">5€</div></div>
-  <div class="pack" id="pk3" onclick="selP(3,60,'10.00')"><div><div class="pkn">60 crédits</div><div class="pks">0,17€/utilisation — économisez 40%</div></div><div class="pkp">10€</div></div>
-  <div class="pack" id="pk4" onclick="selP(4,999,'15.00')"><div><div class="pkn">Illimité</div><div class="pks">Tout illimité pendant 30 jours</div></div><div class="pkp">15€</div></div>
-  <div style="margin-top:13px"><label>CARTE BANCAIRE</label><div id="card-el"></div><div id="card-err"></div><button class="bstr" id="btn-str" onclick="payer()">🔒 PAYER <span id="str-amt">1€</span> EN TOUTE SÉCURITÉ</button></div>
+  <div class="pack on" id="pk1" onclick="buyPack('1credit')"><div><div class="pkn">1 crédit</div><div class="pks">1 diagnostic ou recherche</div></div><div class="pkp">1€</div></div>
+  <div class="pack" id="pk2" onclick="buyPack('25credits')"><div><div class="pkn">25 crédits</div><div class="pks">0,20€/utilisation — économisez 20%</div></div><div class="pkp">5€</div></div>
+  <div class="pack" id="pk3" onclick="buyPack('60credits')"><div><div class="pkn">60 crédits</div><div class="pks">0,17€/utilisation — économisez 40%</div></div><div class="pkp">10€</div></div>
+  <div class="pack" id="pk4" onclick="buyPack('unlimited')"><div><div class="pkn">Illimité</div><div class="pks">Tout illimité pendant 30 jours</div></div><div class="pkp">15€</div></div>
+  <div style="margin-top:13px;display:none"><label>CARTE BANCAIRE</label><div id="card-el"></div><div id="card-err"></div><button class="bstr" id="btn-str" onclick="payer()">🔒 PAYER <span id="str-amt">1€</span> EN TOUTE SÉCURITÉ</button></div>
   <button class="bcl" onclick="closeM('m-pay')">ANNULER</button>
   <div class="msec">
     <label>CODE PROMO / RÉDUCTION</label>
-    <div style="display:flex;gap:7px;margin-bottom:7px"><input type="text" id="promo-in" placeholder="CODE-XXXXX ou INFLUENCEUR20" style="flex:1;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;font-size:12px"><button class="bbuy" onclick="appPromo()">APPLIQUER</button></div>
+    <div style="display:flex;gap:7px;margin-bottom:7px"><input type="text" id="promo-in" placeholder="CODE-XXXXX ou INFLUENCEUR20" style="flex:1;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;font-size:12px"><button class="bbuy" onclick="redeemPromo()">APPLIQUER</button></div>
     <div id="promo-msg" style="font-size:11px;font-family:'IBM Plex Mono',monospace;min-height:13px"></div>
   </div>
   <div class="msec"><label>CODE PROPRIÉTAIRE</label><input type="password" id="own-in" placeholder="••••••••" style="margin-bottom:7px"><button class="bcl" onclick="actOwner()" style="color:var(--accent);border-color:rgba(240,165,0,0.3)">ACTIVER</button></div>
@@ -418,7 +418,7 @@ textarea{resize:vertical;min-height:68px}
 <!-- GARAGE -->
 <div class="pg" id="pg-garage"><div class="wrap">
   <div class="card">
-    <div class="ch"><div class="ct">Mon Garage Virtuel</div><span class="fbadge">FIREBASE</span></div>
+    <div class="ch"><div class="ct">Mon Garage Virtuel</div><span class="fbadge">SUPABASE</span></div>
     <div class="cb">
       <p style="font-size:12px;color:var(--muted);margin-bottom:13px;line-height:1.6">Ajoutez vos véhicules une seule fois. L'IA les connaît pour tous vos diagnostics.</p>
       <div id="g-cars"></div>
@@ -544,7 +544,7 @@ textarea{resize:vertical;min-height:68px}
   <div class="card"><div class="ch"><div class="ct">Questions fréquentes</div></div><div class="cb">
     <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionnent les crédits ?</span><span>▼</span></div><div class="faq-a">1 crédit = 1 diagnostic OBD, 1 recherche pièces, 1 alerte entretien ou 1 analyse photo. Le décodeur VIN est toujours gratuit. Les crédits n'expirent jamais sauf le pack illimité (30 jours).</div></div>
     <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Les diagnostics sont-ils fiables ?</span><span>▼</span></div><div class="faq-a">L'IA analyse le code OBD, les symptômes et le véhicule pour un diagnostic précis. Plus vous donnez d'infos, plus c'est précis. Les résultats sont indicatifs — consultez un professionnel pour les interventions critiques.</div></div>
-    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionne le garage virtuel ?</span><span>▼</span></div><div class="faq-a">Ajoutez vos véhicules une seule fois. L'IA les mémorise et les utilise automatiquement pour tous vos diagnostics. Sauvegardé dans votre compte Firebase — accessible depuis n'importe quel appareil.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionne le garage virtuel ?</span><span>▼</span></div><div class="faq-a">Ajoutez vos véhicules une seule fois. L'IA les mémorise et les utilise automatiquement pour tous vos diagnostics. Sauvegardé dans votre compte Supabase — accessible depuis n'importe quel appareil.</div></div>
     <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Le paiement est-il sécurisé ?</span><span>▼</span></div><div class="faq-a">100% sécurisé par Stripe, leader mondial du paiement en ligne. Votre carte n'est jamais stockée sur nos serveurs. Crédits activés immédiatement après confirmation bancaire.</div></div>
     <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Les crédits expirent-ils ?</span><span>▼</span></div><div class="faq-a">Non ! Ils n'expirent jamais sauf le pack illimité (30 jours). Achetez quand vous en avez besoin.</div></div>
     <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionnent les codes promo ?</span><span>▼</span></div><div class="faq-a">Deux types : réduction % (ex: -20% sur un pack) et crédits gratuits. Entrez le code dans le modal de paiement. Générés par Loïc Declerck et partagés via partenaires et influenceurs.</div></div>
@@ -556,7 +556,7 @@ textarea{resize:vertical;min-height:68px}
     <p style="margin-bottom:9px"><strong style="color:var(--text)">1. Service</strong><br>MecaIA est un outil d'aide au diagnostic automobile basé sur l'IA. Les résultats sont indicatifs et ne remplacent pas l'avis d'un professionnel qualifié.</p>
     <p style="margin-bottom:9px"><strong style="color:var(--text)">2. Crédits & Paiements</strong><br>Non remboursables une fois utilisés. Les packs n'expirent pas sauf le pack illimité (30 jours). Paiements sécurisés via Stripe.</p>
     <p style="margin-bottom:9px"><strong style="color:var(--text)">3. Responsabilité</strong><br>MecaIA ne peut être tenu responsable des décisions prises sur la base des diagnostics. Consultez toujours un mécanicien professionnel pour les interventions critiques.</p>
-    <p style="margin-bottom:9px"><strong style="color:var(--text)">4. Données personnelles (RGPD)</strong><br>Données stockées via Firebase (Google Cloud, serveurs EU). Jamais vendues à des tiers. Suppression possible sur demande.</p>
+    <p style="margin-bottom:9px"><strong style="color:var(--text)">4. Données personnelles (RGPD)</strong><br>Données stockées via Supabase (PostgreSQL, serveurs EU). Jamais vendues à des tiers. Suppression possible sur demande.</p>
     <p style="margin-bottom:9px"><strong style="color:var(--text)">5. Cookies</strong><br>Utilisation du localStorage pour les préférences. Aucun cookie publicitaire.</p>
     <p><strong style="color:var(--text)">6. Propriété intellectuelle</strong><br>"MecaIA", le code et le design sont la propriété de Loïc Declerck. Reproduction interdite sans autorisation.</p>
   </div></div>
@@ -615,8 +615,8 @@ textarea{resize:vertical;min-height:68px}
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 /* >>> REMPLIS TES 2 VALEURS PUBLIQUES : Supabase > Settings > API <<< */
-const SUPABASE_URL="<<<TON_PROJECT_URL>>>";
-const SUPABASE_ANON="<<<TA_CLE_ANON_PUBLIQUE>>>";
+const SUPABASE_URL="https://vexxjbpbfrvgszvzpmgu.supabase.co";
+const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZleHhqYnBiZnJ2Z3N6dnpwbWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NzU4NzksImV4cCI6MjA5NTU1MTg3OX0.T2owu6atANKHH7PfEUL-BG8F6MAizhsqZb3RQWJOR1U";
 const supa=createClient(SUPABASE_URL,SUPABASE_ANON,{auth:{persistSession:true,autoRefreshToken:true}});
 async function getToken(){const{data}=await supa.auth.getSession();return data?.session?.access_token||null;}
 async function authedFetch(fn,{method="POST",body=null,query=null}={}){const t=await getToken();let u="/.netlify/functions/"+fn;if(query)u+="?"+new URLSearchParams(query).toString();const r=await fetch(u,{method,headers:{"Content-Type":"application/json",...(t?{Authorization:"Bearer "+t}:{})},body:body?JSON.stringify(body):undefined});let d=null;try{d=await r.json();}catch{}return{ok:r.ok,status:r.status,data:d};}
@@ -1064,8 +1064,7 @@ setLang(lang);showSc('s-land');
    On garde tes helpers UI (setAM, showSc, toast, ss, majC, majVis,
    setLang, renderCars, renderMbrs, loadDash, hideLoading, goLand)
    et tes variables (CU, CR, UT, cars, tries, lang, OWNER).
-   NB : Firebase reste présent pour l'instant (les données passent à
-   Supabase en 9.3, puis on retire Firebase en 9.4).
+   NB : Migration Supabase effectuée (Firebase entièrement retiré).
    ============================================================ */
 
 // ---- Connexion ----
@@ -1525,13 +1524,20 @@ window.grantTester = async function (kind, value) {
 
 /* ---- Côté UTILISATEUR : échanger un code promo (crédits/illimité) ---- */
 window.redeemPromo = async function () {
-  const code = prompt('Entre ton code promo :');
+  const inp = document.getElementById('promo-in');
+  const msg = document.getElementById('promo-msg');
+  const code = ((inp && inp.value.trim()) || (typeof prompt === 'function' ? prompt('Entre ton code promo :') : '') || '').trim();
   if (!code) return;
   const r = await MecaIA.authedFetch('promo_redeem', { method: 'POST', body: { code } });
   if (r.ok && r.data && r.data.success) {
+    if (msg) { msg.textContent = '🎉 Code appliqué !'; msg.style.color = 'var(--green)'; }
     toast('🎉 Code appliqué !', 'ok');
     if (window.refreshCredits) refreshCredits();
-  } else toast((r.data && r.data.message) || 'Code invalide', 'er');
+  } else {
+    const m = (r.data && r.data.message) || 'Code invalide';
+    if (msg) { msg.textContent = m; msg.style.color = 'var(--red)'; }
+    toast(m, 'er');
+  }
 };
 
 </script>

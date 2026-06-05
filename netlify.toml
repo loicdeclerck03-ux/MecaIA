@@ -6,6 +6,13 @@
   functions = "netlify/functions"
   publish = "."
 
+# Ces clés sont PUBLIQUES (identifiants de prix, clé publique Stripe, URL + clé anon
+# Supabase) : normal qu'elles apparaissent côté client. On dit au scanner de Netlify
+# de ne PAS les traiter comme des secrets. Les vrais secrets (STRIPE_SECRET_KEY,
+# SUPABASE_SECRET, ANTHROPIC_KEY, RESEND_API_KEY, STRIPE_WEBHOOK_SECRET) restent scannés.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL,SUPABASE_ANON,STRIPE_PUBLIC_KEY,FRONTEND_URL,STRIPE_PRICE_1CREDIT,STRIPE_PRICE_25CREDITS,STRIPE_PRICE_60CREDITS,STRIPE_PRICE_UNLIMITED,STRIPE_PRICE_1EUR,STRIPE_PRICE_5EUR,STRIPE_PRICE_10EUR,STRIPE_PRICE_15EUR"
+
 [functions]
   # esbuild embarque les imports (../lib/auth.mjs) et les node_modules
   node_bundler = "esbuild"
@@ -20,10 +27,16 @@
 # ------------------------------------------------------------
 # Pipeline planifié (accumulation de cas) — lundi & jeudi 3h UTC
 # ------------------------------------------------------------
-[[scheduled]]
-  cron = "0 3 * * 1"
-  function = "scheduled_pipeline"
-
-[[scheduled]]
-  cron = "0 3 * * 4"
-  function = "scheduled_pipeline"
+# ⏸️ DÉSACTIVÉ POUR LA BÊTA (2026-06) — évite des appels IA inutiles et
+# protège la base de connaissance. Les 5 fonctions du pipeline restent en
+# place (scraper / cleaner / consolidator / orchestrator / scheduled_pipeline).
+# Pour RÉACTIVER après lancement : retirer les "#" ci-dessous + corriger le
+# mapping de colonnes dans insert_consolidated_case (vehicle_year / obd_code).
+#
+# [[scheduled]]
+#   cron = "0 3 * * 1"
+#   function = "scheduled_pipeline"
+#
+# [[scheduled]]
+#   cron = "0 3 * * 4"
+#   function = "scheduled_pipeline"
