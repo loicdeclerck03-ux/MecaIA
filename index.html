@@ -623,6 +623,23 @@ async function authedFetch(fn,{method="POST",body=null,query=null}={}){const t=a
 window.MecaIA={supa,getToken,authedFetch,signUp:(e,p,m={})=>supa.auth.signUp({email:e,password:p,options:{data:m}}),signIn:(e,p)=>supa.auth.signInWithPassword({email:e,password:p}),signOut:()=>supa.auth.signOut(),resetPassword:(e)=>supa.auth.resetPasswordForEmail(e,{redirectTo:window.location.origin}),onAuth:(cb)=>supa.auth.onAuthStateChange((_e,s)=>cb(s?.user||null,s)),getUser:async()=>(await supa.auth.getUser()).data?.user||null};
 
 
+/* ============================================================
+   BOUCLIER ANTI-FIREBASE (2026-06)
+   Neutralise le code Firestore résiduel qui n'a jamais été retiré.
+   Les vraies fonctions passent par Supabase (authedFetch) plus bas.
+   Ces "stubs" empêchent tout appel vers la table fantôme "users"
+   (cause directe des erreurs 404) — SANS rien supprimer.
+   Réversible : retirer ce bloc le jour où le code legacy est nettoyé.
+   ============================================================ */
+const db = null;
+const doc = () => null;
+const collection = () => null;
+const getDoc = async () => ({ exists: () => false, data: () => ({}) });
+const getDocs = async () => ({ forEach: () => {}, docs: [] });
+const setDoc = async () => {};
+const updateDoc = async () => {};
+const increment = (n = 0) => n;
+
 const OWNER='loicdeclerck4020@gmail.com';
 const STRIPE_PK='pk_live_51Taf2SQ1QuRc9MT3V0PKJkTasRga27aj7opM15j5rq5l0o3gx83yyNkeWSeugQSRabsqWj9cnBDp7HbOEgkGbOL500Ntp5CF6o';
 
