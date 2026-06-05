@@ -1,52 +1,29 @@
-# netlify.toml — Configuration MecaIA
-# ⚠️ JAMAIS de clés secrètes dans ce fichier
-
+# ============================================================
+# MecaIA V3 — Configuration Netlify
+# ============================================================
 [build]
-  command   = "echo 'Frontend only — no build'"
-  publish   = "."
+  command = "echo 'No build step'"
   functions = "netlify/functions"
+  publish = "."
 
-[build.environment]
-  SECRETS_SCAN_OMIT_PATHS = "README.md,.env.example"
-  NODE_VERSION = "18"
+[functions]
+  # esbuild embarque les imports (../lib/auth.mjs) et les node_modules
+  node_bundler = "esbuild"
 
-# /api/* → Netlify Functions
+# Les routes /.netlify/functions/* sont gérées nativement par Netlify.
+# SPA : tout le reste renvoie index.html.
 [[redirects]]
-  from   = "/api"
-  to     = "/.netlify/functions/api"
+  from = "/*"
+  to = "/index.html"
   status = 200
 
-[[redirects]]
-  from   = "/api/*"
-  to     = "/.netlify/functions/api/:splat"
-  status = 200
+# ------------------------------------------------------------
+# Pipeline planifié (accumulation de cas) — lundi & jeudi 3h UTC
+# ------------------------------------------------------------
+[[scheduled]]
+  cron = "0 3 * * 1"
+  function = "scheduled_pipeline"
 
-[[redirects]]
-  from   = "/stripe-webhook"
-  to     = "/.netlify/functions/stripe-webhook"
-  status = 200
-
-[[redirects]]
-  from   = "/checkout"
-  to     = "/.netlify/functions/stripe-checkout"
-  status = 200
-
-# SPA fallback
-[[redirects]]
-  from   = "/*"
-  to     = "/index.html"
-  status = 200
-
-# Headers sécurité
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options        = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy        = "strict-origin-when-cross-origin"
-    Permissions-Policy     = "camera=(), microphone=(), geolocation=()"
-
-[[headers]]
-  for = "/.netlify/functions/*"
-  [headers.values]
-    Cache-Control = "no-cache, no-store"
+[[scheduled]]
+  cron = "0 3 * * 4"
+  function = "scheduled_pipeline"

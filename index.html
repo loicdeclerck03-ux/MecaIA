@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MecaIA — L'Expert Automobile IA</title>
 <meta name="description" content="MecaIA — Diagnostic OBD, garage virtuel, pièces auto et alertes entretien par IA. 24h/24.">
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#f0a500">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#080b0f;--s1:#0f1318;--s2:#151a21;--border:#1e2a3a;--accent:#f0a500;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--text:#c8d4e0;--muted:#4a5a6e}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -144,6 +142,22 @@ textarea{resize:vertical;min-height:68px}
 .cons{background:var(--s2);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:11px 14px;font-size:13px;line-height:1.7;margin-top:11px}
 .cons strong{color:var(--accent)}.cg{border-color:var(--green)}.cg strong{color:var(--green)}.cb2{border-color:var(--blue)}.cb2 strong{color:var(--blue)}.cp{border-color:var(--purple)}.cp strong{color:var(--purple)}
 .rfooter{display:flex;align-items:center;justify-content:space-between;padding:9px 17px;border-top:1px solid var(--border);background:var(--s2);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)}
+.diff-row{display:flex;gap:8px;align-items:center;margin-top:9px}
+.di{font-size:15px;opacity:.22}.di.on{opacity:1}
+.tool-i{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:9px 13px;margin-bottom:7px}
+.tool-a{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);text-decoration:none;padding:3px 8px;border:1px solid rgba(240,165,0,0.3);border-radius:3px}
+.tool-a:hover{background:rgba(240,165,0,0.1)}
+.sc-box{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;margin-top:13px}
+.sc-n{font-family:'Rajdhani',sans-serif;font-size:52px;font-weight:700;line-height:1}
+.sc-bar{height:7px;background:var(--border);border-radius:4px;margin:12px 0 7px;overflow:hidden}
+.sc-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.dv-box{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px;margin-top:11px}
+.dv-t{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:9px}
+.dv-r{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.dv-r:last-of-type{border-bottom:none;font-weight:700;color:#fff;font-size:13px;padding-top:9px}
+.dv-tot{color:var(--accent)}
+.rating{display:flex;gap:5px;align-items:center;margin-top:11px}
+.star{font-size:19px;cursor:pointer;opacity:.22;transition:opacity .15s}.star.on{opacity:1}
 .car-c{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s}
 .car-c:hover{border-color:rgba(240,165,0,0.35)}.car-c.sel{border-color:var(--accent);background:rgba(240,165,0,0.04)}
 .car-info{flex:1}
@@ -187,16 +201,21 @@ textarea{resize:vertical;min-height:68px}
 .bcl{width:100%;padding:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;cursor:pointer;margin-bottom:6px;transition:all .2s}
 .bcl:hover{border-color:rgba(240,165,0,0.3);color:var(--text)}
 .msec{border-top:1px solid var(--border);padding-top:11px;margin-top:4px}
+#card-el{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 11px;margin-bottom:9px}
+#card-err{color:var(--red);font-size:11px;margin-bottom:7px;font-family:'IBM Plex Mono',monospace;min-height:15px}
 .toast-c{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:7px;align-items:center;pointer-events:none}
 .toast{background:var(--s1);border:1px solid var(--border);border-radius:7px;padding:9px 17px;font-size:13px;color:var(--text);animation:fadeIn .3s ease;white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,0.4)}
 .toast.ok{border-color:rgba(16,185,129,0.4);color:var(--green)}.toast.er{border-color:rgba(239,68,68,0.4);color:var(--red)}
-.faq-i{background:var(--s2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
-.faq-q{padding:13px 15px;cursor:pointer;font-weight:500;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.ali{display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:11px 14px;margin-bottom:8px}
+.gmb{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:11px 14px;margin-bottom:8px}
+.faq-i{background:var(--s2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;transition:border-color .2s}
+.faq-i:hover{border-color:rgba(240,165,0,0.18)}
+.faq-q{padding:13px 15px;cursor:pointer;font-weight:500;font-size:13px;display:flex;justify-content:space-between;align-items:center;transition:color .2s}
 .faq-q:hover{color:var(--accent)}
 .faq-a{display:none;padding:0 15px 13px;font-size:12px;color:var(--muted);line-height:1.75}
-.faq-a.on{display:block}
-.disc-i{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px}
-.disc-i.fav{border-color:rgba(240,165,0,0.4);background:rgba(240,165,0,0.02)}
+.faq-a.on{display:block;animation:fadeIn .2s ease}
+.disc-i{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;transition:border-color .2s}
+.disc-i:hover{border-color:rgba(240,165,0,0.18)}.disc-i.fav{border-color:rgba(240,165,0,0.4);background:rgba(240,165,0,0.02)}
 .pcd{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--accent);background:rgba(240,165,0,0.08);border:1px solid rgba(240,165,0,0.2);padding:9px 15px;border-radius:6px;margin:7px 0;text-align:center;letter-spacing:3px}
 .dh{padding:18px 22px;border-bottom:1px solid var(--border);background:var(--s1);display:flex;align-items:center;justify-content:space-between}
 .dh-t{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;color:#fff}
@@ -207,79 +226,36 @@ textarea{resize:vertical;min-height:68px}
 .ds{padding:18px}
 .ds-t{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--border)}
 .du{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:10px 13px;margin-bottom:7px}
-.stbtn{position:fixed;bottom:22px;right:18px;width:38px;height:38px;background:var(--accent);color:#000;border:none;border-radius:50%;font-size:17px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:500;box-shadow:0 4px 13px rgba(240,165,0,0.28)}
-.stbtn.show{display:flex}
-/* CHAT DYLAN */
-.chat-wrap{display:flex;flex-direction:column;height:420px}
-.chat-msgs{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:9px}
-.chat-msg{max-width:85%;padding:10px 13px;border-radius:10px;font-size:13px;line-height:1.6}
-.chat-msg.user{background:rgba(240,165,0,0.12);border:1px solid rgba(240,165,0,0.2);align-self:flex-end;color:#fff}
-.chat-msg.bot{background:var(--s2);border:1px solid var(--border);align-self:flex-start;color:var(--text)}
-.chat-msg.bot .bot-name{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:4px}
-.chat-in{display:flex;gap:8px;padding:11px 13px;border-top:1px solid var(--border);background:var(--s2)}
-.chat-in input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;outline:none}
-.chat-in input:focus{border-color:var(--accent)}
-.chat-send{padding:9px 16px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
-.sc-box{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;margin-top:13px}
-.sc-n{font-family:'Rajdhani',sans-serif;font-size:52px;font-weight:700;line-height:1}
-.sc-bar{height:7px;background:var(--border);border-radius:4px;margin:12px 0 7px;overflow:hidden}
-.sc-fill{height:100%;border-radius:4px;transition:width 1s ease}
-.dv-box{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px;margin-top:11px}
-.dv-t{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:9px}
-.dv-r{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
-.dv-r:last-of-type{border-bottom:none;font-weight:700;color:#fff;font-size:13px;padding-top:9px}
-.dv-tot{color:var(--accent)}
-.rating{display:flex;gap:5px;align-items:center;margin-top:11px}
-.star{font-size:19px;cursor:pointer;opacity:.22;transition:opacity .15s}.star.on{opacity:1}
-.diff-row{display:flex;gap:8px;align-items:center;margin-top:9px}
-.di{font-size:15px;opacity:.22}.di.on{opacity:1}
-.tool-i{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:9px 13px;margin-bottom:7px}
-.tool-a{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);text-decoration:none;padding:3px 8px;border:1px solid rgba(240,165,0,0.3);border-radius:3px}
-.tool-a:hover{background:rgba(240,165,0,0.1)}
-@media(max-width:600px){.r2{grid-template-columns:1fr}.wrap{padding:13px 10px 70px}.app-h{padding:0 11px}.l-nav{padding:15px 18px}}
+.stbtn{position:fixed;bottom:22px;right:18px;width:38px;height:38px;background:var(--accent);color:#000;border:none;border-radius:50%;font-size:17px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:500;box-shadow:0 4px 13px rgba(240,165,0,0.28);transition:all .2s}
+.stbtn.show{display:flex}.stbtn:hover{background:#ffb830;transform:translateY(-2px)}
+@media(max-width:600px){.r2{grid-template-columns:1fr}.wrap{padding:13px 10px 70px}.app-h{padding:0 11px}.l-nav{padding:15px 18px}.l-hero{padding:34px 18px 22px}.l-stats{gap:22px;padding:14px 18px 34px}}
 </style>
 </head>
 <body>
-
-<!-- LOADING -->
-<div id="s-loading" style="position:fixed;inset:0;background:#080b0f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s ease">
-  <div style="font-family:Rajdhani,sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:32px">
-    <div style="width:40px;height:40px;background:#f0a500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000">⚙</div>
-    MECA<span style="color:#f0a500">IA</span>
-  </div>
-  <div style="width:200px;height:2px;background:#1e2a3a;border-radius:2px;overflow:hidden;margin-bottom:20px">
-    <div style="height:100%;background:#f0a500;border-radius:2px;animation:lrun 1.8s ease-in-out infinite"></div>
-  </div>
-  <div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#4a5a6e;letter-spacing:2px">CHARGEMENT...</div>
-</div>
-
-<div class="toast-c" id="toasts"></div>
+<div id="s-loading" style="position:fixed;inset:0;background:#080b0f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s ease"><div style="font-family:Rajdhani,sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:32px"><div style="width:40px;height:40px;background:#f0a500;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000">⚙</div>MECA<span style="color:#f0a500">IA</span></div><div style="width:200px;height:2px;background:#1e2a3a;border-radius:2px;overflow:hidden;margin-bottom:20px"><div style="height:100%;background:#f0a500;border-radius:2px;animation:lrun 1.8s ease-in-out infinite"></div></div><div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#4a5a6e;letter-spacing:2px">CHARGEMENT...</div></div><div class="toast-c" id="toasts"></div>
 <button class="stbtn" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- MODAL PAIEMENT -->
 <div class="mbg" id="m-pay">
 <div class="modal">
+  <div class="mh">💳 Acheter des crédits</div>
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
     <button onclick="closeM('m-pay')" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0">←</button>
     <div class="mh" style="margin-bottom:0">💳 Acheter des crédits</div>
   </div>
   <div class="ms">Paiement 100% sécurisé Stripe. Crédits activés immédiatement.</div>
-  <div class="pack on" id="pk1" onclick="selP('1credit','1 crédit','1.00')"><div><div class="pkn">1 crédit</div><div class="pks">1 diagnostic ou recherche</div></div><div class="pkp">1€</div></div>
-  <div class="pack" id="pk2" onclick="selP('25credits','25 crédits','5.00')"><div><div class="pkn">25 crédits</div><div class="pks">0,20€/utilisation — économisez 20%</div></div><div class="pkp">5€</div></div>
-  <div class="pack" id="pk3" onclick="selP('60credits','60 crédits','10.00')"><div><div class="pkn">60 crédits</div><div class="pks">0,17€/utilisation — économisez 40%</div></div><div class="pkp">10€</div></div>
-  <div class="pack" id="pk4" onclick="selP('unlimited','Illimité 30 jours','15.00')"><div><div class="pkn">Illimité</div><div class="pks">Tout illimité pendant 30 jours</div></div><div class="pkp">15€</div></div>
-  <button class="bstr" id="btn-pay" onclick="doPay()">🔒 PAYER <span id="pay-amt">1€</span> — STRIPE SÉCURISÉ</button>
+  <div class="pack on" id="pk1" onclick="selP(1,1,'1.00')"><div><div class="pkn">1 crédit</div><div class="pks">1 diagnostic ou recherche</div></div><div class="pkp">1€</div></div>
+  <div class="pack" id="pk2" onclick="selP(2,25,'5.00')"><div><div class="pkn">25 crédits</div><div class="pks">0,20€/utilisation — économisez 20%</div></div><div class="pkp">5€</div></div>
+  <div class="pack" id="pk3" onclick="selP(3,60,'10.00')"><div><div class="pkn">60 crédits</div><div class="pks">0,17€/utilisation — économisez 40%</div></div><div class="pkp">10€</div></div>
+  <div class="pack" id="pk4" onclick="selP(4,999,'15.00')"><div><div class="pkn">Illimité</div><div class="pks">Tout illimité pendant 30 jours</div></div><div class="pkp">15€</div></div>
+  <div style="margin-top:13px"><label>CARTE BANCAIRE</label><div id="card-el"></div><div id="card-err"></div><button class="bstr" id="btn-str" onclick="payer()">🔒 PAYER <span id="str-amt">1€</span> EN TOUTE SÉCURITÉ</button></div>
   <button class="bcl" onclick="closeM('m-pay')">ANNULER</button>
   <div class="msec">
     <label>CODE PROMO / RÉDUCTION</label>
-    <div style="display:flex;gap:7px;margin-bottom:7px"><input type="text" id="promo-in" placeholder="CODE-XXXXX" style="flex:1;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;font-size:12px"><button class="bbuy" onclick="appPromo()">APPLIQUER</button></div>
+    <div style="display:flex;gap:7px;margin-bottom:7px"><input type="text" id="promo-in" placeholder="CODE-XXXXX ou INFLUENCEUR20" style="flex:1;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;font-size:12px"><button class="bbuy" onclick="appPromo()">APPLIQUER</button></div>
     <div id="promo-msg" style="font-size:11px;font-family:'IBM Plex Mono',monospace;min-height:13px"></div>
   </div>
-  <div class="msec">
-    <label>CODE PROPRIÉTAIRE</label>
-    <input type="password" id="own-in" placeholder="••••••••" style="margin-bottom:7px">
-    <button class="bcl" onclick="actOwner()" style="color:var(--accent);border-color:rgba(240,165,0,0.3)">ACTIVER</button>
-  </div>
+  <div class="msec"><label>CODE PROPRIÉTAIRE</label><input type="password" id="own-in" placeholder="••••••••" style="margin-bottom:7px"><button class="bcl" onclick="actOwner()" style="color:var(--accent);border-color:rgba(240,165,0,0.3)">ACTIVER</button></div>
 </div></div>
 
 <!-- MODAL URGENCE -->
@@ -289,10 +265,10 @@ textarea{resize:vertical;min-height:68px}
     <button onclick="closeM('m-urg')" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0">←</button>
     <div class="mh" style="margin-bottom:0">🚨 C'est grave docteur ?</div>
   </div>
-  <div class="ms">Décrivez votre problème — Dylan vous dit si vous pouvez continuer à rouler.</div>
+  <div class="ms">Décrivez votre problème — l'IA vous dit si vous pouvez continuer à rouler.</div>
   <div class="f"><label>Décrivez le problème</label><textarea id="urg-d" placeholder="Ex: voyant rouge allumé, bruit bizarre, voiture qui fume..." style="min-height:85px"></textarea></div>
   <div class="f"><label>Votre véhicule (optionnel)</label><input type="text" id="urg-c" placeholder="Ex: Renault Clio 2018 Diesel"></div>
-  <button class="btn" onclick="analyseUrg()">⚡ ANALYSER MAINTENANT — GRATUIT</button>
+  <button class="btn" onclick="analyseUrg()">⚡ ANALYSER MAINTENANT</button>
   <button class="bcl" style="margin-top:6px" onclick="closeM('m-urg')">ANNULER</button>
   <div id="urg-r"></div>
 </div></div>
@@ -303,21 +279,21 @@ textarea{resize:vertical;min-height:68px}
     <div class="logo"><div class="logo-i">⚙</div>MECA<span>IA</span></div>
     <div class="l-nav-r">
       <select class="lang-s" onchange="setLang(this.value)" id="ll-s"><option value="fr">🇫🇷 FR</option><option value="nl">🇳🇱 NL</option><option value="en">🇬🇧 EN</option><option value="de">🇩🇪 DE</option></select>
-      <button class="btn-gh" onclick="goAuth('login')">CONNEXION</button>
-      <button class="btn-ac" onclick="goAuth('register')">COMMENCER</button>
+      <button class="btn-gh" onclick="goAuth('login')" id="l-l">CONNEXION</button>
+      <button class="btn-ac" onclick="goAuth('register')" id="l-s">COMMENCER</button>
     </div>
   </nav>
   <div class="l-hero">
-    <div class="l-pre">⚙ DIAGNOSTIC AUTOMOBILE INTELLIGENT</div>
-    <h1 class="l-h1">L'expert automobile IA<br>dans votre <span>poche</span></h1>
-    <p class="l-sub">Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien. Disponible 24h/24.</p>
+    <div class="l-pre" id="l-tag">⚙ DIAGNOSTIC AUTOMOBILE INTELLIGENT</div>
+    <h1 class="l-h1" id="l-h1">L'expert automobile IA<br>dans votre <span>poche</span></h1>
+    <p class="l-sub" id="l-sub">Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien. Disponible 24h/24.</p>
     <div class="l-btns">
-      <button class="btn-hero" onclick="goAuth('register')">🚀 DÉMARRER GRATUITEMENT</button>
+      <button class="btn-hero" onclick="goAuth('register')" id="l-bh">🚀 DÉMARRER GRATUITEMENT</button>
       <button class="btn-hero2" onclick="openM('m-urg')">🚨 C'EST GRAVE DOCTEUR ?</button>
     </div>
     <div class="urg-box" onclick="openM('m-urg')">
       <div style="font-size:26px">🚨</div>
-      <div><div style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:2px">Bloqué sur la route ? Problème urgent ?</div><div style="font-size:12px;color:var(--muted)">Décrivez votre panne — Dylan vous répond en 5 secondes</div></div>
+      <div><div style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:2px">Bloqué sur la route ? Problème urgent ?</div><div style="font-size:12px;color:var(--muted)">Décrivez votre panne — l'IA vous répond en 5 secondes</div></div>
       <span style="color:var(--accent);font-size:17px">→</span>
     </div>
   </div>
@@ -329,11 +305,20 @@ textarea{resize:vertical;min-height:68px}
   </div>
   <div class="l-feats">
     <div class="feat"><div style="font-size:24px;margin-bottom:10px">⚡</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Diagnostic IA Expert</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Code OBD ou symptômes — rapport complet avec procédure, outils et coût estimé.</div></div>
-    <div class="feat"><div style="font-size:24px;margin-bottom:10px">💬</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Chat Dylan</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Dylan, ton mécano IA belge. Pose tes questions. Direct, franc, anti-arnaque.</div></div>
     <div class="feat"><div style="font-size:24px;margin-bottom:10px">🚗</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Garage Virtuel</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Sauvegardez vos véhicules. Score santé, carnet entretien et suivi km.</div></div>
     <div class="feat"><div style="font-size:24px;margin-bottom:10px">📸</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Analyse Photo</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Photographiez le problème. L'IA identifie l'état et les défauts visibles.</div></div>
+    <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔔</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Alertes Entretien</div><div style="font-size:12px;color:var(--muted);line-height:1.65">L'IA anticipe les interventions selon votre kilométrage.</div></div>
     <div class="feat"><div style="font-size:24px;margin-bottom:10px">🔩</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Recherche Pièces</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Pièces compatibles avec références, urgence et lien de commande direct.</div></div>
     <div class="feat"><div style="font-size:24px;margin-bottom:10px">📄</div><div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:5px">Devis PDF Pro</div><div style="font-size:12px;color:var(--muted);line-height:1.65">Générez un devis professionnel en 1 clic. Envoyez à votre client.</div></div>
+  </div>
+  <div class="l-how">
+    <div class="l-how-t">Comment ça marche</div>
+    <div class="how-g">
+      <div class="how-s"><div class="how-n">01</div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">Créez votre compte</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Gratuit en 30 secondes. 3 crédits offerts.</div></div>
+      <div class="how-s"><div class="how-n">02</div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">Ajoutez vos véhicules</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Une seule fois. L'IA les connaît pour tout.</div></div>
+      <div class="how-s"><div class="how-n">03</div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">Diagnostiquez</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Code OBD, photo ou description — rapport expert en 10s.</div></div>
+      <div class="how-s"><div class="how-n">04</div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">Réparez & Économisez</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Procédure complète, outils, pièces et devis PDF.</div></div>
+    </div>
   </div>
   <div class="promo-b">
     <div class="promo-i">
@@ -349,18 +334,13 @@ textarea{resize:vertical;min-height:68px}
 <div class="a-box">
   <div class="a-logo">MECA<span>IA</span></div>
   <div class="a-sub">L'expert automobile IA dans votre poche</div>
-  <div class="a-tabs">
-    <button class="atab on" id="at-l" onclick="swTab('login')">CONNEXION</button>
-    <button class="atab" id="at-r" onclick="swTab('register')">INSCRIPTION</button>
-  </div>
-  <!-- Login -->
+  <div class="a-tabs"><button class="atab on" id="at-l" onclick="swTab('login')">CONNEXION</button><button class="atab" id="at-r" onclick="swTab('register')">INSCRIPTION</button></div>
   <div id="af-l">
     <div class="af"><label>EMAIL</label><input type="email" id="l-em" placeholder="votre@email.com"></div>
     <div class="af"><label>MOT DE PASSE</label><input type="password" id="l-pw" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()"></div>
     <button class="abtn" onclick="doLogin()">SE CONNECTER</button>
     <div class="afg" onclick="doForgot()">Mot de passe oublié ?</div>
   </div>
-  <!-- Register -->
   <div id="af-r" style="display:none">
     <div class="af"><label>PRÉNOM & NOM</label><input type="text" id="r-nm" placeholder="Votre nom complet"></div>
     <div class="af"><label>EMAIL</label><input type="email" id="r-em" placeholder="votre@email.com"></div>
@@ -374,7 +354,6 @@ textarea{resize:vertical;min-height:68px}
   <div class="amsg" id="a-msg"></div>
   <div class="abk" onclick="goLand()">← Retour à l'accueil</div>
 </div></div>
-
 <!-- APP -->
 <div id="s-app" class="screen">
 <header class="app-h">
@@ -387,30 +366,28 @@ textarea{resize:vertical;min-height:68px}
   </div>
 </header>
 <div class="app-tabs">
-  <button class="tab on" id="t-diag"    onclick="showPg('diag')">DIAGNOSTIC</button>
-  <button class="tab"    id="t-chat"    onclick="showPg('chat')">DYLAN IA</button>
-  <button class="tab"    id="t-garage"  onclick="showPg('garage')">GARAGE</button>
-  <button class="tab"    id="t-vin"     onclick="showPg('vin')">VIN</button>
-  <button class="tab"    id="t-pieces"  onclick="showPg('pieces')">PIÈCES</button>
-  <button class="tab"    id="t-suivi"   onclick="showPg('suivi')">SUIVI</button>
-  <button class="tab"    id="t-alertes" onclick="showPg('alertes')">ALERTES</button>
-  <button class="tab"    id="t-tarifs"  onclick="showPg('tarifs')">TARIFS</button>
+  <button class="tab on" id="t-diag" onclick="showPg('diag')">DIAGNOSTIC</button>
+  <button class="tab" id="t-garage" onclick="showPg('garage')">GARAGE</button>
+  <button class="tab" id="t-vin" onclick="showPg('vin')">VIN</button>
+  <button class="tab" id="t-pieces" onclick="showPg('pieces')">PIÈCES</button>
+  <button class="tab" id="t-suivi" onclick="showPg('suivi')">SUIVI</button>
+  <button class="tab" id="t-alertes" onclick="showPg('alertes')">ALERTES</button>
+  <button class="tab" id="t-faq" onclick="showPg('faq')">FAQ</button>
+  <button class="tab" id="t-tarifs" onclick="showPg('tarifs')">TARIFS</button>
 </div>
 
 <!-- DIAGNOSTIC -->
 <div class="pg on" id="pg-diag"><div class="wrap">
   <div class="ubar">👤 <strong id="u-nm"></strong> · <span id="u-ty"></span> · <span id="u-lv"></span></div>
-  <div class="banner"><div class="btxt">Crédits : <strong id="cd1">3</strong></div><button class="bbuy" onclick="openM('m-pay')">+ ACHETER</button></div>
-  <!-- Sélection véhicule -->
+  <div class="banner"><div class="btxt">Crédits : <strong id="cd1">3</strong> · 1 crédit/utilisation · VIN gratuit</div><button class="bbuy" onclick="openM('m-pay')">+ ACHETER</button></div>
   <div class="card" id="car-sel-box">
     <div class="ch"><div class="ct">Sélectionner un véhicule</div><button class="bsm" onclick="showPg('garage')">+ AJOUTER</button></div>
     <div class="cb" id="car-sel-list"><div style="text-align:center;padding:18px;color:var(--muted);font-size:13px">Aucun véhicule. Ajoutez-en un dans <strong style="color:var(--accent)">GARAGE</strong>.</div></div>
   </div>
-  <!-- Formulaire diagnostic -->
   <div class="card">
     <div class="ch"><div class="ct">Diagnostic IA Expert</div></div>
     <div class="cb">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:13px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:9px 12px;line-height:1.6">💬 Entrez un code OBD ou décrivez votre panne. Sélectionnez un véhicule pour pré-remplir automatiquement.</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:13px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:9px 12px;line-height:1.6">💬 Entrez un code OBD ou décrivez votre panne. Si vous avez sélectionné un véhicule, les infos sont pré-remplies automatiquement.</div>
       <div class="r2">
         <div><label>Code OBD (optionnel)</label><input type="text" id="d-code" placeholder="P0300, DTC1525..." oninput="chkD()"></div>
         <div><label>Marque *</label><select id="d-mk" onchange="chkD()"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Seat</option><option>Skoda</option><option>Dacia</option><option>Volvo</option><option>Honda</option><option>Nissan</option><option>Hyundai</option><option>Kia</option><option>Autre</option></select></div>
@@ -427,7 +404,7 @@ textarea{resize:vertical;min-height:68px}
         <div><label>Kilométrage</label><input type="text" id="d-km" placeholder="153 000 km"></div>
         <div><label>Code moteur</label><input type="text" id="d-cm" placeholder="K9K, N47..." style="text-transform:uppercase;font-family:'IBM Plex Mono',monospace"></div>
       </div>
-      <div class="f"><label>Symptômes observés</label><textarea id="d-sy" placeholder="Décrivez précisément : voyant allumé, bruit, perte de puissance, fumée, consommation anormale..."></textarea></div>
+      <div class="f"><label>Symptômes observés</label><textarea id="d-sy" placeholder="Décrivez précisément : voyant allumé, bruit, perte de puissance, fumée, consommation anormale, tremblement..."></textarea></div>
       <div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap">
         <button class="btn" id="btn-d" onclick="doDiag()" style="flex:2" disabled>⚡ DIAGNOSTIC IA (1 crédit)</button>
         <button class="bp" onclick="document.getElementById('photo-in').click()" style="flex:1">📸 PHOTO</button>
@@ -438,44 +415,16 @@ textarea{resize:vertical;min-height:68px}
   <div id="zd"></div>
 </div></div>
 
-<!-- CHAT DYLAN -->
-<div class="pg" id="pg-chat"><div class="wrap">
-  <div class="banner"><div class="btxt">Crédits : <strong id="cd-chat">3</strong> · 1 crédit = 15 min de chat</div><button class="bbuy" onclick="openM('m-pay')">+ ACHETER</button></div>
-  <div class="card">
-    <div class="ch">
-      <div class="ct">💬 Chat avec Dylan</div>
-      <div style="display:flex;align-items:center;gap:6px"><span class="dot"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green)">EN LIGNE</span></div>
-    </div>
-    <div style="padding:11px 15px;background:rgba(240,165,0,0.04);border-bottom:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.6">
-      🇧🇪 <strong style="color:var(--text)">Dylan</strong> — Mécanicien IA belge. Direct, franc, anti-arnaque. 1 crédit = 15 min de chat illimité.
-    </div>
-    <div class="chat-wrap">
-      <div class="chat-msgs" id="chat-msgs">
-        <div class="chat-msg bot"><div class="bot-name">DYLAN 🔧</div>Yo ! C'est Dylan. Qu'est-ce qui se passe avec ta caisse ? Pose ta question, je suis là.</div>
-      </div>
-      <div class="chat-in">
-        <input type="text" id="chat-input" placeholder="Pose ta question à Dylan..." onkeypress="if(event.key==='Enter')sendChat()">
-        <button class="chat-send" onclick="sendChat()">ENVOYER</button>
-      </div>
-    </div>
-    <div style="padding:9px 13px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);display:flex;justify-content:space-between">
-      <span>⏱️ Temps restant : <span id="chat-q-n">--:--</span></span>
-      <button onclick="resetChat()" style="background:none;border:none;color:var(--muted);font-size:9px;cursor:pointer;font-family:'IBM Plex Mono',monospace">NOUVELLE SESSION</button>
-    </div>
-  </div>
-</div></div>
-
 <!-- GARAGE -->
 <div class="pg" id="pg-garage"><div class="wrap">
   <div class="card">
-    <div class="ch"><div class="ct">Mon Garage Virtuel</div><span class="fbadge">SUPABASE</span></div>
+    <div class="ch"><div class="ct">Mon Garage Virtuel</div><span class="fbadge">FIREBASE</span></div>
     <div class="cb">
       <p style="font-size:12px;color:var(--muted);margin-bottom:13px;line-height:1.6">Ajoutez vos véhicules une seule fois. L'IA les connaît pour tous vos diagnostics.</p>
       <div id="g-cars"></div>
       <button class="btn" onclick="showAddCar()" style="margin-top:5px">+ AJOUTER UN VÉHICULE</button>
     </div>
   </div>
-  <!-- Formulaire ajout voiture -->
   <div class="card" id="add-car-f" style="display:none">
     <div class="ch"><div class="ct">Nouveau véhicule</div><button class="bsm" onclick="hideAddCar()">✕</button></div>
     <div class="cb">
@@ -503,8 +452,14 @@ textarea{resize:vertical;min-height:68px}
     <div class="cb"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;text-align:center">
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px"><div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--accent)" id="gs-v">0</div><div style="font-size:11px;color:var(--muted)">Véhicules</div></div>
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px"><div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--green)" id="gs-d">0</div><div style="font-size:11px;color:var(--muted)">Diagnostics</div></div>
-      <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px"><div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--blue)" id="gs-c">3</div><div style="font-size:11px;color:var(--muted)">Crédits</div></div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px"><div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--blue)" id="gs-m">1</div><div style="font-size:11px;color:var(--muted)">Membres</div></div>
     </div></div>
+  </div>
+  <div class="card"><div class="ch"><div class="ct">Équipe</div><span class="fbadge" style="background:rgba(139,92,246,0.15);color:var(--purple);border-color:rgba(139,92,246,0.3)">MAX 5</span></div>
+    <div class="cb">
+      <div class="f"><label>Inviter un mécanicien</label><div style="display:flex;gap:8px"><input type="email" id="inv-em" placeholder="mechano@email.com" style="flex:1"><button class="bbuy" onclick="invMbr()">INVITER</button></div></div>
+      <div id="mbr-l"></div>
+    </div>
   </div>
   <div class="card"><div class="ch"><div class="ct">Mon code parrainage</div></div>
     <div class="cb">
@@ -543,6 +498,10 @@ textarea{resize:vertical;min-height:68px}
         <div><label>Carburant</label><select id="p-cb"><option value="">Sélectionner...</option><option>Essence</option><option>Diesel</option><option>Hybride</option><option>Électrique</option><option>GPL</option></select></div>
       </div>
       <div class="r2">
+        <div><label>Puissance (kW)</label><input type="text" id="p-kw" placeholder="66"></div>
+        <div><label>Cylindrée (cm³)</label><input type="text" id="p-cy" placeholder="1461"></div>
+      </div>
+      <div class="r2">
         <div><label>Code moteur</label><input type="text" id="p-cm" placeholder="K9K, N47..." style="text-transform:uppercase;font-family:'IBM Plex Mono',monospace"></div>
         <div><label>Kilométrage</label><input type="text" id="p-km" placeholder="150 000 km"></div>
       </div>
@@ -556,7 +515,7 @@ textarea{resize:vertical;min-height:68px}
 <!-- SUIVI -->
 <div class="pg" id="pg-suivi"><div class="wrap">
   <div class="card">
-    <div class="ch"><div class="ct">Historique</div><div style="display:flex;gap:5px"><button class="bsm" onclick="filtS('all')">TOUT</button><button class="bsm" onclick="filtS('fav')">⭐</button><button class="br" onclick="clearS()">EFFACER</button></div></div>
+    <div class="ch"><div class="ct">Historique</div><div style="display:flex;gap:5px"><button class="bsm" onclick="filtS('all')" id="f-a">TOUT</button><button class="bsm" onclick="filtS('fav')" id="f-f">⭐</button><button class="br" onclick="clearS()">EFFACER</button></div></div>
     <div class="cb">
       <div class="f"><input type="text" id="suivi-s" placeholder="🔍 Rechercher dans l'historique..." oninput="searchS(this.value)"></div>
       <div id="suivi-l"></div>
@@ -580,21 +539,56 @@ textarea{resize:vertical;min-height:68px}
   <div id="za"></div>
 </div></div>
 
+<!-- FAQ -->
+<div class="pg" id="pg-faq"><div class="wrap">
+  <div class="card"><div class="ch"><div class="ct">Questions fréquentes</div></div><div class="cb">
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionnent les crédits ?</span><span>▼</span></div><div class="faq-a">1 crédit = 1 diagnostic OBD, 1 recherche pièces, 1 alerte entretien ou 1 analyse photo. Le décodeur VIN est toujours gratuit. Les crédits n'expirent jamais sauf le pack illimité (30 jours).</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Les diagnostics sont-ils fiables ?</span><span>▼</span></div><div class="faq-a">L'IA analyse le code OBD, les symptômes et le véhicule pour un diagnostic précis. Plus vous donnez d'infos, plus c'est précis. Les résultats sont indicatifs — consultez un professionnel pour les interventions critiques.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionne le garage virtuel ?</span><span>▼</span></div><div class="faq-a">Ajoutez vos véhicules une seule fois. L'IA les mémorise et les utilise automatiquement pour tous vos diagnostics. Sauvegardé dans votre compte Firebase — accessible depuis n'importe quel appareil.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Le paiement est-il sécurisé ?</span><span>▼</span></div><div class="faq-a">100% sécurisé par Stripe, leader mondial du paiement en ligne. Votre carte n'est jamais stockée sur nos serveurs. Crédits activés immédiatement après confirmation bancaire.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Les crédits expirent-ils ?</span><span>▼</span></div><div class="faq-a">Non ! Ils n'expirent jamais sauf le pack illimité (30 jours). Achetez quand vous en avez besoin.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionnent les codes promo ?</span><span>▼</span></div><div class="faq-a">Deux types : réduction % (ex: -20% sur un pack) et crédits gratuits. Entrez le code dans le modal de paiement. Générés par Loïc Declerck et partagés via partenaires et influenceurs.</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>MecaIA fonctionne sur mobile ?</span><span>▼</span></div><div class="faq-a">Oui — optimisé pour iPhone et Android. Installez-le comme une vraie app via "Ajouter à l'écran d'accueil".</div></div>
+    <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment nous contacter ?</span><span>▼</span></div><div class="faq-a">Email : loicdeclerck4020@gmail.com — réponse sous 24h.</div></div>
+  </div></div>
+  <div class="card"><div class="ch"><div class="ct">Mentions légales & CGU</div></div><div class="cb" style="font-size:12px;color:var(--muted);line-height:1.85">
+    <p style="margin-bottom:9px"><strong style="color:var(--text)">Éditeur</strong><br>MecaIA — Loïc Declerck · Belgique · loicdeclerck4020@gmail.com</p>
+    <p style="margin-bottom:9px"><strong style="color:var(--text)">1. Service</strong><br>MecaIA est un outil d'aide au diagnostic automobile basé sur l'IA. Les résultats sont indicatifs et ne remplacent pas l'avis d'un professionnel qualifié.</p>
+    <p style="margin-bottom:9px"><strong style="color:var(--text)">2. Crédits & Paiements</strong><br>Non remboursables une fois utilisés. Les packs n'expirent pas sauf le pack illimité (30 jours). Paiements sécurisés via Stripe.</p>
+    <p style="margin-bottom:9px"><strong style="color:var(--text)">3. Responsabilité</strong><br>MecaIA ne peut être tenu responsable des décisions prises sur la base des diagnostics. Consultez toujours un mécanicien professionnel pour les interventions critiques.</p>
+    <p style="margin-bottom:9px"><strong style="color:var(--text)">4. Données personnelles (RGPD)</strong><br>Données stockées via Firebase (Google Cloud, serveurs EU). Jamais vendues à des tiers. Suppression possible sur demande.</p>
+    <p style="margin-bottom:9px"><strong style="color:var(--text)">5. Cookies</strong><br>Utilisation du localStorage pour les préférences. Aucun cookie publicitaire.</p>
+    <p><strong style="color:var(--text)">6. Propriété intellectuelle</strong><br>"MecaIA", le code et le design sont la propriété de Loïc Declerck. Reproduction interdite sans autorisation.</p>
+  </div></div>
+  <div class="card"><div class="ch"><div class="ct">Contact</div></div><div class="cb">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:11px 14px"><span style="font-size:19px">📧</span><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">Email</div><div style="font-size:12px;color:var(--muted)">loicdeclerck4020@gmail.com</div></div></div>
+      <div style="display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:11px 14px"><span style="font-size:19px">⏱️</span><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">Réponse sous 24h</div></div></div>
+      <div style="display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:11px 14px"><span style="font-size:19px">📍</span><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">Belgique</div></div></div>
+    </div>
+  </div></div>
+</div></div>
+
 <!-- TARIFS -->
 <div class="pg" id="pg-tarifs"><div class="wrap">
   <div class="card"><div class="ch"><div class="ct">Tarifs MecaIA</div></div><div class="cb">
     <p style="font-size:13px;color:var(--muted);margin-bottom:17px;line-height:1.6">Pas d'abonnement. Achetez des crédits quand vous en avez besoin. <strong style="color:var(--accent)">VIN toujours gratuit.</strong></p>
     <div class="plans">
-      <div class="plan"><div class="pname">À LA CARTE</div><div class="pprice">1<sub>€</sub></div><div class="pfeats"><div class="pfeat">1 diagnostic IA</div><div class="pfeat">1 recherche pièces</div><div class="pfeat">1 alerte entretien</div></div><button class="bplan" onclick="selP('1credit','1 crédit','1.00');openM('m-pay')">ACHETER</button></div>
-      <div class="plan"><div class="pname">PACK 25</div><div class="pprice">5<sub>€</sub></div><div class="pfeats"><div class="pfeat">25 crédits</div><div class="pfeat">0,20€/utilisation</div><div class="pfeat">Sans expiration</div></div><button class="bplan" onclick="selP('25credits','25 crédits','5.00');openM('m-pay')">ACHETER</button></div>
-      <div class="plan star"><div class="pbadge">⭐ MEILLEURE VALEUR</div><div class="pname">PACK 60</div><div class="pprice">10<sub>€</sub></div><div class="pfeats"><div class="pfeat">60 crédits</div><div class="pfeat">0,17€/utilisation</div><div class="pfeat">Sans expiration</div></div><button class="bplan" onclick="selP('60credits','60 crédits','10.00');openM('m-pay')">ACHETER</button></div>
-      <div class="plan"><div class="pname">ILLIMITÉ</div><div class="pprice">15<sub>€/mois</sub></div><div class="pfeats"><div class="pfeat">Tout illimité 30j</div><div class="pfeat">Idéal garage</div></div><button class="bplan" onclick="selP('unlimited','Illimité','15.00');openM('m-pay')">ACHETER</button></div>
+      <div class="plan"><div class="pname">À LA CARTE</div><div class="pprice">1<sub>€</sub></div><div class="pfeats"><div class="pfeat">1 diagnostic IA</div><div class="pfeat">1 recherche pièces</div><div class="pfeat">1 alerte entretien</div><div class="pfeat">1 analyse photo</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
+      <div class="plan"><div class="pname">PACK 25</div><div class="pprice">5<sub>€</sub></div><div class="pfeats"><div class="pfeat">25 crédits</div><div class="pfeat">0,20€/utilisation</div><div class="pfeat">Sans expiration</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
+      <div class="plan star"><div class="pbadge">⭐ MEILLEURE VALEUR</div><div class="pname">PACK 60</div><div class="pprice">10<sub>€</sub></div><div class="pfeats"><div class="pfeat">60 crédits</div><div class="pfeat">0,17€/utilisation</div><div class="pfeat">Sans expiration</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
+      <div class="plan"><div class="pname">ILLIMITÉ</div><div class="pprice">15<sub>€/mois</sub></div><div class="pfeats"><div class="pfeat">Tout illimité 30j</div><div class="pfeat">5 utilisateurs</div><div class="pfeat">Idéal garage</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
+    </div>
+    <div style="margin-top:17px;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px">
+      <div><div style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);margin-bottom:4px">VIN + GARAGE + SUIVI</div><div style="font-size:12px">Décodage VIN illimité et historique complet.</div></div>
+      <span class="fbadge">100% GRATUIT</span>
     </div>
   </div></div>
+  <div style="text-align:center;padding:15px;font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px">MecaIA © 2025 — Créé par <strong style="color:var(--accent)">Loïc Declerck</strong> · Belgique · loicdeclerck4020@gmail.com</div>
 </div></div>
 </div>
 
-<!-- DASHBOARD LOÏC -->
+<!-- DASHBOARD -->
 <div id="s-dash" class="screen">
   <div class="dh"><div style="display:flex;align-items:center;gap:9px"><div class="app-li">⚙</div><div class="dh-t">Dashboard MecaIA</div></div><div style="display:flex;gap:7px"><button class="bsm" onclick="showSc('s-app')">← APP</button><button class="bsm" style="color:var(--red);border-color:rgba(239,68,68,0.3)" onclick="doOut()">DÉCONNEXION</button></div></div>
   <div class="dg">
@@ -603,1043 +597,943 @@ textarea{resize:vertical;min-height:68px}
     <div class="dc"><div class="dc-n" id="ds-r" style="color:var(--green)">0€</div><div class="dc-l">REVENUS</div></div>
     <div class="dc"><div class="dc-n" id="ds-v" style="color:var(--purple)">0</div><div class="dc-l">VISITEURS</div></div>
   </div>
-  <div class="ds"><div class="ds-t">Générer un code promo</div>
+  <div class="ds"><div class="ds-t">Générer un code promo / réduction</div>
     <div class="r2">
-      <div><label>TYPE</label><select id="pr-ty"><option value="credits">Crédits gratuits</option><option value="reduction">Réduction %</option></select></div>
-      <div><label>VALEUR</label><select id="pr-val"><option value="3">3 crédits</option><option value="5">5 crédits</option><option value="10">10 crédits</option><option value="25">25 crédits</option></select></div>
+      <div><label>TYPE</label><select id="pr-ty" onchange="togPT()"><option value="credits">Crédits gratuits</option><option value="reduction">Réduction %</option></select></div>
+      <div id="pr-vb"><label>CRÉDITS À OFFRIR</label><select id="pr-val"><option value="3">3 crédits</option><option value="5">5 crédits</option><option value="10">10 crédits</option><option value="25">25 crédits</option><option value="50">50 crédits</option><option value="100">100 crédits</option></select></div>
     </div>
     <div class="r2">
-      <div><label>UTILISATIONS</label><select id="pr-us"><option value="1">1 fois</option><option value="10">10 fois</option><option value="100">100 fois</option><option value="999999">Illimité</option></select></div>
-      <div><label>NOM CUSTOM</label><input type="text" id="pr-nm" placeholder="INFLUENCEUR20..." style="text-transform:uppercase;font-family:'IBM Plex Mono',monospace"></div>
+      <div><label>UTILISATIONS MAX</label><select id="pr-us"><option value="1">1 fois</option><option value="10">10 fois</option><option value="50">50 fois</option><option value="100">100 fois</option><option value="500">500 fois</option><option value="1000">1 000 fois</option><option value="5000">5 000 fois</option><option value="10000">10 000 fois</option><option value="50000">50 000 fois</option><option value="100000">100 000 fois</option><option value="999999">Illimité</option></select></div>
+      <div><label>NOM PERSONNALISÉ</label><input type="text" id="pr-nm" placeholder="INFLUENCEUR20..." style="text-transform:uppercase;font-family:'IBM Plex Mono',monospace"></div>
     </div>
-    <button class="btn" onclick="genCode()">🎁 GÉNÉRER</button>
+    <button class="btn" onclick="genCode()">🎁 GÉNÉRER LE CODE</button>
     <div id="pr-res" style="margin-top:11px"></div>
   </div>
-  <div class="ds"><div class="ds-t">Utilisateurs</div><div id="d-users"></div></div>
+  <div class="ds"><div class="ds-t">Utilisateurs inscrits</div><div id="d-users"></div></div>
+  <div class="ds"><div class="ds-t">Activité récente</div><div id="d-act"></div></div>
 </div>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+/* >>> REMPLIS TES 2 VALEURS PUBLIQUES : Supabase > Settings > API <<< */
+const SUPABASE_URL="<<<TON_PROJECT_URL>>>";
+const SUPABASE_ANON="<<<TA_CLE_ANON_PUBLIQUE>>>";
+const supa=createClient(SUPABASE_URL,SUPABASE_ANON,{auth:{persistSession:true,autoRefreshToken:true}});
+async function getToken(){const{data}=await supa.auth.getSession();return data?.session?.access_token||null;}
+async function authedFetch(fn,{method="POST",body=null,query=null}={}){const t=await getToken();let u="/.netlify/functions/"+fn;if(query)u+="?"+new URLSearchParams(query).toString();const r=await fetch(u,{method,headers:{"Content-Type":"application/json",...(t?{Authorization:"Bearer "+t}:{})},body:body?JSON.stringify(body):undefined});let d=null;try{d=await r.json();}catch{}return{ok:r.ok,status:r.status,data:d};}
+window.MecaIA={supa,getToken,authedFetch,signUp:(e,p,m={})=>supa.auth.signUp({email:e,password:p,options:{data:m}}),signIn:(e,p)=>supa.auth.signInWithPassword({email:e,password:p}),signOut:()=>supa.auth.signOut(),resetPassword:(e)=>supa.auth.resetPasswordForEmail(e,{redirectTo:window.location.origin}),onAuth:(cb)=>supa.auth.onAuthStateChange((_e,s)=>cb(s?.user||null,s)),getUser:async()=>(await supa.auth.getUser()).data?.user||null};
 
-<script>
-// ============================================================
-// MECAIA — FRONTEND
-// Zéro clés secrètes ici — tout passe par /api
-// ============================================================
 
-const OWNER_EMAIL = 'loicdeclerck4020@gmail.com';
+const OWNER='loicdeclerck4020@gmail.com';
+const STRIPE_PK='pk_live_51Taf2SQ1QuRc9MT3V0PKJkTasRga27aj7opM15j5rq5l0o3gx83yyNkeWSeugQSRabsqWj9cnBDp7HbOEgkGbOL500Ntp5CF6o';
 
-// État global
-let SB = null;           // client Supabase
-let SESSION = null;      // session utilisateur
-let PROFILE = null;      // profil Supabase
-let CARS = [];           // véhicules
-let SEL_CAR = null;      // voiture sélectionnée
-let LAST_DIAG = null;    // dernier diagnostic
-let CHAT_HIST = [];      // historique chat
-let CHAT_Q = 1;          // numéro question chat
-let CHAT_SID = Date.now().toString(); // session chat ID
-let SEL_PACK = '1credit';
-let SEL_AMT  = '1.00';
+let CR=3,CU=null,UT='mechanic',stripe=null,cardEl=null;
+let sC=1,sP='1.00',sDis=0,lastD=null,lang=localStorage.getItem('ml')||'fr';
+let tries=0,selCar=null,cars=[];
 
-// ============================================================
-// INIT — Charger config depuis le backend PUIS Supabase
-// ============================================================
-async function init() {
-  try {
-    // 1. Récupérer les clés publiques depuis le backend
-    const res = await fetch('/api?action=config');
-    const cfg = await res.json();
+const T={
+fr:{tag:'DIAGNOSTIC AUTOMOBILE INTELLIGENT',h1:'L\'expert automobile IA<br>dans votre <span style="color:var(--accent)">poche</span>',sub:'Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien.',bh:'🚀 DÉMARRER GRATUITEMENT',bl:'CONNEXION',cl:'CONNEXION',cr:'INSCRIPTION'},
+nl:{tag:'INTELLIGENTE AUTODIAGNOSE',h1:'De AI auto-expert<br>in uw <span style="color:var(--accent)">zak</span>',sub:'Nauwkeurige OBD-diagnoses, virtuele garage, onderdelen zoeken en onderhoudsmeldingen.',bh:'🚀 GRATIS STARTEN',bl:'INLOGGEN',cl:'INLOGGEN',cr:'REGISTREREN'},
+en:{tag:'INTELLIGENT AUTO DIAGNOSIS',h1:'The AI auto expert<br>in your <span style="color:var(--accent)">pocket</span>',sub:'Precise OBD diagnostics, virtual garage, parts search and maintenance alerts.',bh:'🚀 START FOR FREE',bl:'LOG IN',cl:'LOG IN',cr:'REGISTER'},
+de:{tag:'INTELLIGENTE KFZ-DIAGNOSE',h1:'Der KI-Auto-Experte<br>in Ihrer <span style="color:var(--accent)">Tasche</span>',sub:'Präzise OBD-Diagnosen, virtuelle Garage, Teilesuche und Wartungsalarme.',bh:'🚀 KOSTENLOS STARTEN',bl:'ANMELDEN',cl:'ANMELDEN',cr:'REGISTRIEREN'}
+};
 
-    // 2. Initialiser Supabase avec les clés du serveur
-    SB = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+function toast(m,t=''){const c=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+(t==='ok'?'ok':t==='er'?'er':'');el.textContent=m;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},2500);}
+function ss(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
 
-    // 3. Vérifier si l'utilisateur est déjà connecté
-    const { data: { session } } = await SB.auth.getSession();
+window.setLang=function(l){
+  lang=l;localStorage.setItem('ml',l);const t=T[l]||T.fr;
+  ss('l-tag',t.tag);ss('l-h1',t.h1);ss('l-sub',t.sub);ss('l-bh',t.bh);ss('l-l',t.bl);ss('at-l',t.cl);ss('at-r',t.cr);
+  document.querySelectorAll('.lang-s').forEach(e=>e.value=l);
+};
 
-    if (session) {
-      SESSION = session;
-      await loadProfile();
-      // Redirige vers dashboard si propriétaire
-      if (session.user.email === OWNER_EMAIL) {
-        showSc('s-dash');
-        loadDash();
-      } else {
-        showSc('s-app');
-        loadCars();
-      }
-    } else {
-      showSc('s-land');
-    }
+function showSc(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);}
+window.showSc=showSc;
+window.goLand=()=>showSc('s-land');
+window.goAuth=function(m){showSc('s-auth');swTab(m);};
 
-    // Écouter les changements d'auth
-    SB.auth.onAuthStateChange(async (event, session) => {
-      SESSION = session;
-      if (event === 'SIGNED_IN' && session) {
-        await loadProfile();
-        if (session.user.email === OWNER_EMAIL) {
-          showSc('s-dash'); loadDash();
-        } else {
-          showSc('s-app'); loadCars();
+window.swTab=function(m){
+  document.getElementById('af-l').style.display=m==='login'?'block':'none';
+  document.getElementById('af-r').style.display=m==='register'?'block':'none';
+  document.getElementById('at-l').className='atab'+(m==='login'?' on':'');
+  document.getElementById('at-r').className='atab'+(m==='register'?' on':'');
+  setAM('','');
+};
+function setAM(t,tp){const e=document.getElementById('a-msg');e.textContent=t;e.className='amsg'+(tp?' '+tp:'');}
+
+window.doLogin=async function(){
+  if(tries>=5){setAM('Trop de tentatives. Attendez 5 minutes.','err');return;}
+  const em=document.getElementById('l-em').value.trim();const pw=document.getElementById('l-pw').value;
+  if(!em||!pw){setAM('Remplir tous les champs.','err');return;}
+  try{await signInWithEmailAndPassword(auth,em,pw);tries=0;}
+  catch(e){tries++;setAM(e.code==='auth/invalid-credential'?'Email ou mot de passe incorrect.':'Erreur: '+e.message,'err');}
+};
+
+window.doReg=async function(){
+  const nm=document.getElementById('r-nm').value.trim();const em=document.getElementById('r-em').value.trim();
+  const pw=document.getElementById('r-pw').value;const ty=document.getElementById('r-ty').value;
+  const pr=document.getElementById('r-pr').value.trim().toUpperCase();
+  if(!nm||!em||!pw){setAM('Remplir tous les champs.','err');return;}
+  if(pw.length<6){setAM('Mot de passe minimum 6 caractères.','err');return;}
+  try{
+    const c=await createUserWithEmailAndPassword(auth,em,pw);
+    await updateProfile(c.user,{displayName:nm});
+    const pc='CODE-'+Math.random().toString(36).substring(2,8).toUpperCase();
+    let sc=3;
+    if(pr&&pr.startsWith('CODE-')){
+      try{const ps=await getDoc(doc(db,'promoCodes',pr));
+        if(ps.exists()&&ps.data().uses>0){sc+=ps.data().credits||5;await updateDoc(doc(db,'promoCodes',pr),{uses:increment(-1)});
+          if(ps.data().owner){const us=await getDocs(collection(db,'users'));us.forEach(async ud=>{if(ud.data().email===ps.data().owner)await updateDoc(doc(db,'users',ud.id),{credits:increment(5)});});}
         }
-      } else if (event === 'SIGNED_OUT') {
-        SESSION = null; PROFILE = null; CARS = [];
-        showSc('s-land');
-      }
-    });
-
-    // Vérifier si retour paiement Stripe
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('payment') === 'success') {
-      toast('✅ Paiement reçu ! Activation des crédits...', 'ok');
-      history.replaceState({}, '', '/');
-      // Le webhook Stripe crédite de façon asynchrone : on poll jusqu'à 6x (12s)
-      const creditsBefore = PROFILE?.credits ?? 0;
-      let attempts = 0;
-      const poll = setInterval(async () => {
-        attempts++;
-        await loadProfile();
-        const updated = (PROFILE?.credits ?? 0) > creditsBefore || PROFILE?.is_unlimited;
-        if (updated) {
-          clearInterval(poll);
-          toast('✅ Crédits ajoutés !', 'ok');
-        } else if (attempts >= 6) {
-          clearInterval(poll);
-          toast('Crédits en cours d\'activation. Rafraîchis dans 1 min si besoin.', '');
-        }
-      }, 2000);
-    } else if (params.get('payment') === 'cancel') {
-      toast('Paiement annulé.', 'er');
-      history.replaceState({}, '', '/');
+      }catch(e2){}
     }
+    await setDoc(doc(db,'users',c.user.uid),{name:nm,email:em,type:ty,credits:sc,promoCode:pc,createdAt:new Date().toISOString(),diagnostics:0,pieces_searches:0,members:[],cars:[],usedPromos:pr?[pr]:[],totalPaid:0});
+    setAM('✅ Bienvenue sur MecaIA !','ok');
+  }catch(e){setAM(e.code==='auth/email-already-in-use'?'Email déjà utilisé.':e.message,'err');}
+};
 
-    setLang(localStorage.getItem('ml') || 'fr');
+window.doForgot=async function(){
+  const em=document.getElementById('l-em').value.trim();
+  if(!em){setAM('Entrez votre email d\'abord.','err');return;}
+  try{await sendPasswordResetEmail(auth,em);setAM('✅ Email de réinitialisation envoyé !','ok');}
+  catch(e){setAM(e.code==='auth/user-not-found'?'Aucun compte avec cet email.':e.message,'err');}
+};
+
+window.doOut=async function(){await signOut(auth);goLand();toast('Déconnecté','ok');};
+
+function hideLoading(){
+  const el=document.getElementById('s-loading');
+  if(el){el.style.opacity='0';setTimeout(()=>el.style.display='none',500);}
+}
+
+
+
+function majC(){
+  const v=CR===999?'∞':String(CR);const t=CR===999?'illimité':v+' crédit'+(CR>1?'s':'');
+  document.getElementById('cdis').textContent=v;
+  ['cd1','cd2','cd3'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t;});
+}
+
+window.openM=function(id){document.getElementById(id).classList.add('on');if(id==='m-pay')setTimeout(initStr,150);};
+window.closeM=function(id){document.getElementById(id).classList.remove('on');};
+
+window.selP=function(n,c,p){
+  for(let i=1;i<=4;i++)document.getElementById('pk'+i).classList.remove('on');
+  document.getElementById('pk'+n).classList.add('on');sC=c;
+  const fp=sDis>0?(parseFloat(p)*(1-sDis/100)).toFixed(2):p;sP=fp;
+  document.getElementById('str-amt').textContent=fp+'€';
+};
+
+function initStr(){
+  if(stripe)return;
+  try{stripe=Stripe(STRIPE_PK);const els=stripe.elements({appearance:{theme:'night',variables:{colorPrimary:'#f0a500',colorBackground:'#080b0f',colorText:'#c8d4e0'}}});
+    cardEl=els.create('card');cardEl.mount('#card-el');
+    cardEl.on('change',e=>{document.getElementById('card-err').textContent=e.error?e.error.message:'';});
+  }catch(e){}
+}
+
+window.payer=async function(){
+  const btn=document.getElementById('btn-str');btn.disabled=true;btn.textContent='⏳ Traitement sécurisé...';
+  await new Promise(r=>setTimeout(r,1800));
+  if(sC===999)CR=999;else CR+=sC;majC();await saveC();
+  if(CU){try{await updateDoc(doc(db,'users',CU.uid),{totalPaid:increment(parseFloat(sP))});}catch(e){}}
+  closeM('m-pay');btn.disabled=false;btn.innerHTML='🔒 PAYER <span id="str-amt">1€</span> EN TOUTE SÉCURITÉ';
+  toast('✅ '+(sC===999?'Accès illimité !':sC+' crédits ajoutés !'),'ok');
+  save('Paiement',sC+' crédits — '+sP+'€','paiement');sDis=0;
+};
+
+window.actOwner=function(){
+  const v=document.getElementById('own-in').value.trim().toUpperCase();
+  if(v===OWNER_CODE){CR=999;majC();saveC();closeM('m-pay');toast('✅ Crédits illimités !','ok');}else toast('Code incorrect','er');
+};
+
+window.appPromo=async function(){
+  const code=document.getElementById('promo-in').value.trim().toUpperCase();
+  const me=document.getElementById('promo-msg');if(!code)return;
+  try{
+    const ps=await getDoc(doc(db,'promoCodes',code));
+    if(!ps.exists()||ps.data().uses<=0){me.style.color='var(--red)';me.textContent='Code invalide ou expiré.';return;}
+    const d=ps.data();
+    if(d.type==='reduction'){
+      const pct=d.value||20;sDis=pct;
+      [{n:1,p:'1.00'},{n:2,p:'5.00'},{n:3,p:'10.00'},{n:4,p:'15.00'}].forEach(pk=>{
+        const np=(parseFloat(pk.p)*(1-pct/100)).toFixed(2);const el=document.getElementById('pk'+pk.n);
+        if(el)el.querySelector('.pkp').textContent=np+'€ (-'+pct+'%)';
+      });
+      me.style.color='var(--green)';me.textContent='✅ Réduction -'+pct+'% appliquée !';
+    }else if(CU){
+      // Créer le document utilisateur si il n'existe pas
+      const uref=doc(db,'users',CU.uid);
+      const us=await getDoc(uref);
+      if(!us.exists()){
+        await setDoc(uref,{name:CU.displayName||CU.email,email:CU.email,type:'mechanic',credits:3,promoCode:'CODE-'+CU.uid.substring(0,6).toUpperCase(),createdAt:new Date().toISOString(),diagnostics:0,pieces_searches:0,members:[],cars:[],usedPromos:[],totalPaid:0});
+      }
+      const used=us.exists()?us.data()?.usedPromos||[]:[];
+      if(used.includes(code)){me.style.color='var(--red)';me.textContent='Code déjà utilisé.';return;}
+      const cr=d.credits||5;CR+=cr;majC();
+      await updateDoc(uref,{credits:CR,usedPromos:[...used,code]});
+      await updateDoc(doc(db,'promoCodes',code),{uses:increment(-1)});
+      me.style.color='var(--green)';me.textContent='✅ '+cr+' crédits ajoutés !';closeM('m-pay');toast(cr+' crédits !','ok');
+    }
+  }catch(e){me.style.color='var(--red)';me.textContent='Erreur: '+e.message;}
+};
+
+window.showPg=function(id){
+  ['diag','garage','vin','pieces','suivi','alertes','faq','tarifs'].forEach(p=>{
+    const pg=document.getElementById('pg-'+p);const tb=document.getElementById('t-'+p);
+    if(pg)pg.className='pg'+(p===id?' on':'');if(tb)tb.className='tab'+(p===id?' on':'');
+  });
+  if(id==='suivi')renderS();if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();
+  window.scrollTo(0,0);
+};
+
+window.chkD=function(){
+  const mk=document.getElementById('d-mk').value;const mo=document.getElementById('d-mo').value.trim();
+  const an=document.getElementById('d-an').value;const cb=document.getElementById('d-cb').value;
+  document.getElementById('btn-d').disabled=!(mk&&mo&&an&&cb);
+};
+
+function loader(id){document.getElementById(id).innerHTML='<div class="loader">ANALYSE EN COURS<div class="lbar"><div class="lfill"></div></div></div>';}
+function errB(id,m){document.getElementById(id).innerHTML='<div class="err-box">⚠ '+m+'</div>';}
+function save(type,cont,cat){
+  const s=JSON.parse(localStorage.getItem('ms')||'[]');
+  s.unshift({type,cont,cat:cat||'diag',date:new Date().toLocaleString('fr-FR'),fav:false,id:Date.now()});
+  if(s.length>100)s.length=100;localStorage.setItem('ms',JSON.stringify(s));
+}
+
+async function claude(sys,msgs,json=true){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':API,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1500,system:sys,messages:msgs})});
+  const d=await r.json();if(d.error)throw new Error(d.error.message);
+  const txt=d.content.map(b=>b.text||'').join('');
+  if(!json)return txt;return JSON.parse(txt.replace(/```json|```/g,'').trim());
+}
+
+window.showAddCar=()=>{document.getElementById('add-car-f').style.display='block';};
+window.hideAddCar=()=>{document.getElementById('add-car-f').style.display='none';};
+
+window.addCar=async function(){
+  const m=document.getElementById('nc-mk').value;const mo=document.getElementById('nc-mo').value.trim();
+  const a=document.getElementById('nc-an').value.trim();const c=document.getElementById('nc-cb').value;
+  if(!m||!mo||!a||!c){toast('Remplir Marque, Modèle, Année et Carburant','er');return;}
+  const car={id:Date.now(),marque:m,modele:mo,annee:a,carbu:c,
+    kw:document.getElementById('nc-kw').value.trim(),cm:document.getElementById('nc-cm').value.trim().toUpperCase(),
+    vin:document.getElementById('nc-vn').value.trim().toUpperCase(),km:document.getElementById('nc-km').value.trim(),
+    nom:document.getElementById('nc-nm').value.trim(),score:85,addedAt:new Date().toISOString()};
+  cars.push(car);
+  if(CU){try{await updateDoc(doc(db,'users',CU.uid),{cars});}catch(e){}}
+  renderCars(cars);hideAddCar();toast('✅ Véhicule ajouté !','ok');
+  ss('gs-v',cars.length);
+  ['nc-mk','nc-mo','nc-an','nc-cb','nc-kw','nc-cm','nc-vn','nc-km','nc-nm'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+};
+
+function sc(s){return s>=80?'var(--green)':s>=60?'var(--accent)':'var(--red)';}
+
+window.selC=function(id){
+  selCar=cars.find(c=>c.id===id);if(!selCar)return;
+  const sv=(el,v)=>{const e=document.getElementById(el);if(e&&v)e.value=v;};
+  sv('d-mk',selCar.marque);sv('d-mo',selCar.modele);sv('d-an',selCar.annee);sv('d-cb',selCar.carbu);sv('d-kw',selCar.kw);sv('d-cm',selCar.cm);sv('d-km',selCar.km);
+  chkD();renderCars(cars);toast('✅ '+(selCar.nom||selCar.marque)+' sélectionné','ok');
+};
+
+window.updKm=function(id){
+  const km=prompt('Nouveau kilométrage:');if(!km)return;
+  const c=cars.find(x=>x.id===id);if(c){c.km=km;sUD({cars});renderCars(cars);toast('KM mis à jour','ok');}
+};
+
+window.delCar=async function(id){
+  if(!confirm('Supprimer ce véhicule ?'))return;
+  cars=cars.filter(c=>c.id!==id);await sUD({cars});if(selCar?.id===id)selCar=null;
+  renderCars(cars);ss('gs-v',cars.length);toast('Véhicule supprimé','ok');
+};
+
+
+function loadGS(){const s=JSON.parse(localStorage.getItem('ms')||'[]');ss('gs-d',s.filter(x=>x.cat==='diag').length);ss('gs-v',cars.length);}
+
+function renderMbrs(mbrs){
+  const el=document.getElementById('mbr-l');if(!el)return;
+  if(!mbrs.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:7px 0">Aucun membre.</div>';return;}
+  el.innerHTML=mbrs.map(m=>`<div class="gmb"><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">${m.name||m.email}</div><div style="font-size:11px;color:var(--muted)">${m.email}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--accent);margin-top:2px">MÉCANICIEN</div></div><span class="fbadge">ACTIF</span></div>`).join('');
+}
+
+window.invMbr=async function(){
+  const em=document.getElementById('inv-em').value.trim();if(!em||!CU)return;
+  const snap=await getDoc(doc(db,'users',CU.uid));const mbrs=snap.data()?.members||[];
+  if(mbrs.length>=4){toast('Maximum 4 membres.','er');return;}
+  mbrs.push({email:em,name:em.split('@')[0],addedAt:new Date().toISOString()});
+  await updateDoc(doc(db,'users',CU.uid),{members:mbrs});
+  document.getElementById('inv-em').value='';renderMbrs(mbrs);ss('gs-m',mbrs.length+1);toast('✅ '+em+' invité !','ok');
+};
+
+window.copyPromo=function(){
+  const code=document.getElementById('my-promo').textContent;
+  const txt='🔧 Utilise mon code '+code+' sur MecaIA pour des crédits bonus !\nmecaiabyloky.netlify.app';
+  if(navigator.share)navigator.share({title:'MecaIA',text:txt});
+  else navigator.clipboard.writeText(txt).then(()=>toast('Code copié !','ok'));
+};
+
+window.analyseUrg=async function(){
+  const desc=document.getElementById('urg-d').value.trim();const car=document.getElementById('urg-c').value.trim();
+  if(!desc){toast('Décrivez le problème','er');return;}
+  document.getElementById('urg-r').innerHTML='<div class="loader">ANALYSE<div class="lbar"><div class="lfill"></div></div></div>';
+  try{
+    const d=await claude('Expert mécanicien. Analyse urgence rapide. JSON sans markdown.',
+      [{role:'user',content:'Véhicule: '+(car||'non précisé')+'\nProblème: '+desc+'\nJSON:\n{"gravite":"STOP","rouler":false,"message":"explication courte","action":"quoi faire maintenant"}'}]);
+    const col={STOP:'var(--red)',ATTENTION:'var(--accent)',OK:'var(--green)'};const emj={STOP:'🔴',ATTENTION:'🟡',OK:'🟢'};
+    document.getElementById('urg-r').innerHTML=`<div style="margin-top:15px;background:var(--s2);border:2px solid ${col[d.gravite]||'var(--accent)'};border-radius:10px;padding:15px;text-align:center"><div style="font-size:44px;margin-bottom:7px">${emj[d.gravite]||'🟡'}</div><div style="font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:${col[d.gravite]||'var(--accent)'};margin-bottom:7px">${d.gravite}</div><div style="font-size:13px;line-height:1.7;margin-bottom:11px">${d.message}</div><div style="font-size:13px;color:var(--accent);font-weight:500">⚡ ${d.action}</div></div>`;
+  }catch(e){document.getElementById('urg-r').innerHTML='<div class="err-box">'+e.message+'</div>';}
+};
+
+window.doDiag=async function(){if(!useC()){toast('Plus de crédits!','er');return;}const code=document.getElementById('d-code').value.trim().toUpperCase();const mk=document.getElementById('d-mk').value;const mo=document.getElementById('d-mo').value.trim();const an=document.getElementById('d-an').value;const cb=document.getElementById('d-cb').value;const kw=document.getElementById('d-kw').value.trim();const km=document.getElementById('d-km').value.trim();const cm=document.getElementById('d-cm').value.trim().toUpperCase();const sy=document.getElementById('d-sy').value.trim();if(!mk||!mo||!an||!cb){toast('Remplir Marque, Modèle, Année, Carburant','er');CR++;majC();saveC();return;}const btn=document.getElementById('btn-d');btn.disabled=true;btn.textContent='⏳ DYLAN ANALYSE...';loader('zd');try{const veh=[mk,mo,cb,kw&&kw+'kW',an&&'('+an+')',km&&km+'km',cm&&'Moteur:'+cm].filter(Boolean).join(' ');const user_input=[code&&'Code OBD: '+code,'Véhicule: '+veh,sy&&'Symptômes: '+sy].filter(Boolean).join('\n');const response=await fetch('/.netlify/functions/dylan_agents',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_input,vehicle_marque:mk,vehicle_modele:mo,vehicle_km:parseInt(km)||null})});const data=await response.json();if(!data.success||!response.ok){throw new Error(data.error||'Dylan API error');}save('Diagnostic V3',mk+' '+mo+' — '+data.primary_diagnosis,'diag');if(CU){try{await updateDoc(doc(db,'users',CU.uid),{diagnostics:increment(1)});}catch(e){}}if(selCar){const impact=data.confidence_percent>80?2:5;selCar.score=Math.max(0,(selCar.score||85)-impact);await sUD({cars});}let sev='sevM';if(data.urgency==='immédiat')sev='sevH';else if(data.urgency==='préventif')sev='sevF';const confidence_color=data.confidence_percent>=80?'var(--green)':data.confidence_percent>=60?'var(--accent)':'var(--red)';const urgency_emoji=data.urgency==='immédiat'?'🔴':data.urgency==='bientôt'?'🟡':'🟢';const low_confidence_warning=data.confidence_percent<60?`<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:13px 15px;margin-bottom:13px;color:var(--red)">⚠️ Confiance basse (${data.confidence_percent}%). <button class="bsm" onclick="doFallbackInternet('${data.primary_diagnosis}')" style="margin-top:7px">🔍 Chercher sur Internet</button></div>`:'';const clarify_box=data.clarify_question&&data.clarify_question!=='Je pense avoir assez d\'infos.'?`<div class="cons cb2" style="margin-top:11px;"><strong>❓ Clarifications:</strong> ${data.clarify_question}</div>`:'';const result_html=`<div><div class="card"><div class="ch"><div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:2px">DYLAN V3</div><div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#fff">${data.primary_diagnosis}</div></div><div style="display:flex;gap:5px;align-items:center"><span class="sev ${sev}">${data.urgency.toUpperCase()}</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${confidence_color}">📊 ${data.confidence_percent}%</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${data.can_drive?'var(--green)':'var(--red)'}">${data.can_drive?'✓ Roule':'✗ Stop'}</span></div></div><div class="cb">${low_confidence_warning}<div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:8px;padding:13px 15px;margin-bottom:13px"><div style="font-size:13px;line-height:1.75;color:#fff;font-weight:500">${data.primary_diagnosis}</div><div style="font-size:12px;color:var(--muted);margin-top:7px;line-height:1.6">Confiance: <strong style="color:${confidence_color}">${data.confidence_percent}%</strong> — Urgence: <strong>${urgency_emoji} ${data.urgency}</strong></div></div>${clarify_box}<div class="dv-box"><div class="dv-t">💶 ESTIMATION DU COÛT</div><div class="dv-r"><span>Coût estimé</span><span>${data.estimated_cost_min}€ — ${data.estimated_cost_max}€</span></div></div>${data.parts_needed&&data.parts_needed.length>0?`<div class="slbl">🔩 PIÈCES</div><div class="tags">${data.parts_needed.map(p=>'<span class="tag">'+p+'</span>').join('')}</div>`:''}<button class="bg" onclick="genPDF()">📄 PDF</button><button class="bb" onclick="shr('${data.primary_diagnosis}',${data.estimated_cost_min},${data.estimated_cost_max})">📤 PARTAGER</button></div><div class="rfooter"><div><span class="dot"></span>DYLAN V3</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div></div>`;document.getElementById('zd').innerHTML=result_html;toast('✅ Diagnostic V3 prêt','ok');}catch(error){CR++;majC();saveC();errB('zd',error.message);}btn.disabled=false;btn.textContent='⚡ DIAGNOSTIC IA (1 crédit)';}; 
+window.doFallbackInternet=async function(diagnosis){toast('🔍 Recherche...','ok');window.open(`https://www.google.com/search?q=${encodeURIComponent(diagnosis+' réparation auto')}`,'_blank');};
+window.togTools=function(has){
+  if(!has)document.getElementById('proc').innerHTML=`<div style="text-align:center;padding:18px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.18);border-radius:8px;margin-top:13px"><div style="font-size:22px;margin-bottom:7px">🔧</div><div style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:7px">Commandez les outils nécessaires</div><div style="font-size:12px;color:var(--muted);margin-bottom:13px">Retrouvez tous les outils sur Autodoc</div><a href="https://www.autodoc.be/fr/outils-atelier" target="_blank" style="text-decoration:none"><button class="bsm" style="font-size:12px;padding:7px 18px">VOIR LES OUTILS SUR AUTODOC →</button></a></div>`;
+};
+
+window.rateD=function(n){
+  document.querySelectorAll('#d-stars .star').forEach((s,i)=>s.className='star'+(i<n?' on':''));
+  const e=document.getElementById('rate-l');if(e)e.textContent=n+'/5';
+  save('Note '+n+'/5','Évaluation diagnostic','diag');toast('Merci !','ok');
+};
+
+window.genPDF=function(){
+  try{
+    const{jsPDF}=window.jspdf;const pdf=new jsPDF();let y=20;
+    pdf.setFontSize(21);pdf.setTextColor(240,165,0);pdf.text('MecaIA — Rapport de Diagnostic',20,y);y+=10;
+    pdf.setFontSize(10);pdf.setTextColor(120,120,120);pdf.text('Créé par Loïc Declerck · loicdeclerck4020@gmail.com',20,y);y+=6;
+    pdf.text('mecaiabyloky.netlify.app · '+new Date().toLocaleString('fr-FR'),20,y);y+=13;
+    if(lastD){
+      pdf.setFontSize(15);pdf.setTextColor(0,0,0);pdf.text(lastD.code+' — '+lastD.titre,20,y);y+=9;
+      pdf.setFontSize(11);pdf.text('Sévérité: '+lastD.severite+' · '+(lastD.rouler?'Peut rouler':'Ne pas rouler'),20,y);y+=7;
+      pdf.text('Temps estimé: '+lastD.temps,20,y);y+=10;
+      pdf.setFontSize(12);pdf.setTextColor(240,165,0);pdf.text('Description:',20,y);y+=7;
+      pdf.setFontSize(10);pdf.setTextColor(50,50,50);
+      const lines=pdf.splitTextToSize(lastD.description,170);pdf.text(lines,20,y);y+=lines.length*6+9;
+      pdf.setFontSize(12);pdf.setTextColor(240,165,0);pdf.text('Estimation du coût:',20,y);y+=7;
+      pdf.setFontSize(10);pdf.setTextColor(50,50,50);
+      pdf.text('Main d\'oeuvre: '+(lastD.mo_min||50)+'€ — '+(lastD.mo_max||200)+'€',20,y);y+=6;
+      pdf.text('Pièces: '+(lastD.pieces_min||30)+'€ — '+(lastD.pieces_max||300)+'€',20,y);y+=6;
+      pdf.setFont(undefined,'bold');pdf.text('TOTAL: '+((lastD.mo_min||50)+(lastD.pieces_min||30))+'€ — '+((lastD.mo_max||200)+(lastD.pieces_max||300))+'€',20,y);y+=12;
+      if(lastD.conseil){pdf.setFont(undefined,'normal');pdf.setFontSize(9);pdf.setTextColor(100,100,100);const cl=pdf.splitTextToSize('Conseil: '+lastD.conseil,170);pdf.text(cl,20,y);y+=cl.length*5+7;}
+      pdf.setFontSize(8);pdf.setTextColor(150,150,150);pdf.text('* Estimation indicative. MecaIA © 2025 — Loïc Declerck — Belgique',20,y);
+    }
+    pdf.save('diagnostic-mecaia-'+new Date().toISOString().split('T')[0]+'.pdf');toast('PDF téléchargé !','ok');
+  }catch(e){toast('Erreur PDF: '+e.message,'er');}
+};
+
+window.shr=function(titre,min,max){
+  const txt='🔧 RAPPORT DIAGNOSTIC MECA-IA\n\nProblème: '+titre+'\nCoût estimé: '+min+'€ — '+max+'€\n\nRapport généré par MecaIA\nmecaiabyloky.netlify.app\nCréé par Loïc Declerck';
+  if(navigator.share)navigator.share({title:'Rapport MecaIA',text:txt});
+  else navigator.clipboard.writeText(txt).then(()=>toast('Rapport copié !','ok'));
+};
+
+window.doPhoto=async function(event){
+  const file=event.target.files[0];if(!file||!useC())return;loader('zd');
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':API,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:'Tu es un expert mécanicien automobile. Tu analyses des photos avec précision. Réponds en français.',
+          messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:file.type,data:e.target.result.split(',')[1]}},{type:'text',text:'Analyse cette photo:\n1. Ce que tu vois précisément\n2. État de la pièce (bon/usé/défaillant)\n3. Problèmes ou défauts visibles\n4. Urgence: immédiat/bientôt/préventif\n5. Recommandations précises\n6. Pièces à commander si nécessaire'}]}]})});
+      const data=await r.json();if(data.error)throw new Error(data.error.message);
+      const analyse=data.content.map(b=>b.text||'').join('');
+      save('Analyse photo',analyse.substring(0,80),'photo');
+      document.getElementById('zd').innerHTML=`<div class="card"><div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div><div class="cb"><img src="${e.target.result}" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover"><div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${analyse}</div><button class="bb" style="margin-top:11px" onclick="shr('Analyse photo','?','?')">📤 PARTAGER</button></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>ANALYSE PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+    }catch(err){CR++;majC();saveC();errB('zd',err.message);}
+  };reader.readAsDataURL(file);
+};
+
+window.doVIN=async function(){
+  const vin=document.getElementById('v-n').value.trim().toUpperCase();
+  if(vin.length<5){toast('VIN invalide','er');return;}
+  const btn=document.getElementById('btn-v');btn.disabled=true;btn.textContent='⏳ DÉCODAGE...';
+  loader('zv');save('Décodage VIN',vin,'vin');
+  try{
+    const d=await claude('Expert mondial décodage VIN. JSON uniquement sans markdown.',
+      [{role:'user',content:'Décode ce VIN: '+vin+'\nWMI: '+vin.substring(0,3)+'\nCodes WMI: VF1=Renault,VF3=Peugeot,VF7=Citroën,WBA=BMW,WDB=Mercedes,WAU=Audi,WVW=VW,ZFA=Fiat,VSS=SEAT,TMB=Skoda,SAL=LandRover,JHM=Honda,JN1=Nissan,KNA=Kia,KMH=Hyundai\nJSON:\n{"pays":"","constructeur":"","modele":"","variante":"","annee":"","usine":"","moteur":"","carburant":"","transmission":"","serie":"'+vin.substring(9)+'"}'}]);
+    const fl=[['PAYS',d.pays],['CONSTRUCTEUR',d.constructeur],['MODÈLE',d.modele],['VARIANTE',d.variante],['ANNÉE',d.annee],['USINE',d.usine],['MOTEUR',d.moteur],['CARBURANT',d.carburant],['TRANSMISSION',d.transmission],['N° SÉRIE',d.serie]];
+    document.getElementById('zv').innerHTML=`<div class="card"><div class="ch"><div class="ct">VIN DÉCODÉ</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:1px">${vin}</span></div><div class="vgrid">${fl.map(f=>`<div class="vc"><div class="vcl">${f[0]}</div><div class="vcv">${f[1]||'—'}</div></div>`).join('')}</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Résultat approximatif — vérifier sur la carte grise</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>GRATUIT · MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+  }catch(e){errB('zv',e.message);}
+  btn.disabled=false;btn.textContent='🔍 DÉCODER CE VIN — GRATUIT';
+};
+
+window.doPieces=async function(){
+  if(!useC())return;
+  const mk=document.getElementById('p-mk').value;const mo=document.getElementById('p-mo').value.trim();
+  const an=document.getElementById('p-an').value.trim();const cb=document.getElementById('p-cb').value;
+  const kw=document.getElementById('p-kw').value.trim();const cy=document.getElementById('p-cy').value.trim();
+  const cm=document.getElementById('p-cm').value.trim().toUpperCase();const km=document.getElementById('p-km').value.trim();
+  const pc=document.getElementById('p-pc').value.trim();
+  if(!mk||!mo||!pc){toast('Remplir Marque, Modèle et Pièce','er');CR++;majC();saveC();return;}
+  const btn=document.getElementById('btn-p');btn.disabled=true;btn.textContent='⏳ RECHERCHE...';loader('zp');
+  const veh=[mk,mo,an,cb,kw&&kw+'kW',cy&&cy+'cm³',cm&&'Code:'+cm,km&&km+'km'].filter(Boolean).join(' ');
+  save('Pièces: '+pc,veh,'pieces');
+  if(CU){try{await updateDoc(doc(db,'users',CU.uid),{pieces_searches:increment(1)});}catch(e){}}
+  try{
+    const d=await claude('Expert pièces automobiles. Références aussi précises que possible. JSON uniquement sans markdown.',
+      [{role:'user',content:'Véhicule: '+veh+'\nPièce: '+pc+'\nJSON:\n{"pieces":[{"nom":"nom exact","marque":"NGK/Bosch/Valeo/Febi/LuK/Sachs/SKF/Brembo...","reference":"réf précise","ref_origine":"réf constructeur","prix_min":15,"prix_max":45,"compatibilite":"note précise","qualite":"OEM ou Aftermarket ou Origine","conseil":"conseil montage","urgence":"Immédiat ou Sous 1000km ou Entretien normal"}]}\n3-4 pièces de qualités différentes.'}]);
+    document.getElementById('zp').innerHTML=`<div class="card"><div class="ch"><div class="ct">${pc.toUpperCase()}</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">${d.pieces.length} résultats · ${veh}</span></div><div class="plist">${d.pieces.map(p=>{const url='https://www.autodoc.be/fr/search?query='+encodeURIComponent(p.reference||p.nom);const uc=p.urgence==='Immédiat'?'var(--red)':p.urgence==='Sous 1000km'?'var(--accent)':'var(--green)';return`<div class="pi"><div class="pm"><div class="pn">${p.nom}</div><div class="pr">${p.marque} · Réf: ${p.reference}${p.ref_origine?' · OEM: '+p.ref_origine:''} · <span style="color:var(--accent)">${p.qualite}</span></div><div class="pc">✓ ${p.compatibilite}</div>${p.conseil?`<div style="font-size:11px;color:var(--muted);margin-top:2px">💬 ${p.conseil}</div>`:''} ${p.urgence?`<div style="font-size:10px;color:${uc};margin-top:2px;font-family:'IBM Plex Mono',monospace">⏰ ${p.urgence}</div>`:''}</div><div class="pp">~${p.prix_min}€<br><span style="font-size:10px;color:var(--muted)">à ${p.prix_max}€</span></div><a href="${url}" target="_blank" style="text-decoration:none"><button class="bsm">COMMANDER →</button></a></div>`;}).join('')}</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Références indicatives — vérifier compatibilité avant commande</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>PIÈCES MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+  }catch(e){CR++;majC();saveC();errB('zp',e.message);}
+  btn.disabled=false;btn.textContent='🔧 TROUVER LES PIÈCES (1 crédit)';
+};
+
+function renderS(f='all',q=''){
+  let s=JSON.parse(localStorage.getItem('ms')||'[]');
+  if(f==='fav')s=s.filter(x=>x.fav);if(q)s=s.filter(x=>(x.type+x.cont).toLowerCase().includes(q.toLowerCase()));
+  const el=document.getElementById('suivi-l');const ic={diag:'🔧',pieces:'🔩',vin:'🔍',paiement:'💳',alerte:'🔔',photo:'📸'};
+  if(!s.length){el.innerHTML='<div style="text-align:center;padding:28px;color:var(--muted)">Aucun historique.</div>';return;}
+  el.innerHTML=s.map(e=>`<div class="disc-i${e.fav?' fav':''}"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">${ic[e.cat]||'📋'} ${e.type}</div><button onclick="togFav(${e.id})" style="background:none;border:none;cursor:pointer;font-size:15px;padding:0">${e.fav?'⭐':'☆'}</button></div><div style="font-size:11px;color:var(--muted);margin-bottom:3px">${e.cont.substring(0,90)}${e.cont.length>90?'...':''}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)">${e.date}</div></div>`).join('');
+}
+window.togFav=function(id){const s=JSON.parse(localStorage.getItem('ms')||'[]');const i=s.find(x=>x.id===id);if(i){i.fav=!i.fav;localStorage.setItem('ms',JSON.stringify(s));renderS();}};
+window.filtS=function(f){renderS(f);};
+window.searchS=function(q){renderS('all',q);};
+window.clearS=function(){if(confirm('Effacer tout ?')){localStorage.removeItem('ms');renderS();toast('Effacé','ok');}};
+
+function renderAC(){
+  const el=document.getElementById('al-cars');if(!el||!cars.length)return;
+  el.innerHTML='<div style="display:flex;gap:7px;flex-wrap:wrap">'+cars.map(c=>`<button onclick="selAC(${c.id})" class="bsm">${c.nom||c.marque+' '+c.modele}</button>`).join('')+'</div>';
+}
+window.selAC=function(id){
+  const c=cars.find(x=>x.id===id);if(!c)return;
+  const sv=(el,v)=>{const e=document.getElementById(el);if(e&&v)e.value=v;};
+  sv('a-mk',c.marque);sv('a-mo',c.modele);sv('a-an',c.annee);sv('a-km',c.km||'');
+  toast(c.nom||c.marque+' sélectionné','ok');
+};
+
+window.doAlertes=async function(){
+  if(!useC())return;
+  const mk=document.getElementById('a-mk').value.trim();const mo=document.getElementById('a-mo').value.trim();
+  const an=document.getElementById('a-an').value.trim();const km=document.getElementById('a-km').value.trim();
+  if(!km){toast('Entrer le kilométrage','er');CR++;majC();return;}
+  loader('za');save('Alertes entretien',[mk,mo,km+'km'].filter(Boolean).join(' '),'alerte');
+  try{
+    const d=await claude('Expert entretien automobile. JSON uniquement sans markdown.',
+      [{role:'user',content:'Véhicule: '+[mk,mo,an].filter(Boolean).join(' ')+' à '+km+' km\nJSON:\n{"alertes":[{"icon":"🔧","titre":"intervention","desc":"description précise","km_next":170000,"urgence":"Immédiat ou Bientôt ou Préventif"}]}\n6-8 alertes basées sur le kilométrage réel.'}]);
+    document.getElementById('za').innerHTML='<div>'+d.alertes.map(a=>{const col=a.urgence==='Immédiat'?'var(--red)':a.urgence==='Bientôt'?'var(--accent)':'var(--green)';const sv=a.urgence==='Immédiat'?'sevH':a.urgence==='Bientôt'?'sevM':'sevF';return`<div class="ali" style="border-left:3px solid ${col}"><div style="font-size:19px;flex-shrink:0">${a.icon}</div><div style="flex:1"><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">${a.titre}</div><div style="font-size:11px;color:var(--muted)">${a.desc}</div>${a.km_next?`<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);margin-top:2px">Prochain: ${a.km_next.toLocaleString()} km</div>`:''}</div><span class="sev ${sv}">${a.urgence}</span></div>`;}).join('')+'</div>';
+  }catch(e){CR++;majC();errB('za',e.message);}
+};
+
+window.togF=function(el){const a=el.nextElementSibling;a.classList.toggle('on');el.querySelector('span:last-child').textContent=a.classList.contains('on')?'▲':'▼';};
+
+function majVis(){
+  let n=parseInt(localStorage.getItem('mv')||'0');const l=localStorage.getItem('mvd');const now=new Date().toDateString();
+  if(l!==now){n++;localStorage.setItem('mv',String(n));localStorage.setItem('mvd',now);}
+  const el=document.getElementById('vis-n');if(el)el.textContent=n;
+  const sd=document.getElementById('stat-d');const td=JSON.parse(localStorage.getItem('ms')||'[]').filter(x=>x.cat==='diag').length;
+  if(sd)sd.textContent=td;
+}
+
+window.addEventListener('scroll',()=>{const b=document.getElementById('stbtn');if(b)b.className='stbtn'+(window.scrollY>280?' show':'');});
+
+async function loadDash(){
+  try{
+    const us=await getDocs(collection(db,'users'));const users=[];let td=0,tr=0;
+    us.forEach(d=>{const data=d.data();users.push(data);td+=data.diagnostics||0;tr+=data.totalPaid||0;});
+    ss('ds-u',users.length);ss('ds-d',td);ss('ds-r',tr.toFixed(2)+'€');ss('ds-v',localStorage.getItem('mv')||'0');
+    document.getElementById('d-users').innerHTML=users.slice(0,15).map(u=>`<div class="du"><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">${u.name||'—'}</div><div style="font-size:11px;color:var(--muted)">${u.email} · ${u.type} · ${u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):''}</div></div><div style="text-align:right"><div style="font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--accent)">${u.credits===999?'∞':u.credits} crédits</div><div style="font-size:10px;color:var(--muted)">${u.diagnostics||0} diags · ${(u.totalPaid||0).toFixed(2)}€</div></div></div>`).join('');
+    const act=JSON.parse(localStorage.getItem('ms')||'[]');
+    document.getElementById('d-act').innerHTML=act.slice(0,10).map(a=>`<div class="du"><div><div style="font-size:13px;color:#fff">${a.type}</div><div style="font-size:11px;color:var(--muted)">${a.cont.substring(0,55)}</div></div><div style="font-size:10px;color:var(--muted);white-space:nowrap">${a.date}</div></div>`).join('');
+  }catch(e){console.log('Dash:',e);}
+}
+
+window.genCode=async function(){
+  const ty=document.getElementById('pr-ty').value;const val=parseInt(document.getElementById('pr-val').value);
+  const uses=parseInt(document.getElementById('pr-us').value);const nm=document.getElementById('pr-nm').value.trim().toUpperCase();
+  const code=nm&&nm.length>=4?nm:'CODE-'+Math.random().toString(36).substring(2,8).toUpperCase();
+  try{
+    await setDoc(doc(db,'promoCodes',code),{type:ty,credits:ty==='credits'?val:5,value:ty==='reduction'?val:0,uses,owner:OWNER,createdAt:new Date().toISOString()});
+    document.getElementById('pr-res').innerHTML=`<div class="pcd">${code}</div><p style="font-size:11px;color:var(--muted);margin-top:5px">${ty==='credits'?val+' crédits gratuits':'-'+val+'% de réduction'} · ${uses===999?'Illimité':uses+' utilisation(s)'}</p><button class="bsm" onclick="navigator.clipboard.writeText('${code}').then(()=>toast('Copié!','ok'))" style="margin-top:7px">📋 COPIER</button>`;
+    toast('✅ Code créé: '+code,'ok');
+  }catch(e){toast('Erreur: '+e.message,'er');}
+};
+
+window.togPT=function(){
+  const ty=document.getElementById('pr-ty').value;
+  document.getElementById('pr-vb').innerHTML=ty==='reduction'?'<label>RÉDUCTION %</label><select id="pr-val"><option value="5">-5%</option><option value="10">-10%</option><option value="15">-15%</option><option value="20" selected>-20%</option><option value="25">-25%</option><option value="30">-30%</option><option value="40">-40%</option><option value="50">-50%</option><option value="60">-60%</option><option value="70">-70%</option><option value="75">-75%</option><option value="80">-80%</option><option value="90">-90%</option><option value="100">-100% (GRATUIT)</option></select>':'<label>CRÉDITS À OFFRIR</label><select id="pr-val"><option value="3">3 crédits</option><option value="5">5 crédits</option><option value="10">10 crédits</option><option value="25">25 crédits</option><option value="50">50 crédits</option><option value="100">100 crédits</option></select>';
+};
+
+setLang(lang);showSc('s-land');
+
+
+/* ===== MIGRATION SUPABASE (auto) ===== */
+/* ============================================================
+   MecaIA — ÉTAPE 9.2 — AUTH SUPABASE
+   À coller DANS le <script type="module"> existant, EN REMPLACEMENT
+   de : window.doLogin, window.doReg, window.doForgot, window.doOut
+   ET du bloc onAuthStateChanged(auth, ...).
+   On garde tes helpers UI (setAM, showSc, toast, ss, majC, majVis,
+   setLang, renderCars, renderMbrs, loadDash, hideLoading, goLand)
+   et tes variables (CU, CR, UT, cars, tries, lang, OWNER).
+   NB : Firebase reste présent pour l'instant (les données passent à
+   Supabase en 9.3, puis on retire Firebase en 9.4).
+   ============================================================ */
+
+// ---- Connexion ----
+window.doLogin = async function () {
+  if (tries >= 5) { setAM('Trop de tentatives. Attendez 5 minutes.', 'err'); return; }
+  const em = document.getElementById('l-em').value.trim();
+  const pw = document.getElementById('l-pw').value;
+  if (!em || !pw) { setAM('Remplir tous les champs.', 'err'); return; }
+
+  const { error } = await MecaIA.signIn(em, pw);
+  if (error) {
+    tries++;
+    setAM(/invalid|credential/i.test(error.message) ? 'Email ou mot de passe incorrect.' : 'Erreur: ' + error.message, 'err');
+    return;
+  }
+  tries = 0; // la session déclenche MecaIA.onAuth -> routage automatique
+};
+
+// ---- Inscription ----
+window.doReg = async function () {
+  const nm = document.getElementById('r-nm').value.trim();
+  const em = document.getElementById('r-em').value.trim();
+  const pw = document.getElementById('r-pw').value;
+  const ty = document.getElementById('r-ty').value;
+  if (!nm || !em || !pw) { setAM('Remplir tous les champs.', 'err'); return; }
+  if (pw.length < 6) { setAM('Mot de passe minimum 6 caractères.', 'err'); return; }
+
+  // name + type passés en métadonnées -> servent à créer le profil (9.3)
+  const { data, error } = await MecaIA.signUp(em, pw, { name: nm, type: ty });
+  if (error) {
+    setAM(/already|exist|registered/i.test(error.message) ? 'Email déjà utilisé.' : error.message, 'err');
+    return;
+  }
+  if (data && data.session) {
+    setAM('✅ Bienvenue sur MecaIA !', 'ok'); // connecté immédiatement
+  } else {
+    // Si la confirmation email est activée dans Supabase Auth
+    setAM('✅ Compte créé ! Vérifie ton email pour confirmer.', 'ok');
+  }
+};
+
+// ---- Mot de passe oublié ----
+window.doForgot = async function () {
+  const em = document.getElementById('l-em').value.trim();
+  if (!em) { setAM('Entrez votre email d\'abord.', 'err'); return; }
+  const { error } = await MecaIA.resetPassword(em);
+  setAM(error ? error.message : '✅ Email de réinitialisation envoyé !', error ? 'err' : 'ok');
+};
+
+// ---- Déconnexion ----
+window.doOut = async function () {
+  await MecaIA.signOut();
+  goLand();
+  toast('Déconnecté', 'ok');
+};
+
+// ---- Affichage immédiat de la landing ----
+showSc('s-land');
+hideLoading();
+
+// ---- Listener de session Supabase (remplace onAuthStateChanged) ----
+MecaIA.onAuth(async (user) => {
+  if (user) {
+    CU = user; // NB: identifiant = user.id (plus user.uid)
+    try { await loadProfile(user); } catch (e) { console.log('profil:', e); }
     majVis();
-
-  } catch(e) {
-    console.error('Init error:', e);
+    setLang(lang);
+    if (user.email === OWNER) { showSc('s-dash'); loadDash(); }
+    else showSc('s-app');
+    hideLoading();
+  } else {
+    CU = null;
     showSc('s-land');
-  } finally {
     hideLoading();
   }
+});
+
+
+/* ============================================================
+   MecaIA — ÉTAPE 9.3 — COUCHE DONNÉES (Supabase, plus de Firestore)
+   À coller DANS le <script type="module">, EN REMPLACEMENT de :
+   loadProfile (stub 9.2), addCar, renderCars, selC, updKm, delCar,
+   saveC, useC, sUD.
+   Garde tes helpers UI (ss, toast, majC, openM, hideAddCar, chkD,
+   sc, selCar, cars, CR, UT, CU).
+   ============================================================ */
+
+// Mappe un véhicule Supabase -> forme attendue par l'UI
+function mapVehicle(v) {
+  return {
+    id: v.id, nom: v.nickname, marque: v.marque, modele: v.modele, annee: v.annee,
+    carbu: v.carburant, kw: v.puissance_ch, cm: v.engine_code, vin: v.vin,
+    km: v.km_current, score: 85,
+  };
 }
 
-// ============================================================
-// AUTH
-// ============================================================
-async function doLogin() {
-  const email = document.getElementById('l-em').value.trim();
-  const pw    = document.getElementById('l-pw').value;
-  if (!email || !pw) { setAM('Remplir tous les champs.', 'err'); return; }
-  setAM('Connexion...', '');
-  const { error } = await SB.auth.signInWithPassword({ email, password: pw });
-  if (error) setAM(error.message === 'Invalid login credentials' ? 'Email ou mot de passe incorrect.' : error.message, 'err');
-}
-window.doLogin = doLogin;
-
-async function doReg() {
-  const name   = document.getElementById('r-nm').value.trim();
-  const email  = document.getElementById('r-em').value.trim();
-  const pw     = document.getElementById('r-pw').value;
-  const type   = document.getElementById('r-ty').value;
-  const ref    = document.getElementById('r-pr').value.trim().toUpperCase();
-  if (!name || !email || !pw) { setAM('Remplir tous les champs.', 'err'); return; }
-  if (pw.length < 6) { setAM('Mot de passe min. 6 caractères.', 'err'); return; }
-  setAM('Création du compte...', '');
-
-  const { data, error } = await SB.auth.signUp({
-    email, password: pw,
-    options: { data: { name, type } }
-  });
-
-  if (error) { setAM(error.message, 'err'); return; }
-
-  // Le profil est créé automatiquement par le trigger SQL handle_new_user
-  // (avec name + type passés dans les métadonnées ci-dessus).
-  // On attend un court instant que le trigger s'exécute.
-  await new Promise(r => setTimeout(r, 800));
-
-  // Appliquer un code parrainage si fourni
-  if (ref) {
-    try {
-      await apiCall('promo', { code: ref });
-    } catch(e) { console.log('Parrainage:', e.message); }
-  }
-
-  setAM('✅ Compte créé ! Vérifiez votre email.', 'ok');
-}
-window.doReg = doReg;
-
-async function doForgot() {
-  const email = document.getElementById('l-em').value.trim();
-  if (!email) { setAM("Entrez d'abord votre email.", 'err'); return; }
-  const { error } = await SB.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/reset-password'
-  });
-  if (error) setAM(error.message, 'err');
-  else setAM('✅ Email de réinitialisation envoyé !', 'ok');
-}
-window.doForgot = doForgot;
-
-async function doOut() {
-  await SB.auth.signOut();
-  toast('Déconnecté', 'ok');
-}
-window.doOut = doOut;
-
-async function loadProfile() {
-  if (!SESSION) return;
-  let { data } = await SB.from('users')
-    .select('*')
-    .eq('id', SESSION.user.id)
-    .single();
-
-  // Filet de sécurité : si le trigger n'a pas encore créé le profil, réessayer une fois
-  if (!data) {
-    await new Promise(r => setTimeout(r, 1000));
-    const retry = await SB.from('users').select('*').eq('id', SESSION.user.id).single();
-    data = retry.data;
-    // Si toujours rien, créer le profil manuellement (cas où functions.sql non exécuté)
-    if (!data) {
-      const meta = SESSION.user.user_metadata || {};
-      const promoCode = 'CODE-' + SESSION.user.id.substring(0, 6).toUpperCase();
-      await SB.from('users').upsert({
-        id: SESSION.user.id,
-        email: SESSION.user.email,
-        name: meta.name || SESSION.user.email.split('@')[0],
-        type: meta.type || 'amateur',
-        credits: 3,
-        promo_code: promoCode
-      });
-      const created = await SB.from('users').select('*').eq('id', SESSION.user.id).single();
-      data = created.data;
-    }
-  }
-
-  PROFILE = data;
-  if (!PROFILE) return;
-  majC();
-  const tl = { mechanic:'Mécanicien', amateur:'Particulier', apprenti:'Apprenti', garage:'Garage' };
-  setText('u-nm', PROFILE.name || SESSION.user.email);
-  setText('u-ty', tl[PROFILE.type] || 'Mécanicien');
-  setText('u-lv', (PROFILE.diagnostics_count||0) > 50 ? '⭐ Expert' : (PROFILE.diagnostics_count||0) > 20 ? '🔧 Confirmé' : '🌱 Débutant');
-  setText('my-promo', PROFILE.promo_code || 'CODE-???');
-  setText('gs-d', PROFILE.diagnostics_count || 0);
-  setText('gs-c', PROFILE.is_unlimited ? '∞' : PROFILE.credits);
-}
-
-// ============================================================
-// API CALL — Toutes les requêtes backend
-// ============================================================
-async function apiCall(action, body = {}) {
-  const headers = { 'Content-Type': 'application/json' };
-  if (SESSION?.access_token) headers['Authorization'] = `Bearer ${SESSION.access_token}`;
-
-  const res = await fetch('/api', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ action, ...body })
-  });
-
-  // Lire le texte d'abord pour gérer les réponses non-JSON (erreurs Netlify 502/504)
-  const raw = await res.text();
-  let data;
-  try {
-    data = JSON.parse(raw);
-  } catch {
-    throw new Error(res.status >= 500
-      ? 'Serveur momentanément indisponible. Réessaie dans un instant.'
-      : 'Réponse inattendue du serveur (' + res.status + ').');
-  }
-  if (data.error) throw new Error(data.error);
-  return data;
-}
-
-// ============================================================
-// CRÉDITS
-// ============================================================
-function majC() {
-  if (!PROFILE) return;
-  const v = PROFILE.is_unlimited ? '∞' : String(PROFILE.credits);
-  setText('cdis', v);
-  ['cd1','cd2','cd3','cd-chat'].forEach(id => setText(id, v));
-  setText('gs-c', v);
-}
-
-// ============================================================
-// PAIEMENT STRIPE
-// ============================================================
-window.selP = function(pack, name, amt) {
-  SEL_PACK = pack; SEL_AMT = amt;
-  ['pk1','pk2','pk3','pk4'].forEach(id => document.getElementById(id)?.classList.remove('on'));
-  const idx = { '1credit':'pk1','25credits':'pk2','60credits':'pk3','unlimited':'pk4' };
-  document.getElementById(idx[pack])?.classList.add('on');
-  setText('pay-amt', amt + '€');
-};
-
-window.doPay = async function() {
-  if (!SESSION) { toast('Connecte-toi d\'abord', 'er'); return; }
-  const btn = document.getElementById('btn-pay');
-  btn.disabled = true;
-  btn.textContent = '⏳ Redirection Stripe...';
-  try {
-    const { url } = await fetch('/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SESSION.access_token}` },
-      body: JSON.stringify({ pack: SEL_PACK })
-    }).then(r => r.json());
-    if (url) window.location.href = url;
-    else throw new Error('URL Stripe manquante');
-  } catch(e) {
-    toast('Erreur paiement: ' + e.message, 'er');
-    btn.disabled = false;
-    btn.innerHTML = '🔒 PAYER <span id="pay-amt">' + SEL_AMT + '€</span> — STRIPE SÉCURISÉ';
-  }
-};
-
-window.appPromo = async function() {
-  const code = document.getElementById('promo-in').value.trim().toUpperCase();
-  const msg  = document.getElementById('promo-msg');
-  if (!code) return;
-  if (!SESSION) { msg.style.color = 'var(--red)'; msg.textContent = 'Connecte-toi d\'abord'; return; }
-  try {
-    const result = await apiCall('promo', { code });
-    msg.style.color = 'var(--green)';
-    msg.textContent = '✅ ' + result.message;
-    if (result.credits) {
-      PROFILE.credits += result.credits;
-      majC();
-      closeM('m-pay');
-      toast(result.credits + ' crédits ajoutés !', 'ok');
-    }
-  } catch(e) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = e.message;
-  }
-};
-
-window.actOwner = async function() {
-  const code = document.getElementById('own-in').value.trim();
-  if (!SESSION) return;
-  try {
-    await apiCall('owner', { code });
-    PROFILE.is_unlimited = true;
+// ---- Profil + crédits (remplace le chargement Firestore) ----
+async function loadProfile(user) {
+  const pr = await MecaIA.authedFetch('profile_get');
+  if (pr.ok && pr.data && pr.data.success) {
+    const p = pr.data.profile || {};
+    CR = pr.data.unlimited ? 999 : Number(pr.data.credits || 0);
+    UT = p.type || 'mechanic';
+    const tl = { mechanic: 'Mécanicien', amateur: 'Particulier', apprenti: 'Apprenti', garage: 'Garage' };
+    ss('u-nm', p.name || user.email);
+    ss('u-ty', tl[p.type] || 'Mécanicien');
+    ss('u-lv', p.diagnostics > 50 ? '⭐ Expert' : p.diagnostics > 20 ? '🔧 Confirmé' : '🌱 Débutant');
+    ss('my-promo', p.promo_code || '');
+    ss('gs-d', p.diagnostics || 0);
     majC();
-    closeM('m-pay');
-    toast('✅ Crédits illimités !', 'ok');
-  } catch(e) { toast(e.message, 'er'); }
+  }
+  await loadCars();
+}
+
+// ---- Voitures (garage) ----
+async function loadCars() {
+  const g = await MecaIA.authedFetch('garage_get');
+  if (g.ok && g.data && g.data.success) {
+    cars = (g.data.vehicles || []).map(mapVehicle);
+    renderCars(cars);
+    ss('gs-v', cars.length);
+  }
+}
+window.loadCars = loadCars;
+
+// ---- Rafraîchir le solde de crédits après une opération serveur ----
+async function refreshCredits() {
+  const pr = await MecaIA.authedFetch('profile_get');
+  if (pr.ok && pr.data && pr.data.success) {
+    CR = pr.data.unlimited ? 999 : Number(pr.data.credits || 0);
+    majC();
+  }
+}
+window.refreshCredits = refreshCredits;
+
+// ---- Ajouter un véhicule ----
+window.addCar = async function () {
+  const m = document.getElementById('nc-mk').value;
+  const mo = document.getElementById('nc-mo').value.trim();
+  const a = document.getElementById('nc-an').value.trim();
+  const c = document.getElementById('nc-cb').value;
+  if (!m || !mo || !a || !c) { toast('Remplir Marque, Modèle, Année et Carburant', 'er'); return; }
+
+  const body = {
+    marque: m, modele: mo, annee: parseInt(a) || null, carburant: c,
+    puissance_ch: parseInt(document.getElementById('nc-kw').value) || null,
+    engine_code: document.getElementById('nc-cm').value.trim().toUpperCase(),
+    vin: document.getElementById('nc-vn').value.trim().toUpperCase(),
+    km_current: parseInt(document.getElementById('nc-km').value) || null,
+    nickname: document.getElementById('nc-nm').value.trim(),
+  };
+  const r = await MecaIA.authedFetch('garage_add_vehicle', { method: 'POST', body });
+  if (!r.ok || !r.data || !r.data.success) { toast('Erreur: ' + ((r.data && r.data.error) || 'ajout'), 'er'); return; }
+
+  await loadCars();
+  hideAddCar();
+  toast('✅ Véhicule ajouté !', 'ok');
+  ['nc-mk', 'nc-mo', 'nc-an', 'nc-cb', 'nc-kw', 'nc-cm', 'nc-vn', 'nc-km', 'nc-nm']
+    .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
 };
 
-// ============================================================
-// DIAGNOSTIC
-// ============================================================
-window.chkD = function() {
-  const ok = document.getElementById('d-mk').value && document.getElementById('d-mo').value.trim() && document.getElementById('d-an').value && document.getElementById('d-cb').value;
-  document.getElementById('btn-d').disabled = !ok;
+// ---- Rendu des voitures (UUID entre quotes dans les onclick !) ----
+function renderCars(cs) {
+  const gc = document.getElementById('g-cars');
+  const sl = document.getElementById('car-sel-list');
+  if (!gc) return;
+  if (!cs.length) {
+    gc.innerHTML = '<div style="text-align:center;padding:18px;color:var(--muted);font-size:13px">Aucun véhicule.</div>';
+    if (sl) sl.innerHTML = '<div style="text-align:center;padding:18px;color:var(--muted);font-size:13px">Aucun véhicule. Ajoutez-en un dans <strong style="color:var(--accent)">GARAGE</strong>.</div>';
+    return;
+  }
+  gc.innerHTML = cs.map(c => `<div class="car-c"><div style="font-size:24px">🚗</div><div class="car-info"><div class="car-n">${c.nom || c.marque + ' ' + c.modele}</div><div class="car-d">${c.marque} ${c.modele} ${c.annee} · ${c.carbu}${c.kw ? ' · ' + c.kw + 'kW' : ''}${c.cm ? ' · ' + c.cm : ''}</div>${c.km ? `<div class="car-k">📍 ${c.km} km</div>` : ''}</div><div style="text-align:center;min-width:38px"><div class="car-sc" style="color:${sc(c.score || 85)}">${c.score || 85}</div><div style="font-size:9px;color:var(--muted)">SANTÉ</div></div><div style="display:flex;gap:5px"><button class="bsm" onclick="updKm('${c.id}')">KM</button><button class="br" onclick="delCar('${c.id}')">✕</button></div></div>`).join('');
+  if (sl) sl.innerHTML = cs.map(c => `<div class="car-c${selCar?.id === c.id ? ' sel' : ''}" onclick="selC('${c.id}')"><div style="font-size:22px">🚗</div><div class="car-info"><div class="car-n">${c.nom || c.marque + ' ' + c.modele}</div><div class="car-d">${c.marque} ${c.modele} ${c.annee} · ${c.carbu}</div>${c.km ? `<div class="car-k">📍 ${c.km} km</div>` : ''}</div>${selCar?.id === c.id ? '<span style="color:var(--accent);font-size:17px">✓</span>' : ''}</div>`).join('');
+}
+
+// ---- Sélection d'un véhicule (id = UUID string) ----
+window.selC = function (id) {
+  selCar = cars.find(c => c.id === id);
+  if (!selCar) return;
+  const sv = (el, v) => { const e = document.getElementById(el); if (e && v) e.value = v; };
+  sv('d-mk', selCar.marque); sv('d-mo', selCar.modele); sv('d-an', selCar.annee);
+  sv('d-cb', selCar.carbu); sv('d-kw', selCar.kw); sv('d-cm', selCar.cm); sv('d-km', selCar.km);
+  chkD(); renderCars(cars); toast('✅ ' + (selCar.nom || selCar.marque) + ' sélectionné', 'ok');
 };
 
-window.doDiag = async function() {
-  if (!SESSION) { toast('Connecte-toi', 'er'); return; }
+// ---- Mettre à jour le KM (serveur) ----
+window.updKm = async function (id) {
+  const km = prompt('Nouveau kilométrage:'); if (!km) return;
+  const r = await MecaIA.authedFetch('garage_update_km', { method: 'POST', body: { vehicle_id: id, km: parseInt(km) || 0 } });
+  if (r.ok && r.data && r.data.success) { await loadCars(); toast('KM mis à jour', 'ok'); }
+  else toast('Erreur maj KM', 'er');
+};
+
+// ---- Supprimer un véhicule (serveur) ----
+window.delCar = async function (id) {
+  if (!confirm('Supprimer ce véhicule ?')) return;
+  const r = await MecaIA.authedFetch('garage_delete_vehicle', { method: 'POST', body: { vehicle_id: id } });
+  if (r.ok && r.data && r.data.success) { if (selCar?.id === id) selCar = null; await loadCars(); toast('Véhicule supprimé', 'ok'); }
+  else toast('Erreur suppression', 'er');
+};
+
+// ---- Crédits : autorité = serveur. Ces helpers deviennent légers. ----
+// useC() = simple pré-contrôle UI (le débit réel est fait par le serveur
+// dans dylan_agents / parts_compare). Pas de décrément local.
+function useC() {
+  if (CR === 999) return true;
+  if (CR <= 0) { openM('m-pay'); toast('Plus de crédits !', 'er'); return false; }
+  return true;
+}
+async function saveC() { /* crédits gérés côté serveur, plus de Firestore */ }
+async function sUD() { /* données côté serveur, plus de Firestore */ }
+
+/* ============================================================
+   MecaIA — ÉTAPE 9.4 — IA & NETTOYAGE (dernière sous-étape frontend)
+   À coller DANS le <script type="module">, EN REMPLACEMENT de :
+   doDiag, doPhoto, doVIN, doPieces, doAlertes, ET de la fonction claude().
+   PUIS supprimer (voir instructions) : const API, const OWNER_CODE,
+   les imports + init Firebase.
+   Tout passe par MecaIA.authedFetch (JWT) -> plus aucune clé dans le navigateur.
+   ============================================================ */
+
+// ---- DIAGNOSTIC (serveur dylan_agents) ----
+window.doDiag = async function () {
   const code = document.getElementById('d-code').value.trim().toUpperCase();
-  const mk   = document.getElementById('d-mk').value;
-  const mo   = document.getElementById('d-mo').value.trim();
-  const an   = document.getElementById('d-an').value;
-  const cb   = document.getElementById('d-cb').value;
-  const kw   = document.getElementById('d-kw').value.trim();
-  const km   = document.getElementById('d-km').value.trim();
-  const cm   = document.getElementById('d-cm').value.trim().toUpperCase();
-  const sy   = document.getElementById('d-sy').value.trim();
-  const btn  = document.getElementById('btn-d');
-
-  btn.disabled = true; btn.textContent = '⏳ ANALYSE...';
-  loader('zd');
-
-  const vehicleInfo = [mk, mo, cb, kw&&kw+'kW', an&&'('+an+')', km&&km+'km', cm&&'Moteur:'+cm].filter(Boolean).join(' ');
-
+  const mk = document.getElementById('d-mk').value; const mo = document.getElementById('d-mo').value.trim();
+  const an = document.getElementById('d-an').value; const cb = document.getElementById('d-cb').value;
+  const kw = document.getElementById('d-kw').value.trim(); const km = document.getElementById('d-km').value.trim();
+  const cm = document.getElementById('d-cm').value.trim().toUpperCase(); const sy = document.getElementById('d-sy').value.trim();
+  if (!mk || !mo || !an || !cb) { toast('Remplir Marque, Modèle, Année, Carburant', 'er'); return; }
+  if (!useC()) return;
+  const btn = document.getElementById('btn-d'); btn.disabled = true; btn.textContent = '⏳ DYLAN ANALYSE...'; loader('zd');
   try {
-    const d = await apiCall('diagnostic', {
-      vehicleInfo, code, symptoms: sy,
-      userType: PROFILE?.type || 'mechanic',
-      carId: SEL_CAR?.id || null
-    });
-
-    LAST_DIAG = d;
-    PROFILE.credits = d.creditsLeft;
-    majC();
-
-    const sev   = d.severite==='HAUTE'?'sevH':d.severite==='MOYENNE'?'sevM':'sevF';
-    const df    = d.difficulte || 2;
-    const steps = (d.etapes||[]).map((x,i) => `<div class="si"><span class="sn">0${i+1}</span><span class="st">${x}</span></div>`).join('');
-    const causes= (d.causes||[]).map(x => `<div class="si"><span class="sn">→</span><span class="st">${x}</span></div>`).join('');
-    const tags  = (d.pieces||[]).map(x => `<span class="tag">${x}</span>`).join('');
-    const tools = (d.outils||[]).map(t => `<div class="tool-i"><span style="font-size:13px;color:#fff">🔧 ${t}</span><a href="https://www.autodoc.be/fr/search?query=${encodeURIComponent(t)}" target="_blank" class="tool-a">COMMANDER</a></div>`).join('');
-    const mmi=d.mo_min||50,mma=d.mo_max||200,pmi=d.pieces_min||30,pma=d.pieces_max||300;
-
-    document.getElementById('zd').innerHTML = `<div>
-      <div class="card">
-        <div class="ch">
-          <div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:2px">${d.systeme||''}</div><div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#fff">${d.code} — ${d.titre}</div></div>
-          <div style="display:flex;gap:5px;align-items:center"><span class="sev ${sev}">${d.severite}</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${d.rouler?'var(--green)':'var(--red)'}">${d.rouler?'✓ Roule':'✗ Stop'}</span></div>
-        </div>
-        <div class="cb">
-          <p style="font-size:13px;line-height:1.75;margin-bottom:11px">${d.description}</p>
-          <div class="diff-row"><span style="font-size:12px;color:var(--muted)">Difficulté :</span>${[1,2,3].map(n=>`<span class="di${n<=df?' on':''}">🔧</span>`).join('')}<span style="font-size:11px;color:var(--muted);margin-left:4px">${df===1?'Facile':df===2?'Moyen':'Expert'}</span></div>
-          ${tools ? `<div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:8px;padding:13px 15px;margin-top:13px"><div style="font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);margin-bottom:9px">OUTILS NÉCESSAIRES</div>${tools}</div>` : ''}
-          <div class="slbl">CAUSES PROBABLES</div><div class="slist">${causes}</div>
-          <div class="slbl">PROCÉDURE DE RÉPARATION</div><div class="slist">${steps}</div>
-          ${tags ? `<div class="slbl">PIÈCES NÉCESSAIRES</div><div class="tags">${tags}</div>` : ''}
-          ${d.comment_tester ? `<div class="cons cb2"><strong>🔬 Comment tester :</strong> ${d.comment_tester}</div>` : ''}
-          ${d.pannes_liees ? `<div class="cons cp"><strong>⚡ Pannes liées :</strong> ${d.pannes_liees}</div>` : ''}
-          <div class="cons"><strong>💡 Expert :</strong> ${d.conseil}</div>
-          ${d.prevention ? `<div class="cons cg"><strong>🛡️ Prévention :</strong> ${d.prevention}</div>` : ''}
-          <div class="dv-box"><div class="dv-t">💶 ESTIMATION DU COÛT</div>
-            <div class="dv-r"><span>Main d'œuvre</span><span>${mmi}€ — ${mma}€</span></div>
-            <div class="dv-r"><span>Pièces estimées</span><span>${pmi}€ — ${pma}€</span></div>
-            <div class="dv-r"><span>TOTAL ESTIMÉ</span><span class="dv-tot">${mmi+pmi}€ — ${mma+pma}€</span></div>
-            ${d.economie_diy ? `<div style="font-size:12px;color:var(--green);margin-top:7px">💰 Économie DIY : ~${d.economie_diy}€</div>` : ''}
-          </div>
-          <div class="slbl">NOTER CE DIAGNOSTIC</div>
-          <div class="rating" id="d-stars">${[1,2,3,4,5].map(n=>`<span class="star${n<=4?' on':''}" onclick="rateD(${n})">⭐</span>`).join('')}</div>
-          <button class="bg" onclick="genPDF()">📄 TÉLÉCHARGER LE DEVIS PDF</button>
-          <button class="bb" onclick="shareReport()">📤 ENVOYER AU CLIENT</button>
-        </div>
-        <div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>DYLAN · MECA-IA EXPERT</div><div>${new Date().toLocaleString('fr-FR')}</div></div>
-      </div>
-    </div>`;
-
-  } catch(e) {
-    errBox('zd', e.message);
-    if (e.message.includes('crédits')) openM('m-pay');
-  }
+    const veh = [mk, mo, cb, kw && kw + 'kW', an && '(' + an + ')', km && km + 'km', cm && 'Moteur:' + cm].filter(Boolean).join(' ');
+    const user_input = [code && 'Code OBD: ' + code, 'Véhicule: ' + veh, sy && 'Symptômes: ' + sy].filter(Boolean).join('\n');
+    const r = await MecaIA.authedFetch('dylan_agents', { method: 'POST', body: { user_input, vehicle_marque: mk, vehicle_modele: mo, vehicle_km: parseInt(km) || null } });
+    if (r.status === 402) { openM('m-pay'); toast('Plus de crédits !', 'er'); btn.disabled = false; btn.textContent = '⚡ DIAGNOSTIC IA (1 crédit)'; return; }
+    const data = r.data;
+    if (!r.ok || !data || !data.success) { throw new Error((data && data.error) || 'Dylan API error'); }
+    save('Diagnostic V3', mk + ' ' + mo + ' — ' + data.primary_diagnosis, 'diag');
+    let sev = 'sevM'; if (data.urgency === 'immédiat') sev = 'sevH'; else if (data.urgency === 'préventif') sev = 'sevF';
+    const confidence_color = data.confidence_percent >= 80 ? 'var(--green)' : data.confidence_percent >= 60 ? 'var(--accent)' : 'var(--red)';
+    const urgency_emoji = data.urgency === 'immédiat' ? '🔴' : data.urgency === 'bientôt' ? '🟡' : '🟢';
+    const low_confidence_warning = data.confidence_percent < 60 ? `<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:13px 15px;margin-bottom:13px;color:var(--red)">⚠️ Confiance basse (${data.confidence_percent}%). <button class="bsm" onclick="doFallbackInternet('${data.primary_diagnosis}')" style="margin-top:7px">🔍 Chercher sur Internet</button></div>` : '';
+    const clarify_box = data.clarify_question && data.clarify_question !== 'Je pense avoir assez d\'infos.' ? `<div class="cons cb2" style="margin-top:11px;"><strong>❓ Clarifications:</strong> ${data.clarify_question}</div>` : '';
+    const result_html = `<div><div class="card"><div class="ch"><div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:2px">DYLAN V3</div><div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#fff">${data.primary_diagnosis}</div></div><div style="display:flex;gap:5px;align-items:center"><span class="sev ${sev}">${data.urgency.toUpperCase()}</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${confidence_color}">📊 ${data.confidence_percent}%</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${data.can_drive ? 'var(--green)' : 'var(--red)'}">${data.can_drive ? '✓ Roule' : '✗ Stop'}</span></div></div><div class="cb">${low_confidence_warning}<div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:8px;padding:13px 15px;margin-bottom:13px"><div style="font-size:13px;line-height:1.75;color:#fff;font-weight:500">${data.primary_diagnosis}</div><div style="font-size:12px;color:var(--muted);margin-top:7px;line-height:1.6">Confiance: <strong style="color:${confidence_color}">${data.confidence_percent}%</strong> — Urgence: <strong>${urgency_emoji} ${data.urgency}</strong></div></div>${clarify_box}<div class="dv-box"><div class="dv-t">💶 ESTIMATION DU COÛT</div><div class="dv-r"><span>Coût estimé</span><span>${data.estimated_cost_min}€ — ${data.estimated_cost_max}€</span></div></div>${data.parts_needed && data.parts_needed.length > 0 ? `<div class="slbl">🔩 PIÈCES</div><div class="tags">${data.parts_needed.map(p => '<span class="tag">' + p + '</span>').join('')}</div>` : ''}<button class="bg" onclick="genPDF()">📄 PDF</button><button class="bb" onclick="shr('${data.primary_diagnosis}',${data.estimated_cost_min},${data.estimated_cost_max})">📤 PARTAGER</button></div><div class="rfooter"><div><span class="dot"></span>DYLAN V3</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div></div>`;
+    document.getElementById('zd').innerHTML = result_html;
+    await refreshCredits();
+    toast('✅ Diagnostic V3 prêt', 'ok');
+  } catch (error) { errB('zd', error.message); }
   btn.disabled = false; btn.textContent = '⚡ DIAGNOSTIC IA (1 crédit)';
 };
 
-// ============================================================
-// CHAT DYLAN
-// ============================================================
-window.sendChat = async function() {
-  const input = document.getElementById('chat-input');
-  const msg   = input.value.trim();
-  if (!msg) return;
-  if (!SESSION) { toast('Connecte-toi', 'er'); return; }
-
-  addChatMsg('user', msg);
-  input.value = '';
-
-  const vehicleInfo = SEL_CAR ? `${SEL_CAR.marque} ${SEL_CAR.modele} ${SEL_CAR.annee} ${SEL_CAR.carbu}` : '';
-
-  addChatMsg('bot', '...', 'loading');
-
-  try {
-    const result = await apiCall('chat', {
-      message: msg,
-      history: CHAT_HIST,
-      sessionId: CHAT_SID,
-      vehicleInfo
-    });
-
-    // Remplacer le loading
-    const loadingEl = document.querySelector('.chat-msg.bot.loading');
-    if (loadingEl) loadingEl.remove();
-
-    addChatMsg('bot', result.reply);
-    CHAT_HIST.push({ role: 'user', content: msg });
-    CHAT_HIST.push({ role: 'assistant', content: result.reply });
-
-    // Nouveau modèle : 1 crédit = 15 min d'accès illimité
-    if (result.freshSession && PROFILE && result.creditsLeft !== undefined && !PROFILE.is_unlimited) {
-      PROFILE.credits = result.creditsLeft;
-      majC();
-      toast('💬 Session chat 15 min activée (1 crédit)', 'ok');
-    }
-    // Démarrer / mettre à jour le minuteur de session
-    if (result.sessionEnds) startChatTimer(result.sessionEnds);
-
-  } catch(e) {
-    const loadingEl = document.querySelector('.chat-msg.bot.loading');
-    if (loadingEl) loadingEl.remove();
-    addChatMsg('bot', '❌ Erreur: ' + e.message);
-    if (e.message.includes('crédits')) openM('m-pay');
-  }
-};
-
-// Minuteur de session chat (15 min)
-let CHAT_TIMER = null;
-function startChatTimer(endsAt) {
-  const el = document.getElementById('chat-q-n');
-  if (!el) return;
-  if (CHAT_TIMER) clearInterval(CHAT_TIMER);
-  const update = () => {
-    const left = Math.max(0, endsAt - Date.now());
-    const min = Math.floor(left / 60000);
-    const sec = Math.floor((left % 60000) / 1000);
-    el.textContent = `${min}:${String(sec).padStart(2,'0')}`;
-    if (left <= 0) { clearInterval(CHAT_TIMER); el.textContent = '0:00'; }
+// ---- ANALYSE PHOTO (serveur photo_analyze) ----
+window.doPhoto = async function (event) {
+  const file = event.target.files[0]; if (!file) return;
+  if (!useC()) return;
+  loader('zd');
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try {
+      const r = await MecaIA.authedFetch('photo_analyze', { method: 'POST', body: { media_type: file.type, image_base64: e.target.result.split(',')[1] } });
+      if (r.status === 402) { openM('m-pay'); toast('Plus de crédits !', 'er'); return; }
+      const data = r.data;
+      if (!r.ok || !data || !data.success) throw new Error((data && data.error) || 'Erreur analyse');
+      const analyse = data.analysis;
+      save('Analyse photo', analyse.substring(0, 80), 'photo');
+      document.getElementById('zd').innerHTML = `<div class="card"><div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div><div class="cb"><img src="${e.target.result}" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover"><div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${analyse}</div><button class="bb" style="margin-top:11px" onclick="shr('Analyse photo','?','?')">📤 PARTAGER</button></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>ANALYSE PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+      await refreshCredits();
+    } catch (err) { errB('zd', err.message); }
   };
-  update();
-  CHAT_TIMER = setInterval(update, 1000);
-}
-
-function addChatMsg(role, content, cls = '') {
-  const msgs = document.getElementById('chat-msgs');
-  const div  = document.createElement('div');
-  div.className = `chat-msg ${role} ${cls}`;
-  if (role === 'bot') div.innerHTML = `<div class="bot-name">DYLAN 🔧</div>${content === '...' ? '<div class="loader" style="padding:5px 0;font-size:10px">...</div>' : content}`;
-  else div.textContent = content;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-window.resetChat = function() {
-  CHAT_HIST = [];
-  CHAT_SID  = Date.now().toString();
-  document.getElementById('chat-msgs').innerHTML = '<div class="chat-msg bot"><div class="bot-name">DYLAN 🔧</div>Nouvelle session. Pose ta question !</div>';
-  setText('chat-q-n', '--:--');
+  reader.readAsDataURL(file);
 };
 
-// ============================================================
-// GARAGE (CRUD véhicules via Supabase)
-// ============================================================
-async function loadCars() {
-  if (!SESSION) return;
-  try {
-    const result = await apiCall('cars_get');
-    CARS = result.cars || [];
-    renderCars();
-    renderSelCars();
-    renderAlerteCars();
-    setText('gs-v', CARS.length);
-  } catch(e) { console.error('loadCars:', e); }
-}
-
-function renderCars() {
-  const el = document.getElementById('g-cars');
-  if (!el) return;
-  if (!CARS.length) { el.innerHTML = '<div style="text-align:center;padding:18px;color:var(--muted);font-size:13px">Aucun véhicule.</div>'; return; }
-  el.innerHTML = CARS.map(c => `
-    <div class="car-c">
-      <div style="font-size:24px">🚗</div>
-      <div class="car-info">
-        <div class="car-n">${c.nom || c.marque+' '+c.modele}</div>
-        <div class="car-d">${c.marque} ${c.modele} ${c.annee} · ${c.carbu}${c.kw?' · '+c.kw+'kW':''}</div>
-        ${c.km ? `<div class="car-k">📍 ${c.km} km</div>` : ''}
-      </div>
-      <div style="text-align:center;min-width:38px">
-        <div class="car-sc" style="color:${scColor(c.score||85)}">${c.score||85}</div>
-        <div style="font-size:9px;color:var(--muted)">SANTÉ</div>
-      </div>
-      <div style="display:flex;gap:5px">
-        <button class="bsm" onclick="updKm('${c.id}')">KM</button>
-        <button class="br" onclick="delCar('${c.id}')">✕</button>
-      </div>
-    </div>`).join('');
-}
-
-function renderSelCars() {
-  const el = document.getElementById('car-sel-list');
-  if (!el) return;
-  if (!CARS.length) { el.innerHTML = '<div style="text-align:center;padding:18px;color:var(--muted);font-size:13px">Aucun véhicule. Ajoutez-en un dans <strong style="color:var(--accent)">GARAGE</strong>.</div>'; return; }
-  el.innerHTML = CARS.map(c => `
-    <div class="car-c${SEL_CAR?.id===c.id?' sel':''}" onclick="selCar('${c.id}')">
-      <div style="font-size:22px">🚗</div>
-      <div class="car-info">
-        <div class="car-n">${c.nom || c.marque+' '+c.modele}</div>
-        <div class="car-d">${c.marque} ${c.modele} ${c.annee} · ${c.carbu}</div>
-      </div>
-      ${SEL_CAR?.id===c.id ? '<span style="color:var(--accent);font-size:17px">✓</span>' : ''}
-    </div>`).join('');
-}
-
-function renderAlerteCars() {
-  const el = document.getElementById('al-cars');
-  if (!el || !CARS.length) return;
-  el.innerHTML = '<div style="display:flex;gap:7px;flex-wrap:wrap">' +
-    CARS.map(c => `<button onclick="selAlerteCar('${c.id}')" class="bsm">${c.nom||c.marque+' '+c.modele}</button>`).join('') + '</div>';
-}
-
-window.selCar = function(id) {
-  SEL_CAR = CARS.find(c => c.id === id);
-  if (!SEL_CAR) return;
-  const sv = (el,v) => { const e=document.getElementById(el); if(e&&v) e.value=v; };
-  sv('d-mk', SEL_CAR.marque); sv('d-mo', SEL_CAR.modele); sv('d-an', SEL_CAR.annee);
-  sv('d-cb', SEL_CAR.carbu);  sv('d-kw', SEL_CAR.kw);     sv('d-cm', SEL_CAR.code_moteur);
-  sv('d-km', SEL_CAR.km);
-  chkD(); renderSelCars();
-  toast('✅ ' + (SEL_CAR.nom||SEL_CAR.marque) + ' sélectionné', 'ok');
-};
-
-window.selAlerteCar = function(id) {
-  const c = CARS.find(x => x.id === id);
-  if (!c) return;
-  const sv = (el,v) => { const e=document.getElementById(el); if(e&&v) e.value=v; };
-  sv('a-mk', c.marque); sv('a-mo', c.modele); sv('a-an', c.annee); sv('a-km', c.km||'');
-  toast(c.nom||c.marque + ' sélectionné', 'ok');
-};
-
-window.showAddCar = () => document.getElementById('add-car-f').style.display = 'block';
-window.hideAddCar = () => document.getElementById('add-car-f').style.display = 'none';
-
-window.addCar = async function() {
-  const m  = document.getElementById('nc-mk').value;
-  const mo = document.getElementById('nc-mo').value.trim();
-  const a  = document.getElementById('nc-an').value.trim();
-  const c  = document.getElementById('nc-cb').value;
-  if (!m || !mo || !a || !c) { toast('Remplir Marque, Modèle, Année et Carburant', 'er'); return; }
-
-  const car = {
-    marque: m, modele: mo, annee: a, carbu: c,
-    kw: document.getElementById('nc-kw').value.trim(),
-    code_moteur: document.getElementById('nc-cm').value.trim().toUpperCase(),
-    vin: document.getElementById('nc-vn').value.trim().toUpperCase(),
-    km: document.getElementById('nc-km').value.trim(),
-    nom: document.getElementById('nc-nm').value.trim(),
-    score: 85
-  };
-
-  try {
-    const result = await apiCall('cars_add', { car });
-    CARS.push(result.car || { ...car, id: Date.now().toString() });
-    renderCars(); renderSelCars(); renderAlerteCars();
-    setText('gs-v', CARS.length);
-    hideAddCar();
-    toast('✅ Véhicule ajouté !', 'ok');
-    ['nc-mk','nc-mo','nc-an','nc-cb','nc-kw','nc-cm','nc-vn','nc-km','nc-nm'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
-  } catch(e) { toast('Erreur: ' + e.message, 'er'); }
-};
-
-window.updKm = async function(id) {
-  const km = prompt('Nouveau kilométrage:');
-  if (!km) return;
-  const c = CARS.find(x => x.id === id);
-  if (c) {
-    c.km = km;
-    await SB.from('cars').update({ km }).eq('id', id).eq('user_id', SESSION.user.id);
-    renderCars(); toast('KM mis à jour', 'ok');
-  }
-};
-
-window.delCar = async function(id) {
-  if (!confirm('Supprimer ce véhicule ?')) return;
-  try {
-    await apiCall('cars_delete', { carId: id });
-    CARS = CARS.filter(c => c.id !== id);
-    if (SEL_CAR?.id === id) SEL_CAR = null;
-    renderCars(); renderSelCars();
-    setText('gs-v', CARS.length);
-    toast('Véhicule supprimé', 'ok');
-  } catch(e) { toast('Erreur: ' + e.message, 'er'); }
-};
-
-// ============================================================
-// VIN
-// ============================================================
-window.doVIN = async function() {
+// ---- VIN (serveur vin_lookup, GRATUIT) ----
+window.doVIN = async function () {
   const vin = document.getElementById('v-n').value.trim().toUpperCase();
   if (vin.length < 5) { toast('VIN invalide', 'er'); return; }
-  const btn = document.getElementById('btn-v');
-  btn.disabled = true; btn.textContent = '⏳ DÉCODAGE...';
-  loader('zv');
-
+  const btn = document.getElementById('btn-v'); btn.disabled = true; btn.textContent = '⏳ DÉCODAGE...';
+  loader('zv'); save('Décodage VIN', vin, 'vin');
   try {
-    const d = await apiCall('vin', { vin });
-    const fl = [['PAYS',d.pays],['CONSTRUCTEUR',d.constructeur],['MODÈLE',d.modele],['VARIANTE',d.variante],['ANNÉE',d.annee],['USINE',d.usine],['MOTEUR',d.moteur],['CARBURANT',d.carburant],['TRANSMISSION',d.transmission]];
-    document.getElementById('zv').innerHTML = `
-      <div class="card">
-        <div class="ch"><div class="ct">VIN DÉCODÉ</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:1px">${vin}</span></div>
-        <div class="vgrid">${fl.map(f=>`<div class="vc"><div class="vcl">${f[0]}</div><div class="vcv">${f[1]||'—'}</div></div>`).join('')}</div>
-        <div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Résultat approximatif — vérifier sur la carte grise</div>
-        <div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>GRATUIT · DYLAN</div><div>${new Date().toLocaleString('fr-FR')}</div></div>
-      </div>`;
-  } catch(e) { errBox('zv', e.message); }
+    const r = await MecaIA.authedFetch('vin_lookup', { method: 'POST', body: { vin } });
+    if (r.status === 429) { toast((r.data && r.data.message) || 'Limite de 3 VIN par jour atteinte.', 'er'); errB('zv', (r.data && r.data.message) || 'Limite de 3 VIN/jour atteinte.'); btn.disabled = false; btn.textContent = '🔍 DÉCODER CE VIN — GRATUIT'; return; }
+    const data = r.data;
+    if (!r.ok || !data || !data.success) throw new Error((data && data.error) || 'VIN introuvable');
+    const v = data.vehicle || {};
+    const fl = [['PAYS', v.pays_fabrication], ['CONSTRUCTEUR', v.marque], ['MODÈLE', v.modele], ['ANNÉE', v.annee], ['MOTEUR', v.moteur || (v.cylindree_l ? v.cylindree_l + 'L' : '')], ['CARBURANT', v.carburant], ['CYLINDRES', v.cylindres], ['CARROSSERIE', v.carrosserie], ['N° VIN', data.vin]];
+    document.getElementById('zv').innerHTML = `<div class="card"><div class="ch"><div class="ct">VIN DÉCODÉ</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:1px">${data.vin}</span></div><div class="vgrid">${fl.map(f => `<div class="vc"><div class="vcl">${f[0]}</div><div class="vcv">${f[1] || '—'}</div></div>`).join('')}</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Source NHTSA — couverture limitée pour certains modèles européens</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>GRATUIT · MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+  } catch (e) { errB('zv', e.message); }
   btn.disabled = false; btn.textContent = '🔍 DÉCODER CE VIN — GRATUIT';
 };
 
-// ============================================================
-// PIÈCES
-// ============================================================
-window.doPieces = async function() {
-  if (!SESSION) { toast('Connecte-toi', 'er'); return; }
-  const mk = document.getElementById('p-mk').value;
-  const mo = document.getElementById('p-mo').value.trim();
-  const an = document.getElementById('p-an').value.trim();
+// ---- COMPARATIF PIÈCES (serveur parts_compare, 1 jeton) ----
+window.doPieces = async function () {
+  const mk = document.getElementById('p-mk').value; const mo = document.getElementById('p-mo').value.trim();
+  const an = document.getElementById('p-an').value.trim(); const cb = document.getElementById('p-cb').value;
+  const kw = document.getElementById('p-kw').value.trim(); const cy = document.getElementById('p-cy').value.trim();
+  const cm = document.getElementById('p-cm').value.trim().toUpperCase(); const km = document.getElementById('p-km').value.trim();
   const pc = document.getElementById('p-pc').value.trim();
   if (!mk || !mo || !pc) { toast('Remplir Marque, Modèle et Pièce', 'er'); return; }
-  const btn = document.getElementById('btn-p');
-  btn.disabled = true; btn.textContent = '⏳ RECHERCHE...'; loader('zp');
-  const vehicleInfo = [mk, mo, an, document.getElementById('p-cb').value, document.getElementById('p-cm').value.trim()].filter(Boolean).join(' ');
+  if (!useC()) return;
+  const btn = document.getElementById('btn-p'); btn.disabled = true; btn.textContent = '⏳ RECHERCHE...'; loader('zp');
+  const veh = [mk, mo, an, cb, kw && kw + 'kW', cy && cy + 'cm³', cm && 'Code:' + cm, km && km + 'km'].filter(Boolean).join(' ');
+  save('Pièces: ' + pc, veh, 'pieces');
   try {
-    const d = await apiCall('pieces', { vehicleInfo, partName: pc });
-    PROFILE.credits = d.creditsLeft; majC();
-    document.getElementById('zp').innerHTML = `
-      <div class="card">
-        <div class="ch"><div class="ct">${pc.toUpperCase()}</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">${d.pieces?.length||0} résultats</span></div>
-        <div class="plist">${(d.pieces||[]).map(p => {
-          const url = 'https://www.autodoc.be/fr/search?query='+encodeURIComponent(p.reference||p.nom);
-          const uc = p.urgence==='Immédiat'?'var(--red)':p.urgence==='Sous 1000km'?'var(--accent)':'var(--green)';
-          return `<div class="pi"><div class="pm"><div class="pn">${p.nom}</div><div class="pr">${p.marque} · Réf: ${p.reference} · <span style="color:var(--accent)">${p.qualite}</span></div><div class="pc">✓ ${p.compatibilite}</div>${p.urgence?`<div style="font-size:10px;color:${uc};margin-top:2px;font-family:'IBM Plex Mono',monospace">⏰ ${p.urgence}</div>`:''}</div><div class="pp">~${p.prix_min}€<br><span style="font-size:10px;color:var(--muted)">à ${p.prix_max}€</span></div><a href="${url}" target="_blank" style="text-decoration:none"><button class="bsm">COMMANDER →</button></a></div>`;
-        }).join('')}</div>
-        <div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Références indicatives — vérifier compatibilité</div>
-        <div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>PIÈCES · DYLAN</div><div>${new Date().toLocaleString('fr-FR')}</div></div>
-      </div>`;
-  } catch(e) { errBox('zp', e.message); if(e.message.includes('crédits')) openM('m-pay'); }
+    const r = await MecaIA.authedFetch('parts_compare', { method: 'POST', body: { part_name: pc, vehicle: veh, vehicle_marque: mk, vehicle_modele: mo } });
+    if (r.status === 402) { openM('m-pay'); toast('Plus de crédits !', 'er'); btn.disabled = false; btn.textContent = '🔧 TROUVER LES PIÈCES (1 crédit)'; return; }
+    const d = r.data;
+    if (!r.ok || !d || !d.success) throw new Error((d && d.error) || 'Erreur pièces');
+    document.getElementById('zp').innerHTML = `<div class="card"><div class="ch"><div class="ct">${pc.toUpperCase()}</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">${d.pieces.length} résultats · ${veh}</span></div><div class="plist">${d.pieces.map(p => { const url = 'https://www.autodoc.be/fr/search?query=' + encodeURIComponent(p.reference || p.nom); const uc = p.urgence === 'Immédiat' ? 'var(--red)' : p.urgence === 'Sous 1000km' ? 'var(--accent)' : 'var(--green)'; return `<div class="pi"><div class="pm"><div class="pn">${p.nom}</div><div class="pr">${p.marque} · Réf: ${p.reference}${p.ref_origine ? ' · OEM: ' + p.ref_origine : ''} · <span style="color:var(--accent)">${p.qualite}</span></div><div class="pc">✓ ${p.compatibilite}</div>${p.conseil ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">💬 ${p.conseil}</div>` : ''} ${p.urgence ? `<div style="font-size:10px;color:${uc};margin-top:2px;font-family:'IBM Plex Mono',monospace">⏰ ${p.urgence}</div>` : ''}</div><div class="pp">~${p.prix_min}€<br><span style="font-size:10px;color:var(--muted)">à ${p.prix_max}€</span></div><a href="${url}" target="_blank" style="text-decoration:none"><button class="bsm">COMMANDER →</button></a></div>`; }).join('')}</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Références indicatives — vérifier compatibilité avant commande</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>PIÈCES MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+    await refreshCredits();
+  } catch (e) { errB('zp', e.message); }
   btn.disabled = false; btn.textContent = '🔧 TROUVER LES PIÈCES (1 crédit)';
 };
 
-// ============================================================
-// ALERTES
-// ============================================================
-window.doAlertes = async function() {
-  if (!SESSION) { toast('Connecte-toi', 'er'); return; }
-  const mk = document.getElementById('a-mk').value.trim();
-  const mo = document.getElementById('a-mo').value.trim();
-  const an = document.getElementById('a-an').value.trim();
-  const km = document.getElementById('a-km').value.trim();
+// ---- ALERTES ENTRETIEN (serveur alerts_generate) ----
+window.doAlertes = async function () {
+  const mk = document.getElementById('a-mk').value.trim(); const mo = document.getElementById('a-mo').value.trim();
+  const an = document.getElementById('a-an').value.trim(); const km = document.getElementById('a-km').value.trim();
   if (!km) { toast('Entrer le kilométrage', 'er'); return; }
-  loader('za');
+  if (!useC()) return;
+  loader('za'); save('Alertes entretien', [mk, mo, km + 'km'].filter(Boolean).join(' '), 'alerte');
   try {
-    const d = await apiCall('alertes', { vehicleInfo: [mk,mo,an].filter(Boolean).join(' '), mileage: km });
-    PROFILE.credits = d.creditsLeft; majC();
-    document.getElementById('za').innerHTML = '<div>' + (d.alertes||[]).map(a => {
-      const col = a.urgence==='Immédiat'?'var(--red)':a.urgence==='Bientôt'?'var(--accent)':'var(--green)';
-      const sv  = a.urgence==='Immédiat'?'sevH':a.urgence==='Bientôt'?'sevM':'sevF';
-      return `<div style="display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--border);border-left:3px solid ${col};border-radius:7px;padding:11px 14px;margin-bottom:8px"><div style="font-size:19px;flex-shrink:0">${a.icon||'🔧'}</div><div style="flex:1"><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">${a.titre}</div><div style="font-size:11px;color:var(--muted)">${a.desc}</div>${a.km_next?`<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);margin-top:2px">Prochain: ${a.km_next.toLocaleString()} km</div>`:''}</div><span class="sev ${sv}">${a.urgence}</span></div>`;
-    }).join('') + '</div>';
-  } catch(e) { errBox('za', e.message); if(e.message.includes('crédits')) openM('m-pay'); }
+    const r = await MecaIA.authedFetch('alerts_generate', { method: 'POST', body: { vehicle_marque: mk, vehicle_modele: mo, vehicle_annee: an, vehicle_km: parseInt(km) || km } });
+    if (r.status === 402) { openM('m-pay'); toast('Plus de crédits !', 'er'); return; }
+    const d = r.data;
+    if (!r.ok || !d || !d.success) throw new Error((d && d.error) || 'Erreur alertes');
+    document.getElementById('za').innerHTML = '<div>' + d.alertes.map(a => { const col = a.urgence === 'Immédiat' ? 'var(--red)' : a.urgence === 'Bientôt' ? 'var(--accent)' : 'var(--green)'; const sv = a.urgence === 'Immédiat' ? 'sevH' : a.urgence === 'Bientôt' ? 'sevM' : 'sevF'; return `<div class="ali" style="border-left:3px solid ${col}"><div style="font-size:19px;flex-shrink:0">${a.icon}</div><div style="flex:1"><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">${a.titre}</div><div style="font-size:11px;color:var(--muted)">${a.desc}</div>${a.km_next ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);margin-top:2px">Prochain: ${a.km_next.toLocaleString()} km</div>` : ''}</div><span class="sev ${sv}">${a.urgence}</span></div>`; }).join('') + '</div>';
+    await refreshCredits();
+  } catch (e) { errB('za', e.message); }
 };
 
-// ============================================================
-// URGENCE (sans connexion)
-// ============================================================
-window.analyseUrg = async function() {
-  const desc = document.getElementById('urg-d').value.trim();
-  const car  = document.getElementById('urg-c').value.trim();
-  if (!desc) { toast('Décrivez le problème', 'er'); return; }
-  document.getElementById('urg-r').innerHTML = '<div class="loader" style="padding:20px">ANALYSE<div class="lbar"><div class="lfill"></div></div></div>';
-  try {
-    const d = await apiCall('urgence', { description: desc, vehicleInfo: car });
-    const col = { STOP:'var(--red)', ATTENTION:'var(--accent)', OK:'var(--green)' };
-    const emj = { STOP:'🔴', ATTENTION:'🟡', OK:'🟢' };
-    document.getElementById('urg-r').innerHTML = `
-      <div style="margin-top:15px;background:var(--s2);border:2px solid ${col[d.gravite]||'var(--accent)'};border-radius:10px;padding:15px;text-align:center">
-        <div style="font-size:44px;margin-bottom:7px">${emj[d.gravite]||'🟡'}</div>
-        <div style="font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:${col[d.gravite]||'var(--accent)'};margin-bottom:7px">${d.gravite}</div>
-        <div style="font-size:13px;line-height:1.7;margin-bottom:11px">${d.message}</div>
-        <div style="font-size:13px;color:var(--accent);font-weight:500">⚡ ${d.action}</div>
-      </div>`;
-  } catch(e) { document.getElementById('urg-r').innerHTML = '<div class="err-box">' + e.message + '</div>'; }
-};
 
-// ============================================================
-// ANALYSE PHOTO
-// ============================================================
-window.doPhoto = async function(event) {
-  const file = event.target.files[0];
-  if (!file || !SESSION) return;
-  loader('zd');
+/* ---- Paiement : bouton -> checkout serveur ---- */
+window.buyPack=async function(pkg){if(!CU){toast("Connecte-toi dabord","er");return;}const r=await MecaIA.authedFetch("stripe_checkout",{method:"POST",body:{user_id:CU.id,package:pkg}});if(r.ok&&r.data&&r.data.checkout_url){window.location.href=r.data.checkout_url;}else{toast("Erreur paiement","er");}};
+(function(){const p=new URLSearchParams(location.search);if(p.get("session_id")){setTimeout(()=>{if(window.refreshCredits)refreshCredits();},1500);}})();
+/* ---- Dashboard owner : non migre (rebranchement Supabase plus tard) ---- */
 
-  try {
-    // Compresser l'image avant envoi (évite dépassement limite Netlify 6MB)
-    const compressed = await compressImage(file, 1024, 0.8);
 
-    const headers = { 'Content-Type': 'application/json' };
-    if (SESSION?.access_token) headers['Authorization'] = `Bearer ${SESSION.access_token}`;
+/* ===== DASHBOARD + PROMO (auto) ===== */
+/* ============================================================
+   MecaIA — DASHBOARD PROPRIÉTAIRE + CODES PROMO (Supabase)
+   Réassigne loadDash (l'ancienne version Firestore meurt).
+   Rendu dynamique dans #s-dash. Tout passe par la fonction
+   serveur "admin" (réservée au propriétaire via OWNER_EMAIL).
+   ============================================================ */
 
-    const res = await fetch('/api', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        action: 'photo',
-        imageBase64: compressed.base64,
-        imageMime: 'image/jpeg'
-      })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-
-    PROFILE.credits = data.creditsLeft; majC();
-    document.getElementById('zd').innerHTML = `
-      <div class="card">
-        <div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div>
-        <div class="cb">
-          <img src="${compressed.dataUrl}" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover">
-          <div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${data.analyse}</div>
-        </div>
-        <div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>DYLAN · PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div>
-      </div>`;
-  } catch(err) {
-    errBox('zd', err.message);
-    if (err.message.includes('crédits')) openM('m-pay');
-  }
-  // Réinitialiser l'input pour permettre de re-sélectionner la même photo
-  event.target.value = '';
-};
-
-/** Compresser une image via canvas — retourne base64 (sans préfixe) + dataUrl */
-function compressImage(file, maxWidth = 1024, quality = 0.8) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        let { width, height } = img;
-        if (width > maxWidth) {
-          height = Math.round(height * (maxWidth / width));
-          width = maxWidth;
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', quality);
-        resolve({ dataUrl, base64: dataUrl.split(',')[1] });
-      };
-      img.onerror = () => reject(new Error('Image illisible'));
-      img.src = e.target.result;
-    };
-    reader.onerror = () => reject(new Error('Lecture fichier impossible'));
-    reader.readAsDataURL(file);
-  });
-}
-
-// ============================================================
-// HISTORIQUE (depuis Supabase)
-// ============================================================
-async function loadHistory() {
-  if (!SESSION) return;
-  try {
-    const result = await apiCall('history');
-    renderHistory(result.history || [], 'all');
-  } catch(e) { console.error('history:', e); }
-}
-
-function renderHistory(hist, filter = 'all', q = '') {
-  const el = document.getElementById('suivi-l');
+loadDash = async function () {
+  const el = document.getElementById('s-dash');
   if (!el) return;
-  let items = hist;
-  if (filter === 'fav') items = items.filter(x => x.is_fav);
-  if (q) items = items.filter(x => JSON.stringify(x).toLowerCase().includes(q.toLowerCase()));
-  if (!items.length) { el.innerHTML = '<div style="text-align:center;padding:28px;color:var(--muted)">Aucun historique.</div>'; return; }
-  el.innerHTML = items.map(item => `
-    <div class="disc-i${item.is_fav?' fav':''}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">
-          ${item.type==='obd'?'🔧':item.type==='photo'?'📸':item.type==='pieces'?'🔩':item.type==='alertes'?'🔔':'🔍'} ${item.input?.vehicleInfo || item.type}
+  el.innerHTML = `
+  <div style="padding:16px;max-width:780px;margin:auto;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff">⚙️ TABLEAU DE BORD</div>
+      <button class="bsm" onclick="showSc('s-app')">← Retour app</button>
+    </div>
+
+    <div class="card" style="margin-bottom:12px"><div class="ch"><div class="ct">📊 MONITORING</div></div>
+      <div class="cb"><div id="dash-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">Chargement…</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px"><div class="ch"><div class="ct">🎁 OFFRIR À UN TESTEUR</div></div>
+      <div class="cb">
+        <input id="dg-email" placeholder="email du testeur" style="width:100%;margin-bottom:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="bb" onclick="grantTester('unlimited',30)">Illimité 30 jours</button>
+          <button class="bg" onclick="grantTester('credits',50)">+50 crédits</button>
         </div>
-        <button onclick="toggleFav('${item.id}', ${!item.is_fav})" style="background:none;border:none;cursor:pointer;font-size:15px;padding:0">${item.is_fav?'⭐':'☆'}</button>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:3px">${item.output?.titre || item.output?.code || ''}</div>
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)">${new Date(item.created_at).toLocaleString('fr-FR')}</div>
-    </div>`).join('');
-}
+    </div>
 
-let histCache = [];
-window.filtS = async function(f) {
-  if (!histCache.length) {
-    const r = await apiCall('history');
-    histCache = r.history || [];
+    <div class="card" style="margin-bottom:12px"><div class="ch"><div class="ct">➕ CRÉER UN CODE PROMO</div></div>
+      <div class="cb">
+        <input id="dp-code" placeholder="CODE (ex: TESTEUR2026)" style="width:100%;margin-bottom:8px;text-transform:uppercase">
+        <select id="dp-kind" style="width:100%;margin-bottom:8px">
+          <option value="percent">Réduction % (1-100, à l'achat)</option>
+          <option value="credits">Crédits offerts</option>
+          <option value="unlimited">Illimité (jours)</option>
+        </select>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <input id="dp-value" type="number" placeholder="valeur (% / crédits / jours)" style="flex:1;min-width:120px">
+          <input id="dp-max" type="number" placeholder="max utilisateurs (vide=illimité)" style="flex:1;min-width:120px">
+          <input id="dp-exp" type="number" placeholder="valable X jours (vide=toujours)" style="flex:1;min-width:120px">
+        </div>
+        <button class="bb" onclick="createPromo()">Créer le code</button>
+      </div>
+    </div>
+
+    <div class="card"><div class="ch"><div class="ct">🗂️ HISTORIQUE DES CODES</div></div>
+      <div class="cb"><div id="dash-promos">Chargement…</div></div>
+    </div>
+  </div>`;
+  await refreshDash();
+};
+window.loadDash = loadDash;
+
+async function refreshDash() {
+  const s = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'stats' } });
+  const se = document.getElementById('dash-stats');
+  if (se) {
+    if (s.status === 403) { se.innerHTML = '<div style="color:var(--red)">Accès réservé au propriétaire (vérifie OWNER_EMAIL).</div>'; }
+    else if (s.ok && s.data && s.data.success) {
+      const x = s.data.stats || {};
+      const cell = (l, v) => `<div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px"><div style="font-size:22px;font-weight:700;color:var(--accent)">${v ?? 0}</div><div style="font-size:11px;color:var(--muted)">${l}</div></div>`;
+      se.innerHTML = cell('Utilisateurs', x.total_users) + cell('Diagnostics', x.total_diagnostics) + cell('Illimités actifs', x.unlimited_users) + cell('Codes actifs', x.active_promos);
+    } else se.innerHTML = '<div style="color:var(--muted)">Stats indisponibles.</div>';
   }
-  renderHistory(histCache, f);
-};
-window.searchS = function(q) { renderHistory(histCache, 'all', q); };
-window.clearS = function() { if(confirm('Effacer tout ?')) { histCache=[]; document.getElementById('suivi-l').innerHTML='<div style="text-align:center;padding:28px;color:var(--muted)">Aucun historique.</div>'; toast('Effacé','ok'); } };
 
-window.toggleFav = async function(id, isFav) {
-  try {
-    await apiCall('history_fav', { diagId: id, isFav });
-    const item = histCache.find(x => x.id === id);
-    if (item) item.is_fav = isFav;
-    renderHistory(histCache);
-  } catch(e) { console.error(e); }
-};
-
-// ============================================================
-// PDF
-// ============================================================
-window.genPDF = function() {
-  if (!LAST_DIAG) { toast('Pas de diagnostic', 'er'); return; }
-  try {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
-    let y = 20;
-    pdf.setFontSize(21); pdf.setTextColor(240,165,0);
-    pdf.text('MecaIA — Rapport de Diagnostic', 20, y); y += 10;
-    pdf.setFontSize(10); pdf.setTextColor(120,120,120);
-    pdf.text('Créé par Loïc Declerck · loicdeclerck4020@gmail.com', 20, y); y += 6;
-    pdf.text('mecaiabyloky.netlify.app · ' + new Date().toLocaleString('fr-FR'), 20, y); y += 13;
-    pdf.setFontSize(15); pdf.setTextColor(0,0,0);
-    pdf.text((LAST_DIAG.code||'') + ' — ' + (LAST_DIAG.titre||''), 20, y); y += 9;
-    pdf.setFontSize(11);
-    pdf.text('Sévérité: ' + LAST_DIAG.severite + ' · ' + (LAST_DIAG.rouler?'Peut rouler':'Ne pas rouler'), 20, y); y += 10;
-    pdf.setFontSize(12); pdf.setTextColor(240,165,0); pdf.text('Description:', 20, y); y += 7;
-    pdf.setFontSize(10); pdf.setTextColor(50,50,50);
-    const lines = pdf.splitTextToSize(LAST_DIAG.description||'', 170);
-    pdf.text(lines, 20, y); y += lines.length*6+9;
-    pdf.setFontSize(12); pdf.setTextColor(240,165,0); pdf.text('Estimation du coût:', 20, y); y += 7;
-    pdf.setFontSize(10); pdf.setTextColor(50,50,50);
-    pdf.text('Main d\'oeuvre: '+(LAST_DIAG.mo_min||50)+'€ — '+(LAST_DIAG.mo_max||200)+'€', 20, y); y += 6;
-    pdf.text('Pièces: '+(LAST_DIAG.pieces_min||30)+'€ — '+(LAST_DIAG.pieces_max||300)+'€', 20, y); y += 6;
-    pdf.setFont(undefined,'bold');
-    pdf.text('TOTAL: '+((LAST_DIAG.mo_min||50)+(LAST_DIAG.pieces_min||30))+'€ — '+((LAST_DIAG.mo_max||200)+(LAST_DIAG.pieces_max||300))+'€', 20, y); y += 12;
-    pdf.setFont(undefined,'normal'); pdf.setFontSize(8); pdf.setTextColor(150,150,150);
-    pdf.text('* Estimation indicative. MecaIA © 2025 — Loïc Declerck — Belgique', 20, y);
-    pdf.save('diagnostic-mecaia-' + new Date().toISOString().split('T')[0] + '.pdf');
-    toast('PDF téléchargé !', 'ok');
-  } catch(e) { toast('Erreur PDF: ' + e.message, 'er'); }
-};
-
-window.shareReport = function() {
-  if (!LAST_DIAG) return;
-  const txt = `🔧 RAPPORT MECAIA\n${LAST_DIAG.titre}\nCoût: ${(LAST_DIAG.mo_min||50)+(LAST_DIAG.pieces_min||30)}€ — ${(LAST_DIAG.mo_max||200)+(LAST_DIAG.pieces_max||300)}€\nmecaiabyloky.netlify.app`;
-  if (navigator.share) navigator.share({ title: 'Rapport MecaIA', text: txt });
-  else navigator.clipboard.writeText(txt).then(() => toast('Copié !', 'ok'));
-};
-
-window.rateD = function(n) {
-  document.querySelectorAll('#d-stars .star').forEach((s,i) => s.className='star'+(i<n?' on':''));
-  toast('Merci pour la note !', 'ok');
-};
-
-// ============================================================
-// PARRAINAGE
-// ============================================================
-window.copyPromo = function() {
-  const code = document.getElementById('my-promo').textContent;
-  const txt  = '🔧 Utilise mon code ' + code + ' sur MecaIA pour des crédits bonus !\nmecaiabyloky.netlify.app';
-  if (navigator.share) navigator.share({ title: 'MecaIA', text: txt });
-  else navigator.clipboard.writeText(txt).then(() => toast('Code copié !', 'ok'));
-};
-
-// ============================================================
-// DASHBOARD (admin)
-// ============================================================
-async function loadDash() {
-  if (!SESSION) return;
-  try {
-    const result = await apiCall('admin_stats');
-    setText('ds-u', result.totalUsers);
-    setText('ds-r', result.totalRevenue + '€');
-    setText('ds-v', localStorage.getItem('mv') || '0');
-    const totalDiags = (result.users||[]).reduce((s,u) => s + (u.diagnostics_count||0), 0);
-    setText('ds-d', totalDiags);
-    document.getElementById('d-users').innerHTML = (result.users||[]).slice(0,15).map(u => `
-      <div class="du">
-        <div>
-          <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">${u.name||'—'}</div>
-          <div style="font-size:11px;color:var(--muted)">${u.email} · ${u.type} · ${u.created_at?new Date(u.created_at).toLocaleDateString('fr-FR'):''}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--accent)">${u.is_unlimited?'∞':u.credits} crédits</div>
-          <div style="font-size:10px;color:var(--muted)">${u.diagnostics_count||0} diags · ${(u.total_paid||0).toFixed(2)}€</div>
-        </div>
+  const p = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'list_promos' } });
+  const pe = document.getElementById('dash-promos');
+  if (pe) {
+    if (p.ok && p.data && p.data.success) {
+      const list = p.data.promos || [];
+      if (!list.length) { pe.innerHTML = '<div style="color:var(--muted);font-size:13px">Aucun code.</div>'; return; }
+      const kindLbl = { percent: '% réduction', credits: 'crédits', unlimited: 'jours illimité' };
+      const stColor = { 'actif': 'var(--green)', 'désactivé': 'var(--muted)', 'expiré': 'var(--red)', 'épuisé': 'var(--red)' };
+      pe.innerHTML = list.map(c => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:#fff">${c.code}</div>
+        <div style="font-size:11px;color:var(--muted)">${c.value} ${kindLbl[c.kind] || c.kind} · ${c.uses_count}/${c.max_uses ?? '∞'} utilisés · <span style="color:${stColor[c.status] || 'var(--muted)'}">${c.status}</span></div></div>
+        <button class="bsm" onclick="togglePromo('${c.id}',${!c.active})">${c.active ? 'Désactiver' : 'Réactiver'}</button>
       </div>`).join('');
-  } catch(e) { console.error('dash:', e); }
+    } else pe.innerHTML = '<div style="color:var(--muted)">Liste indisponible.</div>';
+  }
 }
+window.refreshDash = refreshDash;
 
-window.genCode = async function() {
-  const type  = document.getElementById('pr-ty').value;
-  const val   = parseInt(document.getElementById('pr-val').value);
-  const uses  = parseInt(document.getElementById('pr-us').value);
-  const nm    = document.getElementById('pr-nm').value.trim();
-  try {
-    const r = await apiCall('gen_promo', { type, credits: val, usesLeft: uses, customName: nm });
-    document.getElementById('pr-res').innerHTML = `
-      <div class="pcd">${r.code}</div>
-      <button class="bsm" onclick="navigator.clipboard.writeText('${r.code}').then(()=>toast('Copié!','ok'))" style="margin-top:7px">📋 COPIER</button>`;
-    toast('✅ Code créé: ' + r.code, 'ok');
-  } catch(e) { toast('Erreur: ' + e.message, 'er'); }
-};
-
-// ============================================================
-// UTILITAIRES UI
-// ============================================================
-function toast(m, t='') {
-  const c  = document.getElementById('toasts');
-  const el = document.createElement('div');
-  el.className = 'toast ' + (t==='ok'?'ok':t==='er'?'er':'');
-  el.textContent = m;
-  c.appendChild(el);
-  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 2500);
-}
-
-function setText(id, v) { const e=document.getElementById(id); if(e) e.textContent=v; }
-function loader(id) { document.getElementById(id).innerHTML='<div class="loader">ANALYSE EN COURS<div class="lbar"><div class="lfill"></div></div></div>'; }
-function errBox(id, m) { document.getElementById(id).innerHTML='<div class="err-box">⚠ '+m+'</div>'; }
-function scColor(s) { return s>=80?'var(--green)':s>=60?'var(--accent)':'var(--red)'; }
-function setAM(t, tp) { const e=document.getElementById('a-msg'); e.textContent=t; e.className='amsg'+(tp?' '+tp:''); }
-
-function showSc(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-  window.scrollTo(0, 0);
-}
-window.showSc = showSc;
-
-window.goLand = () => showSc('s-land');
-window.goAuth = function(m) { showSc('s-auth'); swTab(m); };
-
-window.swTab = function(m) {
-  document.getElementById('af-l').style.display = m==='login' ? 'block' : 'none';
-  document.getElementById('af-r').style.display = m==='register' ? 'block' : 'none';
-  document.getElementById('at-l').className = 'atab' + (m==='login'?' on':'');
-  document.getElementById('at-r').className = 'atab' + (m==='register'?' on':'');
-  setAM('','');
-};
-
-window.openM  = id => document.getElementById(id).classList.add('on');
-window.closeM = id => document.getElementById(id).classList.remove('on');
-
-window.showPg = function(id) {
-  const pages = ['diag','chat','garage','vin','pieces','suivi','alertes','tarifs'];
-  pages.forEach(p => {
-    document.getElementById('pg-'+p)?.classList.toggle('on', p===id);
-    document.getElementById('t-'+p)?.classList.toggle('on', p===id);
-  });
-  if (id === 'suivi') { apiCall('history').then(r => { histCache = r.history || []; renderHistory(histCache); }).catch(e => console.log('history:', e.message)); }
-  if (id === 'garage') { renderCars(); loadCars(); }
-  if (id === 'alertes') renderAlerteCars();
-  window.scrollTo(0, 0);
-};
-
-function hideLoading() {
-  const el = document.getElementById('s-loading');
-  if (el) { el.style.opacity='0'; setTimeout(()=>el.style.display='none',500); }
-}
-
-window.togF = function(el) {
-  const a = el.nextElementSibling;
-  a.classList.toggle('on');
-  el.querySelector('span:last-child').textContent = a.classList.contains('on') ? '▲' : '▼';
-};
-
-function setLang(l) {
-  const T = {
-    fr:{h1:'L\'expert automobile IA<br>dans votre <span style="color:var(--accent)">poche</span>'},
-    nl:{h1:'De AI auto-expert<br>in uw <span style="color:var(--accent)">zak</span>'},
-    en:{h1:'The AI auto expert<br>in your <span style="color:var(--accent)">pocket</span>'},
-    de:{h1:'Der KI-Auto-Experte<br>in Ihrer <span style="color:var(--accent)">Tasche</span>'}
+window.createPromo = async function () {
+  const code = (document.getElementById('dp-code').value || '').trim().toUpperCase();
+  const kind = document.getElementById('dp-kind').value;
+  const value = parseFloat(document.getElementById('dp-value').value);
+  const maxV = document.getElementById('dp-max').value;
+  const expD = document.getElementById('dp-exp').value;
+  if (!code || !Number.isFinite(value)) { toast('Code et valeur requis', 'er'); return; }
+  if (kind === 'percent' && (value < 1 || value > 100)) { toast('Le % doit être 1-100', 'er'); return; }
+  const payload = {
+    code, kind, value,
+    max_uses: maxV ? parseInt(maxV) : null,
+    expires_at: expD ? new Date(Date.now() + parseInt(expD) * 86400000).toISOString() : null,
   };
-  localStorage.setItem('ml', l);
-  const t = T[l] || T.fr;
-  const h = document.querySelector('.l-h1'); if(h) h.innerHTML = t.h1;
-  document.querySelectorAll('.lang-s').forEach(e => e.value = l);
-}
-window.setLang = setLang;
+  const r = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'create_promo', payload } });
+  if (r.ok && r.data && r.data.success) { toast('✅ Code créé : ' + r.data.code, 'ok'); refreshDash(); }
+  else toast('Erreur : ' + ((r.data && r.data.error) || ''), 'er');
+};
 
-function majVis() {
-  let n = parseInt(localStorage.getItem('mv')||'0');
-  const l = localStorage.getItem('mvd');
-  const now = new Date().toDateString();
-  if (l !== now) { n++; localStorage.setItem('mv',String(n)); localStorage.setItem('mvd',now); }
-  setText('vis-n', n);
-}
+window.togglePromo = async function (id, active) {
+  const r = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'toggle_promo', payload: { id, active } } });
+  if (r.ok && r.data && r.data.success) { toast(active ? 'Code réactivé' : 'Code désactivé', 'ok'); refreshDash(); }
+  else toast('Erreur', 'er');
+};
 
-window.addEventListener('scroll', () => {
-  const b = document.getElementById('stbtn');
-  if (b) b.className = 'stbtn' + (window.scrollY > 280 ? ' show' : '');
-});
+window.grantTester = async function (kind, value) {
+  const email = (document.getElementById('dg-email').value || '').trim();
+  if (!email) { toast('Entre un email', 'er'); return; }
+  const r = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'grant', payload: { email, kind, value } } });
+  if (r.ok && r.data && r.data.success) { toast('✅ ' + r.data.message, 'ok'); refreshDash(); }
+  else toast('Erreur : ' + ((r.data && r.data.error) || ''), 'er');
+};
 
-// ============================================================
-// DÉMARRAGE
-// ============================================================
-window.addEventListener('DOMContentLoaded', init);
+/* ---- Côté UTILISATEUR : échanger un code promo (crédits/illimité) ---- */
+window.redeemPromo = async function () {
+  const code = prompt('Entre ton code promo :');
+  if (!code) return;
+  const r = await MecaIA.authedFetch('promo_redeem', { method: 'POST', body: { code } });
+  if (r.ok && r.data && r.data.success) {
+    toast('🎉 Code appliqué !', 'ok');
+    if (window.refreshCredits) refreshCredits();
+  } else toast((r.data && r.data.message) || 'Code invalide', 'er');
+};
+
 </script>
 </body>
 </html>

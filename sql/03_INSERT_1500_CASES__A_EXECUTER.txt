@@ -1,0 +1,13 @@
+REMPLISSAGE DE LA BASE — ÉTAPE ESSENTIELLE
+==========================================
+Le fichier réel "INSERT_1500_CASES.sql" (~44 Mo, 1500 cas) est fourni
+SÉPARÉMENT (hors de ce zip car trop volumineux).
+
+Quand l'exécuter : APRÈS 00, 01, 02 (les tables/fonctions doivent exister),
+tu peux le lancer à n'importe quel moment de la Phase 1.
+
+Comment : ouvre-le dans le SQL Editor de Supabase et exécute-le
+(ou via psql). Il insère 1500 cas dans la table diagnostic_cases.
+
+Sans ce remplissage, la recherche de cas similaires sera vide au début
+(la base se remplira ensuite toute seule avec les diagnostics des utilisateurs).

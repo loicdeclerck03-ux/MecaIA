@@ -1,15 +1,14 @@
 {
-  "name": "mecaia",
-  "version": "1.0.0",
-  "description": "MecaIA - L'expert automobile IA",
-  "type": "module",
+  "name": "mecaia-v3",
+  "version": "3.0.0",
+  "description": "MecaIA V3 - Plateforme de diagnostic automobile assistee par IA",
   "private": true,
   "engines": {
-    "node": ">=18"
+    "node": ">=18.0.0"
   },
-  "scripts": {
-    "test": "node test/test-api.mjs && node test/test-webhook.mjs && node test/test-checkout-email.mjs && node test/simulation.mjs"
-  },
-  "author": "Loïc Declerck",
-  "license": "UNLICENSED"
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "stripe": "^16.12.0"
+  }
 }

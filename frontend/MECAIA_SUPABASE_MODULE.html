@@ -1,0 +1,72 @@
+<!-- ============================================================
+     MecaIA — BRIQUE SUPABASE (Auth + appels sécurisés)
+     ÉTAPE 9.1 — fondation du frontend.
+     • Remplace le bloc Firebase d'init/auth.
+     • SUPABASE_URL et SUPABASE_ANON sont PUBLICS : sans danger
+       dans le navigateur (la clé anon est faite pour ça).
+     • Expose window.MecaIA pour tout le reste de l'app.
+     À coller dans index.html À LA PLACE des imports/inits Firebase.
+     ============================================================ -->
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// >>> REMPLIS avec TES valeurs publiques : Supabase > Settings > API <<<
+const SUPABASE_URL  = "https://TON-PROJET.supabase.co"; // Project URL
+const SUPABASE_ANON = "TA_CLE_ANON_PUBLIQUE";            // anon public key
+
+const supa = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: { persistSession: true, autoRefreshToken: true },
+});
+
+// JWT courant (ou null si déconnecté)
+async function getToken() {
+  const { data } = await supa.auth.getSession();
+  return data?.session?.access_token || null;
+}
+
+// Appel d'une fonction Netlify avec le JWT attaché automatiquement.
+//   fnName : "garage_get", "dylan_agents", ...
+//   { method, body, query }
+// Retour : { ok, status, data }
+async function authedFetch(fnName, { method = "POST", body = null, query = null } = {}) {
+  const token = await getToken();
+  let url = `/.netlify/functions/${fnName}`;
+  if (query) url += "?" + new URLSearchParams(query).toString();
+
+  const res = await fetch(url, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  let data = null;
+  try { data = await res.json(); } catch { /* réponse non-JSON */ }
+  return { ok: res.ok, status: res.status, data };
+}
+
+// API publique utilisée par le reste de l'app (étapes 9.2 → 9.4)
+window.MecaIA = {
+  supa,
+  getToken,
+  authedFetch,
+
+  // ---- Authentification (Supabase Auth) ----
+  signUp: (email, password, meta = {}) =>
+    supa.auth.signUp({ email, password, options: { data: meta } }),
+  signIn: (email, password) =>
+    supa.auth.signInWithPassword({ email, password }),
+  signOut: () => supa.auth.signOut(),
+  resetPassword: (email) =>
+    supa.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin }),
+
+  // S'abonner aux changements de session (login/logout/refresh)
+  onAuth: (cb) =>
+    supa.auth.onAuthStateChange((_evt, session) => cb(session?.user || null, session)),
+
+  // Utilisateur courant (ou null)
+  getUser: async () => (await supa.auth.getUser()).data?.user || null,
+};
+</script>

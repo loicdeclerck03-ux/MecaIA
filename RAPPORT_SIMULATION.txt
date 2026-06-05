@@ -1,0 +1,52 @@
+════════ SIMULATION STATIQUE — MecaIA V3 ════════
+
+[1] Syntaxe de toutes les fonctions backend
+  ✅ 30 fonctions + lib compilent
+
+[2] Variables d'environnement
+  ✅ aucune variable cassée
+
+[3] Sécurité paiement
+  ✅ crédit UNIQUEMENT dans le webhook
+  ✅ checkout ne crédite pas
+  ✅ verify ne crédite pas
+
+[4] Modèle de jetons
+  ✅ diagnostic = session 10 min
+  ✅ comparatif = 1 jeton
+  ✅ VIN limité 3/jour
+
+[5] Auth / anti-IDOR (échantillon)
+  ✅ garage_get exige le JWT (401)
+  ✅ maintenance_get exige le JWT (401)
+  ✅ health_score_get exige le JWT (401)
+  ✅ profile_get exige le JWT (401)
+  ✅ contrôle propriété véhicule
+
+[6] Frontend index.html (migré Supabase)
+  ✅ syntaxe du module
+  ✅ aucune clé sk-ant
+  ✅ Firebase init retiré
+  ✅ Supabase MecaIA défini
+  ✅ bouton achat -> checkout
+
+[7] Paquet complet
+  ✅ 19 SQL numérotés (00->18)
+  ✅ 32 fonctions packagées
+  ✅ index migré dans le paquet
+
+[8] Dashboard admin & codes promo
+  ✅ admin réservé au propriétaire (403)
+  ✅ promo_redeem compile
+  ✅ checkout gère code %
+  ✅ dashboard dans index
+  ✅ redeem utilisateur dans index
+  ✅ PROMO_ADMIN.sql packagé
+
+[9] Table diagnostic_cases (le blocage corrigé)
+  ✅ 00 crée la table
+  ✅ extension pgvector
+  ✅ 01 : fonction avant trigger
+  ✅ 19 fichiers SQL (00->18)
+
+════════ RÉSULTAT : 31 réussis / 0 échecs ════════
