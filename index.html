@@ -366,7 +366,7 @@ textarea{resize:vertical;min-height:68px}
   </div>
 </header>
 <div class="app-tabs">
-  <button class="tab on" id="t-diag" onclick="showPg('diag')">DIAGNOSTIC</button>
+  <button class="tab on" id="t-diag" onclick="showPg('diag')">🔧 DYLAN IA</button>
   <button class="tab" id="t-garage" onclick="showPg('garage')">GARAGE</button>
   <button class="tab" id="t-vin" onclick="showPg('vin')">VIN</button>
   <button class="tab" id="t-pieces" onclick="showPg('pieces')">PIÈCES</button>
@@ -385,7 +385,21 @@ textarea{resize:vertical;min-height:68px}
     <div class="cb" id="car-sel-list"><div style="text-align:center;padding:18px;color:var(--muted);font-size:13px">Aucun véhicule. Ajoutez-en un dans <strong style="color:var(--accent)">GARAGE</strong>.</div></div>
   </div>
   <div class="card">
-    <div class="ch"><div class="ct">Diagnostic IA Expert</div></div>
+    <div class="ch"><div class="ct">🔧 Dylan — votre mécanicien IA</div></div>
+    <div class="cb">
+      <div id="dylan-feed" style="display:flex;flex-direction:column;gap:10px;max-height:360px;overflow-y:auto;padding:6px 2px;margin-bottom:12px"></div>
+      <textarea id="dylan-in" rows="2" placeholder="Décrivez votre panne à Dylan : voyant allumé, bruit, code OBD, perte de puissance..." style="width:100%;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();dylanSend();}"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn" onclick="dylanSend()" style="flex:2">💬 ENVOYER À DYLAN</button>
+        <button class="bp" onclick="document.getElementById('photo-in').click()" style="flex:1">📸 PHOTO</button>
+        <button class="br" onclick="dylanNew()" title="Nouvelle conversation">🔄 NOUVELLE</button>
+      </div>
+    </div>
+  </div>
+  <details style="margin-bottom:14px">
+  <summary style="cursor:pointer;color:var(--muted);font-size:12px;padding:8px 4px">⚙️ Mode formulaire détaillé (facultatif)</summary>
+  <div class="card">
+    <div class="ch"><div class="ct">Diagnostic détaillé</div></div>
     <div class="cb">
       <div style="font-size:12px;color:var(--muted);margin-bottom:13px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:9px 12px;line-height:1.6">💬 Entrez un code OBD ou décrivez votre panne. Si vous avez sélectionné un véhicule, les infos sont pré-remplies automatiquement.</div>
       <div class="r2">
@@ -412,6 +426,7 @@ textarea{resize:vertical;min-height:68px}
       </div>
     </div>
   </div>
+  </details>
   <div id="zd"></div>
 </div></div>
 
@@ -515,7 +530,7 @@ textarea{resize:vertical;min-height:68px}
 <!-- SUIVI -->
 <div class="pg" id="pg-suivi"><div class="wrap">
   <div class="card">
-    <div class="ch"><div class="ct">Historique</div><div style="display:flex;gap:5px"><button class="bsm" onclick="filtS('all')" id="f-a">TOUT</button><button class="bsm" onclick="filtS('fav')" id="f-f">⭐</button><button class="br" onclick="clearS()">EFFACER</button></div></div>
+    <div class="ch"><div class="ct">Mes conversations Dylan</div><div style="display:flex;gap:5px"><button class="bsm" onclick="filtS('all')" id="f-a">TOUT</button><button class="bsm" onclick="filtS('fav')" id="f-f">⭐</button><button class="br" onclick="clearS()">EFFACER</button></div></div>
     <div class="cb">
       <div class="f"><input type="text" id="suivi-s" placeholder="🔍 Rechercher dans l'historique..." oninput="searchS(this.value)"></div>
       <div id="suivi-l"></div>
@@ -799,7 +814,7 @@ window.showPg=function(id){
     const pg=document.getElementById('pg-'+p);const tb=document.getElementById('t-'+p);
     if(pg)pg.className='pg'+(p===id?' on':'');if(tb)tb.className='tab'+(p===id?' on':'');
   });
-  if(id==='suivi')renderS();if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();
+  if(id==='suivi')renderS();if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();if(id==='diag'&&window.dylanWelcome)dylanWelcome();
   window.scrollTo(0,0);
 };
 
@@ -1304,6 +1319,73 @@ async function sUD() { /* données côté serveur, plus de Firestore */ }
    ============================================================ */
 
 // ---- DIAGNOSTIC (serveur dylan_agents) ----
+// ============================================================
+// CHAT DYLAN (2026-06) — interface conversationnelle.
+// Réutilise le moteur existant dylan_agents. Mémoire de conversation
+// côté client (window.dylanHist). 1 crédit = 1 conversation
+// (le serveur gère déjà une session de 10 min par crédit).
+// ============================================================
+window.dylanHist = window.dylanHist || [];
+window.dylanConv = window.dylanConv || null;
+
+window.dylanBubble = function (role, html) {
+  const feed = document.getElementById('dylan-feed'); if (!feed) return null;
+  const mine = role === 'user';
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;' + (mine ? 'justify-content:flex-end' : 'justify-content:flex-start');
+  wrap.innerHTML = '<div style="max-width:85%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.6;' + (mine ? 'background:var(--accent);color:#111;border-bottom-right-radius:3px' : 'background:var(--s2);border:1px solid var(--border);color:#fff;border-bottom-left-radius:3px') + '">' + html + '</div>';
+  feed.appendChild(wrap); feed.scrollTop = feed.scrollHeight;
+  return wrap;
+};
+
+window.dylanWelcome = function () {
+  const feed = document.getElementById('dylan-feed'); if (!feed || feed.children.length) return;
+  dylanBubble('dylan', "👋 Salut, moi c'est <strong>Dylan</strong>. Décrivez-moi votre panne (symptôme, voyant, bruit, code OBD…) et je vous aide à diagnostiquer. Astuce : sélectionnez un véhicule ci-dessus pour un diagnostic plus précis.");
+};
+
+window.dylanNew = function () {
+  window.dylanHist = []; window.dylanConv = null;
+  const feed = document.getElementById('dylan-feed'); if (feed) feed.innerHTML = '';
+  dylanWelcome(); toast('Nouvelle conversation', 'ok');
+};
+
+window.dylanSend = async function () {
+  const inp = document.getElementById('dylan-in'); if (!inp) return;
+  const msg = inp.value.trim(); if (!msg) { toast('Écrivez votre message à Dylan', 'er'); return; }
+  const mk = document.getElementById('d-mk').value, mo = document.getElementById('d-mo').value.trim();
+  const an = document.getElementById('d-an').value, cb = document.getElementById('d-cb').value;
+  const km = document.getElementById('d-km').value.trim(), cm = document.getElementById('d-cm').value.trim().toUpperCase();
+  const code = document.getElementById('d-code').value.trim().toUpperCase();
+  // 1 crédit par conversation (au 1er message). Les suivants réutilisent la session serveur.
+  if (!window.dylanConv) { if (!useC()) return; window.dylanConv = Date.now(); }
+  dylanBubble('user', msg.replace(/</g, '&lt;'));
+  inp.value = '';
+  const thinking = dylanBubble('dylan', '<span style="opacity:.6">Dylan réfléchit…</span>');
+  try {
+    const veh = [mk, mo, cb, an && '(' + an + ')', km && km + 'km', cm && 'Moteur:' + cm].filter(Boolean).join(' ');
+    const histTxt = window.dylanHist.map(h => (h.role === 'user' ? 'Client: ' : 'Dylan: ') + h.text).join('\n');
+    const user_input = [histTxt && 'Conversation en cours:\n' + histTxt, code && 'Code OBD: ' + code, veh && 'Véhicule: ' + veh, 'Message du client: ' + msg].filter(Boolean).join('\n');
+    const r = await MecaIA.authedFetch('dylan_agents', { method: 'POST', body: { user_input, vehicle_marque: mk || null, vehicle_modele: mo || null, vehicle_km: parseInt(km) || null } });
+    if (r.status === 402) { if (thinking) thinking.remove(); openM('m-pay'); toast('Plus de crédits !', 'er'); window.dylanConv = null; return; }
+    const data = r.data;
+    if (!r.ok || !data || !data.success) { throw new Error((data && data.error) || 'Dylan indisponible'); }
+    if (thinking) thinking.remove();
+    const conf = data.confidence_percent >= 80 ? 'var(--green)' : data.confidence_percent >= 60 ? 'var(--accent)' : 'var(--red)';
+    const urg = data.urgency === 'immédiat' ? '🔴' : data.urgency === 'bientôt' ? '🟡' : '🟢';
+    let html = '<strong>' + data.primary_diagnosis + '</strong>';
+    html += '<div style="font-size:11px;color:var(--muted);margin-top:5px">' + urg + ' ' + data.urgency + ' · 📊 <span style="color:' + conf + '">' + data.confidence_percent + '%</span> · ' + (data.can_drive ? '✓ peut rouler' : '✗ ne pas rouler') + '</div>';
+    if (data.estimated_cost_min != null) html += '<div style="font-size:11px;color:var(--muted);margin-top:3px">💶 ' + data.estimated_cost_min + '€ – ' + data.estimated_cost_max + '€</div>';
+    if (data.parts_needed && data.parts_needed.length) html += '<div style="margin-top:6px">' + data.parts_needed.map(p => '<span class="tag">' + p + '</span>').join(' ') + '</div>';
+    if (data.clarify_question && data.clarify_question !== "Je pense avoir assez d'infos.") html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">❓ ' + data.clarify_question + '</div>';
+    dylanBubble('dylan', html);
+    window.dylanHist.push({ role: 'user', text: msg });
+    window.dylanHist.push({ role: 'dylan', text: data.primary_diagnosis });
+    if (window.dylanHist.length > 12) window.dylanHist = window.dylanHist.slice(-12);
+    save('Conversation Dylan', (mk && mo ? mk + ' ' + mo + ' — ' : '') + data.primary_diagnosis, 'dylan');
+    await refreshCredits();
+  } catch (e) { if (thinking) thinking.remove(); dylanBubble('dylan', '<span style="color:var(--red)">⚠️ ' + e.message + '</span>'); }
+};
+
 window.doDiag = async function () {
   const code = document.getElementById('d-code').value.trim().toUpperCase();
   const mk = document.getElementById('d-mk').value; const mo = document.getElementById('d-mo').value.trim();
