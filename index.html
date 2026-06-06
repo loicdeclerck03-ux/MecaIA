@@ -1158,15 +1158,22 @@ showSc('s-land');
 hideLoading();
 
 // ---- Listener de session Supabase (remplace onAuthStateChanged) ----
-MecaIA.onAuth(async (user) => {
+MecaIA.onAuth((user) => {
   if (user) {
     CU = user; // NB: identifiant = user.id (plus user.uid)
-    try { await loadProfile(user); } catch (e) { console.log('profil:', e); }
     majVis();
     setLang(lang);
-    if (user.email === OWNER) { showSc('s-dash'); loadDash(); }
-    else showSc('s-app');
+    // Bascule visuelle IMMÉDIATE (avant tout appel réseau)
+    if (user.email === OWNER) showSc('s-dash'); else showSc('s-app');
     hideLoading();
+    // IMPORTANT : on diffère les appels Supabase (loadProfile/loadDash) HORS du
+    // callback onAuthStateChange. Les appeler dedans gèle la connexion en silence
+    // (deadlock connu de supabase-js : un getSession() dans le callback attend un
+    // verrou que le callback lui-même détient). setTimeout(0) résout le souci.
+    setTimeout(async () => {
+      try { await loadProfile(user); } catch (e) { console.log('profil:', e); }
+      if (user.email === OWNER) { try { await loadDash(); } catch (e) { console.log('dash:', e); } }
+    }, 0);
   } else {
     CU = null;
     showSc('s-land');
