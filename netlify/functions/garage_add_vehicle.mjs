@@ -1,4 +1,7 @@
 // GARAGE_ADD_VEHICLE — ajoute un véhicule (auth obligatoire)
+// Version robuste : écrit DIRECTEMENT dans la table user_vehicles via le client
+// "service" (qui contourne RLS), sans dépendre de la fonction SQL add_user_vehicle.
+// → règle l'erreur 500 quel que soit l'état des fonctions SQL.
 import { getUser, serviceClient, json, preflight } from "../lib/auth.mjs";
 
 export const handler = async (event) => {
@@ -11,30 +14,63 @@ export const handler = async (event) => {
   const supabase = serviceClient();
 
   try {
-    const { marque, modele, annee, km_current, immatriculation, nickname, carburant, couleur, puissance_ch, vin, engine_code } =
-      JSON.parse(event.body || "{}");
+    const b = JSON.parse(event.body || "{}");
+    if (!b.marque || !b.modele) return json(400, { error: "Champs requis: marque, modele" });
 
-    if (!marque || !modele) return json(400, { error: "Champs requis: marque, modele" });
+    // Le 1er véhicule de l'utilisateur devient le véhicule principal
+    let isPrimary = false;
+    try {
+      const { count } = await supabase
+        .from("user_vehicles")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("is_active", true);
+      isPrimary = (count || 0) === 0;
+    } catch (_) { /* non bloquant */ }
 
-    const { data, error } = await supabase.rpc("add_user_vehicle", {
-      p_user_id: userId,
-      p_marque: marque,
-      p_modele: modele,
-      p_annee: annee,
-      p_km_current: km_current,
-      p_immatriculation: immatriculation,
-      p_nickname: nickname,
-      p_carburant: carburant,
-      p_couleur: couleur,
-      p_puissance_ch: puissance_ch,
-      p_vin: vin,
-      p_engine_code: engine_code,
-    });
+    // Colonnes garanties par le schéma de base
+    const row = {
+      user_id: userId,
+      marque: b.marque,
+      modele: b.modele,
+      annee: b.annee ?? null,
+      km_current: b.km_current ?? null,
+      immatriculation: b.immatriculation || null,
+      nickname: b.nickname || null,
+      carburant: b.carburant || null,
+      couleur: b.couleur || null,
+      puissance_ch: b.puissance_ch ?? null,
+      vin: b.vin || null,
+      is_primary: isPrimary,
+    };
+    // engine_code : seulement si fourni (la colonne peut ne pas exister sur d'anciennes bases)
+    if (b.engine_code) row.engine_code = b.engine_code;
+
+    let { data, error } = await supabase
+      .from("user_vehicles")
+      .insert(row)
+      .select("id")
+      .single();
+
+    // Si la colonne engine_code n'existe pas encore en base, on réessaie sans elle
+    if (error && /engine_code/i.test(error.message || "")) {
+      delete row.engine_code;
+      ({ data, error } = await supabase
+        .from("user_vehicles")
+        .insert(row)
+        .select("id")
+        .single());
+    }
+
     if (error) throw error;
-    if (!data || data.length === 0) throw new Error("No response from add_user_vehicle");
 
-    const result = data[0];
-    return json(201, { success: true, vehicle_id: result.vehicle_id, message: result.message, marque, modele });
+    return json(201, {
+      success: true,
+      vehicle_id: data.id,
+      marque: b.marque,
+      modele: b.modele,
+      message: "Véhicule ajouté",
+    });
   } catch (error) {
     console.error("[GARAGE_ADD]", error.message);
     return json(500, { success: false, error: error.message });
