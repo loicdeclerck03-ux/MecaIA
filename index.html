@@ -7,6 +7,8 @@
 <meta name="description" content="MecaIA — Diagnostic OBD, garage virtuel, pièces auto et alertes entretien par IA. 24h/24.">
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#080b0f;--s1:#0f1318;--s2:#151a21;--border:#1e2a3a;--accent:#f0a500;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--text:#c8d4e0;--muted:#4a5a6e}
@@ -501,6 +503,14 @@ textarea{resize:vertical;min-height:68px}
 <!-- PIÈCES -->
 <div class="pg" id="pg-pieces"><div class="wrap">
   <div class="banner"><div class="btxt">Crédits : <strong id="cd2">3</strong> · 1 crédit/recherche</div><button class="bbuy" onclick="openM('m-pay')">+ ACHETER</button></div>
+  <div class="card" id="p-car-box">
+    <div class="ch"><div class="ct">🚗 Mon garage</div></div>
+    <div class="cb">
+      <select id="p-car" onchange="selCarPieces(this.value)" style="width:100%">
+        <option value="">— Choisir un véhicule pour pré-remplir —</option>
+      </select>
+    </div>
+  </div>
   <div class="card">
     <div class="ch"><div class="ct">Recherche pièces compatibles</div></div>
     <div class="cb">
@@ -672,6 +682,20 @@ de:{tag:'INTELLIGENTE KFZ-DIAGNOSE',h1:'Der KI-Auto-Experte<br>in Ihrer <span st
 function toast(m,t=''){const c=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+(t==='ok'?'ok':t==='er'?'er':'');el.textContent=m;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},2500);}
 function ss(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
 
+window.fillPCars = function () {
+  const s = document.getElementById('p-car'); if (!s) return;
+  const list = (window.cars || []);
+  s.innerHTML = '<option value="">— Choisir un véhicule pour pré-remplir —</option>' +
+    list.map(c => '<option value="' + c.id + '">' + ((c.nom || (c.marque + ' ' + c.modele))) + '</option>').join('');
+};
+window.selCarPieces = function (id) {
+  const c = (window.cars || []).find(x => x.id === id); if (!c) return;
+  const sv = (el, v) => { const e = document.getElementById(el); if (e && v != null && v !== '') e.value = v; };
+  sv('p-mk', c.marque); sv('p-mo', c.modele); sv('p-an', c.annee); sv('p-cb', c.carbu);
+  sv('p-kw', c.kw); sv('p-cm', c.cm); sv('p-km', c.km);
+  if (window.toast) toast('✅ ' + (c.nom || c.marque) + ' chargé', 'ok');
+};
+
 window.setLang=function(l){
   lang=l;localStorage.setItem('ml',l);const t=T[l]||T.fr;
   ss('l-tag',t.tag);ss('l-h1',t.h1);ss('l-sub',t.sub);ss('l-bh',t.bh);ss('l-l',t.bl);ss('at-l',t.cl);ss('at-r',t.cr);
@@ -814,7 +838,7 @@ window.showPg=function(id){
     const pg=document.getElementById('pg-'+p);const tb=document.getElementById('t-'+p);
     if(pg)pg.className='pg'+(p===id?' on':'');if(tb)tb.className='tab'+(p===id?' on':'');
   });
-  if(id==='suivi')renderS();if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();if(id==='diag'&&window.dylanWelcome)dylanWelcome();
+  if(id==='suivi')renderS();if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();if(id==='diag'&&window.dylanWelcome)dylanWelcome();if(id==='pieces'&&window.fillPCars)fillPCars();
   window.scrollTo(0,0);
 };
 
