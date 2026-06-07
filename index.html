@@ -1528,7 +1528,7 @@ window.doAlertes = async function () {
 
 
 /* ---- Paiement : bouton -> checkout serveur ---- */
-window.buyPack=async function(pkg){if(!CU){toast("Connecte-toi dabord","er");return;}const r=await MecaIA.authedFetch("stripe_checkout",{method:"POST",body:{user_id:CU.id,package:pkg}});if(r.ok&&r.data&&r.data.checkout_url){window.location.href=r.data.checkout_url;}else{toast("Erreur paiement","er");}};
+window.buyPack=async function(pkg){if(!CU){toast("Connecte-toi dabord","er");return;}const r=await MecaIA.authedFetch("stripe_checkout",{method:"POST",body:{user_id:CU.id,package:pkg}});if(r.ok&&r.data&&r.data.checkout_url){window.location.href=r.data.checkout_url;}else{const msg=(r.data&&r.data.error)||("code "+(r.status||"?"));toast("Erreur paiement: "+msg,"er");console.error("[buyPack] échec checkout:",r);}};
 (function(){
   const p=new URLSearchParams(location.search);const sid=p.get("session_id");
   if(!sid)return;
