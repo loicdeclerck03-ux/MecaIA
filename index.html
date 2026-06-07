@@ -1532,12 +1532,14 @@ window.buyPack=async function(pkg){if(!CU){toast("Connecte-toi dabord","er");ret
 (function(){
   const p=new URLSearchParams(location.search);const sid=p.get("session_id");
   if(!sid)return;
-  history.replaceState(null,'',location.pathname); // évite de re-traiter au rechargement
+  // 1) Filet de sécurité D'ABORD : confirme le paiement auprès de Stripe et crédite (idempotent)
   fetch('/.netlify/functions/stripe_verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid})})
     .then(r=>r.json()).then(d=>{
       if(d&&d.paid&&window.toast)toast('✅ Paiement confirmé, crédits ajoutés !','ok');
       let n=0;const iv=setInterval(()=>{n++;if(window.refreshCredits)refreshCredits();if(n>=4)clearInterval(iv);},1200);
     }).catch(()=>{if(window.refreshCredits)setTimeout(refreshCredits,1500);});
+  // 2) Nettoie l'URL ensuite, sans jamais planter (gère le double slash)
+  try{var clean=location.origin+'/'+location.pathname.replace(/^\/+/,'');history.replaceState(null,'',clean);}catch(e){}
 })();
 /* ---- Dashboard owner : non migre (rebranchement Supabase plus tard) ---- */
 
