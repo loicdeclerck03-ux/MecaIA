@@ -61,7 +61,7 @@ export const handler = async (event) => {
       }
 
       const { data, error } = await supabase.rpc("apply_stripe_purchase", {
-        p_event_id: stripeEvent.id,
+        p_event_id: session.id, // clé = n° de commande (même que le filet -> jamais de double crédit)
         p_session_id: session.id,
         p_user_id: userId,
         p_credits: credits,

@@ -1,9 +1,11 @@
 // ============================================================
-// STRIPE_VERIFY.MJS  (LECTURE SEULE)
-// Appelée par la page de succès pour AFFICHER l'état du paiement
-// et le solde courant. NE CRÉDITE PLUS RIEN : le crédit est fait
-// exclusivement par le webhook signé (stripe_webhook.mjs).
-// -> supprime la faille de rejeu (double crédit) de l'ancienne version.
+// STRIPE_VERIFY.MJS — FILET DE SÉCURITÉ
+// Appelée par la page de retour après un paiement.
+// 1) Demande à STRIPE si la commande est réellement payée (source de vérité).
+// 2) Si OUI -> crédite via apply_stripe_purchase.
+//    -> idempotent : clé = session.id (LA MÊME que le webhook),
+//       donc jamais de double crédit, quel que soit celui qui passe en 1er.
+// 3) Si NON -> ne crédite rien (impossible d'avoir des crédits sans payer).
 // ============================================================
 
 import Stripe from "stripe";
@@ -19,12 +21,34 @@ export const handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: "Missing session_id" }) };
     }
 
+    // 1) Source de vérité : on demande la commande À STRIPE (le client ne peut pas mentir)
     const session = await stripe.checkout.sessions.retrieve(session_id);
     const paid = session.payment_status === "paid";
     const userId = session.metadata?.user_id;
+    const credits = parseFloat(session.metadata?.credits || "0");
+    const unlimitedDays = parseInt(session.metadata?.unlimited_days || "0", 10);
 
-    // Solde courant (en lecture seule). Peut être encore l'ancien solde
-    // si le webhook n'a pas encore créé le crédit -> le front peut re-poller.
+    let applied = false;
+
+    // 2) On ne crédite QUE si Stripe confirme le paiement
+    if (paid && userId && (credits > 0 || unlimitedDays > 0)) {
+      const { data, error } = await supabase.rpc("apply_stripe_purchase", {
+        p_event_id: session.id,        // clé = n° de commande (même que le webhook)
+        p_session_id: session.id,
+        p_user_id: userId,
+        p_credits: credits,
+        p_unlimited_days: unlimitedDays,
+        p_description: `Achat ${session.metadata?.package || "credits"}`,
+      });
+      if (error) {
+        console.error("[STRIPE_VERIFY] crédit échoué:", error.message);
+      } else {
+        const row = data && data[0];
+        applied = !!(row && row.applied); // false si "déjà traité" (pas de double)
+      }
+    }
+
+    // 3) On renvoie le solde à jour pour l'affichage
     let balance = null;
     if (paid && userId) {
       const { data } = await supabase.rpc("get_user_credits", { p_user_id: userId });
@@ -35,12 +59,14 @@ export const handler = async (event) => {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        payment_status: session.payment_status, // 'paid' | 'unpaid' | 'no_payment_required'
+        payment_status: session.payment_status,
         paid,
-        balance, // peut être null le temps que le webhook traite
+        applied,   // true = crédité à l'instant, false = déjà fait par le webhook
+        balance,
       }),
     };
   } catch (error) {
+    console.error("[STRIPE_VERIFY] erreur:", error.message);
     return { statusCode: 500, body: JSON.stringify({ success: false, error: error.message }) };
   }
 };

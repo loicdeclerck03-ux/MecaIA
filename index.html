@@ -1529,7 +1529,16 @@ window.doAlertes = async function () {
 
 /* ---- Paiement : bouton -> checkout serveur ---- */
 window.buyPack=async function(pkg){if(!CU){toast("Connecte-toi dabord","er");return;}const r=await MecaIA.authedFetch("stripe_checkout",{method:"POST",body:{user_id:CU.id,package:pkg}});if(r.ok&&r.data&&r.data.checkout_url){window.location.href=r.data.checkout_url;}else{toast("Erreur paiement","er");}};
-(function(){const p=new URLSearchParams(location.search);if(p.get("session_id")){setTimeout(()=>{if(window.refreshCredits)refreshCredits();},1500);}})();
+(function(){
+  const p=new URLSearchParams(location.search);const sid=p.get("session_id");
+  if(!sid)return;
+  history.replaceState(null,'',location.pathname); // évite de re-traiter au rechargement
+  fetch('/.netlify/functions/stripe_verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid})})
+    .then(r=>r.json()).then(d=>{
+      if(d&&d.paid&&window.toast)toast('✅ Paiement confirmé, crédits ajoutés !','ok');
+      let n=0;const iv=setInterval(()=>{n++;if(window.refreshCredits)refreshCredits();if(n>=4)clearInterval(iv);},1200);
+    }).catch(()=>{if(window.refreshCredits)setTimeout(refreshCredits,1500);});
+})();
 /* ---- Dashboard owner : non migre (rebranchement Supabase plus tard) ---- */
 
 
