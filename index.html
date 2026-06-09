@@ -1156,6 +1156,8 @@ window.doReg = async function () {
   }
   if (data && data.session) {
     setAM('✅ Bienvenue sur MecaIA !', 'ok'); // connecté immédiatement
+    // Mail de bienvenue (non bloquant : si l'envoi échoue, l'inscription reste OK)
+    try { MecaIA.authedFetch('email_welcome', { method:'POST', body:{ name: nm } }); } catch(e){}
   } else {
     // Si la confirmation email est activée dans Supabase Auth
     setAM('✅ Compte créé ! Vérifie ton email pour confirmer.', 'ok');
@@ -1175,6 +1177,20 @@ window.doOut = async function () {
   await MecaIA.signOut();
   goLand();
   toast('Déconnecté', 'ok');
+};
+
+// ---- Mot de passe oublié : écran "nouveau mot de passe" au retour du mail ----
+supa.auth.onAuthStateChange((evt) => {
+  if (evt === 'PASSWORD_RECOVERY') { const m = document.getElementById('m-newpw'); if (m) m.style.display = 'flex'; }
+});
+window.doResetPw = async function () {
+  const pw = document.getElementById('np-pw').value;
+  const msg = document.getElementById('np-msg');
+  if (!pw || pw.length < 6) { if (msg) { msg.textContent = '6 caractères minimum.'; msg.style.color = '#ef4444'; } return; }
+  const { error } = await supa.auth.updateUser({ password: pw });
+  if (error) { if (msg) { msg.textContent = error.message; msg.style.color = '#ef4444'; } return; }
+  const m = document.getElementById('m-newpw'); if (m) m.style.display = 'none';
+  if (window.toast) toast('✅ Mot de passe modifié !', 'ok');
 };
 
 // ---- Affichage immédiat de la landing ----
@@ -1375,7 +1391,7 @@ window.dylanWelcome = function () {
 };
 
 window.dylanNew = function () {
-  window.dylanHist = []; window.dylanConv = null;
+  window.dylanHist = []; window.dylanConv = null; window.currentDiagSession = null;
   const feed = document.getElementById('dylan-feed'); if (feed) feed.innerHTML = '';
   dylanWelcome(); toast('Nouvelle conversation', 'ok');
 };
@@ -1413,6 +1429,33 @@ window.dylanSend = async function () {
     window.dylanHist.push({ role: 'dylan', text: data.primary_diagnosis });
     if (window.dylanHist.length > 12) window.dylanHist = window.dylanHist.slice(-12);
     save('Conversation Dylan', (mk && mo ? mk + ' ' + mo + ' — ' : '') + data.primary_diagnosis, 'dylan');
+
+    // --- Capture "Panne résolue" : créer la session au 1er diagnostic réussi ---
+    //     Non bloquant : un échec ici ne doit JAMAIS casser le chat.
+    if (!window.currentDiagSession) {
+      try {
+        const band = data.confidence_percent >= 80 ? 'tres_forte'
+                   : data.confidence_percent >= 60 ? 'forte'
+                   : data.confidence_percent >= 40 ? 'probable' : 'faible';
+        const cr = await MecaIA.authedFetch('diag_session_create', { method: 'POST', body: {
+          vehicle: {
+            make: mk || null, model: mo || null,
+            engine_code: null,          // non vérifié à ce stade → null (robuste)
+            engine_label: cm || null,   // libellé moteur brut saisi par l'utilisateur
+            fuel: cb || null,
+            year: parseInt(an) || null,
+            mileage_km: parseInt(km) || null
+          },
+          symptoms: msg,
+          dtc_codes: code ? [code] : [],
+          confidence_band: band,
+          hypotheses: [{ label: data.primary_diagnosis, confidence_band: band, rang: 1 }],
+          raw_exchange: window.dylanHist
+        }});
+        if (cr.ok && cr.data && cr.data.session_id) window.currentDiagSession = cr.data.session_id;
+      } catch (e) { /* capture silencieuse : le chat continue normalement */ }
+    }
+
     await refreshCredits();
   } catch (e) { if (thinking) thinking.remove(); dylanBubble('dylan', '<span style="color:var(--red)">⚠️ ' + e.message + '</span>'); }
 };
@@ -1682,5 +1725,14 @@ window.redeemPromo = async function () {
 };
 
 </script>
+<div id="m-newpw" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#0e141b;border:1px solid #1e2a36;border-radius:14px;max-width:380px;width:100%;padding:26px;font-family:'DM Sans',sans-serif">
+    <h2 style="color:#f0a500;font-family:'Rajdhani',sans-serif;margin:0 0 8px;font-size:22px">Nouveau mot de passe</h2>
+    <p style="color:#8aa0b0;font-size:13px;margin:0 0 16px">Choisis ton nouveau mot de passe (6 caractères minimum).</p>
+    <input type="password" id="np-pw" placeholder="••••••••" style="width:100%;padding:12px;border-radius:8px;border:1px solid #1e2a36;background:#080b0f;color:#fff;margin-bottom:12px;box-sizing:border-box">
+    <button onclick="doResetPw()" style="width:100%;padding:13px;border:none;border-radius:8px;background:#f0a500;color:#0b0f14;font-weight:bold;cursor:pointer;font-size:15px">Enregistrer</button>
+    <div id="np-msg" style="font-size:13px;margin-top:10px;text-align:center"></div>
+  </div>
+</div>
 </body>
 </html>
