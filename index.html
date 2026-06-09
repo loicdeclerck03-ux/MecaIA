@@ -1396,68 +1396,114 @@ window.dylanNew = function () {
   dylanWelcome(); toast('Nouvelle conversation', 'ok');
 };
 
+// --- Libellés FR des bandes qualitatives (plus de pourcentage) ---
+window.dylanBandeLabel = function (b) {
+  return { faible: 'Hypothèse faible', probable: 'Hypothèse probable', forte: 'Hypothèse forte', tres_forte: 'Hypothèse très forte' }[b] || b || '';
+};
+
+// --- Rendu d'une réponse d'enquête de Dylan selon l'état ---
+window.dylanRender = function (data) {
+  let html = '';
+  if (data.message) html += '<div>' + String(data.message).replace(/\n/g, '<br>') + '</div>';
+
+  // Hypothèses (affichées en CONTEXTE/HYPOTHESES/CONTROLE, jamais de %)
+  if (Array.isArray(data.hypotheses) && data.hypotheses.length) {
+    html += '<div style="margin-top:8px">';
+    data.hypotheses.forEach(h => {
+      const barre = h.statut === 'eliminee' ? 'text-decoration:line-through;opacity:.5' : '';
+      const chk = h.statut === 'confirmee' ? '✅ ' : h.statut === 'eliminee' ? '❌ ' : '';
+      html += '<div style="font-size:12px;margin-top:3px;' + barre + '">' + chk + h.libelle + ' <span style="color:var(--muted);font-size:11px">(' + dylanBandeLabel(h.bande) + ')</span></div>';
+    });
+    html += '</div>';
+  }
+
+  // Contrôle guidé en 4 parties + 4 boutons
+  if (data.controle) {
+    const c = data.controle;
+    html += '<div style="margin-top:10px;padding:11px 13px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.18);border-radius:8px">';
+    if (c.pourquoi) html += '<div style="font-size:12px;margin-bottom:6px"><strong>🔍 Pourquoi ce contrôle :</strong> ' + c.pourquoi + '</div>';
+    if (Array.isArray(c.comment) && c.comment.length) html += '<div style="font-size:12px;margin-bottom:6px"><strong>🛠️ Comment faire :</strong><ol style="margin:4px 0 0 18px;padding:0">' + c.comment.map(s => '<li>' + s + '</li>').join('') + '</ol></div>';
+    if (Array.isArray(c.observer) && c.observer.length) html += '<div style="font-size:12px"><strong>👀 À observer :</strong> ' + c.observer.join(', ') + '</div>';
+    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">'
+      + '<button class="bsm" onclick="dylanControl(\'oui\')">✅ Oui</button>'
+      + '<button class="bsm" onclick="dylanControl(\'non\')">❌ Non</button>'
+      + '<button class="bsm" onclick="dylanControl(\'ne_sais_pas\')">🤔 Je ne sais pas</button>'
+      + '<button class="bsm" onclick="dylanControl(\'pas_pu\')">🚫 Je n\'ai pas pu faire le contrôle</button>'
+      + '</div></div>';
+  }
+
+  // Conclusion (seul endroit où apparaissent les pièces)
+  if (data.conclusion) {
+    const cc = data.conclusion;
+    const urg = cc.urgency === 'immédiat' ? '🔴' : cc.urgency === 'bientôt' ? '🟡' : '🟢';
+    html += '<div style="margin-top:10px;padding:11px 13px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px">';
+    html += '<div style="font-weight:700">🎯 ' + cc.cause + '</div>';
+    html += '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + dylanBandeLabel(cc.bande) + ' · ' + urg + ' ' + cc.urgency + ' · ' + (cc.can_drive ? '✓ peut rouler' : '✗ ne pas rouler') + '</div>';
+    if (cc.cost_min || cc.cost_max) html += '<div style="font-size:11px;color:var(--muted);margin-top:3px">💶 ' + cc.cost_min + '€ – ' + cc.cost_max + '€</div>';
+    if (Array.isArray(cc.parts_needed) && cc.parts_needed.length) html += '<div style="margin-top:6px">' + cc.parts_needed.map(p => '<span class="tag">' + p + '</span>').join(' ') + '</div>';
+    html += '</div>';
+  }
+
+  dylanBubble('dylan', html || '…');
+};
+
+// --- Envoi d'un message libre à Dylan (1er tour ou réponse texte) ---
 window.dylanSend = async function () {
   const inp = document.getElementById('dylan-in'); if (!inp) return;
   const msg = inp.value.trim(); if (!msg) { toast('Écrivez votre message à Dylan', 'er'); return; }
+  inp.value = '';
+  dylanBubble('user', msg.replace(/</g, '&lt;'));
+  await dylanTurn({ user_input: msg });
+};
+
+// --- Réponse à un contrôle guidé (les 4 boutons) ---
+window.dylanControl = async function (resultat) {
+  const labels = { oui: '✅ Oui', non: '❌ Non', ne_sais_pas: '🤔 Je ne sais pas', pas_pu: '🚫 Je n\'ai pas pu faire le contrôle' };
+  dylanBubble('user', labels[resultat] || resultat);
+  await dylanTurn({ control_result: resultat });
+};
+
+// --- Cœur : un tour d'enquête (1 appel serveur). Gère jeton, état, rendu. ---
+window.dylanTurn = async function (payload) {
   const mk = document.getElementById('d-mk').value, mo = document.getElementById('d-mo').value.trim();
   const an = document.getElementById('d-an').value, cb = document.getElementById('d-cb').value;
   const km = document.getElementById('d-km').value.trim(), cm = document.getElementById('d-cm').value.trim().toUpperCase();
   const code = document.getElementById('d-code').value.trim().toUpperCase();
-  // 1 crédit par conversation (au 1er message). Les suivants réutilisent la session serveur.
+
+  // 1 crédit par enquête (au 1er message). Les tours suivants réutilisent la session serveur (10 min).
   if (!window.dylanConv) { if (!useC()) return; window.dylanConv = Date.now(); }
-  dylanBubble('user', msg.replace(/</g, '&lt;'));
-  inp.value = '';
+
   const thinking = dylanBubble('dylan', '<span style="opacity:.6">Dylan réfléchit…</span>');
   try {
-    const veh = [mk, mo, cb, an && '(' + an + ')', km && km + 'km', cm && 'Moteur:' + cm].filter(Boolean).join(' ');
-    const histTxt = window.dylanHist.map(h => (h.role === 'user' ? 'Client: ' : 'Dylan: ') + h.text).join('\n');
-    const user_input = [histTxt && 'Conversation en cours:\n' + histTxt, code && 'Code OBD: ' + code, veh && 'Véhicule: ' + veh, 'Message du client: ' + msg].filter(Boolean).join('\n');
-    const r = await MecaIA.authedFetch('dylan_agents', { method: 'POST', body: { user_input, vehicle_marque: mk || null, vehicle_modele: mo || null, vehicle_km: parseInt(km) || null } });
+    const body = {
+      session_id: window.currentDiagSession || null,
+      vehicle: {
+        make: mk || null, model: mo || null,
+        engine_code: null, engine_label: cm || null,
+        fuel: cb || null, year: parseInt(an) || null, mileage_km: parseInt(km) || null
+      },
+      vehicle_marque: mk || null, vehicle_modele: mo || null, vehicle_km: parseInt(km) || null,
+      ...payload
+    };
+    // Au 1er tour, on joint le code OBD au message si présent
+    if (body.user_input && code) body.user_input = 'Code OBD: ' + code + '\n' + body.user_input;
+
+    const r = await MecaIA.authedFetch('dylan_agents', { method: 'POST', body });
     if (r.status === 402) { if (thinking) thinking.remove(); openM('m-pay'); toast('Plus de crédits !', 'er'); window.dylanConv = null; return; }
     const data = r.data;
     if (!r.ok || !data || !data.success) { throw new Error((data && data.error) || 'Dylan indisponible'); }
     if (thinking) thinking.remove();
-    const conf = data.confidence_percent >= 80 ? 'var(--green)' : data.confidence_percent >= 60 ? 'var(--accent)' : 'var(--red)';
-    const urg = data.urgency === 'immédiat' ? '🔴' : data.urgency === 'bientôt' ? '🟡' : '🟢';
-    let html = '<strong>' + data.primary_diagnosis + '</strong>';
-    html += '<div style="font-size:11px;color:var(--muted);margin-top:5px">' + urg + ' ' + data.urgency + ' · 📊 <span style="color:' + conf + '">' + data.confidence_percent + '%</span> · ' + (data.can_drive ? '✓ peut rouler' : '✗ ne pas rouler') + '</div>';
-    if (data.estimated_cost_min != null) html += '<div style="font-size:11px;color:var(--muted);margin-top:3px">💶 ' + data.estimated_cost_min + '€ – ' + data.estimated_cost_max + '€</div>';
-    if (data.parts_needed && data.parts_needed.length) html += '<div style="margin-top:6px">' + data.parts_needed.map(p => '<span class="tag">' + p + '</span>').join(' ') + '</div>';
-    if (data.clarify_question && data.clarify_question !== "Je pense avoir assez d'infos.") html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">❓ ' + data.clarify_question + '</div>';
-    dylanBubble('dylan', html);
-    window.dylanHist.push({ role: 'user', text: msg });
-    window.dylanHist.push({ role: 'dylan', text: data.primary_diagnosis });
-    if (window.dylanHist.length > 12) window.dylanHist = window.dylanHist.slice(-12);
-    save('Conversation Dylan', (mk && mo ? mk + ' ' + mo + ' — ' : '') + data.primary_diagnosis, 'dylan');
 
-    // --- Capture "Panne résolue" : créer la session au 1er diagnostic réussi ---
-    //     Non bloquant : un échec ici ne doit JAMAIS casser le chat.
-    if (!window.currentDiagSession) {
-      try {
-        const band = data.confidence_percent >= 80 ? 'tres_forte'
-                   : data.confidence_percent >= 60 ? 'forte'
-                   : data.confidence_percent >= 40 ? 'probable' : 'faible';
-        const cr = await MecaIA.authedFetch('diag_session_create', { method: 'POST', body: {
-          vehicle: {
-            make: mk || null, model: mo || null,
-            engine_code: null,          // non vérifié à ce stade → null (robuste)
-            engine_label: cm || null,   // libellé moteur brut saisi par l'utilisateur
-            fuel: cb || null,
-            year: parseInt(an) || null,
-            mileage_km: parseInt(km) || null
-          },
-          symptoms: msg,
-          dtc_codes: code ? [code] : [],
-          confidence_band: band,
-          hypotheses: [{ label: data.primary_diagnosis, confidence_band: band, rang: 1 }],
-          raw_exchange: window.dylanHist
-        }});
-        if (cr.ok && cr.data && cr.data.session_id) window.currentDiagSession = cr.data.session_id;
-      } catch (e) { /* capture silencieuse : le chat continue normalement */ }
-    }
+    // Mémoriser l'id de session d'enquête (source de vérité serveur)
+    if (data.session_id) window.currentDiagSession = data.session_id;
 
+    dylanRender(data);
+    save('Conversation Dylan', (mk && mo ? mk + ' ' + mo + ' — ' : '') + (data.conclusion ? data.conclusion.cause : 'enquête en cours'), 'dylan');
     await refreshCredits();
-  } catch (e) { if (thinking) thinking.remove(); dylanBubble('dylan', '<span style="color:var(--red)">⚠️ ' + e.message + '</span>'); }
+  } catch (e) {
+    if (thinking) thinking.remove();
+    dylanBubble('dylan', '<span style="color:var(--red)">⚠️ ' + e.message + '</span>');
+  }
 };
 
 window.doDiag = async function () {
