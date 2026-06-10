@@ -382,6 +382,20 @@ export const handler = async (event) => {
 
     // ---- 5) UN SEUL appel Claude ----
     const system = buildSystem(state, ragContext);
+
+    // ===== LOGS DIAGNOSTIC TEMPORAIRES (à retirer après audit) =====
+    console.log("[AUDIT] === DEBUT TOUR", state.tour, "===");
+    console.log("[AUDIT] state.vehicule =", JSON.stringify(state.vehicule));
+    console.log("[AUDIT] fuel brut =", JSON.stringify(state.vehicule && state.vehicule.fuel));
+    console.log("[AUDIT] body.vehicle recu =", JSON.stringify(vehicle));
+    console.log("[AUDIT] body champs plats =", JSON.stringify({ vehicle_marque, vehicle_modele, vehicle_km }));
+    console.log("[AUDIT] PROMPT contient 'DIESEL' ? ->", system.includes("DIESEL"));
+    console.log("[AUDIT] PROMPT contient 'REGLE CARBURANT' ? ->", system.includes("RÈGLE CARBURANT"));
+    console.log("[AUDIT] --- PROMPT SYSTEME COMPLET ---");
+    console.log(system);
+    console.log("[AUDIT] --- FIN PROMPT ---");
+    // ===============================================================
+
     const userMsg = control_result
       ? `Résultat du contrôle : ${control_result}`
       : `Message du client : ${user_input}`;
@@ -398,10 +412,23 @@ export const handler = async (event) => {
     }
 
     const text = (completion.content || []).map((b) => b.text || "").join("");
+
+    // ===== LOGS DIAGNOSTIC 502 (temporaires, à retirer après audit) =====
+    console.log("[AUDIT] stop_reason =", completion.stop_reason);
+    console.log("[AUDIT] usage =", JSON.stringify(completion.usage));
+    console.log("[AUDIT] LONGUEUR REPONSE =", text ? text.length : 0);
+    console.log("[AUDIT] REPONSE BRUTE CLAUDE DEBUT =");
+    console.log(text);
+    console.log("[AUDIT] REPONSE BRUTE CLAUDE FIN");
+    // ====================================================================
+
     const parsed = safeJSON(text);
     if (!parsed || !parsed.etat) {
+      console.error("[AUDIT] ECHEC PARSING. stop_reason =", completion.stop_reason, "| longueur =", text ? text.length : 0);
       return json(502, { success: false, error: "Réponse de diagnostic illisible, réessayez." });
     }
+
+    console.log("[AUDIT] HYPOTHESES BRUTES (Claude) =", JSON.stringify((parsed.hypotheses || []).map((h) => h.libelle)));
 
     // ---- 6) Fusion dans l'état + TRANSITIONS DÉTERMINISTES (code, pas prompt) ----
     if (parsed.contexte) state.contexte = { ...state.contexte, ...parsed.contexte };
@@ -461,6 +488,11 @@ export const handler = async (event) => {
         }
       }
     }
+
+    // ===== LOG DIAGNOSTIC TEMPORAIRE : hypothèses APRÈS filtre carburant =====
+    console.log("[AUDIT] HYPOTHESES APRES FILTRE =", JSON.stringify(state.hypotheses.map((h) => ({ l: h.libelle, s: h.statut }))));
+    console.log("[AUDIT] carbu utilisé par le filtre =", JSON.stringify(carbu));
+    // ========================================================================
 
     if (typeof parsed.resume_enquete === "string" && parsed.resume_enquete.trim()) {
       state.resume_enquete = parsed.resume_enquete.slice(0, 600); // borne dure (anti-croissance)
