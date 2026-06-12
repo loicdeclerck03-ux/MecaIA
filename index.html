@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -247,9 +247,9 @@ textarea{resize:vertical;min-height:68px}
   </div>
   <div class="ms">Paiement 100% sécurisé Stripe. Crédits activés immédiatement.</div>
   <div class="pack on" id="pk1" onclick="buyPack('1credit')"><div><div class="pkn">1 crédit</div><div class="pks">1 diagnostic ou recherche</div></div><div class="pkp">1€</div></div>
-  <div class="pack" id="pk2" onclick="buyPack('25credits')"><div><div class="pkn">25 crédits</div><div class="pks">0,20€/utilisation — économisez 20%</div></div><div class="pkp">5€</div></div>
-  <div class="pack" id="pk3" onclick="buyPack('60credits')"><div><div class="pkn">60 crédits</div><div class="pks">0,17€/utilisation — économisez 40%</div></div><div class="pkp">10€</div></div>
-  <div class="pack" id="pk4" onclick="buyPack('unlimited')"><div><div class="pkn">Illimité</div><div class="pks">Tout illimité pendant 30 jours</div></div><div class="pkp">15€</div></div>
+  <div class="pack" id="pk2" onclick="buyPack('20credits')"><div><div class="pkn">20 crédits</div><div class="pks">0,50€/diagnostic — économisez 50%</div></div><div class="pkp">9,99€</div></div>
+  <div class="pack" id="pk3" onclick="buyPack('50credits')"><div><div class="pkn">50 crédits</div><div class="pks">0,40€/diagnostic — économisez 60%</div></div><div class="pkp">19,99€</div></div>
+  <div class="pack" id="pk4" onclick="buyPack('unlimited')"><div><div class="pkn">Pack Garage</div><div class="pks">Illimité 30 jours — sans abonnement</div></div><div class="pkp">29,99€</div></div>
   <div style="margin-top:13px;display:none"><label>CARTE BANCAIRE</label><div id="card-el"></div><div id="card-err"></div><button class="bstr" id="btn-str" onclick="payer()">🔒 PAYER <span id="str-amt">1€</span> EN TOUTE SÉCURITÉ</button></div>
   <button class="bcl" onclick="closeM('m-pay')">ANNULER</button>
   <div class="msec">
@@ -406,7 +406,7 @@ textarea{resize:vertical;min-height:68px}
       <div style="font-size:12px;color:var(--muted);margin-bottom:13px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:9px 12px;line-height:1.6">💬 Entrez un code OBD ou décrivez votre panne. Si vous avez sélectionné un véhicule, les infos sont pré-remplies automatiquement.</div>
       <div class="r2">
         <div><label>Code OBD (optionnel)</label><input type="text" id="d-code" placeholder="P0300, DTC1525..." oninput="chkD()"></div>
-        <div><label>Marque *</label><select id="d-mk" onchange="chkD()"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Seat</option><option>Skoda</option><option>Dacia</option><option>Volvo</option><option>Honda</option><option>Nissan</option><option>Hyundai</option><option>Kia</option><option>Autre</option></select></div>
+        <div><label>Marque *</label><select id="d-mk" onchange="chkD()"><option value="">Sélectionner...</option><option>Abarth</option><option>Acura</option><option>Alfa Romeo</option><option>Alpina</option><option>Alpine</option><option>Aston Martin</option><option>Audi</option><option>Bentley</option><option>BMW</option><option>Bugatti</option><option>Buick</option><option>Cadillac</option><option>Chevrolet</option><option>Chrysler</option><option>Citroën</option><option>Cupra</option><option>Dacia</option><option>Daewoo</option><option>Daihatsu</option><option>Dodge</option><option>DS Automobiles</option><option>Ferrari</option><option>Fiat</option><option>Ford</option><option>Genesis</option><option>GMC</option><option>Honda</option><option>Hummer</option><option>Hyundai</option><option>Infiniti</option><option>Isuzu</option><option>Jaguar</option><option>Jeep</option><option>Kia</option><option>Lamborghini</option><option>Lancia</option><option>Land Rover</option><option>Lexus</option><option>Lincoln</option><option>Lotus</option><option>Maserati</option><option>Mazda</option><option>McLaren</option><option>Mercedes-Benz</option><option>MG</option><option>MINI</option><option>Mitsubishi</option><option>Morgan</option><option>Nissan</option><option>Opel</option><option>Peugeot</option><option>Porsche</option><option>Ram</option><option>Renault</option><option>Rolls-Royce</option><option>Saab</option><option>Seat</option><option>Skoda</option><option>Smart</option><option>Ssangyong</option><option>Subaru</option><option>Suzuki</option><option>Tesla</option><option>Toyota</option><option>Volkswagen</option><option>Volvo</option><option>Autre</option></select></div>
       </div>
       <div class="r2">
         <div><label>Modèle *</label><input type="text" id="d-mo" placeholder="Clio, Golf, 308..." oninput="chkD()"></div>
@@ -599,10 +599,10 @@ textarea{resize:vertical;min-height:68px}
   <div class="card"><div class="ch"><div class="ct">Tarifs MecaIA</div></div><div class="cb">
     <p style="font-size:13px;color:var(--muted);margin-bottom:17px;line-height:1.6">Pas d'abonnement. Achetez des crédits quand vous en avez besoin. <strong style="color:var(--accent)">VIN toujours gratuit.</strong></p>
     <div class="plans">
-      <div class="plan"><div class="pname">À LA CARTE</div><div class="pprice">1<sub>€</sub></div><div class="pfeats"><div class="pfeat">1 diagnostic IA</div><div class="pfeat">1 recherche pièces</div><div class="pfeat">1 alerte entretien</div><div class="pfeat">1 analyse photo</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
-      <div class="plan"><div class="pname">PACK 25</div><div class="pprice">5<sub>€</sub></div><div class="pfeats"><div class="pfeat">25 crédits</div><div class="pfeat">0,20€/utilisation</div><div class="pfeat">Sans expiration</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
-      <div class="plan star"><div class="pbadge">⭐ MEILLEURE VALEUR</div><div class="pname">PACK 60</div><div class="pprice">10<sub>€</sub></div><div class="pfeats"><div class="pfeat">60 crédits</div><div class="pfeat">0,17€/utilisation</div><div class="pfeat">Sans expiration</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
-      <div class="plan"><div class="pname">ILLIMITÉ</div><div class="pprice">15<sub>€/mois</sub></div><div class="pfeats"><div class="pfeat">Tout illimité 30j</div><div class="pfeat">5 utilisateurs</div><div class="pfeat">Idéal garage</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
+      <div class="plan"><div class="pname">DÉCOUVERTE</div><div class="pprice">1<sub>€</sub></div><div class="pfeats"><div class="pfeat">1 diagnostic IA</div><div class="pfeat">1 recherche pièces</div><div class="pfeat">1 alerte entretien</div><div class="pfeat">1 analyse photo</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
+      <div class="plan"><div class="pname">STANDARD</div><div class="pprice">9,99<sub>€</sub></div><div class="pfeats"><div class="pfeat">20 crédits</div><div class="pfeat">0,50€/diagnostic</div><div class="pfeat">Sans expiration</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
+      <div class="plan star"><div class="pbadge">⭐ MEILLEURE VALEUR</div><div class="pname">EXPERT</div><div class="pprice">19,99<sub>€</sub></div><div class="pfeats"><div class="pfeat">50 crédits</div><div class="pfeat">0,40€/diagnostic</div><div class="pfeat">Sans expiration</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
+      <div class="plan"><div class="pname">GARAGE</div><div class="pprice">29,99<sub>€</sub></div><div class="pfeats"><div class="pfeat">Illimité 30 jours</div><div class="pfeat">Sans abonnement</div><div class="pfeat">Idéal garage</div></div><button class="bplan" onclick="openM('m-pay')">ACHETER</button></div>
     </div>
     <div style="margin-top:17px;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px">
       <div><div style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);margin-bottom:4px">VIN + GARAGE + SUIVI</div><div style="font-size:12px">Décodage VIN illimité et historique complet.</div></div>
