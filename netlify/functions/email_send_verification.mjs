@@ -1,11 +1,11 @@
-// EMAIL_SEND_VERIFICATION — génère un token et envoie l'email via Resend
+﻿// EMAIL_SEND_VERIFICATION — génère un token et envoie l'email via Resend
 //  • auth obligatoire : on envoie à l'email du compte connecté
 //  • crée le token via create_email_verification (expire 24h)
 //  • envoie via l'API Resend (RESEND_API_KEY)
 import { getUser, serviceClient, json, preflight } from "../lib/auth.mjs";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const EMAIL_FROM = process.env.EMAIL_FROM || "MecaIA <onboarding@resend.dev>";
+const EMAIL_FROM = process.env.EMAIL_FROM_VERIFIED || "MecaIA <onboarding@resend.dev>";
 
 export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return preflight();

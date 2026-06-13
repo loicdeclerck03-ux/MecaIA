@@ -1,10 +1,11 @@
-// EMAIL_WELCOME — envoie un mail de bienvenue chaleureux via Resend
+﻿// EMAIL_WELCOME — envoie un mail de bienvenue chaleureux via Resend
 //  • auth obligatoire : on envoie UNIQUEMENT à l'email du compte connecté
 //  • appelé par le frontend juste après une inscription réussie
 import { getUser, json, preflight } from "../lib/auth.mjs";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const EMAIL_FROM = process.env.EMAIL_FROM || "MecaIA <noreply@mecaiaauto.com>";
+// Resend necessite un domaine verifie. Utiliser onboarding@resend.dev si le domaine custom echoue.
+const EMAIL_FROM = process.env.EMAIL_FROM_VERIFIED || "MecaIA <onboarding@resend.dev>";
 const SITE = (process.env.FRONTEND_URL || "https://mecaiaauto.com").replace(/\/$/, "");
 
 export const handler = async (event) => {
