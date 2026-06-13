@@ -517,7 +517,7 @@ textarea{resize:vertical;min-height:68px}
     <div class="ch"><div class="ct">Recherche pièces compatibles</div></div>
     <div class="cb">
       <div class="r2">
-        <div><label>Marque *</label><select id="p-mk"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Seat</option><option>Skoda</option><option>Dacia</option><option>Autre</option></select></div>
+        <div><label>Marque *</label><select id="p-mk"><option value="">Sélectionner...</option><option>Abarth</option><option>Acura</option><option>Alfa Romeo</option><option>Audi</option><option>BMW</option><option>BYD</option><option>Cadillac</option><option>Changan</option><option>Chery</option><option>Chevrolet</option><option>Chrysler</option><option>Citroën</option><option>Cupra</option><option>Dacia</option><option>Daewoo</option><option>Daihatsu</option><option>DFSK</option><option>Dodge</option><option>DS Automobiles</option><option>Ferrari</option><option>Fiat</option><option>Ford</option><option>Genesis</option><option>GMC</option><option>Honda</option><option>Hyundai</option><option>INEOS</option><option>Infiniti</option><option>Isuzu</option><option>Jaguar</option><option>Jeep</option><option>Kia</option><option>Lada</option><option>Lamborghini</option><option>Lancia</option><option>Land Rover</option><option>Lexus</option><option>Lincoln</option><option>Lotus</option><option>Mahindra</option><option>Maserati</option><option>Mazda</option><option>McLaren</option><option>Mercedes-Benz</option><option>MG</option><option>MINI</option><option>Mitsubishi</option><option>Nissan</option><option>Opel</option><option>Peugeot</option><option>Polestar</option><option>Porsche</option><option>Renault</option><option>Rolls-Royce</option><option>Saab</option><option>Seat</option><option>Skoda</option><option>Smart</option><option>Ssangyong</option><option>Subaru</option><option>Suzuki</option><option>Tata</option><option>Tesla</option><option>Toyota</option><option>Volkswagen</option><option>Volvo</option><option>Xpeng</option><option>Autre</option></select></div>
         <div><label>Modèle *</label><input type="text" id="p-mo" placeholder="Clio, Golf 7..."></div>
       </div>
       <div class="r2">
@@ -686,12 +686,12 @@ function ss(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
 
 window.fillPCars = function () {
   const s = document.getElementById('p-car'); if (!s) return;
-  const list = (window.cars || []);
+  const list = (typeof cars !== 'undefined' ? cars : window.cars) || [];
   s.innerHTML = '<option value="">— Choisir un véhicule pour pré-remplir —</option>' +
     list.map(c => '<option value="' + c.id + '">' + ((c.nom || (c.marque + ' ' + c.modele))) + '</option>').join('');
 };
 window.selCarPieces = function (id) {
-  const c = (window.cars || []).find(x => x.id === id); if (!c) return;
+  const c = ((typeof cars !== 'undefined' ? cars : window.cars) || []).find(x => x.id === id); if (!c) return;
   const sv = (el, v) => { const e = document.getElementById(el); if (e && v != null && v !== '') e.value = v; };
   sv('p-mk', c.marque); sv('p-mo', c.modele); sv('p-an', c.annee); sv('p-cb', c.carbu);
   sv('p-kw', c.kw); sv('p-cm', c.cm); sv('p-km', c.km);
@@ -1277,6 +1277,7 @@ async function loadCars() {
   const g = await MecaIA.authedFetch('garage_get');
   if (g.ok && g.data && g.data.success) {
     cars = (g.data.vehicles || []).map(mapVehicle);
+    window.cars = cars;
     renderCars(cars);
     ss('gs-v', cars.length);
   }
