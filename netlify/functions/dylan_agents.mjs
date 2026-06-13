@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // DYLAN — Moteur d'enquete V1 (cote serveur, securise)
 //  • Auth obligatoire (JWT Supabase)
 //  • Jetons : 1 session = 10 min (INCHANGE) -> tous les tours de
@@ -403,7 +403,7 @@ export const handler = async (event) => {
     let completion;
     try {
       completion = await anthropic.messages.create({
-        model: MODEL, max_tokens: 1400, system,
+        model: MODEL, max_tokens: 2000, system,
         messages: [{ role: "user", content: userMsg }],
       });
     } catch (e) {
@@ -422,10 +422,30 @@ export const handler = async (event) => {
     console.log("[AUDIT] REPONSE BRUTE CLAUDE FIN");
     // ====================================================================
 
-    const parsed = safeJSON(text);
+    let parsed = safeJSON(text);
     if (!parsed || !parsed.etat) {
-      console.error("[AUDIT] ECHEC PARSING. stop_reason =", completion.stop_reason, "| longueur =", text ? text.length : 0);
-      return json(502, { success: false, error: "Réponse de diagnostic illisible, réessayez." });
+      console.error("[AUDIT] ECHEC PARSING tour 1. stop_reason =", completion.stop_reason, "| longueur =", text ? text.length : 0);
+      // --- RETRY : demander à Claude d'extraire uniquement le JSON ---
+      try {
+        const retryCompletion = await anthropic.messages.create({
+          model: MODEL,
+          max_tokens: 2000,
+          system: "Tu es un assistant JSON. Extrais et retourne UNIQUEMENT l'objet JSON valide contenu dans le message de l'utilisateur. Pas de texte avant ou après. Pas de markdown.",
+          messages: [
+            { role: "user", content: text || "Réponse vide" },
+          ],
+        });
+        const retryText = (retryCompletion.content || []).map((b) => b.text || "").join("");
+        console.log("[AUDIT] RETRY TEXT =", retryText.substring(0, 200));
+        parsed = safeJSON(retryText);
+      } catch (retryErr) {
+        console.error("[AUDIT] RETRY erreur:", retryErr.message);
+      }
+      if (!parsed || !parsed.etat) {
+        console.error("[AUDIT] ECHEC PARSING tour 2 (final).");
+        return json(502, { success: false, error: "Réponse de diagnostic illisible, réessayez." });
+      }
+      console.log("[AUDIT] RETRY OK — JSON récupéré.");
     }
 
     console.log("[AUDIT] HYPOTHESES BRUTES (Claude) =", JSON.stringify((parsed.hypotheses || []).map((h) => h.libelle)));
