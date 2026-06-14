@@ -5,6 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MecaIA — L'Expert Automobile IA</title>
 <meta name="description" content="MecaIA — Diagnostic OBD, garage virtuel, pièces auto et alertes entretien par IA. 24h/24.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://mecaiaauto.com/">
+
+<!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mecaiaauto.com/">
+<meta property="og:title" content="MecaIA — L'Expert Automobile IA">
+<meta property="og:description" content="Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien par IA. 3 crédits offerts à l'inscription.">
+<meta property="og:image" content="https://mecaiaauto.com/icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:locale" content="fr_BE">
+<meta property="og:site_name" content="MecaIA">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MecaIA — L'Expert Automobile IA">
+<meta name="twitter:description" content="Diagnostics OBD ultra précis, garage virtuel, pièces auto par IA. Gratuit à l'essai.">
+<meta name="twitter:image" content="https://mecaiaauto.com/icon-512.png">
+
+<!-- Schema.org Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "MecaIA",
+  "description": "Expert automobile IA — diagnostic OBD, garage virtuel, recherche de pièces et alertes entretien.",
+  "url": "https://mecaiaauto.com",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "3 crédits gratuits à l'inscription"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Loïc Declerck",
+    "email": "loicdeclerck4020@gmail.com"
+  },
+  "inLanguage": "fr"
+}
+</script>
+
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="icon" type="image/png" href="/icon-192.png">
@@ -820,7 +865,7 @@ textarea{resize:vertical;min-height:70px}
 
   <!-- Stats bar -->
   <div class="l-stats">
-    <div><div class="stat-n" id="stat-d">0</div><div class="stat-l">DIAGNOSTICS</div></div>
+    <div><div class="stat-n" id="stat-d">—</div><div class="stat-l">DIAGNOSTICS</div></div>
     <div><div class="stat-n">3</div><div class="stat-l">CRÉDITS OFFERTS</div></div>
     <div><div class="stat-n">18K+</div><div class="stat-l">CODES DTC</div></div>
     <div><div class="stat-n">24/7</div><div class="stat-l">DISPONIBLE</div></div>
@@ -1796,7 +1841,7 @@ window.doPhoto=async function(event){
       const data=await r.json();if(data.error)throw new Error(data.error.message);
       const analyse=data.content.map(b=>b.text||'').join('');
       save('Analyse photo',analyse.substring(0,80),'photo');
-      document.getElementById('zd').innerHTML=`<div class="card"><div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div><div class="cb"><img src="${e.target.result}" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover"><div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${analyse}</div><button class="bb" style="margin-top:11px" onclick="shr('Analyse photo','?','?')">📤 PARTAGER</button></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>ANALYSE PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+      document.getElementById('zd').innerHTML=`<div class="card"><div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div><div class="cb"><img src="${e.target.result}" alt="Photo du problème mécanique analysée par IA" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover"><div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${analyse}</div><button class="bb" style="margin-top:11px" onclick="shr('Analyse photo','?','?')">📤 PARTAGER</button></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>ANALYSE PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
     }catch(err){CR++;majC();saveC();errB('zd',err.message);}
   };reader.readAsDataURL(file);
 };
@@ -1911,6 +1956,27 @@ window.togPT=function(){
 };
 
 setLang(lang);showSc('s-land');
+
+// ---- Compteur dynamique diagnostics (landing, non-authentifié) ----
+(async function loadStatDiag() {
+  try {
+    const r = await fetch('https://vexxjbpbfrvgszvzpmgu.supabase.co/rest/v1/diag_sessions?select=id', {
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZleHhqYnBiZnJ2Z3N6dnpwbWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NzU4NzksImV4cCI6MjA5NTU1MTg3OX0.T2owu6atANKHH7PfEUL-BG8F6MAizhsqZb3RQWJOR1U',
+        'Prefer': 'count=exact',
+        'Range-Unit': 'items',
+        'Range': '0-0'
+      }
+    });
+    const count = parseInt(r.headers.get('Content-Range')?.split('/')[1] || '0');
+    const el = document.getElementById('stat-d');
+    if (el && count > 0) el.textContent = count + '+';
+    else if (el) el.textContent = '29+';
+  } catch(e) {
+    const el = document.getElementById('stat-d');
+    if (el) el.textContent = '29+';
+  }
+})();
 
 /* ===== MIGRATION SUPABASE AUTH ===== */
 window.doLogin = async function () {
@@ -2275,7 +2341,7 @@ window.doPhoto = async function (event) {
       if (!r.ok || !data || !data.success) throw new Error((data && data.error) || 'Erreur analyse');
       const analyse = data.analysis;
       save('Analyse photo', analyse.substring(0, 80), 'photo');
-      document.getElementById('zd').innerHTML = `<div class="card"><div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div><div class="cb"><img src="${e.target.result}" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover"><div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${analyse}</div><button class="bb" style="margin-top:11px" onclick="shr('Analyse photo','?','?')">📤 PARTAGER</button></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>ANALYSE PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+      document.getElementById('zd').innerHTML = `<div class="card"><div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div><div class="cb"><img src="${e.target.result}" alt="Photo du problème mécanique analysée par IA" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover"><div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${analyse}</div><button class="bb" style="margin-top:11px" onclick="shr('Analyse photo','?','?')">📤 PARTAGER</button></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>ANALYSE PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
       await refreshCredits();
     } catch (err) { errB('zd', err.message); }
   };

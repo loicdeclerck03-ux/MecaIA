@@ -17,12 +17,38 @@
   # esbuild embarque les imports (../lib/auth.mjs) et les node_modules
   node_bundler = "esbuild"
 
+# Fichiers statiques spéciaux à NE PAS intercepter par la SPA
+# (robots.txt, sitemap.xml, manifest.json doivent être servis tels quels)
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+  force = false
+
 # Les routes /.netlify/functions/* sont gérées nativement par Netlify.
 # SPA : tout le reste renvoie index.html.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# ============================================================
+# SECURITY HEADERS
+# ============================================================
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
 
 # ------------------------------------------------------------
 # Pipeline planifié (accumulation de cas) — lundi & jeudi 3h UTC
