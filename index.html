@@ -391,7 +391,7 @@ textarea{resize:vertical;min-height:68px}
   <div class="card">
     <div class="ch"><div class="ct">🔧 Dylan — votre mécanicien IA</div></div>
     <div class="cb">
-      <div id="dylan-feed" style="display:flex;flex-direction:column;gap:10px;max-height:360px;overflow-y:auto;padding:6px 2px;margin-bottom:12px"></div>
+      <div id="dylan-feed" style="display:flex;flex-direction:column;gap:10px;max-height:360px;min-height:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 2px;margin-bottom:12px;scroll-behavior:smooth"></div>
       <textarea id="dylan-in" rows="2" placeholder="Décrivez votre panne à Dylan : voyant allumé, bruit, code OBD, perte de puissance..." style="width:100%;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();dylanSend();}"></textarea>
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
         <button class="btn" onclick="dylanSend()" style="flex:2">💬 ENVOYER À DYLAN</button>
@@ -448,7 +448,7 @@ textarea{resize:vertical;min-height:68px}
     <div class="ch"><div class="ct">Nouveau véhicule</div><button class="bsm" onclick="hideAddCar()">✕</button></div>
     <div class="cb">
       <div class="r2">
-        <div><label>Marque *</label><select id="nc-mk"><option value="">Sélectionner...</option><option>Renault</option><option>Peugeot</option><option>Citroën</option><option>Volkswagen</option><option>BMW</option><option>Mercedes</option><option>Ford</option><option>Toyota</option><option>Opel</option><option>Fiat</option><option>Seat</option><option>Skoda</option><option>Dacia</option><option>Autre</option></select></div>
+        <div><label>Marque *</label><select id="nc-mk"><option value="">Sélectionner...</option><option>Abarth</option><option>Acura</option><option>Aiways</option><option>Alfa Romeo</option><option>Alpina</option><option>Alpine</option><option>Aston Martin</option><option>Audi</option><option>Bentley</option><option>BMW</option><option>BYD</option><option>Bugatti</option><option>Buick</option><option>Cadillac</option><option>Changan</option><option>Chery</option><option>Chevrolet</option><option>Chrysler</option><option>Citroën</option><option>Cupra</option><option>Dacia</option><option>Daewoo</option><option>Daihatsu</option><option>DFSK</option><option>Dodge</option><option>DS Automobiles</option><option>Ferrari</option><option>Fiat</option><option>Fisker</option><option>Ford</option><option>GAC</option><option>Genesis</option><option>GMC</option><option>Great Wall</option><option>Honda</option><option>Hummer</option><option>Hyundai</option><option>INEOS</option><option>Infiniti</option><option>Isuzu</option><option>Jaguar</option><option>Jeep</option><option>Kia</option><option>Koenigsegg</option><option>Lada</option><option>Lamborghini</option><option>Lancia</option><option>Land Rover</option><option>Leapmotor</option><option>Lexus</option><option>Li Auto</option><option>Lincoln</option><option>Lotus</option><option>Lynk &amp; Co</option><option>Mahindra</option><option>Maserati</option><option>Maxus</option><option>Mazda</option><option>McLaren</option><option>Mercedes-Benz</option><option>MG</option><option>MINI</option><option>Mitsubishi</option><option>Morgan</option><option>NIO</option><option>Nissan</option><option>Oldsmobile</option><option>Opel</option><option>Ora</option><option>Pagani</option><option>Peugeot</option><option>Polestar</option><option>Pontiac</option><option>Porsche</option><option>Ram</option><option>Renault</option><option>Rivian</option><option>Rolls-Royce</option><option>Roewe</option><option>Saab</option><option>Saturn</option><option>Seat</option><option>Skoda</option><option>Smart</option><option>Ssangyong</option><option>Subaru</option><option>Suzuki</option><option>Tata</option><option>Tesla</option><option>Toyota</option><option>UAZ</option><option>Volkswagen</option><option>Volvo</option><option>Xpeng</option><option>Zeekr</option><option>Autre</option></select></div>
         <div><label>Modèle *</label><input type="text" id="nc-mo" placeholder="Clio, Golf..."></div>
       </div>
       <div class="r2">
@@ -1396,7 +1396,9 @@ window.dylanBubble = function (role, html) {
   const wrap = document.createElement('div');
   wrap.style.cssText = 'display:flex;' + (mine ? 'justify-content:flex-end' : 'justify-content:flex-start');
   wrap.innerHTML = '<div style="max-width:85%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.6;' + (mine ? 'background:var(--accent);color:#111;border-bottom-right-radius:3px' : 'background:var(--s2);border:1px solid var(--border);color:#fff;border-bottom-left-radius:3px') + '">' + html + '</div>';
-  feed.appendChild(wrap); feed.scrollTop = feed.scrollHeight;
+  feed.appendChild(wrap);
+  // Scroll iOS-compatible : setTimeout 0 force le reflow avant scroll
+  setTimeout(() => { feed.scrollTop = feed.scrollHeight; }, 0);
   return wrap;
 };
 

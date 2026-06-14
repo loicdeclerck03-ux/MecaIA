@@ -168,7 +168,7 @@ function buildSystem(state, ragContext) {
     contexte: state.contexte,
     hypotheses: state.hypotheses,
     controle_en_cours: state.controle_en_cours,
-    controles_faits: state.controles_faits,
+    controles_faits: state.controles_faits.slice(-3), // 3 derniers suffisent — anti-croissance contexte
     reexpliquer: state.reexpliquer,
   });
 
@@ -383,18 +383,8 @@ export const handler = async (event) => {
     // ---- 5) UN SEUL appel Claude ----
     const system = buildSystem(state, ragContext);
 
-    // ===== LOGS DIAGNOSTIC TEMPORAIRES (à retirer après audit) =====
-    console.log("[AUDIT] === DEBUT TOUR", state.tour, "===");
-    console.log("[AUDIT] state.vehicule =", JSON.stringify(state.vehicule));
-    console.log("[AUDIT] fuel brut =", JSON.stringify(state.vehicule && state.vehicule.fuel));
-    console.log("[AUDIT] body.vehicle recu =", JSON.stringify(vehicle));
-    console.log("[AUDIT] body champs plats =", JSON.stringify({ vehicle_marque, vehicle_modele, vehicle_km }));
-    console.log("[AUDIT] PROMPT contient 'DIESEL' ? ->", system.includes("DIESEL"));
-    console.log("[AUDIT] PROMPT contient 'REGLE CARBURANT' ? ->", system.includes("RÈGLE CARBURANT"));
-    console.log("[AUDIT] --- PROMPT SYSTEME COMPLET ---");
-    console.log(system);
-    console.log("[AUDIT] --- FIN PROMPT ---");
-    // ===============================================================
+    // Log compact production
+    console.log(`[DYLAN] tour=${state.tour} etat=${state.etat} make=${state.vehicule?.make || "?"} fuel=${state.vehicule?.fuel || "?"} elapsed=${Date.now() - startTime}ms`);
 
     const userMsg = control_result
       ? `Résultat du contrôle : ${control_result}`
@@ -405,7 +395,7 @@ export const handler = async (event) => {
       completion = await anthropic.messages.create({
         model: MODEL, max_tokens: 2000, system,
         messages: [{ role: "user", content: userMsg }],
-      });
+      }, { timeout: 8000 }); // timeout 8s — sous le seuil Netlify 10s
     } catch (e) {
       console.error("[DYLAN] appel modèle:", e.message);
       return json(502, { success: false, error: "Service de diagnostic indisponible, réessayez." });
@@ -413,19 +403,12 @@ export const handler = async (event) => {
 
     const text = (completion.content || []).map((b) => b.text || "").join("");
 
-    // ===== LOGS DIAGNOSTIC 502 (temporaires, à retirer après audit) =====
-    console.log("[AUDIT] stop_reason =", completion.stop_reason);
-    console.log("[AUDIT] usage =", JSON.stringify(completion.usage));
-    console.log("[AUDIT] LONGUEUR REPONSE =", text ? text.length : 0);
-    console.log("[AUDIT] REPONSE BRUTE CLAUDE DEBUT =");
-    console.log(text);
-    console.log("[AUDIT] REPONSE BRUTE CLAUDE FIN");
-    // ====================================================================
+    // Log usage Claude
+    console.log(`[DYLAN] stop=${completion.stop_reason} tokens=${JSON.stringify(completion.usage)} len=${text?.length || 0}`);
 
     let parsed = safeJSON(text);
     if (!parsed || !parsed.etat) {
-      console.error("[AUDIT] ECHEC PARSING tour 1. stop_reason =", completion.stop_reason, "| longueur =", text ? text.length : 0);
-      // --- RETRY : demander à Claude d'extraire uniquement le JSON ---
+      console.error(`[DYLAN] parsing échoué tour 1. stop=${completion.stop_reason} len=${text?.length || 0}`);
       try {
         const retryCompletion = await anthropic.messages.create({
           model: MODEL,
@@ -436,19 +419,15 @@ export const handler = async (event) => {
           ],
         });
         const retryText = (retryCompletion.content || []).map((b) => b.text || "").join("");
-        console.log("[AUDIT] RETRY TEXT =", retryText.substring(0, 200));
         parsed = safeJSON(retryText);
       } catch (retryErr) {
-        console.error("[AUDIT] RETRY erreur:", retryErr.message);
+        console.error("[DYLAN] retry erreur:", retryErr.message);
       }
       if (!parsed || !parsed.etat) {
-        console.error("[AUDIT] ECHEC PARSING tour 2 (final).");
+        console.error("[DYLAN] parsing final échoué — réponse illisible.");
         return json(502, { success: false, error: "Réponse de diagnostic illisible, réessayez." });
       }
-      console.log("[AUDIT] RETRY OK — JSON récupéré.");
     }
-
-    console.log("[AUDIT] HYPOTHESES BRUTES (Claude) =", JSON.stringify((parsed.hypotheses || []).map((h) => h.libelle)));
 
     // ---- 6) Fusion dans l'état + TRANSITIONS DÉTERMINISTES (code, pas prompt) ----
     if (parsed.contexte) state.contexte = { ...state.contexte, ...parsed.contexte };
