@@ -3,9 +3,12 @@
 //  Ameliorations implementees :
 //  #1  Retry JSON automatique        (deja present, renforce)
 //  #2  DTC lookup Supabase avant hyp (NOUVEAU)
+//  #3  Pseudo-streaming frontend     (affichage progressif)
 //  #4  Resume anti-croissance ctx    (presente, active >5 tours)
 //  #5  Boutons reponse rapide        (interface frontend)
 //  #6  Haiku enquete + Sonnet conclu (NOUVEAU - modele hybride)
+//  #7  Rappels constructeurs NHTSA   (NOUVEAU)
+//  #8  Devis PDF auto conclusion     (frontend)
 //  #9  Memoire vehicule inter-session(NOUVEAU)
 //  #10 Feedback loop post-conclusion (NOUVEAU)
 // ============================================================
@@ -108,6 +111,36 @@ function peutConclure(state) {
     if (pourFaibles >= 2) return h;
   }
   return null;
+}
+
+// ──────────────────────────────────────────────────────────────
+// #7 RAPPELS CONSTRUCTEURS — API NHTSA (gratuite)
+// ──────────────────────────────────────────────────────────────
+const MAKE_NORMALIZE = {
+  "citroën": "CITROEN", "peugeot": "PEUGEOT", "renault": "RENAULT",
+  "volkswagen": "VOLKSWAGEN", "vw": "VOLKSWAGEN", "bmw": "BMW",
+  "mercedes-benz": "MERCEDES BENZ", "mercedes": "MERCEDES BENZ",
+  "audi": "AUDI", "ford": "FORD", "opel": "OPEL", "vauxhall": "OPEL",
+  "fiat": "FIAT", "toyota": "TOYOTA", "honda": "HONDA", "nissan": "NISSAN",
+  "skoda": "SKODA", "seat": "SEAT", "hyundai": "HYUNDAI", "kia": "KIA",
+  "dacia": "DACIA", "volvo": "VOLVO", "mini": "MINI",
+};
+
+async function checkRecalls(make, model, year) {
+  if (!make || !year) return [];
+  try {
+    const makeNorm = MAKE_NORMALIZE[make.toLowerCase()] || make.toUpperCase();
+    const url = `https://api.nhtsa.gov/recalls/recallsByVehicle?make=${encodeURIComponent(makeNorm)}&model=${encodeURIComponent((model || "").toUpperCase())}&modelYear=${year}`;
+    const resp = await fetch(url, { signal: AbortSignal.timeout(3000) });
+    if (!resp.ok) return [];
+    const data = await resp.json();
+    return (data.results || []).slice(0, 3).map(r => ({
+      id: r.NHTSACampaignNumber,
+      component: r.Component || "",
+      summary: (r.Summary || "").substring(0, 200),
+      remedy: (r.Remedy || "").substring(0, 120),
+    }));
+  } catch { return []; }
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -526,13 +559,21 @@ export const handler = async (event) => {
       const c = parsed.conclusion;
       const causeFiable = hypConclue ? hypConclue.libelle : (c.cause || "");
       const bandeFiable = hypConclue ? (hypConclue.bande || "forte") : (c.bande || "probable");
+
+      // #7 Rappels constructeurs NHTSA (best-effort, non bloquant)
+      let recalls = [];
+      try {
+        recalls = await checkRecalls(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year);
+      } catch {}
+
       response.conclusion = {
         cause: causeFiable, bande: bandeFiable, can_drive: c.can_drive !== false,
         urgency: c.urgency || "bientôt", cost_min: Number(c.cost_min) || 0,
         cost_max: Number(c.cost_max) || 0,
         parts_needed: Array.isArray(c.parts_needed) ? c.parts_needed : [],
+        recalls, // rappels constructeurs (peut être vide)
       };
-      // #10 Feedback loop : signaler qu'on veut un retour
+      // #10 Feedback loop
       response.feedback_requested = true;
     }
 
