@@ -441,17 +441,31 @@ export const handler = async (event) => {
 
     console.log(`[DYLAN] tour=${state.tour} etat=${state.etat} model=${modelChoisi} dtc=${dtcContext.length} elapsed=${Date.now() - startTime}ms`);
 
+    // Timeout manuel : 9s enquête / 9s conclusion (Netlify free = 10s max)
+    // On coupe avant que Netlify tue la fonction silencieusement
     let completion;
     try {
-      completion = await anthropic.messages.create({
-        model: modelChoisi,
-        max_tokens: isConclusion ? 2500 : 1800,
-        system,
-        messages: [{ role: "user", content: userMsg }],
-      }, { timeout: isConclusion ? 12000 : 8000 });
+      const abortCtrl = new AbortController();
+      const killTimer = setTimeout(() => abortCtrl.abort(), isConclusion ? 9000 : 9000);
+      try {
+        completion = await anthropic.messages.create({
+          model: modelChoisi,
+          max_tokens: isConclusion ? 2500 : 2400,   // +600 tokens → plus de troncature
+          system,
+          messages: [{ role: "user", content: userMsg }],
+        }, { signal: abortCtrl.signal });
+      } finally {
+        clearTimeout(killTimer);
+      }
     } catch (e) {
-      console.error("[DYLAN] appel modèle:", e.message);
-      return json(502, { success: false, error: "Service de diagnostic indisponible, réessayez." });
+      const isTimeout = e.name === "AbortError" || e.message?.includes("abort");
+      console.error(`[DYLAN] appel modèle (${isTimeout ? "timeout" : "erreur"}):`, e.message);
+      return json(502, {
+        success: false,
+        error: isTimeout
+          ? "Dylan réfléchit encore — réessaie dans 5 secondes."
+          : "Service de diagnostic indisponible, réessayez.",
+      });
     }
 
     const text = (completion.content || []).map((b) => b.text || "").join("");
@@ -462,13 +476,19 @@ export const handler = async (event) => {
     if (!parsed || !parsed.etat) {
       console.error(`[DYLAN] parsing échoué tour 1`);
       try {
-        const retryCompletion = await anthropic.messages.create({
-          model: MODEL_ENQUETE,
-          max_tokens: 1800,
-          system: "Tu es un assistant JSON. Extrais et retourne UNIQUEMENT l'objet JSON valide contenu dans le message. Pas de texte avant ou après. Pas de markdown.",
-          messages: [{ role: "user", content: text || "Réponse vide" }],
-        });
-        parsed = safeJSON((retryCompletion.content || []).map((b) => b.text || "").join(""));
+        const retryCtrl = new AbortController();
+        const retryTimer = setTimeout(() => retryCtrl.abort(), 8000);
+        try {
+          const retryCompletion = await anthropic.messages.create({
+            model: MODEL_ENQUETE,
+            max_tokens: 1800,
+            system: "Tu es un assistant JSON. Extrais et retourne UNIQUEMENT l'objet JSON valide contenu dans le message. Pas de texte avant ou après. Pas de markdown.",
+            messages: [{ role: "user", content: text || "Réponse vide" }],
+          }, { signal: retryCtrl.signal });
+          parsed = safeJSON((retryCompletion.content || []).map((b) => b.text || "").join(""));
+        } finally {
+          clearTimeout(retryTimer);
+        }
       } catch (retryErr) { console.error("[DYLAN] retry:", retryErr.message); }
       if (!parsed || !parsed.etat) {
         return json(502, { success: false, error: "Réponse de diagnostic illisible, réessayez." });
