@@ -1468,10 +1468,102 @@ let sC=1,sP='1.00',sDis=0,lastD=null,lang=localStorage.getItem('ml')||'fr';
 let tries=0,selCar=null,cars=[];
 
 const T={
-fr:{tag:'DIAGNOSTIC AUTOMOBILE INTELLIGENT',h1:'L\'expert automobile IA<br>dans votre <span style="color:var(--accent)">poche</span>',sub:'Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien.',bh:'🚀 DÉMARRER GRATUITEMENT',bl:'CONNEXION',cl:'CONNEXION',cr:'INSCRIPTION'},
-nl:{tag:'INTELLIGENTE AUTODIAGNOSE',h1:'De AI auto-expert<br>in uw <span style="color:var(--accent)">zak</span>',sub:'Nauwkeurige OBD-diagnoses, virtuele garage, onderdelen zoeken en onderhoudsmeldingen.',bh:'🚀 GRATIS STARTEN',bl:'INLOGGEN',cl:'INLOGGEN',cr:'REGISTREREN'},
-en:{tag:'INTELLIGENT AUTO DIAGNOSIS',h1:'The AI auto expert<br>in your <span style="color:var(--accent)">pocket</span>',sub:'Precise OBD diagnostics, virtual garage, parts search and maintenance alerts.',bh:'🚀 START FOR FREE',bl:'LOG IN',cl:'LOG IN',cr:'REGISTER'},
-de:{tag:'INTELLIGENTE KFZ-DIAGNOSE',h1:'Der KI-Auto-Experte<br>in Ihrer <span style="color:var(--accent)">Tasche</span>',sub:'Präzise OBD-Diagnosen, virtuelle Garage, Teilesuche und Wartungsalarme.',bh:'🚀 KOSTENLOS STARTEN',bl:'ANMELDEN',cl:'ANMELDEN',cr:'REGISTRIEREN'}
+fr:{
+  tag:'DIAGNOSTIC AUTOMOBILE INTELLIGENT',
+  h1:'L\'expert automobile IA<br>dans votre <em>poche</em>',
+  sub:'Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien.',
+  bh:'Démarrer gratuitement',bh2:'C\'est grave docteur ?',
+  bl:'Connexion',cl:'Connexion',cr:'Inscription',
+  s1:'DIAGNOSTICS',s2:'CRÉDITS OFFERTS',s3:'CODES DTC',s4:'DISPONIBLE',
+  f1t:'Diagnostic IA Expert',f1s:'Code OBD ou symptômes — rapport complet avec procédure, outils et coût estimé.',
+  f2t:'Garage Virtuel',f2s:'Sauvegardez vos véhicules. Score santé, carnet entretien et suivi kilométrage.',
+  f3t:'Analyse Photo',f3s:'Photographiez le problème. L\'IA identifie l\'état et les défauts visibles.',
+  f4t:'Alertes Entretien',f4s:'L\'IA anticipe les interventions selon votre kilométrage et modèle.',
+  f5t:'Recherche Pièces',f5s:'Pièces compatibles avec références, urgence et lien de commande direct.',
+  f6t:'Devis PDF Pro',f6s:'Générez un devis professionnel en 1 clic. Envoyez à votre client.',
+  how:'COMMENT ÇA MARCHE',
+  h1t:'Créez votre compte',h1s:'Gratuit en 30 secondes. 3 crédits offerts.',
+  h2t:'Ajoutez vos véhicules',h2s:'Une seule fois. L\'IA les connaît pour tout.',
+  h3t:'Diagnostiquez',h3s:'Code OBD, photo ou description — rapport expert en 10s.',
+  h4t:'Réparez',h4s:'Procédure complète, outils, pièces et devis PDF.',
+  promo:'3 crédits gratuits à l\'inscription — aucune carte requise',start:'Commencer →',
+  urg1:'Bloqué sur la route ?',urg2:'Décrivez votre panne — l\'IA répond en 5 secondes',
+  dyl:'Décrivez votre panne à Dylan : voyant allumé, bruit, code OBD, perte de puissance...',
+  dylwelcome:"👋 Salut, moi c'est <strong>Dylan</strong>. Décrivez-moi votre panne (symptôme, voyant, bruit, code OBD…) et je vous aide à diagnostiquer.",
+  out:'Déconnexion'
+},
+nl:{
+  tag:'INTELLIGENTE AUTODIAGNOSE',
+  h1:'De AI auto-expert<br>in uw <em>zak</em>',
+  sub:'Nauwkeurige OBD-diagnoses, virtuele garage, onderdelen zoeken en onderhoudsmeldingen.',
+  bh:'Gratis starten',bh2:'Is het ernstig dokter?',
+  bl:'Inloggen',cl:'Inloggen',cr:'Registreren',
+  s1:'DIAGNOSES',s2:'GRATIS CREDITS',s3:'DTC CODES',s4:'BESCHIKBAAR',
+  f1t:'Expert AI Diagnose',f1s:'OBD-code of symptomen — volledig rapport met procedure, tools en kostenraming.',
+  f2t:'Virtuele Garage',f2s:'Sla uw voertuigen op. Gezondheidsscore, onderhoudsboekje en kilometerstand.',
+  f3t:'Foto-analyse',f3s:'Fotografeer het probleem. De AI identificeert de staat en zichtbare defecten.',
+  f4t:'Onderhoudswaarschuwingen',f4s:'De AI anticipeert interventies op basis van uw kilometerstand en model.',
+  f5t:'Onderdelen zoeken',f5s:'Compatibele onderdelen met referenties, urgentie en directe bestelkoppeling.',
+  f6t:'PDF Offerte Pro',f6s:'Genereer in 1 klik een professionele offerte. Stuur naar uw klant.',
+  how:'HOE HET WERKT',
+  h1t:'Maak uw account',h1s:'Gratis in 30 seconden. 3 gratis credits.',
+  h2t:'Voeg voertuigen toe',h2s:'Één keer. De AI kent ze voor alles.',
+  h3t:'Diagnosticeer',h3s:'OBD-code, foto of beschrijving — expertrapport in 10s.',
+  h4t:'Repareer',h4s:'Volledige procedure, gereedschappen, onderdelen en PDF-offerte.',
+  promo:'3 gratis credits bij registratie — geen kaart vereist',start:'Begin →',
+  urg1:'Langs de weg stilgevallen?',urg2:'Beschrijf uw panne — de AI antwoordt in 5 seconden',
+  dyl:'Beschrijf uw panne aan Dylan: brandend lampje, geluid, OBD-code, vermogensverlies...',
+  dylwelcome:"👋 Hallo, ik ben <strong>Dylan</strong>. Beschrijf uw panne (symptoom, lampje, geluid, OBD-code…) en ik help u diagnosticeren.",
+  out:'Uitloggen'
+},
+en:{
+  tag:'INTELLIGENT AUTO DIAGNOSIS',
+  h1:'The AI auto expert<br>in your <em>pocket</em>',
+  sub:'Precise OBD diagnostics, virtual garage, parts search and maintenance alerts. 24/7.',
+  bh:'Start for free',bh2:'Is it serious doc?',
+  bl:'Log in',cl:'Log in',cr:'Sign up',
+  s1:'DIAGNOSTICS',s2:'FREE CREDITS',s3:'DTC CODES',s4:'AVAILABLE',
+  f1t:'Expert AI Diagnosis',f1s:'OBD code or symptoms — full report with procedure, tools and estimated cost.',
+  f2t:'Virtual Garage',f2s:'Save your vehicles. Health score, service history and mileage tracking.',
+  f3t:'Photo Analysis',f3s:'Photograph the problem. AI identifies the state and visible defects.',
+  f4t:'Maintenance Alerts',f4s:'AI anticipates interventions based on your mileage and model.',
+  f5t:'Parts Search',f5s:'Compatible parts with references, urgency and direct order link.',
+  f6t:'Pro PDF Quote',f6s:'Generate a professional quote in 1 click. Send to your client.',
+  how:'HOW IT WORKS',
+  h1t:'Create your account',h1s:'Free in 30 seconds. 3 free credits.',
+  h2t:'Add your vehicles',h2s:'Once. AI knows them for everything.',
+  h3t:'Diagnose',h3s:'OBD code, photo or description — expert report in 10s.',
+  h4t:'Repair',h4s:'Full procedure, tools, parts and PDF quote.',
+  promo:'3 free credits on sign up — no card required',start:'Start →',
+  urg1:'Broken down on the road?',urg2:'Describe your fault — AI responds in 5 seconds',
+  dyl:'Describe your problem to Dylan: warning light, noise, OBD code, loss of power...',
+  dylwelcome:"👋 Hi, I'm <strong>Dylan</strong>. Describe your fault (symptom, warning light, noise, OBD code…) and I'll help you diagnose it.",
+  out:'Log out'
+},
+de:{
+  tag:'INTELLIGENTE KFZ-DIAGNOSE',
+  h1:'Der KI-Auto-Experte<br>in Ihrer <em>Tasche</em>',
+  sub:'Präzise OBD-Diagnosen, virtuelle Garage, Teilesuche und Wartungsalarme. 24/7.',
+  bh:'Kostenlos starten',bh2:'Ist es ernst, Doktor?',
+  bl:'Anmelden',cl:'Anmelden',cr:'Registrieren',
+  s1:'DIAGNOSEN',s2:'GRATIS CREDITS',s3:'DTC CODES',s4:'VERFÜGBAR',
+  f1t:'KI-Experten-Diagnose',f1s:'OBD-Code oder Symptome — vollständiger Bericht mit Verfahren, Werkzeug und Kostenschätzung.',
+  f2t:'Virtuelle Garage',f2s:'Fahrzeuge speichern. Gesundheitsscore, Wartungsbuch und Kilometerstand.',
+  f3t:'Fotoanalyse',f3s:'Problem fotografieren. Die KI identifiziert den Zustand und sichtbare Defekte.',
+  f4t:'Wartungsalarme',f4s:'KI antizipiert Eingriffe basierend auf Kilometerstand und Modell.',
+  f5t:'Teilesuche',f5s:'Kompatible Teile mit Referenzen, Dringlichkeit und direktem Bestelllink.',
+  f6t:'PDF-Angebot Pro',f6s:'Professionelles Angebot in 1 Klick erstellen. An Kunden senden.',
+  how:'WIE ES FUNKTIONIERT',
+  h1t:'Konto erstellen',h1s:'Kostenlos in 30 Sekunden. 3 Gratis-Credits.',
+  h2t:'Fahrzeuge hinzufügen',h2s:'Einmal. Die KI kennt sie für alles.',
+  h3t:'Diagnostizieren',h3s:'OBD-Code, Foto oder Beschreibung — Expertenbericht in 10s.',
+  h4t:'Reparieren',h4s:'Vollständiges Verfahren, Werkzeuge, Teile und PDF-Angebot.',
+  promo:'3 Gratis-Credits bei Registrierung — keine Karte erforderlich',start:'Starten →',
+  urg1:'Liegengeblieben?',urg2:'Beschreiben Sie Ihren Fehler — KI antwortet in 5 Sekunden',
+  dyl:'Beschreiben Sie Ihr Problem Dylan: Warnleuchte, Geräusch, OBD-Code, Leistungsverlust...',
+  dylwelcome:"👋 Hallo, ich bin <strong>Dylan</strong>. Beschreiben Sie Ihren Fehler (Symptom, Warnleuchte, Geräusch, OBD-Code…) und ich helfe Ihnen bei der Diagnose.",
+  out:'Abmelden'
+}
 };
 
 function toast(m,t=''){const c=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+(t==='ok'?'ok':t==='er'?'er':'');el.textContent=m;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},2500);}
@@ -1493,8 +1585,35 @@ window.selCarPieces = function (id) {
 
 window.setLang=function(l){
   lang=l;localStorage.setItem('ml',l);const t=T[l]||T.fr;
-  ss('l-tag',t.tag);ss('l-h1',t.h1);ss('l-sub',t.sub);ss('l-bh',t.bh);ss('l-l',t.bl);ss('at-l',t.cl);ss('at-r',t.cr);
+  // Landing page
+  ss('l-tag',t.tag);ss('l-h1',t.h1);ss('l-sub',t.sub);
+  ss('l-l',t.bl);ss('l-s',t.bh);
+  // Landing boutons
+  const lbh=document.getElementById('l-bh');if(lbh)lbh.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> '+t.bh;
+  // Landing stats labels
+  const sls=document.querySelectorAll('.stat-l');if(sls.length>=4){sls[0].textContent=t.s1;sls[1].textContent=t.s2;sls[2].textContent=t.s3;sls[3].textContent=t.s4;}
+  // Features
+  const fts=document.querySelectorAll('.feat-t');const fss=document.querySelectorAll('.feat-s');
+  [[t.f1t,t.f1s],[t.f2t,t.f2s],[t.f3t,t.f3s],[t.f4t,t.f4s],[t.f5t,t.f5s],[t.f6t,t.f6s]].forEach(([ft,fs],i)=>{if(fts[i])fts[i].textContent=ft;if(fss[i])fss[i].textContent=fs;});
+  // How it works
+  const lhowt=document.querySelector('.l-how-t');if(lhowt)lhowt.textContent=t.how;
+  const howts=document.querySelectorAll('.how-t2');const howds=document.querySelectorAll('.how-d');
+  [[t.h1t,t.h1s],[t.h2t,t.h2s],[t.h3t,t.h3s],[t.h4t,t.h4s]].forEach(([ht,hs],i)=>{if(howts[i])howts[i].textContent=ht;if(howds[i])howds[i].textContent=hs;});
+  // Promo + urgence
+  const pi=document.querySelector('.promo-i');if(pi){const sp=pi.querySelector('button');if(sp)sp.textContent=t.start;}
+  const urb=document.querySelector('.urg-box .l');
+  // Auth tabs
+  ss('at-l',t.cl);ss('at-r',t.cr);
+  // App: bouton déconnexion
+  const ob=document.querySelector('[onclick="doOut()"]');if(ob)ob.title=t.out;
+  // Dylan textarea placeholder
+  const din=document.getElementById('dylan-in');if(din)din.placeholder=t.dyl;
+  // Dylan welcome (si feed vide)
+  window._dylwelcome=t.dylwelcome;
+  // Synchro des selects de langue
   document.querySelectorAll('.lang-s').forEach(e=>e.value=l);
+  // Lang HTML
+  document.documentElement.lang=l;
 };
 
 function showSc(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0);}
@@ -2159,7 +2278,8 @@ window.dylanBubble = function (role, html) {
 
 window.dylanWelcome = function () {
   const feed = document.getElementById('dylan-feed'); if (!feed || feed.children.length) return;
-  dylanBubble('dylan', "👋 Salut, moi c'est <strong>Dylan</strong>. Décrivez-moi votre panne (symptôme, voyant, bruit, code OBD…) et je vous aide à diagnostiquer. Astuce : sélectionnez un véhicule ci-dessus pour un diagnostic plus précis.");
+  const msg = (window._dylwelcome) || (T[lang]||T.fr).dylwelcome;
+  dylanBubble('dylan', msg);
 };
 
 window.dylanNew = function () {
@@ -2472,7 +2592,7 @@ window.doPhoto = async function (event) {
 
 window.doVIN = async function () {
   const vin = document.getElementById('v-n').value.trim().toUpperCase();
-  if (vin.length < 5) { toast('VIN invalide', 'er'); return; }
+  if (vin.length < 11) { toast('VIN invalide (min. 11 caractères)', 'er'); return; }
   const btn = document.getElementById('btn-v'); btn.disabled = true; btn.textContent = '⏳ DÉCODAGE...';
   loader('zv'); save('Décodage VIN', vin, 'vin');
   try {
@@ -2481,8 +2601,36 @@ window.doVIN = async function () {
     const data = r.data;
     if (!r.ok || !data || !data.success) throw new Error((data && data.error) || 'VIN introuvable');
     const v = data.vehicle || {};
-    const fl = [['PAYS', v.pays_fabrication], ['CONSTRUCTEUR', v.marque], ['MODÈLE', v.modele], ['ANNÉE', v.annee], ['MOTEUR', v.moteur || (v.cylindree_l ? v.cylindree_l + 'L' : '')], ['CARBURANT', v.carburant], ['CYLINDRES', v.cylindres], ['CARROSSERIE', v.carrosserie], ['N° VIN', data.vin]];
-    document.getElementById('zv').innerHTML = `<div class="card"><div class="ch"><div class="ct">VIN DÉCODÉ</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:1px">${data.vin}</span></div><div class="vgrid">${fl.map(f => `<div class="vc"><div class="vcl">${f[0]}</div><div class="vcv">${f[1] || '—'}</div></div>`).join('')}</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Source NHTSA — couverture limitée pour certains modèles européens</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>GRATUIT · MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+    const qualiteBadge = data.qualite === 'complète' ? '<span style="background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);padding:2px 8px;border-radius:3px;font-size:9px;font-family:IBM Plex Mono,monospace">DONNÉES COMPLÈTES</span>'
+      : data.qualite === 'partielle' ? '<span style="background:rgba(232,160,0,.12);color:var(--acc);border:1px solid rgba(232,160,0,.25);padding:2px 8px;border-radius:3px;font-size:9px;font-family:IBM Plex Mono,monospace">DONNÉES PARTIELLES</span>'
+      : '<span style="background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.3);padding:2px 8px;border-radius:3px;font-size:9px;font-family:IBM Plex Mono,monospace">DONNÉES BASIQUES</span>';
+    const sourceBadge = data.source ? `<span style="font-size:9px;font-family:IBM Plex Mono,monospace;color:var(--muted);margin-left:6px">SRC: ${data.source}</span>` : '';
+    const fields = [
+      ['MARQUE', v.marque], ['MODÈLE', v.modele], ['ANNÉE', v.annee],
+      ['CARBURANT', v.carburant], ['CARROSSERIE', v.carrosserie],
+      ['MOTEUR', v.moteur], ['CYLINDRES', v.cylindres],
+      ['CYLINDRÉE', v.cylindree_l ? v.cylindree_l + ' L' : null],
+      ['PUISSANCE', v.puissance_cv ? v.puissance_cv + ' ch' : null],
+      ['TRANSMISSION', v.transmission], ['PORTES', v.nb_portes],
+      ['PAYS', v.pays_fabrication],
+    ].filter(([, val]) => val && String(val).trim() !== '0' && String(val).trim() !== '');
+    document.getElementById('zv').innerHTML = `<div class="card">
+      <div class="ch">
+        <div class="ct">VIN DÉCODÉ ${qualiteBadge}${sourceBadge}</div>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--acc);letter-spacing:1px">${vin}</span>
+      </div>
+      <div class="vgrid">${fields.map(([l, val]) => `<div class="vc"><div class="vcl">${l}</div><div class="vcv">${val}</div></div>`).join('')}</div>
+      ${v.note_ia ? `<div style="padding:8px 15px;background:rgba(59,130,246,.05);border-top:1px solid var(--bd);font-size:11px;color:var(--tx2)">💡 ${v.note_ia}</div>` : ''}
+      <div style="padding:8px 15px;border-top:1px solid var(--bd);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(232,160,0,.7)">
+        ⚠️ Résultat basé sur la base NHTSA officielle${data.source === 'NHTSA+IA' ? ' + enrichissement IA' : ''}. Vérifier sur la carte grise.
+      </div>
+      <div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>GRATUIT · MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:7px;flex-wrap:wrap">
+      <button class="btn-teal" style="flex:1;margin-top:0" onclick="window.open('https://www.vininfo.com/vin-check/${vin}','_blank')">🔍 Vérifier sur VINinfo</button>
+      <button class="bsm" style="margin-top:0" onclick="window.open('https://www.carjam.co.nz/car/?plate=${vin}','_blank')">📋 Historique</button>
+    </div>`;
+    await refreshCredits();
   } catch (e) { errB('zv', e.message); }
   btn.disabled = false; btn.textContent = '🔍 DÉCODER CE VIN — GRATUIT';
 };
@@ -2503,7 +2651,41 @@ window.doPieces = async function () {
     if (r.status === 402) { openM('m-pay'); toast('Plus de crédits !', 'er'); btn.disabled = false; btn.textContent = '🔧 TROUVER LES PIÈCES (1 crédit)'; return; }
     const d = r.data;
     if (!r.ok || !d || !d.success) throw new Error((d && d.error) || 'Erreur pièces');
-    document.getElementById('zp').innerHTML = `<div class="card"><div class="ch"><div class="ct">${pc.toUpperCase()}</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">${d.pieces.length} résultats · ${veh}</span></div><div class="plist">${d.pieces.map(p => { const url = 'https://www.autodoc.be/fr/search?query=' + encodeURIComponent(p.reference || p.nom); const uc = p.urgence === 'Immédiat' ? 'var(--red)' : p.urgence === 'Sous 1000km' ? 'var(--accent)' : 'var(--green)'; return `<div class="pi"><div class="pm"><div class="pn">${p.nom}</div><div class="pr">${p.marque} · Réf: ${p.reference}${p.ref_origine ? ' · OEM: ' + p.ref_origine : ''} · <span style="color:var(--accent)">${p.qualite}</span></div><div class="pc">✓ ${p.compatibilite}</div>${p.conseil ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">💬 ${p.conseil}</div>` : ''} ${p.urgence ? `<div style="font-size:10px;color:${uc};margin-top:2px;font-family:'IBM Plex Mono',monospace">⏰ ${p.urgence}</div>` : ''}</div><div class="pp">~${p.prix_min}€<br><span style="font-size:10px;color:var(--muted)">à ${p.prix_max}€</span></div><a href="${url}" target="_blank" style="text-decoration:none"><button class="bsm">COMMANDER →</button></a></div>`; }).join('')}</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Références indicatives</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>PIÈCES MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+    document.getElementById('zp').innerHTML = `<div class="card">
+      <div class="ch">
+        <div class="ct">${pc.toUpperCase()}</div>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">${d.pieces.length} résultats · ${veh.substring(0,35)}</span>
+      </div>
+      <div class="plist">${d.pieces.map(p => {
+        const uc = p.urgence === 'Immédiat' ? 'var(--red)' : p.urgence === 'Sous 1000km' ? 'var(--acc)' : 'var(--green)';
+        const refBadge = p.reference
+          ? `<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--acc);background:var(--acc-d);border:1px solid var(--acc-b);padding:1px 6px;border-radius:3px">${p.reference}</span>`
+          : `<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);background:var(--s2);border:1px solid var(--bd);padding:1px 6px;border-radius:3px">Réf à vérifier</span>`;
+        const urlAutodoc = p.url_autodoc || `https://www.autodoc.be/fr/search?query=${encodeURIComponent(p.nom + ' ' + mk + ' ' + mo)}`;
+        const urlEbay = p.url_ebay || `https://www.ebay.be/sch/i.html?_nkw=${encodeURIComponent(p.nom + ' ' + mk)}`;
+        return `<div class="pi">
+          <div class="pm">
+            <div class="pn">${p.nom}</div>
+            <div class="pr" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:3px">
+              <span>${p.marque}</span>${refBadge}
+              <span style="color:var(--acc);font-size:10px">${p.qualite}</span>
+            </div>
+            <div class="pc">✓ ${p.compatibilite}</div>
+            ${p.conseil ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">💬 ${p.conseil}</div>` : ''}
+            ${p.urgence ? `<div style="font-size:10px;color:${uc};margin-top:2px;font-family:'IBM Plex Mono',monospace">⏰ ${p.urgence}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end">
+            <div class="pp">~${p.prix_min}€<br><span style="font-size:10px;color:var(--muted)">à ${p.prix_max}€</span></div>
+            <a href="${urlAutodoc}" target="_blank" style="text-decoration:none"><button class="bsm">Autodoc →</button></a>
+            <a href="${urlEbay}" target="_blank" style="text-decoration:none"><button class="bsm" style="background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:var(--blue)">eBay →</button></a>
+          </div>
+        </div>`;
+      }).join('')}</div>
+      <div style="padding:9px 15px;border-top:1px solid var(--bd);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(232,160,0,.7)">
+        ⚠️ ${d.fiabilite || 'Références indicatives — vérifier compatibilité avant commande'}
+      </div>
+      <div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>PIÈCES MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div>
+    </div>`;
     await refreshCredits();
   } catch (e) { errB('zp', e.message); }
   btn.disabled = false; btn.textContent = '🔧 TROUVER LES PIÈCES (1 crédit)';
