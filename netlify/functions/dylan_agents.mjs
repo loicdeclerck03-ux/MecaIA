@@ -282,6 +282,33 @@ Réponds STRICTEMENT en JSON valide, sans texte autour :
 }`;
 }
 
+// ---- #11 Recherche pièces en parallèle à la conclusion ----
+async function searchPartsForConclusion(partsNeeded, vehicule) {
+  if (!partsNeeded || partsNeeded.length === 0) return [];
+  const v = vehicule || {};
+  const vStr = [v.year, v.make, v.model].filter(Boolean).join(' ') || 'véhicule';
+  const piecesStr = partsNeeded.slice(0, 4).join(', ');
+
+  const prompt = `Pour un ${vStr}, génère des liens de recherche pour ces pièces: ${piecesStr}.
+Réponds UNIQUEMENT en JSON valide sans texte autour:
+{"pieces":[{"nom":"nom pièce","autodoc_url":"https://www.autodoc.be/search?query=TERMES","ebay_url":"https://www.ebay.be/sch/i.html?_nkw=TERMES"}]}
+Remplace TERMES par des termes de recherche précis (pièce + marque + modèle). Max 4 pièces.`;
+
+  try {
+    const resp = await anthropic.messages.create({
+      model: MODEL_ENQUETE,
+      max_tokens: 500,
+      messages: [{ role: 'user', content: prompt }],
+    }, { timeout: 4000 });
+    const txt = (resp.content || []).map(b => b.text || '').join('');
+    const parsed = safeJSON(txt);
+    return Array.isArray(parsed?.pieces) ? parsed.pieces.slice(0, 4) : [];
+  } catch (e) {
+    console.error('[DYLAN] searchParts:', e.message);
+    return [];
+  }
+}
+
 export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return preflight();
   if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
@@ -560,18 +587,22 @@ export const handler = async (event) => {
       const causeFiable = hypConclue ? hypConclue.libelle : (c.cause || "");
       const bandeFiable = hypConclue ? (hypConclue.bande || "forte") : (c.bande || "probable");
 
-      // #7 Rappels constructeurs NHTSA (best-effort, non bloquant)
-      let recalls = [];
-      try {
-        recalls = await checkRecalls(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year);
-      } catch {}
+      // #7+#11 Orchestration parallèle post-conclusion : rappels NHTSA + liens pièces
+      const [recallsRes, partsLinksRes] = await Promise.allSettled([
+        checkRecalls(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year),
+        searchPartsForConclusion(Array.isArray(c.parts_needed) ? c.parts_needed : [], state.vehicule),
+      ]);
+      const recalls = recallsRes.status === 'fulfilled' ? (recallsRes.value || []) : [];
+      const parts_links = partsLinksRes.status === 'fulfilled' ? (partsLinksRes.value || []) : [];
+      console.log(`[DYLAN] parallel: recalls=${recalls.length} parts_links=${parts_links.length}`);
 
       response.conclusion = {
         cause: causeFiable, bande: bandeFiable, can_drive: c.can_drive !== false,
         urgency: c.urgency || "bientôt", cost_min: Number(c.cost_min) || 0,
         cost_max: Number(c.cost_max) || 0,
         parts_needed: Array.isArray(c.parts_needed) ? c.parts_needed : [],
-        recalls, // rappels constructeurs (peut être vide)
+        recalls,      // rappels constructeurs NHTSA (peut être vide)
+        parts_links,  // liens Autodoc+eBay par pièce (#11 orchestration parallèle)
       };
       // #10 Feedback loop
       response.feedback_requested = true;
