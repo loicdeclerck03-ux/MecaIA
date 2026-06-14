@@ -19,6 +19,21 @@
 <meta property="og:locale" content="fr_BE">
 <meta property="og:site_name" content="MecaIA">
 
+<!-- Sentry — monitoring erreurs prod -->
+<script
+  src="https://browser.sentry-cdn.com/8.45.1/bundle.tracing.min.js"
+  crossorigin="anonymous"
+></script>
+<script>
+  Sentry.init({
+    dsn: "https://f5600785f3388d0d597bfde2856d67d4@o4511548876652544.ingest.de.sentry.io/4511565940392016",
+    integrations: [Sentry.browserTracingIntegration()],
+    tracesSampleRate: 0.2,
+    environment: "production",
+    release: "mecaia@1.0.0",
+  });
+</script>
+
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MecaIA — L'Expert Automobile IA">
