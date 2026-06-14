@@ -1090,65 +1090,21 @@ textarea{resize:vertical;min-height:70px}
           <button class="br" onclick="dylanNew()" style="margin-top:0" title="Nouvelle conversation">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.08"/></svg>
           </button>
+          <button class="bsm" onclick="dylanShowSessions()" title="Reprendre une conversation" style="margin-top:0">↩ Reprendre</button>
         </div>
       </div>
       <input type="file" id="photo-in" accept="image/*" style="display:none" onchange="doPhoto(event)">
     </div>
   </div>
 
-  <!-- Advanced diagnostic form -->
-  <div class="card" id="diag-form-card">
-    <div class="ch"><div class="ct">Diagnostic avancé</div></div>
-    <div class="cb">
-      <div class="r2">
-        <div class="f"><label>Marque</label>
-          <select id="d-mk" onchange="chkD()">
-            <option value="">— Marque —</option>
-            <option>Abarth</option><option>Alfa Romeo</option><option>Aston Martin</option>
-            <option>Audi</option><option>Bentley</option><option>BMW</option>
-            <option>Bugatti</option><option>Cadillac</option><option>Chevrolet</option>
-            <option>Chrysler</option><option>Citroën</option><option>Cupra</option>
-            <option>Dacia</option><option>Daewoo</option><option>Dodge</option>
-            <option>DS</option><option>Ferrari</option><option>Fiat</option>
-            <option>Ford</option><option>Genesis</option><option>Honda</option>
-            <option>Hyundai</option><option>Infiniti</option><option>Jaguar</option>
-            <option>Jeep</option><option>Kia</option><option>Lamborghini</option>
-            <option>Lancia</option><option>Land Rover</option><option>Lexus</option>
-            <option>Lincoln</option><option>Lotus</option><option>Maserati</option>
-            <option>Mazda</option><option>McLaren</option><option>Mercedes-Benz</option>
-            <option>MG</option><option>Mini</option><option>Mitsubishi</option>
-            <option>Nissan</option><option>Opel</option><option>Peugeot</option>
-            <option>Porsche</option><option>RAM</option><option>Renault</option>
-            <option>Rolls-Royce</option><option>SEAT</option><option>Skoda</option>
-            <option>Smart</option><option>SsangYong</option><option>Subaru</option>
-            <option>Suzuki</option><option>Tesla</option><option>Toyota</option>
-            <option>Volkswagen</option><option>Volvo</option>
-          </select>
-        </div>
-        <div class="f"><label>Modèle</label><input type="text" id="d-mo" placeholder="Ex: Golf, 308..." onkeyup="chkD()"></div>
-      </div>
-      <div class="r2">
-        <div class="f"><label>Année</label><input type="number" id="d-an" placeholder="2019" min="1980" max="2026" onchange="chkD()"></div>
-        <div class="f"><label>Carburant</label>
-          <select id="d-cb" onchange="chkD()">
-            <option value="">— Type —</option>
-            <option value="essence">Essence</option><option value="diesel">Diesel</option>
-            <option value="hybride">Hybride</option><option value="electrique">Électrique</option>
-            <option value="gpl">GPL</option><option value="gnv">GNV</option>
-          </select>
-        </div>
-      </div>
-      <div class="r2">
-        <div class="f"><label>Puissance (ch)</label><input type="number" id="d-kw" placeholder="110"></div>
-        <div class="f"><label>Kilométrage</label><input type="number" id="d-km" placeholder="95000"></div>
-      </div>
-      <div class="r2">
-        <div class="f"><label>Code moteur</label><input type="text" id="d-cm" placeholder="N47D20" style="text-transform:uppercase"></div>
-        <div class="f"><label>Code OBD (optionnel)</label><input type="text" id="d-code" placeholder="P0301" style="text-transform:uppercase;font-family:'IBM Plex Mono',monospace"></div>
-      </div>
-      <div class="f"><label>Symptômes</label><textarea id="d-sy" placeholder="Décrivez les symptômes, bruits, comportements anormaux..."></textarea></div>
-      <button class="btn" id="btn-d" onclick="doDiag()" disabled>Diagnostic IA (1 crédit)</button>
-      <div id="zd" style="margin-top:13px"></div>
+  <!-- Reprendre une conversation Dylan -->
+  <div class="card" id="dylan-sessions-card" style="display:none">
+    <div class="ch">
+      <div class="ct">💬 Reprendre un diagnostic</div>
+      <button class="br" onclick="document.getElementById('dylan-sessions-card').style.display='none'">✕</button>
+    </div>
+    <div class="cb" style="padding:12px" id="dylan-sessions-list">
+      <div style="font-size:12px;color:var(--muted);text-align:center;padding:16px">Chargement…</div>
     </div>
   </div>
 </div></div>
@@ -2212,6 +2168,50 @@ window.dylanNew = function () {
   dylanWelcome(); toast('Nouvelle conversation', 'ok');
 };
 
+// ── Reprise de session (#3) ──────────────────────────────────
+window.dylanShowSessions = async function () {
+  const card = document.getElementById('dylan-sessions-card');
+  const list = document.getElementById('dylan-sessions-list');
+  card.style.display = 'block';
+  list.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:16px">Chargement…</div>';
+  try {
+    const r = await MecaIA.authedFetch('profile_get'); // on réutilise le supabase client
+    // Requête directe Supabase via RPC
+    const { data, error } = await supa.rpc('get_open_sessions', { p_user_id: supa.auth.getUser ? (await supa.auth.getUser()).data?.user?.id : null, p_limit: 6 });
+    if (error || !data || !data.length) {
+      list.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:20px">Aucun diagnostic en cours.</div>';
+      return;
+    }
+    const etatLabel = { CONTEXTE: '🔍 Contexte', HYPOTHESES: '💡 Hypothèses', CONTROLE: '🔬 Contrôle', CONCLUSION: '✅ Conclusion' };
+    list.innerHTML = data.map(s => `
+      <div style="background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:11px 13px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:2px">${s.veh_make||'—'} ${s.veh_model||''} ${s.veh_fuel?'· '+s.veh_fuel:''}</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.symptoms||'Panne décrite à Dylan'}</div>
+          ${s.resume?`<div style="font-size:11px;color:var(--tx2);margin-bottom:3px;line-height:1.5">${s.resume.substring(0,120)}…</div>`:''}
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--acc)">${etatLabel[s.enquete_etat]||s.enquete_etat}</span>
+            <span style="font-size:10px;color:var(--muted)">· ${s.nb_tours||0} tours · ${new Date(s.maj_le).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+          </div>
+        </div>
+        <button class="btn-teal" onclick="dylanReprendre('${s.id}','${(s.symptoms||'').replace(/'/g,"\\'")}','${s.resume||''}')" style="flex-shrink:0;margin-top:0">↩ Reprendre</button>
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="font-size:12px;color:var(--red);text-align:center;padding:16px">${e.message}</div>`;
+  }
+};
+
+window.dylanReprendre = function (sessionId, symptomes, resume) {
+  window.currentDiagSession = sessionId;
+  window.dylanConv = Date.now();
+  document.getElementById('dylan-sessions-card').style.display = 'none';
+  const feed = document.getElementById('dylan-feed');
+  if (feed) feed.innerHTML = '';
+  dylanBubble('dylan', `↩ <strong>Reprise de diagnostic</strong><br><span style="font-size:12px;color:var(--muted)">${symptomes ? 'Panne : ' + symptomes.substring(0, 80) : ''}</span>${resume ? `<br><div style="margin-top:7px;font-size:12px;color:var(--tx2);line-height:1.6">${resume}</div>` : ''}`);
+  dylanBubble('dylan', 'On reprend là où on s\'était arrêtés. Que s\'est-il passé depuis notre dernière analyse ?');
+  toast('Conversation reprise', 'ok');
+};
+
 window.dylanBandeLabel = function (b) {
   return { faible: 'Hypothèse faible', probable: 'Hypothèse probable', forte: 'Hypothèse forte', tres_forte: 'Hypothèse très forte' }[b] || b || '';
 };
@@ -2250,6 +2250,17 @@ window.dylanRender = function (data) {
     if (cc.cost_min || cc.cost_max) html += '<div style="font-size:11px;color:var(--muted);margin-top:3px">💶 ' + cc.cost_min + '€ – ' + cc.cost_max + '€</div>';
     if (Array.isArray(cc.parts_needed) && cc.parts_needed.length) html += '<div style="margin-top:6px">' + cc.parts_needed.map(p => '<span class="tag">' + p + '</span>').join(' ') + '</div>';
     html += '</div>';
+    // #10 Feedback loop
+    if (data.feedback_requested && data.session_id) {
+      html += `<div style="margin-top:10px;padding:10px 13px;background:rgba(232,160,0,0.06);border:1px solid var(--acc-b);border-radius:8px">
+        <div style="font-size:12px;color:var(--tx);margin-bottom:7px">🙏 Ce diagnostic était-il correct ? <span style="color:var(--muted)">(aide à améliorer Dylan)</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="bsm" onclick="dylanFeedback('${data.session_id}','oui')">✅ Oui, résolu</button>
+          <button class="bsm" onclick="dylanFeedback('${data.session_id}','non')">❌ Non, pas ça</button>
+          <button class="bsm" onclick="dylanFeedback('${data.session_id}','partiel')">🔶 Partiellement</button>
+        </div>
+      </div>`;
+    }
   }
   dylanBubble('dylan', html || '…');
 };
@@ -2268,21 +2279,35 @@ window.dylanControl = async function (resultat) {
   await dylanTurn({ control_result: resultat });
 };
 
+// #10 Feedback post-conclusion
+window.dylanFeedback = async function (sessionId, resolved) {
+  try {
+    await supa.rpc('upsert_diag_outcome', { p_session_id: sessionId, p_resolved: resolved, p_consent: true });
+    const msg = resolved === 'oui' ? '✅ Parfait ! Merci, cela aide à améliorer mes diagnostics.'
+               : resolved === 'non' ? '❌ Noté. Si le problème persiste, décrivez-moi ce qui a changé et on repart de zéro.'
+               : '🔶 Compris. Si besoin, reprends cette conversation pour affiner.';
+    dylanBubble('dylan', msg);
+    toast('Merci pour ton retour !', 'ok');
+  } catch(e) { console.log('feedback:', e.message); }
+};
+
 window.dylanTurn = async function (payload) {
-  const mk = document.getElementById('d-mk').value, mo = document.getElementById('d-mo').value.trim();
-  const an = document.getElementById('d-an').value, cb = document.getElementById('d-cb').value;
-  const km = document.getElementById('d-km').value.trim(), cm = document.getElementById('d-cm').value.trim().toUpperCase();
-  const code = document.getElementById('d-code').value.trim().toUpperCase();
   if (!window.dylanConv) { if (!useC()) return; window.dylanConv = Date.now(); }
   const thinking = dylanBubble('dylan', '<span style="opacity:.6">Dylan réfléchit…</span>');
   try {
+    // Véhicule depuis selCar (garage) en priorité
+    const veh = selCar ? {
+      make: selCar.marque || null, model: selCar.modele || null,
+      engine_code: selCar.cm || null, engine_label: selCar.cm || null,
+      fuel: selCar.carbu || null, year: parseInt(selCar.annee) || null,
+      mileage_km: parseInt(selCar.km) || null,
+    } : {};
     const body = {
       session_id: window.currentDiagSession || null,
-      vehicle: { make: mk || null, model: mo || null, engine_code: null, engine_label: cm || null, fuel: cb || null, year: parseInt(an) || null, mileage_km: parseInt(km) || null },
-      vehicle_marque: mk || null, vehicle_modele: mo || null, vehicle_km: parseInt(km) || null,
+      vehicle: veh,
+      vehicle_marque: veh.make || null, vehicle_modele: veh.model || null, vehicle_km: veh.mileage_km || null,
       ...payload
     };
-    if (body.user_input && code) body.user_input = 'Code OBD: ' + code + '\n' + body.user_input;
     const r = await MecaIA.authedFetch('dylan_agents', { method: 'POST', body });
     if (r.status === 402) { if (thinking) thinking.remove(); openM('m-pay'); toast('Plus de crédits !', 'er'); window.dylanConv = null; return; }
     const data = r.data;
@@ -2290,7 +2315,8 @@ window.dylanTurn = async function (payload) {
     if (thinking) thinking.remove();
     if (data.session_id) window.currentDiagSession = data.session_id;
     dylanRender(data);
-    save('Conversation Dylan', (mk && mo ? mk + ' ' + mo + ' — ' : '') + (data.conclusion ? data.conclusion.cause : 'enquête en cours'), 'dylan');
+    const vehLabel = selCar ? selCar.marque + ' ' + selCar.modele + ' — ' : '';
+    save('Conversation Dylan', vehLabel + (data.conclusion ? data.conclusion.cause : 'enquête en cours'), 'dylan');
     await refreshCredits();
   } catch (e) {
     if (thinking) thinking.remove();
@@ -2298,35 +2324,8 @@ window.dylanTurn = async function (payload) {
   }
 };
 
-window.doDiag = async function () {
-  const code = document.getElementById('d-code').value.trim().toUpperCase();
-  const mk = document.getElementById('d-mk').value; const mo = document.getElementById('d-mo').value.trim();
-  const an = document.getElementById('d-an').value; const cb = document.getElementById('d-cb').value;
-  const kw = document.getElementById('d-kw').value.trim(); const km = document.getElementById('d-km').value.trim();
-  const cm = document.getElementById('d-cm').value.trim().toUpperCase(); const sy = document.getElementById('d-sy').value.trim();
-  if (!mk || !mo || !an || !cb) { toast('Remplir Marque, Modèle, Année, Carburant', 'er'); return; }
-  if (!useC()) return;
-  const btn = document.getElementById('btn-d'); btn.disabled = true; btn.textContent = '⏳ DYLAN ANALYSE...'; loader('zd');
-  try {
-    const veh = [mk, mo, cb, kw && kw + 'kW', an && '(' + an + ')', km && km + 'km', cm && 'Moteur:' + cm].filter(Boolean).join(' ');
-    const user_input = [code && 'Code OBD: ' + code, 'Véhicule: ' + veh, sy && 'Symptômes: ' + sy].filter(Boolean).join('\n');
-    const r = await MecaIA.authedFetch('dylan_agents', { method: 'POST', body: { user_input, vehicle_marque: mk, vehicle_modele: mo, vehicle_km: parseInt(km) || null } });
-    if (r.status === 402) { openM('m-pay'); toast('Plus de crédits !', 'er'); btn.disabled = false; btn.textContent = '⚡ DIAGNOSTIC IA (1 crédit)'; return; }
-    const data = r.data;
-    if (!r.ok || !data || !data.success) { throw new Error((data && data.error) || 'Dylan API error'); }
-    save('Diagnostic V3', mk + ' ' + mo + ' — ' + data.primary_diagnosis, 'diag');
-    let sev = 'sevM'; if (data.urgency === 'immédiat') sev = 'sevH'; else if (data.urgency === 'préventif') sev = 'sevF';
-    const confidence_color = data.confidence_percent >= 80 ? 'var(--green)' : data.confidence_percent >= 60 ? 'var(--accent)' : 'var(--red)';
-    const urgency_emoji = data.urgency === 'immédiat' ? '🔴' : data.urgency === 'bientôt' ? '🟡' : '🟢';
-    const low_confidence_warning = data.confidence_percent < 60 ? `<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:13px 15px;margin-bottom:13px;color:var(--red)">⚠️ Confiance basse (${data.confidence_percent}%). <button class="bsm" onclick="doFallbackInternet('${data.primary_diagnosis}')" style="margin-top:7px">🔍 Chercher sur Internet</button></div>` : '';
-    const clarify_box = data.clarify_question && data.clarify_question !== "Je pense avoir assez d'infos." ? `<div class="cons cb2" style="margin-top:11px;"><strong>❓ Clarifications:</strong> ${data.clarify_question}</div>` : '';
-    const result_html = `<div><div class="card"><div class="ch"><div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:2px">DYLAN V3</div><div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#fff">${data.primary_diagnosis}</div></div><div style="display:flex;gap:5px;align-items:center"><span class="sev ${sev}">${data.urgency.toUpperCase()}</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${confidence_color}">📊 ${data.confidence_percent}%</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${data.can_drive ? 'var(--green)' : 'var(--red)'}">${data.can_drive ? '✓ Roule' : '✗ Stop'}</span></div></div><div class="cb">${low_confidence_warning}<div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:8px;padding:13px 15px;margin-bottom:13px"><div style="font-size:13px;line-height:1.75;color:#fff;font-weight:500">${data.primary_diagnosis}</div><div style="font-size:12px;color:var(--muted);margin-top:7px;line-height:1.6">Confiance: <strong style="color:${confidence_color}">${data.confidence_percent}%</strong> — Urgence: <strong>${urgency_emoji} ${data.urgency}</strong></div></div>${clarify_box}<div class="dv-box"><div class="dv-t">💶 ESTIMATION DU COÛT</div><div class="dv-r"><span>Coût estimé</span><span>${data.estimated_cost_min}€ — ${data.estimated_cost_max}€</span></div></div>${data.parts_needed && data.parts_needed.length > 0 ? `<div class="slbl">🔩 PIÈCES</div><div class="tags">${data.parts_needed.map(p => '<span class="tag">' + p + '</span>').join('')}</div>` : ''}<button class="bg" onclick="genPDF()">📄 PDF</button><button class="bb" onclick="shr('${data.primary_diagnosis}',${data.estimated_cost_min},${data.estimated_cost_max})">📤 PARTAGER</button></div><div class="rfooter"><div><span class="dot"></span>DYLAN V3</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div></div>`;
-    document.getElementById('zd').innerHTML = result_html;
-    await refreshCredits();
-    toast('✅ Diagnostic V3 prêt', 'ok');
-  } catch (error) { errB('zd', error.message); }
-  btn.disabled = false; btn.textContent = '⚡ DIAGNOSTIC IA (1 crédit)';
-};
+// doDiag et chkD supprimés (diagnostic avancé supprimé)
+window.chkD = function() {};
 
 window.doPhoto = async function (event) {
   const file = event.target.files[0]; if (!file) return;
