@@ -43,3 +43,11 @@ logs/
 *.tmp
 *.temp
 *.zip
+  
+# DTC Import files  
+dtc_batch_*.sql  
+dtc_mega_*.sql  
+gen_dtc_sql.py  
+make_mega.py  
+graphify-out/  
+diff_dylan.txt  
