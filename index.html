@@ -2121,27 +2121,25 @@ window.searchS=function(q){renderS('all',q);};
 window.clearS=function(){if(confirm('Effacer tout ?')){localStorage.removeItem('ms');renderS();toast('Effacé','ok');}};
 
 function renderAC(){
-  const el=document.getElementById('al-cars');if(!el||!cars.length)return;
-  el.innerHTML='<div style="display:flex;gap:7px;flex-wrap:wrap">'+cars.map(c=>`<button onclick="selAC(${c.id})" class="bsm">${c.nom||c.marque+' '+c.modele}</button>`).join('')+'</div>';
+  const el=document.getElementById('al-cars');if(!el)return;
+  if(!cars.length){el.innerHTML='';return;}
+  el.innerHTML=`<div style="margin-bottom:10px">
+    <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:7px">CHARGER DEPUIS MON GARAGE</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">`+cars.map(c=>{
+      const mk=(c.marque||'').substring(0,3).toUpperCase();
+      const colors={'BMW':'#1c69d3','RENAULT':'#003189','PEUGEOT':'#003778','CITROËN':'#d82d1d','CIT':'#d82d1d','VOLKSWAGEN':'#003778','VW':'#003778','FORD':'#003478','TOYOTA':'#eb0a1e','OPEL':'#ef7b00'};
+      const bg=colors[mk]||colors[c.marque?.toUpperCase()]||'#555';
+      return`<button onclick="selAC('${c.id}')" style="display:flex;align-items:center;gap:7px;background:var(--s3);border:1px solid var(--bd);border-radius:7px;padding:6px 10px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='var(--bd)'">
+        <div style="width:28px;height:28px;border-radius:5px;background:${bg};color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${mk}</div>
+        <div style="text-align:left"><div style="font-size:11px;font-weight:600;color:var(--white)">${c.nom||c.marque+' '+c.modele}</div><div style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${c.annee||''} · ${c.carbu||''}</div></div>
+      </button>`;
+    }).join('')+'</div></div>';
 }
 window.selAC=function(id){
   const c=cars.find(x=>x.id===id);if(!c)return;
   const sv=(el,v)=>{const e=document.getElementById(el);if(e&&v)e.value=v;};
   sv('a-mk',c.marque);sv('a-mo',c.modele);sv('a-an',c.annee);sv('a-km',c.km||'');
   toast(c.nom||c.marque+' sélectionné','ok');
-};
-
-window.doAlertes=async function(){
-  if(!useC())return;
-  const mk=document.getElementById('a-mk').value.trim();const mo=document.getElementById('a-mo').value.trim();
-  const an=document.getElementById('a-an').value.trim();const km=document.getElementById('a-km').value.trim();
-  if(!km){toast('Entrer le kilométrage','er');CR++;majC();return;}
-  loader('za');save('Alertes entretien',[mk,mo,km+'km'].filter(Boolean).join(' '),'alerte');
-  try{
-    const d=await claude('Expert entretien automobile. JSON uniquement sans markdown.',
-      [{role:'user',content:'Véhicule: '+[mk,mo,an].filter(Boolean).join(' ')+' à '+km+' km\nJSON:\n{"alertes":[{"icon":"🔧","titre":"intervention","desc":"description précise","km_next":170000,"urgence":"Immédiat ou Bientôt ou Préventif"}]}\n6-8 alertes basées sur le kilométrage réel.'}]);
-    document.getElementById('za').innerHTML='<div>'+d.alertes.map(a=>{const col=a.urgence==='Immédiat'?'var(--red)':a.urgence==='Bientôt'?'var(--accent)':'var(--green)';const sv=a.urgence==='Immédiat'?'sevH':a.urgence==='Bientôt'?'sevM':'sevF';return`<div class="ali" style="border-left:3px solid ${col}"><div style="font-size:19px;flex-shrink:0">${a.icon}</div><div style="flex:1"><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">${a.titre}</div><div style="font-size:11px;color:var(--muted)">${a.desc}</div>${a.km_next?`<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);margin-top:2px">Prochain: ${a.km_next.toLocaleString()} km</div>`:''}</div><span class="sev ${sv}">${a.urgence}</span></div>`;}).join('')+'</div>';
-  }catch(e){CR++;majC();errB('za',e.message);}
 };
 
 window.togF=function(el){const a=el.nextElementSibling;a.classList.toggle('on');el.querySelector('span:last-child').textContent=a.classList.contains('on')?'▲':'▼';};
@@ -2328,6 +2326,7 @@ async function loadCars() {
     cars = (g.data.vehicles || []).map(mapVehicle);
     window.cars = cars;
     renderCars(cars);
+    renderAC(); // Mettre à jour le sélecteur dans alertes
     ss('gs-v', cars.length);
   }
 }
