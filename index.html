@@ -827,8 +827,8 @@ textarea{resize:vertical;min-height:70px}
     </div>
     <div class="l-nav-r">
       <select class="lang-s" onchange="setLang(this.value)" id="ll-s">
-        <option value="fr">🇫🇷 FR</option><option value="nl">🇳🇱 NL</option>
-        <option value="en">🇬🇧 EN</option><option value="de">🇩🇪 DE</option>
+        <option value="fr">🇫🇷 Français</option><option value="nl">🇳🇱 Nederlands</option>
+        <option value="en">🇬🇧 English</option><option value="de">🇩🇪 Deutsch</option>
       </select>
       <button class="btn-lnav-ghost" onclick="goAuth('login')" id="l-l">Connexion</button>
       <button class="btn-lnav-acc" onclick="goAuth('register')" id="l-s">Commencer</button>
@@ -2140,7 +2140,7 @@ MecaIA.onAuth((user) => {
     CU = user;
     majVis();
     setLang(lang);
-    if (user.email === OWNER) showSc('s-dash'); else showSc('s-app');
+    if (user.email === OWNER) showSc('s-dash'); else { showSc('s-app'); setTimeout(dylanWelcome, 150); }
     hideLoading();
     setTimeout(async () => {
       try { await loadProfile(user); } catch (e) { console.log('profil:', e); }
@@ -2276,6 +2276,18 @@ async function sUD() { /* données côté serveur */ }
 window.dylanHist = window.dylanHist || [];
 window.dylanConv = window.dylanConv || null;
 
+// Convertit le markdown basique → HTML (bold, italic, listes, sauts de ligne)
+window.mdToHtml = function (text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/gs, '<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)$/gm, '• $1')
+    .replace(/\n/g, '<br>');
+};
+
 window.dylanBubble = function (role, html) {
   const feed = document.getElementById('dylan-feed'); if (!feed) return null;
   const mine = role === 'user';
@@ -2351,15 +2363,21 @@ window.dylanBandeLabel = function (b) {
   return { faible: 'Hypothèse faible', probable: 'Hypothèse probable', forte: 'Hypothèse forte', tres_forte: 'Hypothèse très forte' }[b] || b || '';
 };
 
-// #3 Pseudo-streaming — affiche le texte mot par mot dans un élément
+// #3 Pseudo-streaming — affiche le texte mot par mot, puis rendu markdown final
 window.dylanTypeIn = function (el, text, speed) {
   if (!el) return;
   const words = text.split(' ');
   let i = 0;
-  el.innerHTML = '';
+  el.textContent = '';
   const iv = setInterval(() => {
-    if (i >= words.length) { clearInterval(iv); return; }
-    el.innerHTML += (i > 0 ? ' ' : '') + words[i];
+    if (i >= words.length) {
+      clearInterval(iv);
+      el.innerHTML = mdToHtml(text); // rendu markdown complet à la fin
+      const feed = document.getElementById('dylan-feed');
+      if (feed) feed.scrollTop = feed.scrollHeight;
+      return;
+    }
+    el.textContent = words.slice(0, i + 1).join(' ');
     i++;
     // scroll automatique
     const feed = document.getElementById('dylan-feed');

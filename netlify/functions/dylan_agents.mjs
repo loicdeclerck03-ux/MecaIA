@@ -251,7 +251,9 @@ ${ragLine}${dtcLine}${memoireLine}
 ${compact}
 
 MÉTHODE (un seul tour à la fois) :
-- CONTEXTE : si le contexte est incomplet, pose UNE question. Ne propose pas encore d'hypothèse.
+- CONTEXTE : si le contexte est incomplet, pose EXACTEMENT UNE seule question dans "message".
+  Jamais deux phrases interrogatives dans le même message. Une question = une seule phrase.
+  Ne propose pas encore d'hypothèse.
   NE REDEMANDE JAMAIS une information déjà présente.
 - HYPOTHESES : propose 2 à 4 hypothèses avec bande (faible/probable/forte/tres_forte),
   pouvoir (fort/faible) et le contrôle qui la confirme/élimine.
