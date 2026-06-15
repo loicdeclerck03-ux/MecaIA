@@ -2320,6 +2320,10 @@ async function loadDiagSessions() {
   const btnNew = document.getElementById('btn-new-diag');
   if (!sessions.length) { if (panel) panel.style.display = 'none'; return; }
 
+  // Stocker les données en mémoire pour éviter les problèmes de JSON dans onclick
+  window._diagSessions = {};
+  sessions.forEach(s => { window._diagSessions[s.id] = s; });
+
   const etats = { CONTEXTE: '🔵 Collecte', HYPOTHESES: '🟡 Hypothèses', CONTROLE: '🟠 Contrôles', CONCLUSION: '✅ Conclu' };
   list.innerHTML = sessions.map(s => `
     <div style="background:var(--s3);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
@@ -2333,15 +2337,15 @@ async function loadDiagSessions() {
         ${s.topHyp ? `<div style="font-size:10px;color:#60a5fa;margin-top:2px">→ ${s.topHyp}</div>` : ''}
         <div style="font-size:9px;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace">${s.lastActivity}</div>
       </div>
-      <button onclick="reprendreSession('${s.id}',${JSON.stringify(JSON.stringify(s))})" class="btn" style="margin-top:0;padding:6px 12px;font-size:11px;white-space:nowrap">▶ Reprendre</button>
+      <button onclick="reprendreSession('${s.id}')" class="btn" style="margin-top:0;padding:6px 12px;font-size:11px;white-space:nowrap">▶ Reprendre</button>
     </div>`).join('');
 
   panel.style.display = 'block';
   if (btnNew) btnNew.style.display = 'inline-block';
 }
 
-window.reprendreSession = function(sessionId, sessionJson) {
-  const s = JSON.parse(sessionJson);
+window.reprendreSession = function(sessionId) {
+  const s = window._diagSessions?.[sessionId] || {};
   const state = s.state || {};
 
   // Reset conversation
