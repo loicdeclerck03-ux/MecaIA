@@ -626,9 +626,11 @@ export const handler = async (event) => {
       const bandeFiable = hypConclue ? (hypConclue.bande || "forte") : (c.bande || "probable");
 
       // #7+#11 Orchestration parallèle post-conclusion : rappels NHTSA + liens pièces
+      // Timeout 2s pour ne pas bloquer la réponse (plan Netlify free = 10s total)
+      const withTimeout = (p, ms) => Promise.race([p, new Promise(r => setTimeout(() => r(null), ms))]);
       const [recallsRes, partsLinksRes] = await Promise.allSettled([
-        checkRecalls(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year),
-        searchPartsForConclusion(Array.isArray(c.parts_needed) ? c.parts_needed : [], state.vehicule),
+        withTimeout(checkRecalls(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year), 2000),
+        withTimeout(searchPartsForConclusion(Array.isArray(c.parts_needed) ? c.parts_needed : [], state.vehicule), 2000),
       ]);
       const recalls = recallsRes.status === 'fulfilled' ? (recallsRes.value || []) : [];
       const parts_links = partsLinksRes.status === 'fulfilled' ? (partsLinksRes.value || []) : [];
@@ -659,23 +661,23 @@ export const handler = async (event) => {
     await supabase.from("diag_sessions").update(updateRow).eq("id", diagSessionId);
 
     if (etat === "CONCLUSION") {
-      // #9 Mise à jour mémoire véhicule
-      await majMemoire(userId, state.vehicule, response.conclusion, supabase);
+      // #9 Mise à jour mémoire véhicule — fire-and-forget pour ne pas bloquer la réponse
+      majMemoire(userId, state.vehicule, response.conclusion, supabase)
+        .catch(e => console.error("[DYLAN] majMemoire:", e.message));
 
-      // Matérialisation best-effort
-      try {
-        const hypRows = state.hypotheses.map((h) => ({
-          session_id: diagSessionId, cause_label_raw: h.libelle,
-          confidence_band: h.bande, rang: h.id, confirmee: h.statut === "confirmee" ? true : h.statut === "eliminee" ? false : null,
-        }));
-        if (hypRows.length) await supabase.from("diag_hypotheses").insert(hypRows);
-
-        const ctrlRows = state.controles_faits.map((c) => ({
-          session_id: diagSessionId, label: "controle guidé", objectif: "confirmer",
-          resultat: c.resultat === "oui" ? "positif" : c.resultat === "non" ? "negatif" : c.resultat === "pas_pu" ? "non_effectue" : "non_concluant",
-        }));
-        if (ctrlRows.length) await supabase.from("diag_controls").insert(ctrlRows);
-      } catch (e) { console.error("[DYLAN] matérialisation:", e.message); }
+      // Matérialisation best-effort — fire-and-forget (non critique, ne bloque pas la réponse)
+      const hypRows = state.hypotheses.map((h) => ({
+        session_id: diagSessionId, cause_label_raw: h.libelle,
+        confidence_band: h.bande, rang: h.id, confirmee: h.statut === "confirmee" ? true : h.statut === "eliminee" ? false : null,
+      }));
+      const ctrlRows = state.controles_faits.map((c) => ({
+        session_id: diagSessionId, label: "controle guidé", objectif: "confirmer",
+        resultat: c.resultat === "oui" ? "positif" : c.resultat === "non" ? "negatif" : c.resultat === "pas_pu" ? "non_effectue" : "non_concluant",
+      }));
+      Promise.allSettled([
+        hypRows.length ? supabase.from("diag_hypotheses").insert(hypRows) : Promise.resolve(),
+        ctrlRows.length ? supabase.from("diag_controls").insert(ctrlRows) : Promise.resolve(),
+      ]).catch(e => console.error("[DYLAN] matérialisation:", e.message));
     }
 
     return json(200, response);
