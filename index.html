@@ -659,7 +659,20 @@ textarea{resize:vertical;min-height:70px}
 .ali{display:flex;align-items:center;gap:12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:11px 14px;margin-bottom:8px}
 
 /* ══════════════════════════════
-   GAMIFICATION
+   CARNET D'ENTRETIEN
+══════════════════════════════ */
+@keyframes carnFloat{
+  0%,100%{transform:rotateX(4deg) rotateY(-8deg) translateY(0px)}
+  50%{transform:rotateX(2deg) rotateY(-11deg) translateY(-7px)}
+}
+.ctab{flex:1;padding:8px 4px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);border-radius:5px;cursor:pointer;border:none;background:none;transition:all .18s;text-transform:uppercase}
+.ctab.on{background:var(--acc);color:#0a0c0e}
+.carn-entry{display:flex;gap:12px;padding:12px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);margin-bottom:9px;position:relative}
+.carn-entry::before{content:'';position:absolute;left:-1px;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;background:var(--acc)}
+.carn-diag{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:9px;border-left:3px solid #60a5fa}
+.carn-remind{display:flex;justify-content:space-between;align-items:center;background:var(--s2);border:1px solid rgba(232,160,0,.3);border-radius:10px;padding:11px 14px;margin-bottom:8px}
+.carn-veh-btn{display:flex;align-items:center;gap:10px;background:var(--s3);border:1px solid var(--bd);border-radius:10px;padding:10px 13px;width:100%;cursor:pointer;transition:border-color .15s;text-align:left;margin-bottom:8px}
+.carn-veh-btn:hover,.carn-veh-btn.active{border-color:var(--acc);background:rgba(232,160,0,.06)}
 ══════════════════════════════ */
 .gmb{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:11px 14px;margin-bottom:8px}
 
@@ -1044,9 +1057,9 @@ textarea{resize:vertical;min-height:70px}
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     Suivi
   </button>
-  <button class="tab" id="t-alertes" onclick="showPg('alertes')">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-    Alertes
+  <button class="tab" id="t-carnet" onclick="showPg('carnet')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    Carnet
   </button>
   <button class="tab" id="t-faq" onclick="showPg('faq')">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -1324,24 +1337,165 @@ textarea{resize:vertical;min-height:70px}
 </div></div>
 
 <!-- ══ PAGE: ALERTES ══ -->
-<div class="pg" id="pg-alertes"><div class="wrap">
-  <div class="card">
-    <div class="ch"><div class="ct">Alertes entretien</div></div>
-    <div class="cb">
-      <div id="al-cars" style="margin-bottom:12px"></div>
-      <div class="r2">
-        <div class="f"><label>Marque</label><input type="text" id="a-mk" placeholder="Renault"></div>
-        <div class="f"><label>Modèle</label><input type="text" id="a-mo" placeholder="Clio"></div>
+<div class="pg" id="pg-carnet"><div class="wrap">
+
+  <!-- HERO 3D VOITURE SÉLECTIONNÉE -->
+  <div id="carn-hero" style="display:none;margin-bottom:16px">
+    <div style="perspective:900px;perspective-origin:50% 40%">
+      <div id="carn-card-3d" style="
+        transform-style:preserve-3d;
+        animation:carnFloat 5s ease-in-out infinite;
+        border-radius:16px;padding:22px 20px;
+        display:flex;align-items:center;gap:16px;
+        position:relative;overflow:hidden;
+        box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06)
+      ">
+        <!-- Fond gradient dynamique -->
+        <div id="carn-bg" style="position:absolute;inset:0;opacity:.18;border-radius:16px"></div>
+        <!-- Silhouette SVG voiture -->
+        <div id="carn-silhouette" style="position:absolute;right:-10px;bottom:-5px;opacity:.07;transform:scaleX(-1)"></div>
+        <!-- Badge marque 3D -->
+        <div id="carn-badge3d" style="
+          width:64px;height:64px;border-radius:12px;
+          display:flex;align-items:center;justify-content:center;
+          font-size:16px;font-weight:900;color:#fff;letter-spacing:.5px;
+          box-shadow:0 4px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);
+          flex-shrink:0;font-family:'Rajdhani',sans-serif;position:relative;z-index:1
+        "></div>
+        <div style="position:relative;z-index:1;flex:1;min-width:0">
+          <div id="carn-veh-name" style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:#fff;letter-spacing:1px;line-height:1.1"></div>
+          <div id="carn-veh-sub" style="font-size:11px;color:rgba(255,255,255,.6);font-family:'IBM Plex Mono',monospace;margin-top:4px"></div>
+          <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+            <div id="carn-stat-travaux" style="text-align:center">
+              <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;line-height:1" id="carn-nb-travaux">—</div>
+              <div style="font-size:8px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Travaux</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,.1)"></div>
+            <div id="carn-stat-diags" style="text-align:center">
+              <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;line-height:1" id="carn-nb-diags">—</div>
+              <div style="font-size:8px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Diags</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,.1)"></div>
+            <div style="text-align:center">
+              <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;line-height:1" id="carn-nb-km">—</div>
+              <div style="font-size:8px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">km</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="r2">
-        <div class="f"><label>Année</label><input type="number" id="a-an" placeholder="2018"></div>
-        <div class="f"><label>Kilométrage actuel *</label><input type="number" id="a-km" placeholder="95000"></div>
-      </div>
-      <button class="btn" onclick="doAlertes()">Générer les alertes (1 crédit)</button>
-      <div id="za" style="margin-top:13px"></div>
     </div>
   </div>
+
+  <!-- SÉLECTEUR VÉHICULE (affiché si >1 voiture ou aucune sélectionnée) -->
+  <div class="card" id="carn-sel-panel">
+    <div class="ch"><div class="ct">📋 Carnet d'entretien</div></div>
+    <div class="cb">
+      <div id="carn-no-car" style="display:none;text-align:center;padding:20px;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:8px">🚗</div>
+        <div>Ajoutez un véhicule dans le <strong style="color:var(--acc)">Garage</strong> pour créer votre carnet.</div>
+      </div>
+      <div id="carn-car-list"></div>
+    </div>
+  </div>
+
+  <!-- CARNET PRINCIPAL — affiché après sélection -->
+  <div id="carn-main" style="display:none">
+
+    <!-- ONGLETS -->
+    <div style="display:flex;gap:3px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:3px;margin-bottom:14px">
+      <button id="ctab-travaux" onclick="carnTab('travaux')" class="ctab on">🔧 Travaux</button>
+      <button id="ctab-diags" onclick="carnTab('diags')" class="ctab">🔍 Diags</button>
+      <button id="ctab-rappels" onclick="carnTab('rappels')" class="ctab">🔔 Rappels</button>
+    </div>
+
+    <!-- TAB TRAVAUX -->
+    <div id="ct-travaux">
+      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+        <div style="flex:1;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px">HISTORIQUE</div>
+        <button class="btn" onclick="carnOpenAdd()" style="margin:0;padding:8px 14px;font-size:11px">+ Ajouter un travail</button>
+      </div>
+      <div id="carn-timeline"></div>
+    </div>
+
+    <!-- TAB DIAGNOSTICS -->
+    <div id="ct-diags" style="display:none">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:12px">DIAGNOSTICS DYLAN COMPLÉTÉS</div>
+      <div id="carn-diags-list"></div>
+    </div>
+
+    <!-- TAB RAPPELS -->
+    <div id="ct-rappels" style="display:none">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:12px">MES RAPPELS KILOMÉTRIQUES</div>
+      <div id="carn-rappels-list"></div>
+      <button class="btn" onclick="carnOpenRappel()" style="margin-top:12px;width:100%;background:rgba(232,160,0,.1);border-color:var(--acc-b);color:var(--acc)">🔔 Activer un rappel km (1 crédit)</button>
+    </div>
+  </div>
+
 </div></div>
+
+<!-- MODALE — AJOUTER UN TRAVAIL -->
+<div class="modal" id="m-carnadd">
+  <div class="modal-box" style="max-width:420px">
+    <div class="mh"><div class="mt">🔧 Ajouter un travail</div><button class="mx" onclick="closeM('m-carnadd')">✕</button></div>
+    <div class="mb">
+      <div class="r2">
+        <div class="f"><label>Type de travail *</label>
+          <select id="ca-type" style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:8px 10px;color:var(--tx);width:100%">
+            <option value="">— Choisir —</option>
+            <option>Vidange huile moteur</option><option>Filtre à air</option><option>Filtre à huile</option>
+            <option>Filtre habitacle</option><option>Filtre gasoil</option><option>Bougies d'allumage</option>
+            <option>Plaquettes de frein avant</option><option>Plaquettes de frein arrière</option>
+            <option>Disques de frein</option><option>Pneus</option><option>Courroie de distribution</option>
+            <option>Courroie accessoire</option><option>Batterie</option><option>Amortisseurs</option>
+            <option>Révision complète</option><option>Contrôle technique</option><option>Autre</option>
+          </select>
+        </div>
+        <div class="f"><label>Date *</label><input type="date" id="ca-date"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>Kilométrage au travail</label><input type="number" id="ca-km" placeholder="85000" min="1"></div>
+        <div class="f"><label>Coût (€)</label><input type="number" id="ca-cost" placeholder="120" min="0" step="0.01"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>Garage / Atelier</label><input type="text" id="ca-shop" placeholder="Garage Dupont"></div>
+        <div class="f"><label>Prochain à (km)</label><input type="number" id="ca-next" placeholder="100000" min="1"></div>
+      </div>
+      <div class="f"><label>Notes</label><textarea id="ca-notes" placeholder="Ex: huile 5W-30 Total Quartz..." style="height:56px;resize:none"></textarea></div>
+      <div class="f">
+        <label>📷 Photo facture</label>
+        <div id="ca-photo-zone" style="border:2px dashed var(--bd);border-radius:8px;padding:16px;text-align:center;cursor:pointer;background:var(--s3)" onclick="document.getElementById('ca-photo-in').click()">
+          <div id="ca-photo-preview" style="display:none"><img id="ca-photo-img" style="max-height:100px;border-radius:6px;object-fit:cover"></div>
+          <div id="ca-photo-placeholder">
+            <div style="font-size:24px;margin-bottom:4px">📎</div>
+            <div style="font-size:11px;color:var(--muted)">Cliquer pour ajouter une photo ou PDF</div>
+          </div>
+        </div>
+        <input type="file" id="ca-photo-in" accept="image/*,application/pdf" style="display:none" onchange="carnPhotoSelect(this)">
+      </div>
+      <button class="btn" onclick="carnAddWork()" style="width:100%;margin-top:4px" id="ca-submit">✅ ENREGISTRER LE TRAVAIL</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE — RAPPEL KM -->
+<div class="modal" id="m-carnrappel">
+  <div class="modal-box" style="max-width:360px">
+    <div class="mh"><div class="mt">🔔 Nouveau rappel km</div><button class="mx" onclick="closeM('m-carnrappel')">✕</button></div>
+    <div class="mb">
+      <div class="f"><label>Type de rappel</label>
+        <select id="rp-type" style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:8px 10px;color:var(--tx);width:100%">
+          <option>Vidange huile moteur</option><option>Révision complète</option>
+          <option>Courroie de distribution</option><option>Pneus</option><option>Contrôle technique</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="f"><label>Me rappeler à (km)</label><input type="number" id="rp-km" placeholder="115000" min="1"></div>
+      <div style="background:rgba(232,160,0,.08);border:1px solid var(--acc-b);border-radius:8px;padding:10px;font-size:11px;color:var(--acc);margin-top:4px">
+        🔔 Ce rappel coûte <strong>1 crédit</strong>. Il sera visible dans votre carnet et nous vous notifierons quand vous déclarerez ce kilométrage.
+      </div>
+      <button class="btn" onclick="carnSetRappel()" style="width:100%;margin-top:10px">🔔 ACTIVER LE RAPPEL (1 crédit)</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══ PAGE: FAQ ══ -->
 <div class="pg" id="pg-faq"><div class="wrap">
@@ -1817,11 +1971,11 @@ window.appPromo=async function(){
 };
 
 window.showPg=function(id){
-  ['diag','garage','vin','pieces','suivi','alertes','faq','tarifs'].forEach(p=>{
+  ['diag','garage','vin','pieces','suivi','carnet','faq','tarifs'].forEach(p=>{
     const pg=document.getElementById('pg-'+p);const tb=document.getElementById('t-'+p);
     if(pg)pg.className='pg'+(p===id?' on':'');if(tb)tb.className='tab'+(p===id?' on':'');
   });
-  if(id==='suivi')renderS();if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();if(id==='diag'&&window.dylanWelcome)dylanWelcome();if(id==='pieces'&&window.fillPCars)fillPCars();
+  if(id==='suivi')renderS();if(id==='garage'){renderCars(cars);loadGS();}if(id==='carnet'){carnRenderSelector();if(window.carnVeh)loadCarnetData();}if(id==='diag'&&window.dylanWelcome)dylanWelcome();if(id==='pieces'&&window.fillPCars)fillPCars();
   window.scrollTo(0,0);
 };
 
@@ -2332,7 +2486,311 @@ async function loadCars() {
 }
 window.loadCars = loadCars;
 
-// ══ REPRISE DE DIAGNOSTIC ══
+// ══════════════════════════════════════════════
+// CARNET D'ENTRETIEN — moteur complet
+// ══════════════════════════════════════════════
+const BRAND_COLORS = {
+  BMW:'#1c69d3',MERCEDES:'#222',AUDI:'#bb0a30',VOLKSWAGEN:'#003778',VW:'#003778',
+  RENAULT:'#003189',PEUGEOT:'#003778',CITROËN:'#d82d1d',FORD:'#003478',
+  TOYOTA:'#eb0a1e',OPEL:'#ef7b00',SEAT:'#111',SKODA:'#4e7b40',DACIA:'#001e62',
+  KIA:'#05141f',HYUNDAI:'#002c5f',FIAT:'#9e2b25',HONDA:'#c00',TESLA:'#cc0000',
+  VOLVO:'#003057',NISSAN:'#c00',MAZDA:'#91050e',PORSCHE:'#8b1a1a',MINI:'#111',
+  ALFA:'#ac1c1c',SUBARU:'#003189',SUZUKI:'#003189',LEXUS:'#1a1a2e',
+  'MERCEDES-BENZ':'#222','ALFA ROMEO':'#ac1c1c'
+};
+const BRAND_ABBR = {
+  VOLKSWAGEN:'VW','MERCEDES-BENZ':'MER','MERCEDES':'MER',CITROËN:'CIT','RENAULT':'REN',
+  PEUGEOT:'PEU',TOYOTA:'TOY',HYUNDAI:'HYU',MITSUBISHI:'MIT','ALFA ROMEO':'ALF',
+  'LAND ROVER':'LR',ABARTH:'ABA',PORSCHE:'POR'
+};
+const CAR_SVG = {
+  Diesel:`<svg viewBox="0 0 160 60" fill="currentColor"><path d="M145,40 L135,40 C133,33 126,28 118,28 C110,28 103,33 101,40 L55,40 C53,33 46,28 38,28 C30,28 23,33 21,40 L15,40 L12,35 L10,22 L18,20 L20,16 L35,12 L50,10 L95,10 L115,14 L130,18 L142,22 L148,30 Z M38,28 C43,28 47,32 47,37 C47,42 43,46 38,46 C33,46 29,42 29,37 C29,32 33,28 38,28 Z M118,28 C123,28 127,32 127,37 C127,42 123,46 118,46 C113,46 109,42 109,37 C109,32 113,28 118,28 Z"/></svg>`,
+  Essence:`<svg viewBox="0 0 160 60" fill="currentColor"><path d="M145,40 L135,40 C133,33 126,28 118,28 C110,28 103,33 101,40 L55,40 C53,33 46,28 38,28 C30,28 23,33 21,40 L15,40 L10,35 L8,20 L18,18 L22,12 L42,8 L100,8 L120,12 L138,20 L148,28 Z M38,28 C43,28 47,32 47,37 C47,42 43,46 38,46 C33,46 29,42 29,37 C29,32 33,28 38,28 Z M118,28 C123,28 127,32 127,37 C127,42 123,46 118,46 C113,46 109,42 109,37 C109,32 113,28 118,28 Z"/></svg>`,
+  Hybride:`<svg viewBox="0 0 160 60" fill="currentColor"><path d="M145,40 L135,40 C133,33 126,28 118,28 C110,28 103,33 101,40 L55,40 C53,33 46,28 38,28 C30,28 23,33 21,40 L15,40 L10,35 L8,20 L18,18 L22,12 L42,8 L100,8 L120,12 L138,20 L148,28 Z M38,28 C43,28 47,32 47,37 C47,42 43,46 38,46 C33,46 29,42 29,37 C29,32 33,28 38,28 Z M118,28 C123,28 127,32 127,37 C127,42 123,46 118,46 C113,46 109,42 109,37 C109,32 113,28 118,28 Z M88,5 L84,18 L90,18 L86,30 L98,12 L91,12 Z"/></svg>`,
+  Électrique:`<svg viewBox="0 0 160 60" fill="currentColor"><path d="M148,38 L138,38 C136,31 129,26 121,26 C113,26 106,31 104,38 L52,38 C50,31 43,26 35,26 C27,26 20,31 18,38 L12,38 L8,30 L10,18 L20,15 L25,10 L45,6 L105,6 L125,10 L142,16 L150,26 Z M35,26 C40,26 44,30 44,35 C44,40 40,44 35,44 C30,44 26,40 26,35 C26,30 30,26 35,26 Z M121,26 C126,26 130,30 130,35 C130,40 126,44 121,44 C116,44 112,40 112,35 C112,30 116,26 121,26 Z M90,2 L85,16 L92,16 L87,28 L100,10 L92,10 Z"/></svg>`
+};
+
+let carnVeh = null; // véhicule actif du carnet
+
+function carnBrandColor(marque) {
+  const mk = (marque||'').toUpperCase().trim();
+  return BRAND_COLORS[mk] || BRAND_COLORS[mk.split(' ')[0]] ||
+    ['#1c69d3','#d82d1d','#003189','#22863a','#6f42c1','#e36209','#0075ca','#8b5cf6'][mk.charCodeAt(0)%8];
+}
+function carnBrandAbbr(marque) {
+  const mk = (marque||'').toUpperCase().trim();
+  return BRAND_ABBR[mk] || mk.substring(0,3);
+}
+
+function carnRenderSelector() {
+  const list = document.getElementById('carn-car-list');
+  const nocar = document.getElementById('carn-no-car');
+  if (!list) return;
+  if (!cars.length) { nocar.style.display='block'; return; }
+  nocar.style.display='none';
+  const label = cars.length === 1 ? 'Votre véhicule' : 'Sélectionner un véhicule';
+  list.innerHTML = `<div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:8px">${label.toUpperCase()}</div>` +
+    cars.map(c => {
+      const bg = carnBrandColor(c.marque);
+      const ab = carnBrandAbbr(c.marque);
+      const isActive = carnVeh?.id === c.id;
+      return `<button class="carn-veh-btn${isActive?' active':''}" onclick="carnSelectVeh('${c.id}')">
+        <div style="width:42px;height:42px;border-radius:9px;background:${bg};color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Rajdhani',sans-serif;box-shadow:0 3px 10px ${bg}55">${ab}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--white)">${c.nom||c.marque+' '+c.modele}</div>
+          <div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${c.annee||''} · ${c.carbu||''} ${c.km?'· '+Number(c.km).toLocaleString()+' km':''}</div>
+        </div>
+        ${isActive?'<span style="color:var(--acc);font-size:18px">✓</span>':''}
+      </button>`;
+    }).join('');
+  if (cars.length === 1 && !carnVeh) carnSelectVeh(cars[0].id);
+}
+
+async function carnSelectVeh(id) {
+  carnVeh = cars.find(c => c.id === id);
+  if (!carnVeh) return;
+  const bg = carnBrandColor(carnVeh.marque);
+  const ab = carnBrandAbbr(carnVeh.marque);
+  const carburant = carnVeh.carbu || 'Essence';
+  const svgKey = Object.keys(CAR_SVG).find(k => carburant.toLowerCase().includes(k.toLowerCase())) || 'Essence';
+
+  // Mettre à jour le hero 3D
+  const hero = document.getElementById('carn-hero');
+  const card = document.getElementById('carn-card-3d');
+  const bgDiv = document.getElementById('carn-bg');
+  const badgeDiv = document.getElementById('carn-badge3d');
+  const sil = document.getElementById('carn-silhouette');
+  const nm = document.getElementById('carn-veh-name');
+  const sub = document.getElementById('carn-veh-sub');
+
+  card.style.background = `linear-gradient(135deg, #0e1217 0%, ${bg}22 100%)`;
+  bgDiv.style.background = `radial-gradient(ellipse at 20% 50%, ${bg} 0%, transparent 70%)`;
+  badgeDiv.style.background = `linear-gradient(145deg, ${bg}, ${bg}bb)`;
+  badgeDiv.textContent = ab;
+  sil.innerHTML = `<div style="width:200px;height:75px;color:#fff">${CAR_SVG[svgKey]||CAR_SVG.Essence}</div>`;
+  nm.textContent = carnVeh.nom || carnVeh.marque + ' ' + carnVeh.modele;
+  sub.textContent = [carnVeh.annee, carnVeh.carbu, carnVeh.kw&&carnVeh.kw+'ch', carnVeh.cm&&'Code '+carnVeh.cm].filter(Boolean).join(' · ');
+  document.getElementById('carn-nb-km').textContent = carnVeh.km ? Number(carnVeh.km).toLocaleString() : '—';
+  hero.style.display = 'block';
+  document.getElementById('carn-main').style.display = 'block';
+
+  // Re-render sélecteur
+  carnRenderSelector();
+
+  // Charger les données depuis l'API
+  await loadCarnetData();
+}
+
+async function loadCarnetData() {
+  if (!carnVeh) return;
+  const r = await MecaIA.authedFetch('carnet_get', { method:'POST', body:{ vehicle_id: carnVeh.id } });
+  if (!r.ok) return;
+  const { history=[], reminders=[], diag_recaps=[] } = r.data;
+
+  document.getElementById('carn-nb-travaux').textContent = history.length || '0';
+  document.getElementById('carn-nb-diags').textContent = diag_recaps.length || '0';
+
+  // TIMELINE TRAVAUX
+  const tl = document.getElementById('carn-timeline');
+  if (!history.length) {
+    tl.innerHTML = `<div style="text-align:center;padding:28px;color:var(--muted)">
+      <div style="font-size:32px;margin-bottom:8px">📋</div>
+      <div>Aucun travail enregistré.</div>
+      <div style="font-size:11px;margin-top:4px">Cliquez sur <strong style="color:var(--acc)">+ Ajouter un travail</strong></div>
+    </div>`;
+  } else {
+    tl.innerHTML = history.map(h => {
+      const date = h.maintenance_date ? new Date(h.maintenance_date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '';
+      const typeIcons = {'Vidange huile moteur':'🛢️','Filtre à air':'💨','Plaquettes de frein':'🛑','Courroie de distribution':'⚙️','Batterie':'🔋','Pneus':'🛞','Révision complète':'🔧','Contrôle technique':'📋'};
+      const icon = Object.entries(typeIcons).find(([k])=>h.maintenance_type?.includes(k))?.[1] || '🔩';
+      return `<div class="carn-entry">
+        <div style="font-size:22px;flex-shrink:0">${icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:2px">${h.maintenance_type}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">
+            ${date?`<span>📅 ${date}</span>`:''}
+            ${h.vehicle_km_at_maintenance?`<span>📍 ${Number(h.vehicle_km_at_maintenance).toLocaleString()} km</span>`:''}
+            ${h.cost_eur?`<span>💶 ${h.cost_eur}€</span>`:''}
+            ${h.shop_name?`<span>🏪 ${h.shop_name}</span>`:''}
+          </div>
+          ${h.notes?`<div style="font-size:11px;color:var(--tx);margin-top:4px;opacity:.8">${h.notes}</div>`:''}
+          ${h.next_maintenance_km?`<div style="font-size:10px;color:var(--acc);margin-top:3px;font-family:'IBM Plex Mono',monospace">→ Prochain : ${Number(h.next_maintenance_km).toLocaleString()} km</div>`:''}
+        </div>
+        ${h.receipt_image_url?`<a href="${h.receipt_image_url}" target="_blank" style="flex-shrink:0"><div style="width:44px;height:44px;border-radius:6px;background:var(--s3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer" title="Voir la facture">📎</div></a>`:''}
+      </div>`;
+    }).join('');
+  }
+
+  // DIAGNOSTICS RECAPS
+  const dl = document.getElementById('carn-diags-list');
+  if (!diag_recaps.length) {
+    dl.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted)">Aucun diagnostic complété pour ce véhicule.</div>`;
+  } else {
+    dl.innerHTML = diag_recaps.map(d => {
+      const date = new Date(d.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+      const bande = {'tres_forte':'#4ade80','forte':'var(--acc)','probable':'#60a5fa'}[d.bande] || 'var(--muted)';
+      return `<div class="carn-diag">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:4px">🔍 ${d.cause}</div>
+            ${d.codes?`<div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--acc)">${d.codes}</div>`:''}
+          </div>
+          ${d.bande?`<span style="font-size:9px;font-family:'IBM Plex Mono',monospace;color:${bande};background:${bande}22;padding:2px 7px;border-radius:10px;white-space:nowrap">${d.bande.replace('_',' ')}</span>`:''}
+        </div>
+        <div style="font-size:9px;color:var(--muted);margin-top:5px;font-family:'IBM Plex Mono',monospace">📅 ${date}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // RAPPELS
+  const rl = document.getElementById('carn-rappels-list');
+  if (!reminders.length) {
+    rl.innerHTML = `<div style="text-align:center;padding:18px;color:var(--muted);font-size:12px">Aucun rappel actif. Activez un rappel ci-dessous.</div>`;
+  } else {
+    rl.innerHTML = reminders.map(r => `
+      <div class="carn-remind">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--acc)">🔔 ${r.label}</div>
+          <div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px">À ${Number(r.km_trigger).toLocaleString()} km</div>
+        </div>
+        <button onclick="carnDelRappel('${r.id}')" style="background:none;border:1px solid var(--bd);color:var(--muted);border-radius:5px;padding:4px 8px;cursor:pointer;font-size:11px">✕</button>
+      </div>`).join('');
+  }
+}
+
+window.carnTab = function(tab) {
+  ['travaux','diags','rappels'].forEach(t => {
+    document.getElementById('ct-'+t).style.display = t === tab ? 'block' : 'none';
+    document.getElementById('ctab-'+t).className = 'ctab' + (t === tab ? ' on' : '');
+  });
+};
+
+window.carnOpenAdd = function() {
+  document.getElementById('ca-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('ca-photo-preview').style.display = 'none';
+  document.getElementById('ca-photo-placeholder').style.display = 'block';
+  openM('m-carnadd');
+};
+
+window.carnOpenRappel = function() { openM('m-carnrappel'); };
+
+window._carnPhotoFile = null;
+window.carnPhotoSelect = function(input) {
+  const file = input.files[0]; if (!file) return;
+  window._carnPhotoFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    if (file.type === 'application/pdf') {
+      document.getElementById('ca-photo-img').src = '';
+      document.getElementById('ca-photo-placeholder').innerHTML = `<div style="font-size:22px">📄</div><div style="font-size:11px;color:var(--acc)">${file.name}</div>`;
+    } else {
+      document.getElementById('ca-photo-img').src = e.target.result;
+      document.getElementById('ca-photo-preview').style.display = 'block';
+      document.getElementById('ca-photo-placeholder').style.display = 'none';
+    }
+  };
+  reader.readAsDataURL(file);
+};
+
+window.carnAddWork = async function() {
+  const type = document.getElementById('ca-type').value;
+  const date = document.getElementById('ca-date').value;
+  if (!type || !date) { toast('Choisir le type et la date', 'er'); return; }
+  if (!carnVeh) { toast('Sélectionner un véhicule', 'er'); return; }
+
+  const btn = document.getElementById('ca-submit');
+  btn.disabled = true; btn.textContent = '⏳ Enregistrement...';
+
+  let photoUrl = null;
+  // Upload photo si présente
+  if (window._carnPhotoFile) {
+    try {
+      const { data: sess } = await MecaIA.supa.auth.getSession();
+      const uid = sess?.session?.user?.id;
+      const ext = window._carnPhotoFile.name.split('.').pop();
+      const path = `${uid}/${Date.now()}.${ext}`;
+      const { data, error } = await MecaIA.supa.storage.from('receipts').upload(path, window._carnPhotoFile, { contentType: window._carnPhotoFile.type });
+      if (!error) {
+        const { data: pub } = MecaIA.supa.storage.from('receipts').getPublicUrl(path);
+        photoUrl = pub.publicUrl;
+      }
+    } catch(e) { console.warn('Photo upload:', e.message); }
+  }
+
+  const r = await MecaIA.authedFetch('carnet_add', {
+    method: 'POST',
+    body: {
+      vehicle_id: carnVeh.id,
+      maintenance_type: type,
+      maintenance_date: date,
+      maintenance_description: document.getElementById('ca-type').value,
+      vehicle_km_at_maintenance: parseInt(document.getElementById('ca-km').value) || null,
+      cost_eur: parseFloat(document.getElementById('ca-cost').value) || null,
+      shop_name: document.getElementById('ca-shop').value.trim() || null,
+      next_maintenance_km: parseInt(document.getElementById('ca-next').value) || null,
+      notes: document.getElementById('ca-notes').value.trim() || null,
+      receipt_image_url: photoUrl,
+    }
+  });
+
+  if (r.ok) {
+    toast('✅ Travail enregistré !', 'ok');
+    closeM('m-carnadd');
+    window._carnPhotoFile = null;
+    ['ca-type','ca-km','ca-cost','ca-shop','ca-next','ca-notes'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+    await loadCarnetData();
+  } else {
+    toast('Erreur : ' + (r.data?.error || 'inconnue'), 'er');
+  }
+  btn.disabled = false; btn.textContent = '✅ ENREGISTRER LE TRAVAIL';
+};
+
+window.carnSetRappel = async function() {
+  const label = document.getElementById('rp-type').value;
+  const km = parseInt(document.getElementById('rp-km').value);
+  if (!km || km < 1) { toast('Entrer un kilométrage valide', 'er'); return; }
+  if (!carnVeh) { toast('Sélectionner un véhicule', 'er'); return; }
+
+  const r = await MecaIA.authedFetch('reminder_set', {
+    method: 'POST',
+    body: { vehicle_id: carnVeh.id, label: `${label} — Rappel`, km_trigger: km }
+  });
+
+  if (r.ok && r.data?.success) {
+    toast('🔔 Rappel activé !', 'ok');
+    closeM('m-carnrappel');
+    document.getElementById('rp-km').value = '';
+    await refreshCredits();
+    await loadCarnetData();
+    carnTab('rappels');
+  } else if (r.status === 402) {
+    openM('m-pay'); toast('Plus de crédits !', 'er');
+    closeM('m-carnrappel');
+  } else {
+    toast('Erreur : ' + (r.data?.error || 'inconnue'), 'er');
+  }
+};
+
+window.carnDelRappel = async function(id) {
+  if (!carnVeh) return;
+  await MecaIA.authedFetch('reminder_set', {
+    method: 'POST',
+    body: { vehicle_id: carnVeh.id, action: 'delete', km_trigger: 0, label: '', _id: id }
+  });
+  await loadCarnetData();
+};
+
+// Re-render le sélecteur carnet quand on charge la page
+const _origShowPg = window.showPg;
+window.showPg = function(id) {
+  _origShowPg(id);
+  if (id === 'carnet') {
+    carnRenderSelector();
+    if (carnVeh) loadCarnetData();
+  }
+};
 async function loadDiagSessions() {
   const r = await MecaIA.authedFetch('diag_sessions_list', { method: 'POST', body: {} });
   if (!r.ok || !r.data?.success) return;
