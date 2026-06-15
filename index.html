@@ -35,7 +35,7 @@
 </script>
 
 <!-- Twitter Cards -->
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="MecaIA — L'Expert Automobile IA">
 <meta name="twitter:description" content="Diagnostics OBD ultra précis, garage virtuel, pièces auto par IA. Gratuit à l'essai.">
 <meta name="twitter:image" content="https://mecaiaauto.com/icon-512.png">
@@ -798,7 +798,7 @@ textarea{resize:vertical;min-height:70px}
     <div style="display:flex;gap:7px;margin-bottom:7px"><input type="text" id="promo-in" placeholder="CODE-XXXXX" style="flex:1;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;font-size:12px"><button class="bbuy" onclick="redeemPromo()">Appliquer</button></div>
     <div id="promo-msg" style="font-size:11px;font-family:'IBM Plex Mono',monospace;min-height:13px"></div>
   </div>
-  <div class="msec"><label>Code propriétaire</label><input type="password" id="own-in" placeholder="••••••••" style="margin-bottom:7px"><button class="bcl" onclick="actOwner()" style="color:var(--acc);border-color:var(--acc-b)">Activer</button></div>
+  <div class="msec"><label>Code propriétaire</label><input type="password" id="own-in" placeholder="••••••••" autocomplete="off" style="margin-bottom:7px"><button class="bcl" onclick="actOwner()" style="color:var(--acc);border-color:var(--acc-b)">Activer</button></div>
 </div></div>
 
 <!-- ══ MODAL URGENCE ══ -->
@@ -970,7 +970,7 @@ textarea{resize:vertical;min-height:70px}
   <!-- Login form -->
   <div id="af-l">
     <div class="af"><label>Email</label><input type="email" id="l-em" placeholder="votre@email.com"></div>
-    <div class="af"><label>Mot de passe</label><input type="password" id="l-pw" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()"></div>
+    <div class="af"><label>Mot de passe</label><input type="password" id="l-pw" placeholder="••••••••" autocomplete="current-password" onkeypress="if(event.key==='Enter')doLogin()"></div>
     <button class="abtn" onclick="doLogin()">Se connecter</button>
     <div class="afg" onclick="doForgot()">Mot de passe oublié ?</div>
   </div>
@@ -979,7 +979,7 @@ textarea{resize:vertical;min-height:70px}
   <div id="af-r" style="display:none">
     <div class="af"><label>Prénom & Nom</label><input type="text" id="r-nm" placeholder="Votre nom complet"></div>
     <div class="af"><label>Email</label><input type="email" id="r-em" placeholder="votre@email.com"></div>
-    <div class="af"><label>Mot de passe (min. 6 caractères)</label><input type="password" id="r-pw" placeholder="••••••••"></div>
+    <div class="af"><label>Mot de passe (min. 6 caractères)</label><input type="password" id="r-pw" placeholder="••••••••" autocomplete="new-password"></div>
     <div class="af"><label>Vous êtes</label>
       <select id="r-ty">
         <option value="mechanic">Mécanicien professionnel</option>
@@ -1108,7 +1108,7 @@ textarea{resize:vertical;min-height:70px}
           <button class="bsm" onclick="dylanShowSessions()" title="Reprendre une conversation" style="margin-top:0">↩ Reprendre</button>
         </div>
       </div>
-      <input type="file" id="photo-in" accept="image/*" style="display:none" onchange="doPhoto(event)">
+      <input type="file" id="photo-in" accept="image/*" aria-label="Envoyer une photo à Dylan" style="display:none" onchange="doPhoto(event)">
     </div>
   </div>
 
@@ -1355,6 +1355,22 @@ textarea{resize:vertical;min-height:70px}
       <p style="margin-bottom:9px"><strong style="color:var(--tx)">Service</strong> — MecaIA est un outil d'aide au diagnostic automobile basé sur l'IA. Les résultats sont indicatifs et ne remplacent pas l'avis d'un professionnel qualifié.</p>
       <p style="margin-bottom:9px"><strong style="color:var(--tx)">Responsabilité</strong> — MecaIA ne peut être tenu responsable des décisions prises sur la base des diagnostics. Consultez toujours un mécanicien professionnel pour les interventions critiques.</p>
       <p><strong style="color:var(--tx)">Contact</strong> — loicdeclerck4020@gmail.com · Belgique</p>
+    </div>
+  </div>
+
+  <!-- RGPD / Mentions légales -->
+  <div class="card">
+    <div class="ch"><div class="ct">🔐 Mentions légales &amp; Confidentialité (RGPD)</div></div>
+    <div class="cb" style="font-size:12px;color:var(--muted);line-height:1.7">
+      <p style="margin-bottom:9px"><strong style="color:var(--tx)">Éditeur</strong> — MecaIA est édité par Loïc Declerck, particulier, Belgique. Contact : loicdeclerck4020@gmail.com</p>
+      <p style="margin-bottom:9px"><strong style="color:var(--tx)">Hébergement</strong> — Netlify Inc., 512 2nd St., San Francisco CA 94107. Base de données : Supabase (EU West — Irlande).</p>
+      <p style="margin-bottom:9px"><strong style="color:var(--tx)">Données collectées</strong> — Adresse email, nom, type de profil (mécanicien/particulier). Données véhicule (marque, modèle, kilométrage). Historique des diagnostics et symptômes décrits. Données de paiement traitées exclusivement par Stripe (nous n'accédons à aucun numéro de carte).</p>
+      <p style="margin-bottom:9px"><strong style="color:var(--tx)">Finalités</strong> — Fourniture du service de diagnostic IA · Personnalisation des réponses selon votre véhicule · Gestion des crédits et paiements · Envoi d'emails transactionnels (confirmation inscription, récapitulatif diagnostic).</p>
+      <p style="margin-bottom:9px"><strong style="color:var(--tx)">Base légale</strong> — Exécution du contrat (art. 6.1.b RGPD) pour la fourniture du service. Consentement (art. 6.1.a) pour les emails marketing si applicables.</p>
+      <p style="margin-bottom:9px"><strong style="color:var(--tx)">Durée de conservation</strong> — Compte actif : données conservées pendant la durée du compte. Après suppression : données anonymisées ou supprimées sous 30 jours.</p>
+      <p style="margin-bottom:9px"><strong style="color:var(--tx)">Vos droits</strong> — Accès, rectification, effacement, portabilité, limitation du traitement. Exercez vos droits à : loicdeclerck4020@gmail.com. Réponse sous 30 jours. Droit de réclamation auprès de l'Autorité de protection des données (APD) belge : apd-gba.be.</p>
+      <p style="margin-bottom:9px"><strong style="color:var(--tx)">Cookies &amp; Monitoring</strong> — Sentry (monitoring erreurs, anonymisé, données UE). Aucun cookie publicitaire. Aucune revente de données.</p>
+      <p><strong style="color:var(--tx)">Supprimer votre compte</strong> — Contactez loicdeclerck4020@gmail.com avec votre adresse email. Suppression effective sous 72 heures.</p>
     </div>
   </div>
 </div></div>
@@ -2887,7 +2903,7 @@ window.redeemPromo = async function () {
   <div style="background:#0e141b;border:1px solid #1e2a36;border-radius:14px;max-width:380px;width:100%;padding:26px;font-family:'DM Sans',sans-serif">
     <h2 style="color:#f0a500;font-family:'Rajdhani',sans-serif;margin:0 0 8px;font-size:22px">Nouveau mot de passe</h2>
     <p style="color:#8aa0b0;font-size:13px;margin:0 0 16px">Choisis ton nouveau mot de passe (6 caractères minimum).</p>
-    <input type="password" id="np-pw" placeholder="••••••••" style="width:100%;padding:12px;border-radius:8px;border:1px solid #1e2a36;background:#080b0f;color:#fff;margin-bottom:12px;box-sizing:border-box">
+    <input type="password" id="np-pw" placeholder="••••••••" autocomplete="new-password" style="width:100%;padding:12px;border-radius:8px;border:1px solid #1e2a36;background:#080b0f;color:#fff;margin-bottom:12px;box-sizing:border-box">
     <button onclick="doResetPw()" style="width:100%;padding:13px;border:none;border-radius:8px;background:#f0a500;color:#0b0f14;font-weight:bold;cursor:pointer;font-size:15px">Enregistrer</button>
     <div id="np-msg" style="font-size:13px;margin-top:10px;text-align:center"></div>
   </div>

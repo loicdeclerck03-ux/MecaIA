@@ -6,7 +6,7 @@
 // ============================================================
 
 import Stripe from "stripe";
-import { serviceClient } from "../lib/auth.mjs";
+import { getUser, serviceClient, json, preflight } from "../lib/auth.mjs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -49,13 +49,17 @@ PACKAGES["25credits"] = PACKAGES["20credits"];
 PACKAGES["60credits"] = PACKAGES["50credits"];
 
 export const handler = async (event) => {
+  if (event.httpMethod === "OPTIONS") return preflight();
   if (event.httpMethod !== "POST")
-    return { statusCode: 405, body: JSON.stringify({ error: "POST only" }) };
+    return json(405, { error: "POST only" });
+
+  // Vérification JWT obligatoire — user_id extrait du token, jamais du body
+  const auth = await getUser(event);
+  if (!auth) return json(401, { error: "Unauthorized" });
+  const user_id = auth.userId;
 
   try {
-    const { user_id, package: packageKey, promo_code } = JSON.parse(event.body || "{}");
-    if (!user_id)
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing user_id" }) };
+    const { package: packageKey, promo_code } = JSON.parse(event.body || "{}");
 
     const pkg = PACKAGES[packageKey];
     if (!pkg)
