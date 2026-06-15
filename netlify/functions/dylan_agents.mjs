@@ -458,13 +458,12 @@ export const handler = async (event) => {
 
     console.log(`[DYLAN] tour=${state.tour} etat=${state.etat} model=${modelChoisi} dtc=${dtcContext.length} elapsed=${Date.now() - startTime}ms`);
 
-    // Timeout manuel : 9s enquête / 22s conclusion (Netlify Pro 26s → 22s safe)
-    // Sur plan free Netlify (10s cap), le AbortController sera battu par Netlify
-    // → réponse "réfléchit encore" au lieu de silence complet
+    // Timeout manuel : 22s toutes phases / 22s conclusion (Netlify Pro 26s → 22s safe)
+    // Si plan Free (10s), Netlify coupe silencieusement avant ce timeout
     let completion;
     try {
       const abortCtrl = new AbortController();
-      const killTimer = setTimeout(() => abortCtrl.abort(), isConclusion ? 22000 : 9000);
+      const killTimer = setTimeout(() => abortCtrl.abort(), 22000);
       try {
         completion = await anthropic.messages.create({
           model: modelChoisi,
