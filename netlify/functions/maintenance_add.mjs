@@ -27,11 +27,11 @@ export const handler = async (event) => {
       p_vehicle_id: vehicle_id,
       p_maintenance_type: maintenance_type,
       p_maintenance_date: maintenance_date,
-      p_maintenance_description: maintenance_description,
-      p_vehicle_km_at_maintenance: vehicle_km_at_maintenance,
-      p_cost_eur: cost_eur,
-      p_shop_name: shop_name,
-      p_notes: notes,
+      p_maintenance_description: maintenance_description || null,
+      p_vehicle_km_at_maintenance: vehicle_km_at_maintenance || null,
+      p_cost_eur: cost_eur || null,
+      p_shop_name: shop_name || null,
+      p_notes: notes || null,
     });
     if (error) throw error;
     if (!data || data.length === 0) throw new Error("No response from add_maintenance_record");

@@ -22,7 +22,13 @@ export const handler = async (event) => {
     }
 
     // 1) Source de vérité : on demande la commande À STRIPE (le client ne peut pas mentir)
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+    let session;
+    try {
+      session = await stripe.checkout.sessions.retrieve(session_id);
+    } catch (stripeErr) {
+      // session_id invalide ou inconnu → 400, pas 500
+      return { statusCode: 400, body: JSON.stringify({ error: stripeErr.message, paid: false }) };
+    }
     const paid = session.payment_status === "paid";
     const userId = session.metadata?.user_id;
     const credits = parseFloat(session.metadata?.credits || "0");

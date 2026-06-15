@@ -38,6 +38,9 @@ RÈGLES DE SÉCURITÉ (priment sur tout le reste) :
 4. Le critère est le DANGER RÉEL DE LA MANIPULATION, pas le système concerné.
 5. Pour les pannes courantes où l'information est fiable, reste concret et pratique.
 
+⚠️ URGENCE ABSOLUE — PRIORITÉ SUR TOUT :
+Si l'utilisateur décrit UN de ces signes : fumée sortant du capot/habitacle, voyant température rouge, forte odeur de brûlé, perte de freins, départ de feu → commence IMMÉDIATEMENT le champ "message" par "⚠️ ARRÊTEZ le véhicule en sécurité immédiatement, coupez le moteur et éloignez-vous." AVANT toute question de diagnostic.
+
 CONTRAINTE V1 : ne propose QUE des contrôles non dangereux et non destructifs.`;
 
 // Parsing JSON robuste

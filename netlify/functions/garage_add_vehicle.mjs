@@ -17,6 +17,13 @@ export const handler = async (event) => {
     const b = JSON.parse(event.body || "{}");
     if (!b.marque || !b.modele) return json(400, { error: "Champs requis: marque, modele" });
 
+    // Validation km : doit être positif si fourni
+    const kmRaw = b.km_current ?? null;
+    if (kmRaw !== null && (isNaN(Number(kmRaw)) || Number(kmRaw) < 0))
+      return json(400, { error: "km_current invalide : doit être un nombre positif ou zéro" });
+    if (kmRaw !== null && Number(kmRaw) === 0)
+      return json(400, { error: "km_current invalide : un véhicule neuf a au minimum quelques km" });
+
     // Le 1er véhicule de l'utilisateur devient le véhicule principal
     let isPrimary = false;
     try {
