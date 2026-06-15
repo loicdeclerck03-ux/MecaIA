@@ -1088,9 +1088,15 @@ textarea{resize:vertical;min-height:70px}
   <div class="card">
     <div class="ch">
       <div class="ct">Dylan — Mécanicien IA</div>
-      <div style="display:flex;gap:6px">
+      <div style="display:flex;gap:6px;align-items:center">
         <span class="vpill"><span class="dot"></span>En ligne</span>
+        <button id="btn-new-diag" onclick="nouveauDiag()" style="display:none;background:transparent;border:1px solid var(--bd);border-radius:5px;padding:3px 8px;font-size:10px;color:var(--muted);cursor:pointer">+ Nouveau</button>
       </div>
+    </div>
+    <!-- Sessions récentes — chargées dynamiquement -->
+    <div id="diag-sessions-panel" style="display:none;border-bottom:1px solid var(--bd);padding:10px 14px 8px">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:8px">DIAGNOSTICS EN COURS (7 derniers jours)</div>
+      <div id="diag-sessions-list"></div>
     </div>
     <div class="cb" style="padding:14px">
       <div id="dylan-feed"></div>
@@ -2290,6 +2296,7 @@ async function loadProfile(user) {
     majC();
   }
   await loadCars();
+  await loadDiagSessions();
 }
 
 async function loadCars() {
@@ -2302,6 +2309,89 @@ async function loadCars() {
   }
 }
 window.loadCars = loadCars;
+
+// ══ REPRISE DE DIAGNOSTIC ══
+async function loadDiagSessions() {
+  const r = await MecaIA.authedFetch('diag_sessions_list', { method: 'POST', body: {} });
+  if (!r.ok || !r.data?.success) return;
+  const sessions = r.data.sessions || [];
+  const panel = document.getElementById('diag-sessions-panel');
+  const list = document.getElementById('diag-sessions-list');
+  const btnNew = document.getElementById('btn-new-diag');
+  if (!sessions.length) { if (panel) panel.style.display = 'none'; return; }
+
+  const etats = { CONTEXTE: '🔵 Collecte', HYPOTHESES: '🟡 Hypothèses', CONTROLE: '🟠 Contrôles', CONCLUSION: '✅ Conclu' };
+  list.innerHTML = sessions.map(s => `
+    <div style="background:var(--s3);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:3px">${s.vehicule}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:3px">
+          <span style="font-size:9px;background:var(--s2);color:var(--muted);padding:1px 7px;border-radius:10px;font-family:'IBM Plex Mono',monospace">${etats[s.etat]||s.etat} · Tour ${s.tour}</span>
+          ${s.codes ? `<span style="font-size:9px;background:rgba(232,160,0,.12);color:var(--acc);padding:1px 7px;border-radius:10px;font-family:'IBM Plex Mono',monospace">${s.codes}</span>` : ''}
+        </div>
+        ${s.symptome ? `<div style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">${s.symptome}</div>` : ''}
+        ${s.topHyp ? `<div style="font-size:10px;color:#60a5fa;margin-top:2px">→ ${s.topHyp}</div>` : ''}
+        <div style="font-size:9px;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace">${s.lastActivity}</div>
+      </div>
+      <button onclick="reprendreSession('${s.id}',${JSON.stringify(JSON.stringify(s))})" class="btn" style="margin-top:0;padding:6px 12px;font-size:11px;white-space:nowrap">▶ Reprendre</button>
+    </div>`).join('');
+
+  panel.style.display = 'block';
+  if (btnNew) btnNew.style.display = 'inline-block';
+}
+
+window.reprendreSession = function(sessionId, sessionJson) {
+  const s = JSON.parse(sessionJson);
+  const state = s.state || {};
+
+  // Reset conversation
+  nouveauDiag(false);
+
+  // Restaurer l'ID de session
+  window.currentDiagSession = sessionId;
+  window.dylanConv = sessionId;
+
+  // Afficher le résumé dans le feed
+  const f = document.getElementById('dylan-feed');
+  const etats = { CONTEXTE: '🔵 Collecte info', HYPOTHESES: '🟡 Analyse hypothèses', CONTROLE: '🟠 Contrôles guidés' };
+  const hypsHtml = (state.hypotheses || []).filter(h => h.statut !== 'eliminee').slice(0, 3)
+    .map(h => `<div style="font-size:11px;color:var(--tx);padding:3px 0;border-bottom:1px solid var(--bd)">
+      <span style="font-size:9px;color:${h.bande==='tres_forte'?'#4ade80':h.bande==='forte'?'var(--acc)':'#60a5fa'};font-family:'IBM Plex Mono',monospace;text-transform:uppercase">${h.bande||''}</span>
+      <span style="margin-left:6px">${h.libelle}</span></div>`).join('');
+  const codesHtml = state.contexte?.codes?.length
+    ? `<div style="margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--acc)">${state.contexte.codes.join(' · ')}</div>` : '';
+
+  const resumeHtml = `<div style="background:var(--s3);border:1px solid var(--acc-b);border-radius:8px;padding:11px 13px;margin-bottom:10px">
+    <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--acc);margin-bottom:8px">▶ DIAGNOSTIC REPRIS</div>
+    <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px">${s.vehicule}</div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:8px">${etats[s.etat]||s.etat} · Tour ${s.tour || 0}${state.resume_enquete ? ' · ' + state.resume_enquete.substring(0,60) + '…' : ''}</div>
+    ${s.symptome ? `<div style="font-size:11px;color:var(--tx);margin-bottom:6px">💬 ${s.symptome}</div>` : ''}
+    ${codesHtml}
+    ${hypsHtml ? `<div style="margin-top:8px"><div style="font-size:9px;color:var(--muted);letter-spacing:.8px;margin-bottom:4px">HYPOTHÈSES EN COURS</div>${hypsHtml}</div>` : ''}
+  </div>`;
+
+  // Bulle Dylan de reprise
+  const bubble = dylanBubble('dylan', '');
+  bubble.innerHTML = `<div style="padding:10px 12px">${resumeHtml}<div class="dylan-msg-text">Je reprends votre diagnostic — posez-moi votre prochaine question ou dites-moi "continue".</div></div>`;
+
+  // Cacher le panel sessions
+  document.getElementById('diag-sessions-panel').style.display = 'none';
+  document.getElementById('btn-new-diag').style.display = 'inline-block';
+};
+
+window.nouveauDiag = function(resetPanel = true) {
+  const f = document.getElementById('dylan-feed');
+  if (f) f.innerHTML = '';
+  window.dylanHist = []; window.dylanConv = null; window.currentDiagSession = null;
+  if (resetPanel) {
+    const panel = document.getElementById('diag-sessions-panel');
+    if (panel) panel.style.display = 'none';
+    document.getElementById('btn-new-diag').style.display = 'none';
+  }
+  setTimeout(dylanWelcome, 50);
+};
+
+function nouveauDiag(resetPanel = true) { window.nouveauDiag(resetPanel); }
 
 async function refreshCredits() {
   const pr = await MecaIA.authedFetch('profile_get');
