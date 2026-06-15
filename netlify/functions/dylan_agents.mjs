@@ -18,9 +18,10 @@ import { getUser, serviceClient, json, preflight } from "../lib/auth.mjs";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
 
-// Modele hybride : Haiku pour l'enquete, Sonnet pour la conclusion
+// Haiku pour toutes les phases — Netlify free plan = 10s max, Sonnet trop lent
+// Sonnet réactivable via ANTHROPIC_CONCLUSION_MODEL env var sur plan Pro
 const MODEL_ENQUETE    = process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001";
-const MODEL_CONCLUSION = "claude-sonnet-4-6"; // Precision maximale au moment critique
+const MODEL_CONCLUSION = process.env.ANTHROPIC_CONCLUSION_MODEL || "claude-haiku-4-5-20251001";
 
 // Plafond anti-derive de cout
 const MAX_TOURS = 8;
