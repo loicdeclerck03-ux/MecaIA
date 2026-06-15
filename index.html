@@ -2805,26 +2805,34 @@ loadDash = async function () {
 window.loadDash = loadDash;
 
 async function refreshDash() {
-  const s = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'stats' } });
   const se = document.getElementById('dash-stats');
-  if (se) {
-    if (s.status === 403) { se.innerHTML = '<div style="color:var(--red)">Accès réservé au propriétaire.</div>'; }
-    else if (s.ok && s.data && s.data.success) {
-      const x = s.data.stats || {};
-      const cell = (l, v) => `<div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px"><div style="font-size:22px;font-weight:700;color:var(--accent)">${v ?? 0}</div><div style="font-size:11px;color:var(--muted)">${l}</div></div>`;
-      se.innerHTML = cell('Utilisateurs', x.total_users) + cell('Diagnostics', x.total_diagnostics) + cell('Illimités actifs', x.unlimited_users) + cell('Codes actifs', x.active_promos);
-    } else se.innerHTML = '<div style="color:var(--muted)">Stats indisponibles.</div>';
+  try {
+    const s = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'stats' } });
+    if (se) {
+      if (s.status === 403) { se.innerHTML = '<div style="color:var(--red)">Accès réservé au propriétaire.</div>'; }
+      else if (s.ok && s.data && s.data.success) {
+        const x = s.data.stats || {};
+        const cell = (l, v) => `<div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px"><div style="font-size:22px;font-weight:700;color:var(--accent)">${v ?? 0}</div><div style="font-size:11px;color:var(--muted)">${l}</div></div>`;
+        se.innerHTML = cell('Utilisateurs', x.total_users) + cell('Diagnostics', x.total_diagnostics) + cell('Illimités actifs', x.unlimited_users) + cell('Codes actifs', x.active_promos);
+      } else se.innerHTML = `<div style="color:var(--red)">Erreur ${s.status}: ${s.data?.error || 'Stats indisponibles'}</div>`;
+    }
+  } catch(e) {
+    if (se) se.innerHTML = `<div style="color:var(--red)">⚠️ ${e.message}</div>`;
   }
-  const p = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'list_promos' } });
   const pe = document.getElementById('dash-promos');
-  if (pe) {
-    if (p.ok && p.data && p.data.success) {
-      const list = p.data.promos || [];
-      if (!list.length) { pe.innerHTML = '<div style="color:var(--muted);font-size:13px">Aucun code.</div>'; return; }
-      const kindLbl = { percent: '% réduction', credits: 'crédits', unlimited: 'jours illimité' };
-      const stColor = { 'actif': 'var(--green)', 'désactivé': 'var(--muted)', 'expiré': 'var(--red)', 'épuisé': 'var(--red)' };
-      pe.innerHTML = list.map(c => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border)"><div><div style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:#fff">${c.code}</div><div style="font-size:11px;color:var(--muted)">${c.value} ${kindLbl[c.kind] || c.kind} · ${c.uses_count}/${c.max_uses ?? '∞'} utilisés · <span style="color:${stColor[c.status] || 'var(--muted)'}">${c.status}</span></div></div><button class="bsm" onclick="togglePromo('${c.id}',${!c.active})">${c.active ? 'Désactiver' : 'Réactiver'}</button></div>`).join('');
-    } else pe.innerHTML = '<div style="color:var(--muted)">Liste indisponible.</div>';
+  try {
+    const p = await MecaIA.authedFetch('admin', { method: 'POST', body: { action: 'list_promos' } });
+    if (pe) {
+      if (p.ok && p.data && p.data.success) {
+        const list = p.data.promos || [];
+        if (!list.length) { pe.innerHTML = '<div style="color:var(--muted);font-size:13px">Aucun code.</div>'; return; }
+        const kindLbl = { percent: '% réduction', credits: 'crédits', unlimited: 'jours illimité' };
+        const stColor = { 'actif': 'var(--green)', 'désactivé': 'var(--muted)', 'expiré': 'var(--red)', 'épuisé': 'var(--red)' };
+        pe.innerHTML = list.map(c => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border)"><div><div style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:#fff">${c.code}</div><div style="font-size:11px;color:var(--muted)">${c.value} ${kindLbl[c.kind] || c.kind} · ${c.uses_count}/${c.max_uses ?? '∞'} utilisés · <span style="color:${stColor[c.status] || 'var(--muted)'}">${c.status}</span></div></div><button class="bsm" onclick="togglePromo('${c.id}',${!c.active})">${c.active ? 'Désactiver' : 'Réactiver'}</button></div>`).join('');
+      } else if (pe) pe.innerHTML = `<div style="color:var(--red)">Erreur ${p.status}: ${p.data?.error || 'Liste indisponible'}</div>`;
+    }
+  } catch(e) {
+    if (pe) pe.innerHTML = `<div style="color:var(--red)">⚠️ ${e.message}</div>`;
   }
 }
 window.refreshDash = refreshDash;
