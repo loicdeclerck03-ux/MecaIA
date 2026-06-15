@@ -392,11 +392,17 @@ export const handler = async (event) => {
       state.vehicule = vehiculeRecu;
     }
 
-    // ---- 3) RAG + MÉMOIRE en parallèle — RAG uniquement si < 3 tours et pas encore d'hypothèses ----
-    let ragContext = "";
+    // ---- 3) RAG + MÉMOIRE + DTC en parallèle total ----
+    // Extraire codes OBD du message avant le Promise.all
+    const codesMsg  = user_input ? [...(user_input.match(/[PCBU][0-9]{4}/gi) || [])] : [];
+    const codesSession = state.contexte?.codes || [];
+    const tousLesCodes = [...new Set([...codesSession, ...codesMsg])];
+    const needsDTC = tousLesCodes.length > 0 && !(state.dtc_enrichi?.length);
+
     const vKey = vehicleKey(state.vehicule);
-    const [ragResult, memoire] = await Promise.all([
-      // RAG : uniquement si on n'a pas encore d'hypothèses ET moins de 3 tours (CONTEXTE phase)
+    let ragContext = "";
+    const [ragResult, memoire, dtcResult] = await Promise.all([
+      // RAG : uniquement CONTEXTE phase (tour < 3, pas encore d'hypothèses)
       (!state.hypotheses.length && (state.tour || 0) < 3)
         ? supabase.rpc("search_diagnostic_cases_text", {
             p_marque: state.vehicule.make || "",
@@ -408,21 +414,22 @@ export const handler = async (event) => {
             : ""
           ).catch(e => { console.error("[DYLAN] RAG:", e.message); return ""; })
         : Promise.resolve(""),
-      // Mémoire : toujours en parallèle
+      // Mémoire véhicule
       lireMemoire(userId, vKey, supabase),
+      // DTC lookup — uniquement si codes nouveaux et pas déjà enrichis
+      needsDTC
+        ? enrichirDTC(tousLesCodes, supabase)
+            .catch(e => { console.error("[DYLAN] DTC:", e.message); return []; })
+        : Promise.resolve(state.dtc_enrichi || []),
     ]);
+
     ragContext = ragResult;
-    let dtcContext = state.dtc_enrichi || [];
-    const codesSession = state.contexte?.codes || [];
-    // Extraire codes OBD depuis le message utilisateur
-    const codesMsg = user_input ? [...(user_input.match(/[PCBU][0-9]{4}/gi) || [])] : [];
-    const tousLesCodes = [...new Set([...codesSession, ...codesMsg])];
-    if (tousLesCodes.length && !dtcContext.length) {
-      dtcContext = await enrichirDTC(tousLesCodes, supabase);
+    let dtcContext = dtcResult;
+    if (needsDTC && dtcContext.length) {
       state.dtc_enrichi = dtcContext;
-      if (tousLesCodes.length && !state.contexte.codes.length) {
-        state.contexte.codes = tousLesCodes;
-      }
+      if (!state.contexte.codes.length) state.contexte.codes = tousLesCodes;
+    } else if (!needsDTC) {
+      dtcContext = state.dtc_enrichi || [];
     }
 
     // ---- 4) Appliquer résultat contrôle ----
