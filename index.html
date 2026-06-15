@@ -1273,22 +1273,22 @@ textarea{resize:vertical;min-height:70px}
         <div class="f"><label>Carburant</label>
           <select id="p-cb">
             <option value="">— Type —</option>
-            <option value="essence">Essence</option><option value="diesel">Diesel</option>
-            <option value="hybride">Hybride</option>
+            <option value="Diesel">Diesel</option><option value="Essence">Essence</option>
+            <option value="Hybride">Hybride</option><option value="Électrique">Électrique</option>
           </select>
         </div>
       </div>
       <div class="r2">
         <div class="f"><label>Puissance (ch)</label><input type="number" id="p-kw" placeholder="110"></div>
-        <div class="f"><label>Cylindrée (cm³)</label><input type="number" id="p-cy" placeholder="1598"></div>
-      </div>
-      <div class="r2">
         <div class="f"><label>Code moteur</label><input type="text" id="p-cm" placeholder="N47D20" style="text-transform:uppercase"></div>
-        <div class="f"><label>Kilométrage</label><input type="number" id="p-km" placeholder="85000"></div>
       </div>
-      <div class="f"><label>Pièce recherchée *</label><input type="text" id="p-pc" placeholder="Plaquettes de frein avant, courroie de distribution..."></div>
-      <button class="btn" id="btn-p" onclick="doPieces()">Trouver les pièces (1 crédit)</button>
-      <div id="zp" style="margin-top:13px"></div>
+      <div class="f"><label>Kilométrage</label><input type="number" id="p-km" placeholder="85000" min="1"></div>
+      <div class="f" style="margin-top:10px">
+        <label style="color:var(--acc);font-weight:700">🔩 Pièce à comparer *</label>
+        <input type="text" id="p-pc" placeholder="ex: plaquettes de frein avant, courroie de distribution, pompe à eau...">
+      </div>
+      <button class="btn" id="btn-p" onclick="doPieces()" style="width:100%;margin-top:4px">🔍 COMPARER LES PIÈCES (1 crédit)</button>
+      <div id="zp" style="margin-top:16px"></div>
     </div>
   </div>
 </div></div>
@@ -1966,25 +1966,118 @@ window.doVIN=async function(){
   btn.disabled=false;btn.textContent='🔍 DÉCODER CE VIN — GRATUIT';
 };
 
-window.doPieces=async function(){
-  if(!useC())return;
-  const mk=document.getElementById('p-mk').value;const mo=document.getElementById('p-mo').value.trim();
-  const an=document.getElementById('p-an').value.trim();const cb=document.getElementById('p-cb').value;
-  const kw=document.getElementById('p-kw').value.trim();const cy=document.getElementById('p-cy').value.trim();
-  const cm=document.getElementById('p-cm').value.trim().toUpperCase();const km=document.getElementById('p-km').value.trim();
-  const pc=document.getElementById('p-pc').value.trim();
-  if(!mk||!mo||!pc){toast('Remplir Marque, Modèle et Pièce','er');CR++;majC();saveC();return;}
-  const btn=document.getElementById('btn-p');btn.disabled=true;btn.textContent='⏳ RECHERCHE...';loader('zp');
-  const veh=[mk,mo,an,cb,kw&&kw+'kW',cy&&cy+'cm³',cm&&'Code:'+cm,km&&km+'km'].filter(Boolean).join(' ');
-  save('Pièces: '+pc,veh,'pieces');
-  if(CU){try{await updateDoc(doc(db,'users',CU.uid),{pieces_searches:increment(1)});}catch(e){}}
-  try{
-    const d=await claude('Expert pièces automobiles. Références aussi précises que possible. JSON uniquement sans markdown.',
-      [{role:'user',content:'Véhicule: '+veh+'\nPièce: '+pc+'\nJSON:\n{"pieces":[{"nom":"nom exact","marque":"NGK/Bosch/Valeo/Febi/LuK/Sachs/SKF/Brembo...","reference":"réf précise","ref_origine":"réf constructeur","prix_min":15,"prix_max":45,"compatibilite":"note précise","qualite":"OEM ou Aftermarket ou Origine","conseil":"conseil montage","urgence":"Immédiat ou Sous 1000km ou Entretien normal"}]}\n3-4 pièces de qualités différentes.'}]);
-    document.getElementById('zp').innerHTML=`<div class="card"><div class="ch"><div class="ct">${pc.toUpperCase()}</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">${d.pieces.length} résultats · ${veh}</span></div><div class="plist">${d.pieces.map(p=>{const url='https://www.autodoc.be/fr/search?query='+encodeURIComponent(p.reference||p.nom);const uc=p.urgence==='Immédiat'?'var(--red)':p.urgence==='Sous 1000km'?'var(--accent)':'var(--green)';return`<div class="pi"><div class="pm"><div class="pn">${p.nom}</div><div class="pr">${p.marque} · Réf: ${p.reference}${p.ref_origine?' · OEM: '+p.ref_origine:''} · <span style="color:var(--accent)">${p.qualite}</span></div><div class="pc">✓ ${p.compatibilite}</div>${p.conseil?`<div style="font-size:11px;color:var(--muted);margin-top:2px">💬 ${p.conseil}</div>`:''} ${p.urgence?`<div style="font-size:10px;color:${uc};margin-top:2px;font-family:'IBM Plex Mono',monospace">⏰ ${p.urgence}</div>`:''}</div><div class="pp">~${p.prix_min}€<br><span style="font-size:10px;color:var(--muted)">à ${p.prix_max}€</span></div><a href="${url}" target="_blank" style="text-decoration:none"><button class="bsm">COMMANDER →</button></a></div>`;}).join('')}</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Références indicatives — vérifier compatibilité avant commande</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>PIÈCES MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
-  }catch(e){CR++;majC();saveC();errB('zp',e.message);}
-  btn.disabled=false;btn.textContent='🔧 TROUVER LES PIÈCES (1 crédit)';
+window.doPieces = async function () {
+  if (!useC()) return;
+  const mk = document.getElementById('p-mk').value;
+  const mo = document.getElementById('p-mo').value.trim();
+  const an = document.getElementById('p-an').value.trim();
+  const cb = document.getElementById('p-cb').value;
+  const kw = document.getElementById('p-kw').value.trim();
+  const cm = document.getElementById('p-cm').value.trim().toUpperCase();
+  const km = document.getElementById('p-km').value.trim();
+  const pc = document.getElementById('p-pc').value.trim();
+
+  if (!mk || !mo || !pc) { toast('Remplir Marque, Modèle et Pièce', 'er'); CR++; majC(); saveC(); return; }
+
+  const btn = document.getElementById('btn-p');
+  btn.disabled = true; btn.textContent = '⏳ ANALYSE EN COURS...';
+  document.getElementById('zp').innerHTML = '<div style="text-align:center;padding:28px;color:var(--muted);font-size:12px">🔍 Recherche des références et comparaison des prix…</div>';
+
+  save('Comparateur: ' + pc, [mk, mo, an].filter(Boolean).join(' '), 'pieces');
+
+  try {
+    const r = await MecaIA.authedFetch('parts_search', {
+      method: 'POST',
+      body: { marque: mk, modele: mo, annee: an ? parseInt(an) : null, carburant: cb, puissance_ch: kw ? parseInt(kw) : null, engine_code: cm || null, km: km ? parseInt(km) : null, piece: pc }
+    });
+
+    if (!r.ok || !r.data?.success) {
+      document.getElementById('zp').innerHTML = '<div class="err-box">⚠ ' + (r.data?.error || 'Erreur recherche') + '</div>';
+      CR++; majC(); saveC();
+    } else {
+      renderPieces(r.data);
+    }
+  } catch (e) {
+    document.getElementById('zp').innerHTML = '<div class="err-box">⚠ ' + e.message + '</div>';
+    CR++; majC(); saveC();
+  }
+
+  btn.disabled = false; btn.textContent = '🔍 COMPARER LES PIÈCES (1 crédit)';
 };
+
+function renderPieces(data) {
+  const { piece, vehicule, piece_normalisee, conseil_montage, niveaux, avertissement } = data;
+
+  // Couleurs et badges par tier
+  const tierCfg = {
+    'Origine':      { color: '#4ade80', bg: 'rgba(74,222,128,0.08)', badge: '★ ORIGINE', icon: '🏆' },
+    'Équivalent OEM': { color: 'var(--acc)', bg: 'rgba(232,160,0,0.07)', badge: '✓ QUALITÉ PRO', icon: '⭐' },
+    'Aftermarket':  { color: '#60a5fa', bg: 'rgba(96,165,250,0.07)', badge: '💰 ÉCONOMIQUE', icon: '🔧' },
+  };
+
+  const niveauxHtml = (niveaux || []).map((n, i) => {
+    const cfg = tierCfg[n.tier] || tierCfg['Aftermarket'];
+    const pMin = n.prix_indicatif_min || 0;
+    const pMax = n.prix_indicatif_max || 0;
+    const prixHtml = pMin > 0
+      ? `<div style="font-size:16px;font-weight:700;color:${cfg.color};font-family:'Rajdhani',sans-serif">${pMin}€ – ${pMax}€</div><div style="font-size:9px;color:var(--muted)">indicatif</div>`
+      : `<div style="font-size:11px;color:var(--muted)">Prix variable</div>`;
+
+    const liensHtml = (n.liens || []).map(l =>
+      `<a href="${l.url}" target="_blank" rel="noopener" style="text-decoration:none">
+        <div style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:5px 8px;font-size:10px;color:var(--tx);display:flex;align-items:center;gap:4px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='${cfg.color}'" onmouseout="this.style.borderColor='var(--bd)'">
+          ${l.logo} ${l.shop}
+        </div>
+      </a>`
+    ).join('');
+
+    return `
+      <div style="background:${cfg.bg};border:1px solid ${cfg.color}22;border-radius:10px;padding:14px 15px;margin-bottom:10px${i === 0 ? ';border-width:2px' : ''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;flex-wrap:wrap">
+              <span style="background:${cfg.color}22;color:${cfg.color};font-size:9px;font-weight:700;letter-spacing:1.2px;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace">${cfg.badge}</span>
+              <span style="font-size:13px;font-weight:700;color:var(--white);font-family:'Rajdhani',sans-serif">${n.marque || '—'}</span>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${n.description || ''}</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;margin-bottom:4px">
+              <span style="color:var(--tx)">Réf: <strong style="color:${cfg.color}">${n.reference || '—'}</strong></span>
+              ${n.ref_oe ? `<span style="color:var(--muted);margin-left:8px">OE: ${n.ref_oe}</span>` : ''}
+            </div>
+            ${n.garantie ? `<div style="font-size:10px;color:var(--muted)">🛡 Garantie ${n.garantie}</div>` : ''}
+            ${n.pour_qui ? `<div style="font-size:10px;color:var(--acc);margin-top:4px">👤 ${n.pour_qui}</div>` : ''}
+          </div>
+          <div style="text-align:right;min-width:70px">${prixHtml}</div>
+        </div>
+        <!-- Liens boutiques -->
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:10px">
+          ${liensHtml}
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('zp').innerHTML = `
+    <div style="border-top:1px solid var(--bd);padding-top:14px">
+      <!-- En-tête résultat -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px">
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--white)">${(piece_normalisee || piece).toUpperCase()}</div>
+          <div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${vehicule}</div>
+        </div>
+        <span style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace">3 niveaux · 4 boutiques</span>
+      </div>
+
+      <!-- Conseil montage -->
+      ${conseil_montage ? `<div style="background:var(--s3);border-left:3px solid var(--acc);border-radius:0 6px 6px 0;padding:9px 12px;margin-bottom:12px;font-size:11px;color:var(--tx)">💬 ${conseil_montage}</div>` : ''}
+
+      <!-- Niveaux comparés -->
+      ${niveauxHtml}
+
+      <!-- Avertissement -->
+      ${avertissement ? `<div style="font-size:10px;color:var(--muted);padding-top:8px;border-top:1px solid var(--bd)">ℹ️ ${avertissement}</div>` : ''}
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.6);margin-top:6px">⚠️ Références indicatives — vérifier la compatibilité exacte avant commande</div>
+    </div>`;
+}
 
 function renderS(f='all',q=''){
   let s=JSON.parse(localStorage.getItem('ms')||'[]');
