@@ -16,9 +16,6 @@
 [functions]
   # esbuild embarque les imports (../lib/auth.mjs) et les node_modules
   node_bundler = "esbuild"
-  # Timeout étendu pour les fonctions longues (dylan_agents conclusion Sonnet)
-  # Netlify Pro : 26s max — Netlify Free : 10s max (capé automatiquement)
-  timeout = 26
 
 # Fichiers statiques spéciaux à NE PAS intercepter par la SPA
 # (robots.txt, sitemap.xml, manifest.json doivent être servis tels quels)
