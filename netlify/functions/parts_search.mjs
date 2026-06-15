@@ -4,11 +4,11 @@ import { getUser, json, preflight } from "../lib/auth.mjs";
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
 
 export const handler = async (event) => {
-  const pre = preflight(event);
-  if (pre) return pre;
+  if (event.httpMethod === "OPTIONS") return preflight();
+  if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
 
-  const { user, error: authErr } = await getUser(event);
-  if (authErr || !user) return json(401, { error: "Non authentifié" });
+  const auth = await getUser(event);
+  if (!auth) return json(401, { error: "Non authentifié" });
 
   const { marque, modele, annee, carburant, puissance_ch, engine_code, km, piece } = JSON.parse(event.body || "{}");
   if (!marque || !modele || !piece) return json(400, { error: "Champs requis: marque, modele, piece" });
