@@ -392,21 +392,26 @@ export const handler = async (event) => {
       state.vehicule = vehiculeRecu;
     }
 
-    // ---- 3) RAG — uniquement au 1er tour ----
+    // ---- 3) RAG + MÉMOIRE en parallèle — RAG uniquement si < 3 tours et pas encore d'hypothèses ----
     let ragContext = "";
-    if (!state.hypotheses.length) {
-      try {
-        const { data: cases } = await supabase.rpc("search_diagnostic_cases_text", {
-          p_marque: state.vehicule.make || "",
-          p_modele: state.vehicule.model || "",
-          p_query: user_input || state.contexte.symptome || "",
-          p_limit: 4,
-        });
-        if (cases && cases.length) ragContext = cases.map((c) => `- ${c.primary_diagnosis}`).join("\n");
-      } catch (e) { console.error("[DYLAN] RAG:", e.message); }
-    }
-
-    // ---- #2 DTC LOOKUP — avant HYPOTHESES ----
+    const vKey = vehicleKey(state.vehicule);
+    const [ragResult, memoire] = await Promise.all([
+      // RAG : uniquement si on n'a pas encore d'hypothèses ET moins de 3 tours (CONTEXTE phase)
+      (!state.hypotheses.length && (state.tour || 0) < 3)
+        ? supabase.rpc("search_diagnostic_cases_text", {
+            p_marque: state.vehicule.make || "",
+            p_modele: state.vehicule.model || "",
+            p_query: user_input || state.contexte.symptome || "",
+            p_limit: 4,
+          }).then(({ data: cases }) => cases && cases.length
+            ? cases.map((c) => `- ${c.primary_diagnosis}`).join("\n")
+            : ""
+          ).catch(e => { console.error("[DYLAN] RAG:", e.message); return ""; })
+        : Promise.resolve(""),
+      // Mémoire : toujours en parallèle
+      lireMemoire(userId, vKey, supabase),
+    ]);
+    ragContext = ragResult;
     let dtcContext = state.dtc_enrichi || [];
     const codesSession = state.contexte?.codes || [];
     // Extraire codes OBD depuis le message utilisateur
@@ -419,10 +424,6 @@ export const handler = async (event) => {
         state.contexte.codes = tousLesCodes;
       }
     }
-
-    // ---- #9 MÉMOIRE VÉHICULE ----
-    const vKey = vehicleKey(state.vehicule);
-    const memoire = await lireMemoire(userId, vKey, supabase);
 
     // ---- 4) Appliquer résultat contrôle ----
     state.reexpliquer = false;
