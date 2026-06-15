@@ -2251,8 +2251,27 @@ function renderCars(cs) {
     if (sl) sl.innerHTML = '<div class="empty-state" style="padding:22px 16px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="empty-t">Aucun véhicule</div><div class="empty-d">Ajoutez votre véhicule dans <strong style="color:var(--acc)">Garage</strong></div></div>';
     return;
   }
-  gc.innerHTML = cs.map(c => `<div class="car-c"><div style="font-size:24px">🚗</div><div class="car-info"><div class="car-n">${c.nom || c.marque + ' ' + c.modele}</div><div class="car-d">${c.marque} ${c.modele} ${c.annee} · ${c.carbu}${c.kw ? ' · ' + c.kw + 'kW' : ''}${c.cm ? ' · ' + c.cm : ''}</div>${c.km ? `<div class="car-k">📍 ${c.km} km</div>` : ''}</div><div style="text-align:center;min-width:38px"><div class="car-sc" style="color:${sc(c.score || 85)}">${c.score || 85}</div><div style="font-size:9px;color:var(--muted)">SANTÉ</div></div><div style="display:flex;gap:5px"><button class="bsm" onclick="updKm('${c.id}')">KM</button><button class="br" onclick="delCar('${c.id}')">✕</button></div></div>`).join('');
-  if (sl) sl.innerHTML = cs.map(c => `<div class="car-c${selCar?.id === c.id ? ' sel' : ''}" onclick="selC('${c.id}')"><div style="font-size:22px">🚗</div><div class="car-info"><div class="car-n">${c.nom || c.marque + ' ' + c.modele}</div><div class="car-d">${c.marque} ${c.modele} ${c.annee} · ${c.carbu}</div>${c.km ? `<div class="car-k">📍 ${c.km} km</div>` : ''}</div>${selCar?.id === c.id ? '<span style="color:var(--acc);font-size:17px">✓</span>' : ''}</div>`).join('');
+  // Badge marque coloré — remplace l'emoji générique 🚗
+  function carBadge(marque, size) {
+    const mk = (marque || '?').trim().toUpperCase();
+    const short = {'VOLKSWAGEN':'VW','MERCEDES':'MER','CITROËN':'CIT','RENAULT':'REN',
+      'PEUGEOT':'PEU','TOYOTA':'TOY','HYUNDAI':'HYU','MITSUBISHI':'MIT','ALFA ROMEO':'ALF',
+      'LAND ROVER':'LR','ABARTH':'ABA'}[mk] || mk.substring(0, 3);
+    const bg = {'BMW':'#1c69d3','MERCEDES':'#222','MER':'#222','AUDI':'#bb0a30','VW':'#003778',
+      'VOLKSWAGEN':'#003778','RENAULT':'#003189','PEUGEOT':'#003778','CITROËN':'#d82d1d',
+      'CIT':'#d82d1d','FORD':'#003478','TOYOTA':'#eb0a1e','TOY':'#eb0a1e','OPEL':'#ef7b00',
+      'SEAT':'#111','SKODA':'#4e7b40','SKO':'#4e7b40','DACIA':'#001e62','DAC':'#001e62',
+      'KIA':'#05141f','HYUNDAI':'#002c5f','HYU':'#002c5f','FIAT':'#9e2b25','HONDA':'#c00',
+      'HON':'#c00','NISSAN':'#c00','NIS':'#c00','TESLA':'#cc0000','TES':'#cc0000',
+      'VOLVO':'#003057','VOL':'#003057','PORSCHE':'#8b1a1a','POR':'#8b1a1a',
+      'MINI':'#111','SUZUKI':'#003189','SUZ':'#003189','MAZDA':'#91050e','MAZ':'#91050e',
+      'SUBARU':'#003189','SUB':'#003189','LEXUS':'#1a1a2e','LEX':'#1a1a2e'}[mk] ||
+      ['#1c69d3','#d82d1d','#003189','#22863a','#6f42c1','#e36209','#0075ca','#8b5cf6'][mk.charCodeAt(0) % 8];
+    const s = size || 40;
+    return `<div style="width:${s}px;height:${s}px;border-radius:8px;background:${bg};color:#fff;font-size:${Math.floor(s*0.22)}px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${short}</div>`;
+  }
+  gc.innerHTML = cs.map(c => `<div class="car-c"><div>${carBadge(c.marque)}</div><div class="car-info"><div class="car-n">${c.nom || c.marque + ' ' + c.modele}</div><div class="car-d">${c.marque} ${c.modele} ${c.annee} · ${c.carbu}${c.kw ? ' · ' + c.kw + 'kW' : ''}${c.cm ? ' · ' + c.cm : ''}</div>${c.km ? `<div class="car-k">📍 ${c.km} km</div>` : ''}</div><div style="text-align:center;min-width:38px"><div class="car-sc" style="color:${sc(c.score || 85)}">${c.score || 85}</div><div style="font-size:9px;color:var(--muted)">SANTÉ</div></div><div style="display:flex;gap:5px"><button class="bsm" onclick="updKm('${c.id}')">KM</button><button class="br" onclick="delCar('${c.id}')">✕</button></div></div>`).join('');
+  if (sl) sl.innerHTML = cs.map(c => `<div class="car-c${selCar?.id === c.id ? ' sel' : ''}" onclick="selC('${c.id}')">${carBadge(c.marque, 36)}<div class="car-info"><div class="car-n">${c.nom || c.marque + ' ' + c.modele}</div><div class="car-d">${c.marque} ${c.modele} ${c.annee} · ${c.carbu}</div>${c.km ? `<div class="car-k">📍 ${c.km} km</div>` : ''}</div>${selCar?.id === c.id ? '<span style="color:var(--acc);font-size:17px">✓</span>' : ''}</div>`).join('');
 }
 
 window.selC = function (id) {

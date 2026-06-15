@@ -23,8 +23,8 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
 const MODEL_ENQUETE    = process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001";
 const MODEL_CONCLUSION = process.env.ANTHROPIC_CONCLUSION_MODEL || "claude-haiku-4-5-20251001";
 
-// Plafond anti-derive de cout
-const MAX_TOURS = 8;
+// Plafond anti-derive de cout — 15 tours (3 contexte + 1 hyp + 4 controles + 1 conclu + marge)
+const MAX_TOURS = 15;
 
 // Bloc securite valide
 const SAFETY_BLOCK = `RÔLE : tu aides à comprendre, à diagnostiquer, à guider des contrôles, et à réparer
@@ -265,6 +265,9 @@ MÉTHODE (un seul tour à la fois) :
   Jamais deux phrases interrogatives dans le même message. Une question = une seule phrase.
   Ne propose pas encore d'hypothèse.
   NE REDEMANDE JAMAIS une information déjà présente.
+  ⚡ PASSAGE RAPIDE À HYPOTHESES : dès que tu as (1) le symptôme principal ET (2) l'environnement
+  d'apparition (froid/chaud OU permanent/intermittent OU un code OBD), PASSE À HYPOTHESES.
+  Maximum 3 questions en CONTEXTE — ne prolonge pas inutilement cette phase.
 - HYPOTHESES : propose 2 à 4 hypothèses avec bande (faible/probable/forte/tres_forte),
   pouvoir (fort/faible) et le contrôle qui la confirme/élimine.
 - CONTROLE : UN SEUL contrôle guidé. OBLIGATOIREMENT "polarite_oui" :
