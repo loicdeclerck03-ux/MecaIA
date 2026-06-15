@@ -201,13 +201,19 @@ async function majMemoire(userId, veh, conclusion, supabase) {
 }
 
 function buildSystem(state, ragContext, dtcContext, memoireContext) {
+  // Compact state allégé : symptome tronqué, hypotheses sans preuves
   const compact = JSON.stringify({
     etat: state.etat,
     registre: state.registre,
     tour: state.tour,
     resume_enquete: state.resume_enquete || "",
-    contexte: state.contexte,
-    hypotheses: state.hypotheses,
+    contexte: {
+      ...state.contexte,
+      symptome: state.contexte?.symptome ? state.contexte.symptome.substring(0, 150) : null,
+    },
+    hypotheses: (state.hypotheses || []).map(h => ({
+      id: h.id, libelle: h.libelle, bande: h.bande, statut: h.statut, pouvoir: h.pouvoir,
+    })),
     controle_en_cours: state.controle_en_cours,
     controles_faits: state.controles_faits.slice(-3),
     reexpliquer: state.reexpliquer,
