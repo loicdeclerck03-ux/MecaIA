@@ -817,7 +817,6 @@ textarea{resize:vertical;min-height:70px}
   font-family:'IBM Plex Mono',monospace;opacity:.7
 }
 .d-msg.user .d-ts{text-align:right}
-.d-msg.user .d-ts{text-align:right}
 .d-msg.dylan .d-ts{text-align:left;padding-left:37px}
 @keyframes scanDash{0%{stroke-dashoffset:200}100%{stroke-dashoffset:0}}
 @keyframes scanLine{0%,100%{transform:translateY(-24px);opacity:.3}50%{transform:translateY(24px);opacity:1}}
@@ -2802,7 +2801,7 @@ window.chkD = function() {};
 window.doPhoto = async function (event) {
   const file = event.target.files[0]; if (!file) return;
   if (!useC()) return;
-  document.getElementById('zd').innerHTML=<div style="text-align:center;padding:28px 16px"><div style="position:relative;display:inline-block;margin-bottom:16px"><svg width="64" height="64" viewBox="0 0 64 64" style="display:block"><rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="var(--bd2)" stroke-width="2"/><rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="var(--acc)" stroke-width="2" stroke-dasharray="200" stroke-dashoffset="200" style="animation:scanDash 1.5s linear infinite"/><line x1="4" y1="32" x2="60" y2="32" stroke="var(--acc)" stroke-width="1.5" opacity=".6" style="animation:scanLine 1.5s ease-in-out infinite"/></svg></div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--acc);letter-spacing:1px;margin-bottom:4px">SCAN IA EN COURS</div><div style="font-size:11px;color:var(--muted)">Analyse visuelle par Claude Sonnet…</div></div>;
+  document.getElementById('zd').innerHTML='<div style="text-align:center;padding:28px 16px"><div style="position:relative;display:inline-block;margin-bottom:16px"><svg width="64" height="64" viewBox="0 0 64 64" style="display:block"><rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="var(--bd2)" stroke-width="2"/><rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="var(--acc)" stroke-width="2" stroke-dasharray="200" stroke-dashoffset="200" style="animation:scanDash 1.5s linear infinite"/><line x1="4" y1="32" x2="60" y2="32" stroke="var(--acc)" stroke-width="1.5" opacity=".6" style="animation:scanLine 1.5s ease-in-out infinite"/></svg></div><div style="font-family:Rajdhani,sans-serif;font-size:13px;font-weight:700;color:var(--acc);letter-spacing:1px;margin-bottom:4px">SCAN IA EN COURS</div><div style="font-size:11px;color:var(--muted)">Analyse visuelle par Claude Sonnet...</div></div>';
   const reader = new FileReader();
   reader.onload = async e => {
     try {
