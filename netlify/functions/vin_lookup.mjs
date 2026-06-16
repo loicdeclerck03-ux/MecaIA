@@ -111,13 +111,13 @@ export const handler = async (event) => {
     if (nhtsaQualite < 3) {
       try {
         const completion = await anthropic.messages.create({
-          model: MODEL, max_tokens: 400,
-          system: "Tu es un expert en décodage VIN. Donne UNIQUEMENT les informations certaines. Si tu ne sais pas avec certitude, mets null. Réponds en JSON strict sans markdown.",
+          model: MODEL, max_tokens: 500,
+          system: "Tu es un expert en décodage VIN européen. Pour les VINs européens tu DOIS déduire le modèle depuis la structure WMI+VDS. Exemple: WBA=BMW/Série3-5-7, VF1=Renault/Clio-Mégane-Zoe selon VDS, VF3=Peugeot/208-308-508, WVW=VW/Golf-Polo-Tiguan, WAU=Audi/A3-A4-A6. Sois précis sur la marque et fais une estimation raisonnable du modèle si le WMI est connu. Réponds UNIQUEMENT en JSON strict sans markdown.",
           messages: [{
             role: "user",
-            content: `Décode ce VIN : ${vin}\nWMI: ${wmi3} (marque probable: ${marqueWMI || 'inconnue'})\nAnnée probable depuis position 10: ${anneeVIN || 'inconnue'}\n\nJSON: {"marque": string|null, "modele": string|null, "annee": string|null, "carburant": string|null, "carrosserie": string|null, "pays_fabrication": string|null, "note": "max 1 phrase si info utile"|null}\n\nNe devine jamais une référence de moteur ou cylindrée — mets null si incertain.`
+            content: `Décode ce VIN européen: ${vin}\nWMI 3 lettres: ${wmi3}\nMarque WMI connue: ${marqueWMI || 'inconnue'}\nAnnée décodée position 10: ${anneeVIN || 'inconnue'}\nVDS (positions 4-9): ${vin.substring(3,9)}\n\nJSON REQUIS: {"marque": string, "modele": string|null, "annee": string|null, "carburant": "Essence"|"Diesel"|"Hybride"|"Electrique"|null, "carrosserie": string|null, "pays_fabrication": string|null, "note_ia": "info utile max 1 phrase"|null}\n\nRULES: marque = TOUJOURS remplir si WMI connu. modele = déduire depuis WMI+VDS, mettre null seulement si vraiment impossible.`
           }]
-        }, { timeout: 5000 });
+        }, { timeout: 6000 });
         const text = (completion.content || []).map(b => b.text || "").join("");
         const clean = text.trim().replace(/^```json\s*/i, "").replace(/```$/, "").trim();
         const parsed = JSON.parse(clean);
