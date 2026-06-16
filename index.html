@@ -1445,6 +1445,14 @@ textarea{resize:vertical;min-height:70px}
         <div class="btxt"><strong>3 crédits offerts</strong> à l'inscription — aucune carte requise</div>
         <span class="fbadge">ACTIF</span>
       </div>
+      <!-- Toggle visuel crédits -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:12px;color:var(--muted)">Crédits</span>
+        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:3px;display:flex;gap:2px">
+          <button id="tog-cr" onclick="togTarifs('credits')" style="padding:5px 14px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:var(--acc);color:#0a0c0e;transition:.2s">Crédits</button>
+          <button id="tog-ab" onclick="togTarifs('abo')" style="padding:5px 14px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:.2s">Abonnement <span style="font-size:9px;color:var(--green)">BIENTÔT</span></button>
+        </div>
+      </div>
       <div class="plans">
         <div class="plan">
           <div class="pname">Découverte</div>
@@ -2060,6 +2068,20 @@ window.searchS=function(q){renderS('all',q);};
 window.clearS=function(){if(confirm('Effacer tout ?')){localStorage.removeItem('ms');renderS();toast('Effacé','ok');}};
 
 window.togF=function(el){const a=el.nextElementSibling;a.classList.toggle('on');el.querySelector('span:last-child').textContent=a.classList.contains('on')?'▲':'▼';};
+window.togTarifs=function(mode){
+  const cr=document.getElementById('tog-cr');const ab=document.getElementById('tog-ab');
+  if(!cr||!ab)return;
+  if(mode==='credits'){
+    cr.style.background='var(--acc)';cr.style.color='#0a0c0e';
+    ab.style.background='transparent';ab.style.color='var(--muted)';
+    toast('Pack crédits sélectionné — sans abonnement, sans expiration','ok');
+  } else {
+    ab.style.background='var(--acc)';ab.style.color='#0a0c0e';
+    cr.style.background='transparent';cr.style.color='var(--muted)';
+    toast('🔔 Abonnements disponibles prochainement ! Utilisez les packs crédits en attendant.','ok');
+    setTimeout(()=>togTarifs('credits'),2500);
+  }
+};
 
 function majVis(){
   let n=parseInt(localStorage.getItem('mv')||'0');const l=localStorage.getItem('mvd');const now=new Date().toDateString();
