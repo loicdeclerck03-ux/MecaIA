@@ -114,6 +114,11 @@ function peutConclure(state) {
     const pourFaibles = (h.preuves || []).filter((p) => p.sens === "pour" && p.pouvoir === "faible").length;
     if (pourFaibles >= 2) return h;
   }
+  // Fallback après 2+ contrôles effectués : accepter l'hypothèse la mieux évaluée
+  if ((state.controles_faits || []).length >= 2) {
+    const actives = state.hypotheses.filter((h) => h.statut !== "eliminee");
+    if (actives.length > 0) return actives[0];
+  }
   return null;
 }
 
@@ -593,6 +598,12 @@ export const handler = async (event) => {
     if (etat === "CONCLUSION") {
       hypConclue = peutConclure(state);
       if (!hypConclue) etat = "CONTROLE";
+    }
+    // Forcer CONCLUSION si Dylan veut conclure ET qu'on a déjà fait 2+ contrôles
+    // Évite le blocage infini en CONTROLE quand les préuves ne s'accumulent pas
+    if (etat === "CONTROLE" && (state.controles_faits || []).length >= 2 && parsed.etat === "CONCLUSION") {
+      const bestHyp = state.hypotheses.filter((h) => h.statut !== "eliminee")[0];
+      if (bestHyp) { hypConclue = bestHyp; etat = "CONCLUSION"; }
     }
     if (etat === "HYPOTHESES" && state.hypotheses.length && state.controle_en_cours === null && !peutConclure(state)) {
       etat = "CONTROLE";
