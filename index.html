@@ -2174,7 +2174,6 @@ async function loadCars() {
     cars = (g.data.vehicles || []).map(mapVehicle);
     window.cars = cars;
     renderCars(cars);
-    renderAC(); // Mettre à jour le sélecteur dans alertes
     ss('gs-v', cars.length);
   }
 }
