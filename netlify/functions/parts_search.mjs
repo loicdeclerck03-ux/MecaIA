@@ -1,7 +1,18 @@
+﻿// ============================================================
+// PARTS_SEARCH V2 — Références pièces fiables
+// Stratégie :
+//  1. Claude Sonnet génère les refs avec score de confiance
+//  2. Validation légère sur Autodoc.be (ref existe vraiment ?)
+//  3. Badge VÉRIFIÉ / PROBABLE / INDICATIF sur chaque ref
+//  4. Liens belges (autodoc.be, oscaro.com)
+//  5. Si confiance < 70 → lien recherche, pas de ref inventée
+// ============================================================
 import Anthropic from "@anthropic-ai/sdk";
 import { getUser, json, preflight } from "../lib/auth.mjs";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
+// Sonnet pour meilleure connaissance des références pièces
+const MODEL_PARTS = "claude-sonnet-4-6";
 
 export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return preflight();
@@ -14,91 +25,111 @@ export const handler = async (event) => {
   if (!marque || !modele || !piece) return json(400, { error: "Champs requis: marque, modele, piece" });
 
   const vehicule = [marque, modele, annee, carburant,
-    puissance_ch && puissance_ch + "ch",
-    engine_code && "Code:" + engine_code,
-    km && km + "km"
-  ].filter(Boolean).join(" ");
+    puissance_ch && puissance_ch + " ch",
+    engine_code && "Code moteur: " + engine_code,
+    km && km + " km",
+  ].filter(Boolean).join(" — ");
 
-  const systemPrompt = `Tu es un expert pièces automobiles avec accès aux catalogues ETKA, Autodata et TecDoc.
-Réponds UNIQUEMENT en JSON valide, sans texte autour ni markdown.
-Tes références doivent être réelles et précises pour le véhicule donné.`;
+  // ── 1. Génération Sonnet avec score de confiance ──────────────
+  const systemPrompt = `Tu es un expert pièces automobiles avec connaissance des catalogues TecDoc, ETKA (VAG), MICROCAT (Ford), ETK (BMW), PAD (PSA/Stellantis).
+RÈGLE ABSOLUE : Ne jamais inventer une référence. Si tu n'es pas certain à 80%+, mets reference: null.
+Le champ confidence (0-100) est ta vraie certitude que cette référence correspond exactement à ce véhicule.
+JSON strict sans markdown.`;
 
   const userPrompt = `Véhicule : ${vehicule}
-Pièce recherchée : ${piece}
+Pièce : ${piece}
 
-Retourne exactement ce JSON avec 3 niveaux de qualité :
+3 niveaux (Origine, Équivalent OEM, Aftermarket). confidence = certitude 0-100.
+Mets reference: null si confidence < 75. Ne jamais inventer.
+
+JSON :
 {
-  "piece_normalisee": "nom canonique de la pièce",
-  "conseil_montage": "conseil court montage/remplacement (1-2 phrases max)",
+  "piece_normalisee": "nom exact canonique",
+  "conseil_montage": "conseil pratique 2 phrases max",
   "niveaux": [
     {
       "tier": "Origine",
-      "description": "Pièce constructeur d'origine",
-      "marque": "marque OEM réelle ex: Bosch/Valeo/Sachs/SKF/LuK/Brembo/NGK",
-      "reference": "référence exacte ex: 0 281 002 398",
-      "ref_oe": "référence OE constructeur si connue",
+      "description": "Pièce constructeur origine",
+      "marque": "vrai fournisseur OE (Bosch/Valeo/Sachs/SKF/LuK/Brembo/NGK/Continental)",
+      "reference": "référence exacte ou null",
+      "ref_oe": "ref OE constructeur ou null",
+      "confidence": 0,
       "prix_indicatif_min": 0,
       "prix_indicatif_max": 0,
-      "garantie": "ex: 24 mois",
-      "pour_qui": "conseil en 1 phrase sur pour qui cette option est idéale"
+      "garantie": "24 mois",
+      "pour_qui": "1 phrase pour qui"
     },
-    {
-      "tier": "Équivalent OEM",
-      "description": "Équivalent qualité constructeur, marque premium",
-      "marque": "",
-      "reference": "",
-      "ref_oe": "",
-      "prix_indicatif_min": 0,
-      "prix_indicatif_max": 0,
-      "garantie": "",
-      "pour_qui": ""
-    },
-    {
-      "tier": "Aftermarket",
-      "description": "Bon rapport qualité/prix, marque sérieuse",
-      "marque": "",
-      "reference": "",
-      "ref_oe": "",
-      "prix_indicatif_min": 0,
-      "prix_indicatif_max": 0,
-      "garantie": "",
-      "pour_qui": ""
-    }
+    { "tier": "Équivalent OEM", "description": "", "marque": "", "reference": null, "ref_oe": null, "confidence": 0, "prix_indicatif_min": 0, "prix_indicatif_max": 0, "garantie": "", "pour_qui": "" },
+    { "tier": "Aftermarket", "description": "", "marque": "", "reference": null, "ref_oe": null, "confidence": 0, "prix_indicatif_min": 0, "prix_indicatif_max": 0, "garantie": "", "pour_qui": "" }
   ],
-  "avertissement": "Note courte sur la compatibilité ou le montage si nécessaire, sinon chaîne vide"
+  "avertissement": ""
 }`;
 
+  let data;
   try {
     const completion = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
-      max_tokens: 1200,
+      model: MODEL_PARTS, max_tokens: 1400,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
-
-    const raw = completion.content.map((b) => b.text || "").join("").replace(/```json|```/g, "").trim();
-    const data = JSON.parse(raw);
-
-    // Ajouter liens boutiques pour chaque niveau
-    data.niveaux = (data.niveaux || []).map((n) => ({
-      ...n,
-      liens: genererLiens(n.reference || piece, marque, modele),
-    }));
-
-    return json(200, { success: true, vehicule, piece, ...data });
+    const raw = completion.content.map(b => b.text || "").join("").replace(/```json\s*/gi, "").replace(/```/g, "").trim();
+    data = JSON.parse(raw);
   } catch (e) {
-    console.error("[PARTS_SEARCH] Erreur:", e.message);
-    return json(500, { error: "Erreur recherche pièces: " + e.message });
+    console.error("[PARTS_V2] Génération IA:", e.message);
+    return json(500, { error: "Erreur génération: " + e.message });
   }
-};
 
-function genererLiens(reference, marque, modele) {
-  const q = encodeURIComponent(reference);
-  const vm = encodeURIComponent(marque + " " + modele);
-  return [
-    { shop: "Autodoc", url: `https://www.autodoc.fr/recherche?q=${q}`, logo: "🔵" },
-    { shop: "Oscaro", url: `https://www.oscaro.com/recherche?q=${q}&vehicule=${vm}`, logo: "🟠" },
-    { shop: "Mister-Auto", url: `https://www.mister-auto.com/catalogsearch/result/?q=${q}`, logo: "🟣" },
-    { shop: "Amazon", url: `https://www.amazon.fr/s?k=${q}+${vm}`, logo: "🟡" },
-  ];
-}
+  // ── 2. Validation Autodoc.be + badges ─────────────────────────
+  const niveauxEnrichis = await Promise.all((data.niveaux || []).map(async (n) => {
+    const ref = n.reference;
+    const conf = n.confidence || 0;
+    let badge = "INDICATIF";
+    let autodocUrl = null;
+
+    const pieceQ = encodeURIComponent(data.piece_normalisee || piece);
+    const vmQ = encodeURIComponent(`${marque} ${modele}${annee ? " " + annee : ""}`);
+
+    if (ref) {
+      autodocUrl = `https://www.autodoc.be/recherche?q=${encodeURIComponent(ref)}`;
+      // Tentative validation Autodoc
+      try {
+        const resp = await fetch(autodocUrl, {
+          headers: { "User-Agent": "Mozilla/5.0", "Accept": "text/html", "Accept-Language": "fr-BE,fr;q=0.9" },
+          signal: AbortSignal.timeout(3500),
+        });
+        if (resp.ok) {
+          const html = await resp.text();
+          const found = html.includes('"@type":"Product"') || html.includes("data-article-id") ||
+                        html.includes("article-number") || html.includes(ref.replace(/\s/g,""));
+          badge = found ? "VÉRIFIÉ" : (conf >= 80 ? "PROBABLE" : "INDICATIF");
+          // URL directe si on la trouve
+          const m = html.match(/href="(\/auto-parts\/[^"]+)"/);
+          if (m) autodocUrl = "https://www.autodoc.be" + m[1];
+        } else {
+          badge = conf >= 80 ? "PROBABLE" : "INDICATIF";
+        }
+      } catch {
+        badge = conf >= 80 ? "PROBABLE" : "INDICATIF";
+      }
+    } else {
+      // Pas de référence → lien recherche générique
+      autodocUrl = `https://www.autodoc.be/recherche?q=${pieceQ}+${vmQ}`;
+      badge = "RECHERCHER";
+    }
+
+    const q = ref ? encodeURIComponent(ref) : pieceQ;
+    return {
+      ...n,
+      badge,
+      liens: [
+        { shop: "Autodoc", logo: "🔵", url: autodocUrl },
+        { shop: "Oscaro", logo: "🟠", url: `https://www.oscaro.com/recherche?q=${q}&vehicule=${vmQ}` },
+        { shop: "Mister-Auto", logo: "🟣", url: `https://www.mister-auto.be/catalogsearch/result/?q=${q}+${vmQ}` },
+        { shop: "Amazon.be", logo: "🟡", url: `https://www.amazon.com.be/s?k=${q}+${vmQ}` },
+      ],
+    };
+  }));
+
+  data.niveaux = niveauxEnrichis;
+  return json(200, { success: true, vehicule, piece, source: "sonnet-v2+validation", ...data });
+};

@@ -1961,11 +1961,11 @@ function renderPieces(data) {
             <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;flex-wrap:wrap">
               <span style="background:${cfg.color}22;color:${cfg.color};font-size:9px;font-weight:700;letter-spacing:1.2px;padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace">${cfg.badge}</span>
               <span style="font-size:13px;font-weight:700;color:var(--white);font-family:'Rajdhani',sans-serif">${n.marque || '—'}</span>
+              ${n.badge === 'VÉRIFIÉ' ? '<span style="background:rgba(16,185,129,.15);color:var(--green);font-size:9px;padding:2px 7px;border-radius:20px;font-family:\'IBM Plex Mono\',monospace">✅ VÉRIFIÉ Autodoc</span>' : n.badge === 'PROBABLE' ? '<span style="background:rgba(232,160,0,.12);color:var(--acc);font-size:9px;padding:2px 7px;border-radius:20px;font-family:\'IBM Plex Mono\',monospace">⚠️ PROBABLE</span>' : n.badge === 'RECHERCHER' ? '<span style="background:rgba(59,130,246,.1);color:var(--blue);font-size:9px;padding:2px 7px;border-radius:20px;font-family:\'IBM Plex Mono\',monospace">🔍 RECHERCHER</span>' : n.reference ? '<span style="background:rgba(239,68,68,.08);color:var(--red);font-size:9px;padding:2px 7px;border-radius:20px;font-family:\'IBM Plex Mono\',monospace">⚠️ INDICATIF</span>' : ''}
             </div>
             <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${n.description || ''}</div>
             <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;margin-bottom:4px">
-              <span style="color:var(--tx)">Réf: <strong style="color:${cfg.color}">${n.reference || '—'}</strong></span>
-              ${n.ref_oe ? `<span style="color:var(--muted);margin-left:8px">OE: ${n.ref_oe}</span>` : ''}
+              ${n.reference ? `<span style="color:var(--tx)">Réf: <strong style="color:${cfg.color}">${n.reference}</strong></span>${n.ref_oe ? `<span style="color:var(--muted);margin-left:8px">OE: ${n.ref_oe}</span>` : ''}` : `<span style="color:var(--muted)">Réf: vérifier sur Autodoc ↓</span>`}
             </div>
             ${n.garantie ? `<div style="font-size:10px;color:var(--muted)">🛡 Garantie ${n.garantie}</div>` : ''}
             ${n.pour_qui ? `<div style="font-size:10px;color:var(--acc);margin-top:4px">👤 ${n.pour_qui}</div>` : ''}
