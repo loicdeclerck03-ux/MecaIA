@@ -2543,8 +2543,9 @@ function carnRenderSelector() {
         ${isActive?'<span style="color:var(--acc);font-size:18px">✓</span>':''}
       </button>`;
     }).join('');
-  if (cars.length === 1 && !carnVeh) carnSelectVeh(cars[0].id);
+  if (cars.length === 1 && !carnVeh) window.carnSelectVeh(cars[0].id);
 }
+window.carnRenderSelector = carnRenderSelector;
 
 async function carnSelectVeh(id) {
   carnVeh = cars.find(c => c.id === id);
@@ -2553,8 +2554,6 @@ async function carnSelectVeh(id) {
   const ab = carnBrandAbbr(carnVeh.marque);
   const carburant = carnVeh.carbu || 'Essence';
   const svgKey = Object.keys(CAR_SVG).find(k => carburant.toLowerCase().includes(k.toLowerCase())) || 'Essence';
-
-  // Mettre à jour le hero 3D
   const hero = document.getElementById('carn-hero');
   const card = document.getElementById('carn-card-3d');
   const bgDiv = document.getElementById('carn-bg');
@@ -2562,7 +2561,6 @@ async function carnSelectVeh(id) {
   const sil = document.getElementById('carn-silhouette');
   const nm = document.getElementById('carn-veh-name');
   const sub = document.getElementById('carn-veh-sub');
-
   card.style.background = `linear-gradient(135deg, #0e1217 0%, ${bg}22 100%)`;
   bgDiv.style.background = `radial-gradient(ellipse at 20% 50%, ${bg} 0%, transparent 70%)`;
   badgeDiv.style.background = `linear-gradient(145deg, ${bg}, ${bg}bb)`;
@@ -2573,13 +2571,10 @@ async function carnSelectVeh(id) {
   document.getElementById('carn-nb-km').textContent = carnVeh.km ? Number(carnVeh.km).toLocaleString() : '—';
   hero.style.display = 'block';
   document.getElementById('carn-main').style.display = 'block';
-
-  // Re-render sélecteur
   carnRenderSelector();
-
-  // Charger les données depuis l'API
   await loadCarnetData();
 }
+window.carnSelectVeh = carnSelectVeh;
 
 async function loadCarnetData() {
   if (!carnVeh) return;
