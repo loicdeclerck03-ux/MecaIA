@@ -654,16 +654,6 @@ textarea{resize:vertical;min-height:70px}
 .faq-a.on{display:block;animation:fadeIn .18s ease}
 
 /* ══════════════════════════════
-   ALERTS
-══════════════════════════════ */
-.ali{display:flex;align-items:center;gap:12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:11px 14px;margin-bottom:8px}
-
-/* ══════════════════════════════
-   GAMIFICATION
-══════════════════════════════ */
-.gmb{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:11px 14px;margin-bottom:8px}
-
-/* ══════════════════════════════
    SCORE + HEALTH
 ══════════════════════════════ */
 .sc-box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:16px;text-align:center;margin-top:12px}
@@ -2370,7 +2360,6 @@ function useC() {
   return true;
 }
 async function saveC() { /* crédits gérés côté serveur */ }
-async function sUD() { /* données côté serveur */ }
 
 /* ============================================================
    CHAT DYLAN — Interface conversationnelle
@@ -2790,7 +2779,7 @@ window.buyPack = async function (pkg) {
 })();
 
 /* ===== DASHBOARD + PROMO ===== */
-loadDash = async function () {
+window.loadDash = async function () {
   const el = document.getElementById('s-dash');
   if (!el) return;
   el.innerHTML = `
