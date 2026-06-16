@@ -1,12 +1,10 @@
-﻿// EMAIL_WELCOME — envoie un mail de bienvenue chaleureux via Resend
-//  • auth obligatoire : on envoie UNIQUEMENT à l'email du compte connecté
-//  • appelé par le frontend juste après une inscription réussie
+﻿// EMAIL_WELCOME — bienvenue MecaIA via Resend
+// Design table-based compatible Gmail/Outlook
 import { getUser, json, preflight } from "../lib/auth.mjs";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-// Resend necessite un domaine verifie. Utiliser onboarding@resend.dev si le domaine custom echoue.
-const EMAIL_FROM = process.env.EMAIL_FROM_VERIFIED || "MecaIA <onboarding@resend.dev>";
 const SITE = (process.env.FRONTEND_URL || "https://mecaiaauto.com").replace(/\/$/, "");
+const EMAIL_FROM = process.env.EMAIL_FROM_VERIFIED || "MecaIA <noreply@mecaiaauto.com>";
 
 export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return preflight();
@@ -16,55 +14,61 @@ export const handler = async (event) => {
   if (!auth) return json(401, { error: "Unauthorized" });
   const email = auth.email;
   if (!email) return json(400, { error: "Aucun email sur ce compte" });
-
-  if (!RESEND_API_KEY) return json(500, { error: "RESEND_API_KEY non définie" });
+  if (!RESEND_API_KEY) return json(500, { error: "RESEND_API_KEY non definie" });
 
   let prenom = "";
   try { prenom = (JSON.parse(event.body || "{}").name || "").trim().split(" ")[0]; } catch (_) {}
-  const hello = prenom ? `Bonjour ${prenom},` : "Bonjour,";
+  const salut = prenom ? `Bienvenue ${prenom} !` : "Bienvenue !";
 
   const html = `
-  <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:auto;color:#1a1a1a">
-    <div style="background:#0b0f14;padding:24px;text-align:center;border-radius:12px 12px 0 0">
-      <span style="color:#f0a500;font-size:22px;font-weight:bold;letter-spacing:1px">MECA IA</span>
-    </div>
-    <div style="padding:28px 24px;background:#ffffff;border:1px solid #eee;border-top:none;border-radius:0 0 12px 12px">
-      <h2 style="margin:0 0 14px;font-size:20px">${hello}</h2>
-      <p style="font-size:15px;line-height:1.6;color:#333">
-        Bienvenue sur <strong>MecaIA</strong> ! On est ravis de t'avoir parmi nous. 🔧
-      </p>
-      <p style="font-size:15px;line-height:1.6;color:#333">
-        Ton compte est prêt. Tu peux dès maintenant :
-      </p>
-      <ul style="font-size:15px;line-height:1.8;color:#333;padding-left:20px">
-        <li>Discuter avec <strong>Dylan</strong>, ton assistant diagnostic auto</li>
-        <li>Enregistrer tes véhicules dans ton <strong>garage</strong></li>
-        <li>Rechercher des <strong>pièces</strong> et suivre ton entretien</li>
-      </ul>
-      <p style="text-align:center;margin:26px 0">
-        <a href="${SITE}" style="display:inline-block;padding:13px 26px;background:#f0a500;color:#0b0f14;font-weight:bold;text-decoration:none;border-radius:8px">Ouvrir MecaIA</a>
-      </p>
-      <p style="font-size:13px;line-height:1.6;color:#777">
-        Une question ? Réponds simplement à cet email, on est là pour t'aider.
-      </p>
-      <p style="font-size:13px;color:#333">À très vite,<br>L'équipe MecaIA</p>
-    </div>
-  </div>`;
+<table width="100%" bgcolor="#0a0a0a" cellpadding="0" cellspacing="0" border="0">
+<tr><td align="center" style="padding:40px 16px">
+  <table width="520" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;width:100%">
+    <tr><td align="center" style="padding-bottom:28px">
+      <span style="font-family:Arial Black,Arial,sans-serif;font-size:24px;font-weight:900;letter-spacing:3px;color:#e8a000">MECA</span><span style="font-family:Arial Black,Arial,sans-serif;font-size:24px;font-weight:900;letter-spacing:3px;color:#ffffff"> IA</span>
+    </td></tr>
+    <tr><td bgcolor="#111111" style="border-radius:12px;padding:32px 28px">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#e8a000;text-transform:uppercase;padding-bottom:10px">BIENVENUE</td></tr>
+        <tr><td style="font-family:Arial,sans-serif;font-size:21px;font-weight:700;color:#ffffff;padding-bottom:14px">${salut}</td></tr>
+        <tr><td style="font-family:Arial,sans-serif;font-size:14px;color:#888888;line-height:1.7;padding-bottom:26px">Ton compte MecaIA est pret. Dylan, ton mecanicien IA, est la pour diagnostiquer ta voiture en quelques messages.</td></tr>
+        <tr><td align="center" style="padding-bottom:26px">
+          <a href="${SITE}" style="display:inline-block;background:#e8a000;color:#0a0a0a;font-family:Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-decoration:none;padding:13px 32px;border-radius:8px">OUVRIR MECAIA</a>
+        </td></tr>
+        <tr><td style="border-top:1px solid #1e1e1e;padding-top:18px">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr><td style="font-family:Arial,sans-serif;font-size:13px;color:#666666;padding-bottom:7px">Dylan diagnostique ton probleme en 3-5 messages</td></tr>
+            <tr><td style="font-family:Arial,sans-serif;font-size:13px;color:#666666;padding-bottom:7px">Decodeur VIN gratuit - 3 par jour</td></tr>
+            <tr><td style="font-family:Arial,sans-serif;font-size:13px;color:#666666">Compare les pieces aux meilleurs prix belges</td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </td></tr>
+    <tr><td align="center" style="padding-top:22px;font-family:Arial,sans-serif;font-size:12px;color:#444444">MecaIA &middot; mecaiaauto.com</td></tr>
+  </table>
+</td></tr>
+</table>`;
 
   try {
     const resp = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: EMAIL_FROM, to: [email], subject: "Bienvenue sur MecaIA 🔧", html }),
+      body: JSON.stringify({
+        from: EMAIL_FROM,
+        to: [email],
+        subject: `Bienvenue sur MecaIA${prenom ? " " + prenom : ""} - Ton expert automobile IA`,
+        html,
+      }),
     });
-    const body = await resp.json().catch(() => ({}));
+    const data = await resp.json().catch(() => ({}));
     if (!resp.ok) {
-      console.error("[EMAIL_WELCOME] Resend:", body);
-      return json(502, { success: false, error: body.message || "Envoi échoué" });
+      console.error("[EMAIL_WELCOME] Resend error:", JSON.stringify(data));
+      return json(502, { success: false, error: data.message || "Envoi echoue" });
     }
-    return json(200, { success: true, id: body.id || null });
+    console.log("[EMAIL_WELCOME] OK:", data.id, "->", email);
+    return json(200, { success: true, id: data.id || null });
   } catch (e) {
-    console.error("[EMAIL_WELCOME]", e.message);
+    console.error("[EMAIL_WELCOME] Exception:", e.message);
     return json(500, { success: false, error: e.message });
   }
 };
