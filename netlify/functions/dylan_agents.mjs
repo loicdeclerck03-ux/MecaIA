@@ -599,11 +599,17 @@ export const handler = async (event) => {
       hypConclue = peutConclure(state);
       if (!hypConclue) etat = "CONTROLE";
     }
-    // Forcer CONCLUSION si Dylan veut conclure ET qu'on a déjà fait 2+ contrôles
-    // Évite le blocage infini en CONTROLE quand les préuves ne s'accumulent pas
-    if (etat === "CONTROLE" && (state.controles_faits || []).length >= 2 && parsed.etat === "CONCLUSION") {
+    // Forcer CONCLUSION après 3 contrôles effectués — évite le blocage infini en CONTROLE
+    // peu importe ce que l'IA renvoie dans parsed.etat
+    const controlesFaitsCount = (state.controles_faits || []).length;
+    if (controlesFaitsCount >= 3 && etat !== "CONCLUSION") {
       const bestHyp = state.hypotheses.filter((h) => h.statut !== "eliminee")[0];
       if (bestHyp) { hypConclue = bestHyp; etat = "CONCLUSION"; }
+    }
+    // Aussi forcer si 2+ contrôles ET Dylan veut conclure
+    if (etat === "CONTROLE" && controlesFaitsCount >= 2 && parsed.etat === "CONCLUSION") {
+      const bestHyp = state.hypotheses.filter((h) => h.statut !== "eliminee")[0];
+      if (bestHyp && !hypConclue) { hypConclue = bestHyp; etat = "CONCLUSION"; }
     }
     if (etat === "HYPOTHESES" && state.hypotheses.length && state.controle_en_cours === null && !peutConclure(state)) {
       etat = "CONTROLE";
