@@ -1494,7 +1494,9 @@ fr:{
   urg1:'Bloqué sur la route ?',urg2:'Décrivez votre panne — l\'IA répond en 5 secondes',
   dyl:'Décrivez votre panne à Dylan : voyant allumé, bruit, code OBD, perte de puissance...',
   dylwelcome:"👋 Salut, moi c'est <strong>Dylan</strong>. Décrivez-moi votre panne (symptôme, voyant, bruit, code OBD…) et je vous aide à diagnostiquer.",
-  out:'Déconnexion'
+  out:'Déconnexion',
+  nav:['Dylan IA','Garage','VIN','Pièces','Suivi','FAQ','Tarifs'],
+  banner:'Crédits : ',bannerUnit:'1 crédit/utilisation · VIN gratuit',
 },
 nl:{
   tag:'INTELLIGENTE AUTODIAGNOSE',
@@ -1518,7 +1520,9 @@ nl:{
   urg1:'Langs de weg stilgevallen?',urg2:'Beschrijf uw panne — de AI antwoordt in 5 seconden',
   dyl:'Beschrijf uw panne aan Dylan: brandend lampje, geluid, OBD-code, vermogensverlies...',
   dylwelcome:"👋 Hallo, ik ben <strong>Dylan</strong>. Beschrijf uw panne (symptoom, lampje, geluid, OBD-code…) en ik help u diagnosticeren.",
-  out:'Uitloggen'
+  out:'Uitloggen',
+  nav:['Dylan IA','Garage','VIN','Onderdelen','Overzicht','FAQ','Tarieven'],
+  banner:'Credits: ',bannerUnit:'1 credit/gebruik · VIN gratis',
 },
 en:{
   tag:'INTELLIGENT AUTO DIAGNOSIS',
@@ -1542,7 +1546,9 @@ en:{
   urg1:'Broken down on the road?',urg2:'Describe your fault — AI responds in 5 seconds',
   dyl:'Describe your problem to Dylan: warning light, noise, OBD code, loss of power...',
   dylwelcome:"👋 Hi, I'm <strong>Dylan</strong>. Describe your fault (symptom, warning light, noise, OBD code…) and I'll help you diagnose it.",
-  out:'Log out'
+  out:'Log out',
+  nav:['Dylan AI','Garage','VIN','Parts','History','FAQ','Pricing'],
+  banner:'Credits: ',bannerUnit:'1 credit/use · VIN free',
 },
 de:{
   tag:'INTELLIGENTE KFZ-DIAGNOSE',
@@ -1566,7 +1572,9 @@ de:{
   urg1:'Liegengeblieben?',urg2:'Beschreiben Sie Ihren Fehler — KI antwortet in 5 Sekunden',
   dyl:'Beschreiben Sie Ihr Problem Dylan: Warnleuchte, Geräusch, OBD-Code, Leistungsverlust...',
   dylwelcome:"👋 Hallo, ich bin <strong>Dylan</strong>. Beschreiben Sie Ihren Fehler (Symptom, Warnleuchte, Geräusch, OBD-Code…) und ich helfe Ihnen bei der Diagnose.",
-  out:'Abmelden'
+  out:'Abmelden',
+  nav:['Dylan KI','Garage','VIN','Teile','Verlauf','FAQ','Preise'],
+  banner:'Credits: ',bannerUnit:'1 Credit/Nutzung · VIN kostenlos',
 }
 };
 
@@ -1612,6 +1620,27 @@ window.setLang=function(l){
   const ob=document.querySelector('[onclick="doOut()"]');if(ob)ob.title=t.out;
   // Dylan textarea placeholder
   const din=document.getElementById('dylan-in');if(din)din.placeholder=t.dyl;
+  // App: nav tabs
+  if (t.nav) {
+    const tabIds = ['t-diag','t-garage','t-vin','t-pieces','t-suivi','t-faq','t-tarifs'];
+    tabIds.forEach((id, i) => {
+      const tb = document.getElementById(id);
+      if (tb && t.nav[i]) {
+        // Conserver le SVG, remplacer seulement le texte
+        const svgEl = tb.querySelector('svg');
+        if (svgEl) tb.innerHTML = svgEl.outerHTML + '\n    ' + t.nav[i];
+        else tb.childNodes[tb.childNodes.length - 1].textContent = '\n    ' + t.nav[i];
+      }
+    });
+  }
+  // App: bannière crédits
+  if (t.banner) {
+    const btxt = document.querySelector('.btxt');
+    if (btxt && btxt.querySelector('strong')) {
+      const cVal = btxt.querySelector('strong').outerHTML;
+      btxt.innerHTML = t.banner + cVal + (t.bannerUnit ? ' · ' + t.bannerUnit : '');
+    }
+  }
   // Dylan welcome (si feed vide)
   window._dylwelcome=t.dylwelcome;
   // Synchro des selects de langue
@@ -2655,6 +2684,7 @@ window.dylanTurn = async function (payload) {
       session_id: window.currentDiagSession || null,
       vehicle: veh,
       vehicle_marque: veh.make || null, vehicle_modele: veh.model || null, vehicle_km: veh.mileage_km || null,
+      language: window.lang || lang || 'fr',
       ...payload
     };
     const r = await MecaIA.authedFetch('dylan_agents', { method: 'POST', body });

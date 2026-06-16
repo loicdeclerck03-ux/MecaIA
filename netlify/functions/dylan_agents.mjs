@@ -204,7 +204,7 @@ async function majMemoire(userId, veh, conclusion, supabase) {
   } catch (e) { console.error("[DYLAN] majMemoire:", e.message); }
 }
 
-function buildSystem(state, ragContext, dtcContext, memoireContext) {
+function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruction = "") {
   // Compact state allégé : symptome tronqué, hypotheses sans preuves
   const compact = JSON.stringify({
     etat: state.etat,
@@ -295,6 +295,7 @@ Réponds STRICTEMENT en JSON valide, sans texte autour :
   "controle_propose": {"hypothese_id": number, "polarite_oui": "confirme"|"elimine", "pourquoi": string, "comment": [string], "observer": [string]} | null,
   "conclusion": {"cause": string, "bande": string, "can_drive": boolean, "urgency": "immédiat"|"bientôt"|"préventif", "cost_min": number, "cost_max": number, "parts_needed": [string]} | null
 }`;
+  return sys + langInstruction;
 }
 
 // ---- #11 Recherche pièces en parallèle à la conclusion ----
@@ -336,7 +337,16 @@ export const handler = async (event) => {
 
   try {
     const body = JSON.parse(event.body || "{}");
-    const { session_id, user_input, control_result, vehicle_marque, vehicle_modele, vehicle_km, vehicle } = body;
+    const { session_id, user_input, control_result, vehicle_marque, vehicle_modele, vehicle_km, vehicle, language } = body;
+
+    // Langue de réponse — Dylan s'adapte à la langue de l'utilisateur
+    const LANG_INSTRUCTION = {
+      nl: "\n\n🌐 TAAL: Antwoord ALTIJD in het Nederlands, ook al stelt de gebruiker de vraag in een andere taal.",
+      en: "\n\n🌐 LANGUAGE: Always respond in English, even if the user writes in another language.",
+      de: "\n\n🌐 SPRACHE: Antworte IMMER auf Deutsch, auch wenn der Benutzer in einer anderen Sprache schreibt.",
+      fr: "", // default — pas d'instruction nécessaire, le prompt est déjà en français
+    };
+    const langInstruction = LANG_INSTRUCTION[language] || "";
 
     if (!session_id && (!user_input || String(user_input).trim().length < 3)) {
       return json(400, { error: "user_input requis" });
@@ -457,7 +467,7 @@ export const handler = async (event) => {
     const isConclusion = state.etat === "CONCLUSION" || peutConclure(state) !== null;
     const modelChoisi = isConclusion ? MODEL_CONCLUSION : MODEL_ENQUETE;
 
-    const system = buildSystem(state, ragContext, dtcContext, memoire);
+    const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction);
     const userMsg = control_result
       ? `Résultat du contrôle : ${control_result}`
       : `Message du client : ${user_input}`;
