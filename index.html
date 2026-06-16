@@ -1301,6 +1301,17 @@ textarea{resize:vertical;min-height:70px}
 
 <!-- ══ PAGE: SUIVI ══ -->
 <div class="pg" id="pg-suivi"><div class="wrap">
+
+  <!-- DIAGNOSTICS EN COURS (chargés depuis Supabase) -->
+  <div class="card" id="suivi-open-diags" style="display:none;margin-bottom:12px">
+    <div class="ch">
+      <div class="ct">🔵 Diagnostics en cours</div>
+      <span style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">7 derniers jours</span>
+    </div>
+    <div class="cb" style="padding:10px 14px" id="suivi-diags-list"></div>
+  </div>
+
+  <!-- HISTORIQUE LOCAL -->
   <div class="card">
     <div class="ch">
       <div class="ct">Historique</div>
@@ -1821,7 +1832,7 @@ window.showPg=function(id){
     const pg=document.getElementById('pg-'+p);const tb=document.getElementById('t-'+p);
     if(pg)pg.className='pg'+(p===id?' on':'');if(tb)tb.className='tab'+(p===id?' on':'');
   });
-  if(id==='suivi')renderS();if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();if(id==='diag'&&window.dylanWelcome)dylanWelcome();if(id==='pieces'&&window.fillPCars)fillPCars();
+  if(id==='suivi'){renderS();loadSuiviDiags();}if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();if(id==='diag'&&window.dylanWelcome)dylanWelcome();if(id==='pieces'&&window.fillPCars)fillPCars();
   window.scrollTo(0,0);
 };
 
@@ -2117,6 +2128,45 @@ function renderS(f='all',q=''){
 }
 window.togFav=function(id){const s=JSON.parse(localStorage.getItem('ms')||'[]');const i=s.find(x=>x.id===id);if(i){i.fav=!i.fav;localStorage.setItem('ms',JSON.stringify(s));renderS();}};
 window.filtS=function(f){renderS(f);};
+
+// ══ REPRENDRE DIAG DEPUIS SUIVI ══
+async function loadSuiviDiags() {
+  const panel = document.getElementById('suivi-open-diags');
+  const list = document.getElementById('suivi-diags-list');
+  if (!panel || !list) return;
+  const r = await MecaIA.authedFetch('diag_sessions_list', { method: 'POST', body: {} });
+  if (!r.ok || !r.data?.success || !r.data.sessions?.length) {
+    panel.style.display = 'none'; return;
+  }
+  const sessions = r.data.sessions;
+  const etats = { CONTEXTE:'🔵 Collecte', HYPOTHESES:'🟡 Hypothèses', CONTROLE:'🟠 Contrôle' };
+  window._diagSessions = {};
+  sessions.forEach(s => { window._diagSessions[s.id] = s; });
+  list.innerHTML = sessions.map(s => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:var(--white);margin-bottom:3px">${s.vehicule}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span style="font-size:9px;font-family:'IBM Plex Mono',monospace;background:var(--s3);color:var(--muted);padding:1px 7px;border-radius:10px">${etats[s.etat]||s.etat} · Tour ${s.tour}</span>
+          ${s.codes?`<span style="font-size:9px;font-family:'IBM Plex Mono',monospace;background:rgba(232,160,0,.12);color:var(--acc);padding:1px 7px;border-radius:10px">${s.codes}</span>`:''}
+          <span style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${s.lastActivity}</span>
+        </div>
+        ${s.symptome?`<div style="font-size:10px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.symptome}</div>`:''}
+        ${s.topHyp?`<div style="font-size:10px;color:#60a5fa;margin-top:2px">→ ${s.topHyp}</div>`:''}
+      </div>
+      <button onclick="suiviReprendre('${s.id}')" class="btn" style="margin:0;padding:7px 14px;font-size:11px;white-space:nowrap;flex-shrink:0">▶ Reprendre</button>
+    </div>`).join('');
+  list.innerHTML += `<div style="font-size:9px;color:var(--muted);text-align:center;margin-top:8px;font-family:'IBM Plex Mono',monospace">Diagnostics non conclus des 7 derniers jours</div>`;
+  panel.style.display = 'block';
+}
+
+window.suiviReprendre = function(sessionId) {
+  const s = window._diagSessions?.[sessionId] || {};
+  // Naviguer vers Dylan
+  window.showPg('diag');
+  // Utiliser la même logique de reprise
+  if (window.reprendreSession) window.reprendreSession(sessionId);
+};
 window.searchS=function(q){renderS('all',q);};
 window.clearS=function(){if(confirm('Effacer tout ?')){localStorage.removeItem('ms');renderS();toast('Effacé','ok');}};
 
