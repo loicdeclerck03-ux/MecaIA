@@ -1,14 +1,16 @@
-{
+﻿{
   "name": "MecaIA — L'Expert Automobile IA",
   "short_name": "MecaIA",
-  "description": "Diagnostic OBD, garage virtuel, pièces auto et alertes entretien par IA. 24h/24.",
+  "description": "Diagnostic OBD, garage virtuel, pièces auto et expert mécanique IA. 24h/24.",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#080b0f",
-  "theme_color": "#f0a500",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#060809",
+  "theme_color": "#060809",
   "lang": "fr",
   "categories": ["automotive", "productivity", "utilities"],
+  "id": "/",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -22,5 +24,22 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Nouveau diagnostic",
+      "short_name": "Diagnostic",
+      "description": "Lancer un diagnostic avec Dylan",
+      "url": "/?action=diag",
+      "icons": [{"src": "/icon-192.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "Mon garage",
+      "short_name": "Garage",
+      "description": "Voir mes véhicules",
+      "url": "/?action=garage",
+      "icons": [{"src": "/icon-192.png", "sizes": "96x96"}]
+    }
+  ],
+  "prefer_related_applications": false
 }
