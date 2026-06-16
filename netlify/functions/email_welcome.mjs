@@ -1,24 +1,33 @@
 ﻿// EMAIL_WELCOME — bienvenue MecaIA via Resend
-// Design table-based compatible Gmail/Outlook
+// Domaine mecaiaauto.com verifie dans Resend
 import { getUser, json, preflight } from "../lib/auth.mjs";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE = (process.env.FRONTEND_URL || "https://mecaiaauto.com").replace(/\/$/, "");
-const EMAIL_FROM = process.env.EMAIL_FROM_VERIFIED || "MecaIA <noreply@mecaiaauto.com>";
+// HARDCODE : noreply@mecaiaauto.com verifie dans Resend — NE PAS utiliser onboarding@resend.dev
+const EMAIL_FROM = "MecaIA <noreply@mecaiaauto.com>";
 
 export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return preflight();
   if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
 
   const auth = await getUser(event);
-  if (!auth) return json(401, { error: "Unauthorized" });
+  if (!auth) {
+    console.error("[EMAIL_WELCOME] 401 - pas d auth");
+    return json(401, { error: "Unauthorized" });
+  }
   const email = auth.email;
-  if (!email) return json(400, { error: "Aucun email sur ce compte" });
-  if (!RESEND_API_KEY) return json(500, { error: "RESEND_API_KEY non definie" });
+  if (!email) return json(400, { error: "Aucun email" });
+  if (!RESEND_API_KEY) {
+    console.error("[EMAIL_WELCOME] RESEND_API_KEY manquante !");
+    return json(500, { error: "RESEND_API_KEY manquante" });
+  }
 
   let prenom = "";
   try { prenom = (JSON.parse(event.body || "{}").name || "").trim().split(" ")[0]; } catch (_) {}
   const salut = prenom ? `Bienvenue ${prenom} !` : "Bienvenue !";
+
+  console.log(`[EMAIL_WELCOME] Envoi a ${email} depuis ${EMAIL_FROM}`);
 
   const html = `
 <table width="100%" bgcolor="#0a0a0a" cellpadding="0" cellspacing="0" border="0">
@@ -50,25 +59,28 @@ export const handler = async (event) => {
 </table>`;
 
   try {
+    const payload = {
+      from: EMAIL_FROM,
+      to: [email],
+      subject: `Bienvenue sur MecaIA${prenom ? " " + prenom : ""} - Ton expert automobile IA`,
+      html,
+    };
+    console.log("[EMAIL_WELCOME] Payload from:", payload.from, "to:", payload.to);
+
     const resp = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: EMAIL_FROM,
-        to: [email],
-        subject: `Bienvenue sur MecaIA${prenom ? " " + prenom : ""} - Ton expert automobile IA`,
-        html,
-      }),
+      body: JSON.stringify(payload),
     });
     const data = await resp.json().catch(() => ({}));
     if (!resp.ok) {
-      console.error("[EMAIL_WELCOME] Resend error:", JSON.stringify(data));
-      return json(502, { success: false, error: data.message || "Envoi echoue" });
+      console.error("[EMAIL_WELCOME] Resend ERREUR:", resp.status, JSON.stringify(data));
+      return json(502, { success: false, error: data.message || "Envoi echoue", resend_status: resp.status });
     }
-    console.log("[EMAIL_WELCOME] OK:", data.id, "->", email);
+    console.log("[EMAIL_WELCOME] SUCCES:", data.id, "->", email);
     return json(200, { success: true, id: data.id || null });
   } catch (e) {
-    console.error("[EMAIL_WELCOME] Exception:", e.message);
+    console.error("[EMAIL_WELCOME] EXCEPTION:", e.message);
     return json(500, { success: false, error: e.message });
   }
 };

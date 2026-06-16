@@ -2159,7 +2159,7 @@ window.doReg = async function () {
   }
   if (data && data.session) {
     setAM('✅ Bienvenue sur MecaIA !', 'ok');
-    try { MecaIA.authedFetch('email_welcome', { method:'POST', body:{ name: nm } }); } catch(e){}
+    try { const ew=await MecaIA.authedFetch('email_welcome', { method:'POST', body:{ name: nm } }); if(!ew.ok) console.warn('[EMAIL_WELCOME] erreur',ew.status,ew.data); } catch(e){ console.error('[EMAIL_WELCOME] exception',e.message); }
     if (pr) { try { await MecaIA.authedFetch('promo_redeem', { method:'POST', body:{ code: pr } }); } catch(e2){} }
   } else {
     setAM('✅ Compte créé ! Vérifie ton email pour confirmer.', 'ok');
