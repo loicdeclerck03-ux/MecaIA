@@ -1217,15 +1217,6 @@ textarea{resize:vertical;min-height:70px}
     </div>
   </div>
 
-  <!-- Invite member -->
-  <div class="card">
-    <div class="ch"><div class="ct">Inviter un membre</div></div>
-    <div class="cb">
-      <div class="f"><label>Email du mécanicien</label><input type="email" id="inv-em" placeholder="collegue@garage.com"></div>
-      <button class="bg" style="margin-top:0" onclick="invMbr()">Inviter</button>
-      <div id="mbr-l" style="margin-top:10px"></div>
-    </div>
-  </div>
 </div></div>
 
 <!-- ══ PAGE: VIN ══ -->
@@ -1835,39 +1826,9 @@ window.genPDF=function(){
 };
 
 window.shr=function(titre,min,max){
-  const txt='🔧 RAPPORT DIAGNOSTIC MECA-IA\n\nProblème: '+titre+'\nCoût estimé: '+min+'€ — '+max+'€\n\nRapport généré par MecaIA\nmecaiabyloky.netlify.app\nCréé par Loïc Declerck';
+  const txt='🔧 RAPPORT DIAGNOSTIC MECA-IA\n\nProblème: '+titre+'\nCoût estimé: '+min+'€ — '+max+'€\n\nmecaiaauto.com';
   if(navigator.share)navigator.share({title:'Rapport MecaIA',text:txt});
   else navigator.clipboard.writeText(txt).then(()=>toast('Rapport copié !','ok'));
-};
-
-window.doPhoto=async function(event){
-  const file=event.target.files[0];if(!file||!useC())return;loader('zd');
-  const reader=new FileReader();
-  reader.onload=async e=>{
-    try{
-      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':API,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:'Tu es un expert mécanicien automobile. Tu analyses des photos avec précision. Réponds en français.',
-          messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:file.type,data:e.target.result.split(',')[1]}},{type:'text',text:'Analyse cette photo:\n1. Ce que tu vois précisément\n2. État de la pièce (bon/usé/défaillant)\n3. Problèmes ou défauts visibles\n4. Urgence: immédiat/bientôt/préventif\n5. Recommandations précises\n6. Pièces à commander si nécessaire'}]}]})});
-      const data=await r.json();if(data.error)throw new Error(data.error.message);
-      const analyse=data.content.map(b=>b.text||'').join('');
-      save('Analyse photo',analyse.substring(0,80),'photo');
-      document.getElementById('zd').innerHTML=`<div class="card"><div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div><div class="cb"><img src="${e.target.result}" alt="Photo du problème mécanique analysée par IA" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover"><div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${analyse}</div><button class="bb" style="margin-top:11px" onclick="shr('Analyse photo','?','?')">📤 PARTAGER</button></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>ANALYSE PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
-    }catch(err){CR++;majC();saveC();errB('zd',err.message);}
-  };reader.readAsDataURL(file);
-};
-
-window.doVIN=async function(){
-  const vin=document.getElementById('v-n').value.trim().toUpperCase();
-  if(vin.length<5){toast('VIN invalide','er');return;}
-  const btn=document.getElementById('btn-v');btn.disabled=true;btn.textContent='⏳ DÉCODAGE...';
-  loader('zv');save('Décodage VIN',vin,'vin');
-  try{
-    const d=await claude('Expert mondial décodage VIN. JSON uniquement sans markdown.',
-      [{role:'user',content:'Décode ce VIN: '+vin+'\nWMI: '+vin.substring(0,3)+'\nCodes WMI: VF1=Renault,VF3=Peugeot,VF7=Citroën,WBA=BMW,WDB=Mercedes,WAU=Audi,WVW=VW,ZFA=Fiat,VSS=SEAT,TMB=Skoda,SAL=LandRover,JHM=Honda,JN1=Nissan,KNA=Kia,KMH=Hyundai\nJSON:\n{"pays":"","constructeur":"","modele":"","variante":"","annee":"","usine":"","moteur":"","carburant":"","transmission":"","serie":"'+vin.substring(9)+'"}'}]);
-    const fl=[['PAYS',d.pays],['CONSTRUCTEUR',d.constructeur],['MODÈLE',d.modele],['VARIANTE',d.variante],['ANNÉE',d.annee],['USINE',d.usine],['MOTEUR',d.moteur],['CARBURANT',d.carburant],['TRANSMISSION',d.transmission],['N° SÉRIE',d.serie]];
-    document.getElementById('zv').innerHTML=`<div class="card"><div class="ch"><div class="ct">VIN DÉCODÉ</div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:1px">${vin}</span></div><div class="vgrid">${fl.map(f=>`<div class="vc"><div class="vcl">${f[0]}</div><div class="vcv">${f[1]||'—'}</div></div>`).join('')}</div><div style="padding:8px 15px;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(240,165,0,0.7)">⚠️ Résultat approximatif — vérifier sur la carte grise</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>GRATUIT · MECA-IA</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
-  }catch(e){errB('zv',e.message);}
-  btn.disabled=false;btn.textContent='🔍 DÉCODER CE VIN — GRATUIT';
 };
 
 window.doPieces = async function () {
@@ -2045,28 +2006,6 @@ function majVis(){
 }
 
 window.addEventListener('scroll',()=>{const b=document.getElementById('stbtn');if(b)b.className='stbtn'+(window.scrollY>280?' show':'');});
-
-async function loadDash(){
-  try{
-    const us=await getDocs(collection(db,'users'));const users=[];let td=0,tr=0;
-    us.forEach(d=>{const data=d.data();users.push(data);td+=data.diagnostics||0;tr+=data.totalPaid||0;});
-    ss('ds-u',users.length);ss('ds-d',td);ss('ds-r',tr.toFixed(2)+'€');ss('ds-v',localStorage.getItem('mv')||'0');
-    document.getElementById('d-users').innerHTML=users.slice(0,15).map(u=>`<div class="du"><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">${u.name||'—'}</div><div style="font-size:11px;color:var(--muted)">${u.email} · ${u.type} · ${u.createdAt?new Date(u.createdAt).toLocaleDateString('fr-FR'):''}</div></div><div style="text-align:right"><div style="font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--accent)">${u.credits===999?'∞':u.credits} crédits</div><div style="font-size:10px;color:var(--muted)">${u.diagnostics||0} diags · ${(u.totalPaid||0).toFixed(2)}€</div></div></div>`).join('');
-    const act=JSON.parse(localStorage.getItem('ms')||'[]');
-    document.getElementById('d-act').innerHTML=act.slice(0,10).map(a=>`<div class="du"><div><div style="font-size:13px;color:#fff">${a.type}</div><div style="font-size:11px;color:var(--muted)">${a.cont.substring(0,55)}</div></div><div style="font-size:10px;color:var(--muted);white-space:nowrap">${a.date}</div></div>`).join('');
-  }catch(e){console.log('Dash:',e);}
-}
-
-window.genCode=async function(){
-  const ty=document.getElementById('pr-ty').value;const val=parseInt(document.getElementById('pr-val').value);
-  const uses=parseInt(document.getElementById('pr-us').value);const nm=document.getElementById('pr-nm').value.trim().toUpperCase();
-  const code=nm&&nm.length>=4?nm:'CODE-'+Math.random().toString(36).substring(2,8).toUpperCase();
-  try{
-    await setDoc(doc(db,'promoCodes',code),{type:ty,credits:ty==='credits'?val:5,value:ty==='reduction'?val:0,uses,owner:OWNER,createdAt:new Date().toISOString()});
-    document.getElementById('pr-res').innerHTML=`<div class="pcd">${code}</div><p style="font-size:11px;color:var(--muted);margin-top:5px">${ty==='credits'?val+' crédits gratuits':'-'+val+'% de réduction'} · ${uses===999?'Illimité':uses+' utilisation(s)'}</p><button class="bsm" onclick="navigator.clipboard.writeText('${code}').then(()=>toast('Copié!','ok'))" style="margin-top:7px">📋 COPIER</button>`;
-    toast('✅ Code créé: '+code,'ok');
-  }catch(e){toast('Erreur: '+e.message,'er');}
-};
 
 window.togPT=function(){
   const ty=document.getElementById('pr-ty').value;
@@ -2734,7 +2673,6 @@ window.dylanTurn = async function (payload) {
   }
 };
 
-// doDiag et chkD supprimés (diagnostic avancé supprimé)
 window.chkD = function() {};
 
 window.doPhoto = async function (event) {
