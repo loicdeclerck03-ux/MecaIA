@@ -1474,6 +1474,8 @@ window.MecaIA={supa,getToken,authedFetch,signUp:(e,p,m={})=>supa.auth.signUp({em
    VARIABLES GLOBALES
    ============================================================ */
 const STRIPE_PK='pk_live_51Taf2SQ1QuRc9MT3V0PKJkTasRga27aj7opM15j5rq5l0o3gx83yyNkeWSeugQSRabsqWj9cnBDp7HbOEgkGbOL500Ntp5CF6o';
+const OWNER='loicdeclerck4020@gmail.com';
+const OWNER_CODE='LOIC2025';
 let CR=3,UT='mechanic',stripe=null,cardEl=null;
 let sC=1,sP='1.00',sDis=0,lang=localStorage.getItem('ml')||'fr';
 let tries=0,selCar=null,cars=[];
@@ -2163,7 +2165,6 @@ hideLoading();
 // ---- Listener de session Supabase ----
 MecaIA.onAuth((user) => {
   if (user) {
-    CU = user;
     majVis();
     setLang(lang);
     if (user.email === OWNER) showSc('s-dash'); else { showSc('s-app'); setTimeout(dylanWelcome, 150); }
@@ -2173,7 +2174,6 @@ MecaIA.onAuth((user) => {
       if (user.email === OWNER) { try { await loadDash(); } catch (e) { console.log('dash:', e); } }
     }, 0);
   } else {
-    CU = null;
     showSc('s-land');
     hideLoading();
   }
