@@ -1679,49 +1679,7 @@ window.doGoogleLogin = async function () {
     if (error) setAM(error.message, 'err');
   } catch (e) { setAM(e.message, 'err'); }
 };
-window.doReg = async function () {
-  const nm = document.getElementById('r-nm').value.trim();
-  const em = document.getElementById('r-em').value.trim();
-  const pw = document.getElementById('r-pw').value;
-  const ty = document.getElementById('r-ty').value;
-  const pr = document.getElementById('r-pr').value.trim().toUpperCase();
-  if (!nm || !em || !pw) { setAM('Remplir tous les champs.', 'err'); return; }
-  if (pw.length < 6) { setAM('Mot de passe minimum 6 caractères.', 'err'); return; }
-  try {
-    const { data, error } = await MecaIA.supa.auth.signUp({
-      email: em, password: pw,
-      options: { data: { name: nm, type: ty || 'mechanic' } }
-    });
-    if (error) {
-      const msg = error.message?.toLowerCase().includes('already registered') || error.message?.includes('already')
-        ? 'Email déjà utilisé.' : 'Erreur : ' + error.message;
-      setAM(msg, 'err'); return;
-    }
-    // Appliquer code promo si fourni et session active
-    if (pr && data?.session) {
-      try { await MecaIA.authedFetch('promo_redeem', { method: 'POST', body: { code: pr } }); } catch(e2) {}
-    }
-    setAM('✅ Bienvenue sur MecaIA !', 'ok');
-  } catch (e) { setAM('Erreur : ' + e.message, 'err'); }
-};
-
-window.doForgot = async function () {
-  const em = document.getElementById('l-em').value.trim();
-  if (!em) { setAM("Entrez votre email d'abord.", 'err'); return; }
-  try {
-    const { error } = await MecaIA.supa.auth.resetPasswordForEmail(em, {
-      redirectTo: 'https://mecaiaauto.com'
-    });
-    if (error) setAM('Erreur : ' + error.message, 'err');
-    else setAM('✅ Email de réinitialisation envoyé !', 'ok');
-  } catch (e) { setAM('Erreur : ' + e.message, 'err'); }
-};
-
-window.doOut = async function () {
-  await MecaIA.supa.auth.signOut();
-  goLand();
-  toast('Déconnecté', 'ok');
-};
+// doReg, doForgot, doOut — définis plus bas (version unifiée MecaIA wrapper)
 
 function hideLoading(){
   const el=document.getElementById('s-loading');
@@ -2045,6 +2003,7 @@ window.doReg = async function () {
   const em = document.getElementById('r-em').value.trim();
   const pw = document.getElementById('r-pw').value;
   const ty = document.getElementById('r-ty').value;
+  const pr = (document.getElementById('r-pr') || {}).value?.trim().toUpperCase() || '';
   if (!nm || !em || !pw) { setAM('Remplir tous les champs.', 'err'); return; }
   if (pw.length < 6) { setAM('Mot de passe minimum 6 caractères.', 'err'); return; }
   const { data, error } = await MecaIA.signUp(em, pw, { name: nm, type: ty });
@@ -2055,6 +2014,7 @@ window.doReg = async function () {
   if (data && data.session) {
     setAM('✅ Bienvenue sur MecaIA !', 'ok');
     try { MecaIA.authedFetch('email_welcome', { method:'POST', body:{ name: nm } }); } catch(e){}
+    if (pr) { try { await MecaIA.authedFetch('promo_redeem', { method:'POST', body:{ code: pr } }); } catch(e2){} }
   } else {
     setAM('✅ Compte créé ! Vérifie ton email pour confirmer.', 'ok');
   }
@@ -2100,7 +2060,7 @@ MecaIA.onAuth((user) => {
     hideLoading();
     setTimeout(async () => {
       try { await loadProfile(user); } catch (e) { console.log('profil:', e); }
-      if (user.email === OWNER) { try { await loadDash(); } catch (e) { console.log('dash:', e); } }
+      if (user.email === OWNER) { try { await window.loadDash(); } catch (e) { console.log('dash:', e); } }
     }, 0);
   } else {
     showSc('s-land');
