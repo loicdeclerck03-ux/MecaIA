@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -2391,6 +2391,8 @@ window.dylanShowSessions = async function () {
       return;
     }
     const etatLabel = { CONTEXTE: '🔍 Contexte', HYPOTHESES: '💡 Hypothèses', CONTROLE: '🔬 Contrôle', CONCLUSION: '✅ Conclusion' };
+    window._dylanSessionsData = {};
+    data.forEach(s => { window._dylanSessionsData[s.id] = s; });
     list.innerHTML = data.map(s => `
       <div style="background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:11px 13px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start">
         <div style="flex:1;min-width:0">
@@ -2402,14 +2404,17 @@ window.dylanShowSessions = async function () {
             <span style="font-size:10px;color:var(--muted)">· ${s.nb_tours||0} tours · ${new Date(s.maj_le).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
           </div>
         </div>
-        <button class="btn-teal" onclick="dylanReprendre('${s.id}','${(s.symptoms||'').replace(/'/g,"\\'")}','${s.resume||''}')" style="flex-shrink:0;margin-top:0">↩ Reprendre</button>
+        <button class="btn-teal" onclick="dylanReprendre('${s.id}')" style="flex-shrink:0;margin-top:0">↩ Reprendre</button>
       </div>`).join('');
   } catch(e) {
     list.innerHTML = `<div style="font-size:12px;color:var(--red);text-align:center;padding:16px">${e.message}</div>`;
   }
 };
 
-window.dylanReprendre = function (sessionId, symptomes, resume) {
+window.dylanReprendre = function (sessionId) {
+  const _s = (window._dylanSessionsData || {})[sessionId] || {};
+  const symptomes = _s.symptoms || '';
+  const resume = _s.resume || '';
   window.currentDiagSession = sessionId;
   window.dylanConv = Date.now();
   document.getElementById('dylan-sessions-card').style.display = 'none';
@@ -2792,7 +2797,6 @@ window.loadDash = async function () {
   </div>`;
   await refreshDash();
 };
-window.loadDash = loadDash;
 
 async function refreshDash() {
   const se = document.getElementById('dash-stats');
