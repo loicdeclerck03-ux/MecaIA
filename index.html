@@ -1071,6 +1071,9 @@ textarea{resize:vertical;min-height:70px}
       <option value="fr">🇫🇷</option><option value="nl">🇳🇱</option>
       <option value="en">🇬🇧</option><option value="de">🇩🇪</option>
     </select>
+    <button class="icb" onclick="window.open('mailto:loicdeclerck4020@gmail.com?subject=Bug%20MecaIA&body=Décrivez%20le%20bug%20ici...%0A%0APage%3A%20'+encodeURIComponent(window.location.href))" title="Signaler un bug" style="color:var(--muted)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </button>
     <button class="icb" onclick="doOut()" title="Déconnexion">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
@@ -1410,6 +1413,9 @@ textarea{resize:vertical;min-height:70px}
       <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionne le garage virtuel ?</span><span>▼</span></div><div class="faq-a">Ajoutez vos véhicules une seule fois. L'IA les mémorise et les utilise automatiquement pour tous vos diagnostics. Sauvegardé dans votre compte — accessible depuis n'importe quel appareil.</div></div>
       <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Comment fonctionnent les codes promo ?</span><span>▼</span></div><div class="faq-a">Deux types : réduction % (ex: -20% sur un pack) et crédits gratuits. Entrez le code dans le modal de paiement. Partagés via partenaires et influenceurs.</div></div>
       <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Mes données sont-elles sécurisées ?</span><span>▼</span></div><div class="faq-a">Vos données sont chiffrées et stockées sur Supabase (infrastructure PostgreSQL sécurisée). Aucune donnée n'est partagée avec des tiers. Vous pouvez supprimer votre compte à tout moment.</div></div>
+      <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Combien de crédits faut-il pour un diagnostic ?</span><span>▼</span></div><div class="faq-a">1 crédit = 1 session de diagnostic complète avec Dylan. Une session dure en moyenne 3-5 échanges jusqu'à la conclusion. Le décodeur VIN est gratuit (3 par jour). La session est valable 7 jours : vous pouvez la reprendre à tout moment.</div></div>
+      <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Dylan peut-il se tromper dans son diagnostic ?</span><span>▼</span></div><div class="faq-a">Dylan est un outil d'aide au diagnostic, pas un remplacement au mécanicien. Il identifie les causes probables avec un niveau de confiance clairement indiqué (faible/probable/forte/très forte). Pour les interventions critiques (freins, direction, haute tension), consultez toujours un professionnel qualifié.</div></div>
+      <div class="faq-i"><div class="faq-q" onclick="togF(this)"><span>Les références de pièces sont-elles garanties exactes ?</span><span>▼</span></div><div class="faq-a">Les références sont générées par IA à titre indicatif. Vérifiez toujours la compatibilité exacte sur Autodoc, Oscaro ou chez votre fournisseur avant commande. Les prix sont des fourchettes indicatives — les prix réels varient selon les fournisseurs.</div></div>
     </div>
   </div>
   <div class="card">
