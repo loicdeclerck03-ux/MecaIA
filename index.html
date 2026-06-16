@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MecaIA — L'Expert Automobile IA</title>
-<meta name="description" content="MecaIA — Diagnostic OBD, garage virtuel, pièces auto et alertes entretien par IA. 24h/24.">
+<meta name="description" content="MecaIA — Diagnostic OBD ultra précis par IA, garage virtuel, recherche de pièces auto et analyse photo. Disponible 24h/24.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://mecaiaauto.com/">
 
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mecaiaauto.com/">
 <meta property="og:title" content="MecaIA — L'Expert Automobile IA">
-<meta property="og:description" content="Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien par IA. 3 crédits offerts à l'inscription.">
+<meta property="og:description" content="Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et analyse photo par IA. 3 crédits offerts à l'inscription.">
 <meta property="og:image" content="https://mecaiaauto.com/icon-512.png">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
@@ -222,9 +222,6 @@ textarea{resize:vertical;min-height:70px}
    BADGES & CHIPS
 ══════════════════════════════ */
 .sev{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 8px;border-radius:3px;letter-spacing:1px;text-transform:uppercase}
-.sevH{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
-.sevM{background:rgba(232,160,0,.15);color:var(--acc);border:1px solid rgba(232,160,0,.3)}
-.sevF{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
 
 .cpill{display:inline-flex;align-items:center;gap:6px;background:var(--acc-d);border:1px solid var(--acc-b);padding:5px 12px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--acc);cursor:pointer;transition:background .15s;user-select:none}
 .cpill:hover{background:rgba(232,160,0,.2)}
@@ -781,7 +778,6 @@ textarea{resize:vertical;min-height:70px}
   <div class="pack" id="pk2" onclick="buyPack('20credits')"><div><div class="pkn">Standard — 20 crédits</div><div class="pks">0,50€/diagnostic · économisez 50%</div></div><div class="pkp">9,99€</div></div>
   <div class="pack" id="pk3" onclick="buyPack('50credits')"><div><div class="pkn">Expert — 50 crédits</div><div class="pks">0,40€/diagnostic · économisez 60%</div></div><div class="pkp">19,99€</div></div>
   <div class="pack" id="pk4" onclick="buyPack('unlimited')"><div><div class="pkn">Garage — Illimité</div><div class="pks">30 jours sans abonnement</div></div><div class="pkp">29,99€</div></div>
-  <div style="margin-top:13px;display:none"><label>Carte bancaire</label><div id="card-el"></div><div id="card-err"></div><button class="bstr" id="btn-str" onclick="payer()">🔒 Payer <span id="str-amt">1€</span> en toute sécurité</button></div>
   <button class="bcl" onclick="closeM('m-pay')">Annuler</button>
   <div class="msec">
     <label>Code promo</label>
@@ -884,7 +880,7 @@ textarea{resize:vertical;min-height:70px}
     <div class="feat">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
       <div class="feat-t">Garage Virtuel</div>
-      <div class="feat-s">Sauvegardez vos véhicules. Score santé, carnet entretien et suivi kilométrage.</div>
+      <div class="feat-s">Sauvegardez vos véhicules. Score santé et suivi kilométrage automatique.</div>
     </div>
     <div class="feat">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
@@ -892,9 +888,9 @@ textarea{resize:vertical;min-height:70px}
       <div class="feat-s">Photographiez le problème. L'IA identifie l'état et les défauts visibles.</div>
     </div>
     <div class="feat">
-      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-      <div class="feat-t">Alertes Entretien</div>
-      <div class="feat-s">L'IA anticipe les interventions selon votre kilométrage et modèle.</div>
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <div class="feat-t">Suivi & Historique</div>
+      <div class="feat-s">Retrouvez tous vos diagnostics. Reprenez une session en cours en un clic.</div>
     </div>
     <div class="feat">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/></svg></div>
@@ -1191,10 +1187,9 @@ textarea{resize:vertical;min-height:70px}
   <!-- Garage stats -->
   <div class="card">
     <div class="ch"><div class="ct">Statistiques</div></div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px">
       <div style="text-align:center"><div class="raj" style="font-size:26px;color:var(--acc)" id="gs-v">0</div><div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">VÉHICULES</div></div>
       <div style="text-align:center"><div class="raj" style="font-size:26px;color:var(--green)" id="gs-d">0</div><div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">DIAGNOSTICS</div></div>
-      <div style="text-align:center"><div class="raj" style="font-size:26px;color:var(--blue)" id="gs-m">1</div><div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">MEMBRES</div></div>
     </div>
   </div>
 
@@ -1457,22 +1452,22 @@ window.MecaIA={supa,getToken,authedFetch,signUp:(e,p,m={})=>supa.auth.signUp({em
 const STRIPE_PK='pk_live_51Taf2SQ1QuRc9MT3V0PKJkTasRga27aj7opM15j5rq5l0o3gx83yyNkeWSeugQSRabsqWj9cnBDp7HbOEgkGbOL500Ntp5CF6o';
 const OWNER='loicdeclerck4020@gmail.com';
 const OWNER_CODE='LOIC2025';
-let CR=3,UT='mechanic',stripe=null,cardEl=null;
-let sC=1,sP='1.00',sDis=0,lang=localStorage.getItem('ml')||'fr';
+let CR=3,UT='mechanic';
+let lang=localStorage.getItem('ml')||'fr';
 let tries=0,selCar=null,cars=[];
 
 const T={
 fr:{
   tag:'DIAGNOSTIC AUTOMOBILE INTELLIGENT',
   h1:'L\'expert automobile IA<br>dans votre <em>poche</em>',
-  sub:'Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien.',
+  sub:'Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et analyse photo par IA.',
   bh:'Démarrer gratuitement',bh2:'C\'est grave docteur ?',
   bl:'Connexion',cl:'Connexion',cr:'Inscription',
   s1:'DIAGNOSTICS',s2:'CRÉDITS OFFERTS',s3:'CODES DTC',s4:'DISPONIBLE',
   f1t:'Diagnostic IA Expert',f1s:'Code OBD ou symptômes — rapport complet avec procédure, outils et coût estimé.',
-  f2t:'Garage Virtuel',f2s:'Sauvegardez vos véhicules. Score santé, carnet entretien et suivi kilométrage.',
+  f2t:'Garage Virtuel',f2s:'Sauvegardez vos véhicules. Score santé et suivi kilométrage automatique.',
   f3t:'Analyse Photo',f3s:'Photographiez le problème. L\'IA identifie l\'état et les défauts visibles.',
-  f4t:'Alertes Entretien',f4s:'L\'IA anticipe les interventions selon votre kilométrage et modèle.',
+  f4t:'Suivi & Historique',f4s:'Retrouvez tous vos diagnostics. Reprenez une session en cours en un clic.',
   f5t:'Recherche Pièces',f5s:'Pièces compatibles avec références, urgence et lien de commande direct.',
   f6t:'Devis PDF Pro',f6s:'Générez un devis professionnel en 1 clic. Envoyez à votre client.',
   how:'COMMENT ÇA MARCHE',
@@ -1496,9 +1491,9 @@ nl:{
   bl:'Inloggen',cl:'Inloggen',cr:'Registreren',
   s1:'DIAGNOSES',s2:'GRATIS CREDITS',s3:'DTC CODES',s4:'BESCHIKBAAR',
   f1t:'Expert AI Diagnose',f1s:'OBD-code of symptomen — volledig rapport met procedure, tools en kostenraming.',
-  f2t:'Virtuele Garage',f2s:'Sla uw voertuigen op. Gezondheidsscore, onderhoudsboekje en kilometerstand.',
+  f2t:'Virtuele Garage',f2s:'Sla uw voertuigen op. Gezondheidsscore en automatische kilometerstand bijhouding.',
   f3t:'Foto-analyse',f3s:'Fotografeer het probleem. De AI identificeert de staat en zichtbare defecten.',
-  f4t:'Onderhoudswaarschuwingen',f4s:'De AI anticipeert interventies op basis van uw kilometerstand en model.',
+  f4t:'Overzicht & Geschiedenis',f4s:'Al uw diagnoses op één plek. Hervat een lopende sessie met één klik.',
   f5t:'Onderdelen zoeken',f5s:'Compatibele onderdelen met referenties, urgentie en directe bestelkoppeling.',
   f6t:'PDF Offerte Pro',f6s:'Genereer in 1 klik een professionele offerte. Stuur naar uw klant.',
   how:'HOE HET WERKT',
@@ -1522,9 +1517,9 @@ en:{
   bl:'Log in',cl:'Log in',cr:'Sign up',
   s1:'DIAGNOSTICS',s2:'FREE CREDITS',s3:'DTC CODES',s4:'AVAILABLE',
   f1t:'Expert AI Diagnosis',f1s:'OBD code or symptoms — full report with procedure, tools and estimated cost.',
-  f2t:'Virtual Garage',f2s:'Save your vehicles. Health score, service history and mileage tracking.',
+  f2t:'Virtual Garage',f2s:'Save your vehicles. Health score and automatic mileage tracking.',
   f3t:'Photo Analysis',f3s:'Photograph the problem. AI identifies the state and visible defects.',
-  f4t:'Maintenance Alerts',f4s:'AI anticipates interventions based on your mileage and model.',
+  f4t:'History & Tracking',f4s:'All your diagnostics in one place. Resume an ongoing session in one click.',
   f5t:'Parts Search',f5s:'Compatible parts with references, urgency and direct order link.',
   f6t:'Pro PDF Quote',f6s:'Generate a professional quote in 1 click. Send to your client.',
   how:'HOW IT WORKS',
@@ -1548,9 +1543,9 @@ de:{
   bl:'Anmelden',cl:'Anmelden',cr:'Registrieren',
   s1:'DIAGNOSEN',s2:'GRATIS CREDITS',s3:'DTC CODES',s4:'VERFÜGBAR',
   f1t:'KI-Experten-Diagnose',f1s:'OBD-Code oder Symptome — vollständiger Bericht mit Verfahren, Werkzeug und Kostenschätzung.',
-  f2t:'Virtuelle Garage',f2s:'Fahrzeuge speichern. Gesundheitsscore, Wartungsbuch und Kilometerstand.',
+  f2t:'Virtuelle Garage',f2s:'Fahrzeuge speichern. Gesundheitsscore und automatische Kilometerstand-Verfolgung.',
   f3t:'Fotoanalyse',f3s:'Problem fotografieren. Die KI identifiziert den Zustand und sichtbare Defekte.',
-  f4t:'Wartungsalarme',f4s:'KI antizipiert Eingriffe basierend auf Kilometerstand und Modell.',
+  f4t:'Verlauf & Übersicht',f4s:'Alle Diagnosen an einem Ort. Laufende Sitzung mit einem Klick fortsetzen.',
   f5t:'Teilesuche',f5s:'Kompatible Teile mit Referenzen, Dringlichkeit und direktem Bestelllink.',
   f6t:'PDF-Angebot Pro',f6s:'Professionelles Angebot in 1 Klick erstellen. An Kunden senden.',
   how:'WIE ES FUNKTIONIERT',
@@ -1739,32 +1734,8 @@ function majC(){
   ['cd1','cd2','cd3'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t;});
 }
 
-window.openM=function(id){document.getElementById(id).classList.add('on');if(id==='m-pay')setTimeout(initStr,150);};
+window.openM=function(id){document.getElementById(id).classList.add('on');};
 window.closeM=function(id){document.getElementById(id).classList.remove('on');};
-
-window.selP=function(n,c,p){
-  for(let i=1;i<=4;i++)document.getElementById('pk'+i).classList.remove('on');
-  document.getElementById('pk'+n).classList.add('on');sC=c;
-  const fp=sDis>0?(parseFloat(p)*(1-sDis/100)).toFixed(2):p;sP=fp;
-  document.getElementById('str-amt').textContent=fp+'€';
-};
-
-function initStr(){
-  if(stripe)return;
-  try{stripe=Stripe(STRIPE_PK);const els=stripe.elements({appearance:{theme:'night',variables:{colorPrimary:'#f0a500',colorBackground:'#080b0f',colorText:'#c8d4e0'}}});
-    cardEl=els.create('card');cardEl.mount('#card-el');
-    cardEl.on('change',e=>{document.getElementById('card-err').textContent=e.error?e.error.message:'';});
-  }catch(e){}
-}
-
-window.payer=async function(){
-  const btn=document.getElementById('btn-str');btn.disabled=true;btn.textContent='⏳ Traitement sécurisé...';
-  await new Promise(r=>setTimeout(r,1800));
-  if(sC===999)CR=999;else CR+=sC;majC();await saveC();
-  closeM('m-pay');btn.disabled=false;btn.innerHTML='🔒 PAYER <span id="str-amt">1€</span> EN TOUTE SÉCURITÉ';
-  toast('✅ '+(sC===999?'Accès illimité !':sC+' crédits ajoutés !'),'ok');
-  save('Paiement',sC+' crédits — '+sP+'€','paiement');sDis=0;
-};
 
 window.actOwner=function(){
   const v=document.getElementById('own-in').value.trim().toUpperCase();
