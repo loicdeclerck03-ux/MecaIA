@@ -801,18 +801,16 @@ textarea{resize:vertical;min-height:70px}
   <div class="msec"><label>Code propriétaire</label><input type="password" id="own-in" placeholder="••••••••" autocomplete="off" style="margin-bottom:7px"><button class="bcl" onclick="actOwner()" style="color:var(--acc);border-color:var(--acc-b)">Activer</button></div>
 </div></div>
 
-<!-- ══ MODAL URGENCE ══ -->
+<!-- ══ MODAL URGENCE ══ redirect vers Dylan -->
 <div class="mbg" id="m-urg"><div class="modal">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
     <button onclick="closeM('m-urg')" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0;line-height:1">←</button>
     <div class="mh" style="margin-bottom:0">C'est grave docteur ?</div>
   </div>
-  <div class="ms">Décrivez votre problème — l'IA vous dit si vous pouvez continuer à rouler.</div>
-  <div class="f"><label>Décrivez le problème</label><textarea id="urg-d" placeholder="Ex: voyant rouge allumé, bruit bizarre, voiture qui fume..." style="min-height:85px"></textarea></div>
-  <div class="f"><label>Votre véhicule (optionnel)</label><input type="text" id="urg-c" placeholder="Ex: Renault Clio 2018 Diesel"></div>
-  <button class="btn" onclick="analyseUrg()">Analyser maintenant</button>
+  <div class="ms" style="margin-bottom:14px">Décrivez votre problème à Dylan — il analyse en temps réel.</div>
+  <div class="f"><textarea id="urg-d" placeholder="Ex: voyant rouge allumé, bruit bizarre, voiture qui fume..." style="min-height:85px"></textarea></div>
+  <button class="btn" onclick="closeM('m-urg');showPg('diag');setTimeout(()=>{const v=document.getElementById('urg-d')?.value;const i=document.getElementById('dylan-in');if(v&&i){i.value=v;dylanSend();}},200)">▶ Demander à Dylan</button>
   <button class="bcl" style="margin-top:6px" onclick="closeM('m-urg')">Annuler</button>
-  <div id="urg-r"></div>
 </div></div>
 
 
@@ -1043,10 +1041,6 @@ textarea{resize:vertical;min-height:70px}
   <button class="tab" id="t-suivi" onclick="showPg('suivi')">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     Suivi
-  </button>
-  <button class="tab" id="t-alertes" onclick="showPg('alertes')">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-    Alertes
   </button>
   <button class="tab" id="t-faq" onclick="showPg('faq')">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -1334,26 +1328,6 @@ textarea{resize:vertical;min-height:70px}
   </div>
 </div></div>
 
-<!-- ══ PAGE: ALERTES ══ -->
-<div class="pg" id="pg-alertes"><div class="wrap">
-  <div class="card">
-    <div class="ch"><div class="ct">Alertes entretien</div></div>
-    <div class="cb">
-      <div id="al-cars" style="margin-bottom:12px"></div>
-      <div class="r2">
-        <div class="f"><label>Marque</label><input type="text" id="a-mk" placeholder="Renault"></div>
-        <div class="f"><label>Modèle</label><input type="text" id="a-mo" placeholder="Clio"></div>
-      </div>
-      <div class="r2">
-        <div class="f"><label>Année</label><input type="number" id="a-an" placeholder="2018"></div>
-        <div class="f"><label>Kilométrage actuel *</label><input type="number" id="a-km" placeholder="95000"></div>
-      </div>
-      <button class="btn" onclick="doAlertes()">Générer les alertes (1 crédit)</button>
-      <div id="za" style="margin-top:13px"></div>
-    </div>
-  </div>
-</div></div>
-
 <!-- ══ PAGE: FAQ ══ -->
 <div class="pg" id="pg-faq"><div class="wrap">
   <div class="card">
@@ -1497,22 +1471,11 @@ async function authedFetch(fn,{method="POST",body=null,query=null}={}){const t=a
 window.MecaIA={supa,getToken,authedFetch,signUp:(e,p,m={})=>supa.auth.signUp({email:e,password:p,options:{data:m}}),signIn:(e,p)=>supa.auth.signInWithPassword({email:e,password:p}),signOut:()=>supa.auth.signOut(),resetPassword:(e)=>supa.auth.resetPasswordForEmail(e,{redirectTo:window.location.origin}),onAuth:(cb)=>supa.auth.onAuthStateChange((_e,s)=>cb(s?.user||null,s)),getUser:async()=>(await supa.auth.getUser()).data?.user||null};
 
 /* ============================================================
-   BOUCLIER ANTI-FIREBASE (2026-06)
+   VARIABLES GLOBALES
    ============================================================ */
-const db = null;
-const doc = () => null;
-const collection = () => null;
-const getDoc = async () => ({ exists: () => false, data: () => ({}) });
-const getDocs = async () => ({ forEach: () => {}, docs: [] });
-const setDoc = async () => {};
-const updateDoc = async () => {};
-const increment = (n = 0) => n;
-
-const OWNER='loicdeclerck4020@gmail.com';
 const STRIPE_PK='pk_live_51Taf2SQ1QuRc9MT3V0PKJkTasRga27aj7opM15j5rq5l0o3gx83yyNkeWSeugQSRabsqWj9cnBDp7HbOEgkGbOL500Ntp5CF6o';
-
-let CR=3,CU=null,UT='mechanic',stripe=null,cardEl=null;
-let sC=1,sP='1.00',sDis=0,lastD=null,lang=localStorage.getItem('ml')||'fr';
+let CR=3,UT='mechanic',stripe=null,cardEl=null;
+let sC=1,sP='1.00',sDis=0,lang=localStorage.getItem('ml')||'fr';
 let tries=0,selCar=null,cars=[];
 
 const T={
@@ -1786,7 +1749,6 @@ window.payer=async function(){
   const btn=document.getElementById('btn-str');btn.disabled=true;btn.textContent='⏳ Traitement sécurisé...';
   await new Promise(r=>setTimeout(r,1800));
   if(sC===999)CR=999;else CR+=sC;majC();await saveC();
-  if(CU){try{await updateDoc(doc(db,'users',CU.uid),{totalPaid:increment(parseFloat(sP))});}catch(e){}}
   closeM('m-pay');btn.disabled=false;btn.innerHTML='🔒 PAYER <span id="str-amt">1€</span> EN TOUTE SÉCURITÉ';
   toast('✅ '+(sC===999?'Accès illimité !':sC+' crédits ajoutés !'),'ok');
   save('Paiement',sC+' crédits — '+sP+'€','paiement');sDis=0;
@@ -1800,10 +1762,10 @@ window.actOwner=function(){
 window.appPromo=async function(){
   const code=document.getElementById('promo-in').value.trim().toUpperCase();
   const me=document.getElementById('promo-msg');if(!code)return;
-  try{
-    const ps=await getDoc(doc(db,'promoCodes',code));
-    if(!ps.exists()||ps.data().uses<=0){me.style.color='var(--red)';me.textContent='Code invalide ou expiré.';return;}
-    const d=ps.data();
+  me.textContent='⏳';
+  const r=await MecaIA.authedFetch('promo_redeem',{method:'POST',body:{code}});
+  if(r.ok&&r.data?.success){
+    const d=r.data;
     if(d.type==='reduction'){
       const pct=d.value||20;sDis=pct;
       [{n:1,p:'1.00'},{n:2,p:'5.00'},{n:3,p:'10.00'},{n:4,p:'15.00'}].forEach(pk=>{
@@ -1811,28 +1773,24 @@ window.appPromo=async function(){
         if(el)el.querySelector('.pkp').textContent=np+'€ (-'+pct+'%)';
       });
       me.style.color='var(--green)';me.textContent='✅ Réduction -'+pct+'% appliquée !';
-    }else if(CU){
-      const uref=doc(db,'users',CU.uid);
-      const us=await getDoc(uref);
-      if(!us.exists()){
-        await setDoc(uref,{name:CU.displayName||CU.email,email:CU.email,type:'mechanic',credits:3,promoCode:'CODE-'+CU.uid.substring(0,6).toUpperCase(),createdAt:new Date().toISOString(),diagnostics:0,pieces_searches:0,members:[],cars:[],usedPromos:[],totalPaid:0});
-      }
-      const used=us.exists()?us.data()?.usedPromos||[]:[];
-      if(used.includes(code)){me.style.color='var(--red)';me.textContent='Code déjà utilisé.';return;}
-      const cr=d.credits||5;CR+=cr;majC();
-      await updateDoc(uref,{credits:CR,usedPromos:[...used,code]});
-      await updateDoc(doc(db,'promoCodes',code),{uses:increment(-1)});
+    }else{
+      const cr=d.credits_added||0;if(cr>0){CR+=cr;majC();}
       me.style.color='var(--green)';me.textContent='✅ '+cr+' crédits ajoutés !';closeM('m-pay');toast(cr+' crédits !','ok');
     }
-  }catch(e){me.style.color='var(--red)';me.textContent='Erreur: '+e.message;}
+  }else{
+    me.style.color='var(--red)';me.textContent=r.data?.error||'Code invalide ou expiré.';
+  }
 };
 
 window.showPg=function(id){
-  ['diag','garage','vin','pieces','suivi','alertes','faq','tarifs'].forEach(p=>{
+  ['diag','garage','vin','pieces','suivi','faq','tarifs'].forEach(p=>{
     const pg=document.getElementById('pg-'+p);const tb=document.getElementById('t-'+p);
     if(pg)pg.className='pg'+(p===id?' on':'');if(tb)tb.className='tab'+(p===id?' on':'');
   });
-  if(id==='suivi'){renderS();loadSuiviDiags();}if(id==='garage'){renderCars(cars);loadGS();}if(id==='alertes')renderAC();if(id==='diag'&&window.dylanWelcome)dylanWelcome();if(id==='pieces'&&window.fillPCars)fillPCars();
+  if(id==='suivi'){renderS();loadSuiviDiags();}
+  if(id==='garage'){renderCars(cars);loadGS();}
+  if(id==='diag'&&window.dylanWelcome)dylanWelcome();
+  if(id==='pieces'&&window.fillPCars)fillPCars();
   window.scrollTo(0,0);
 };
 
@@ -1850,122 +1808,26 @@ function save(type,cont,cat){
   if(s.length>100)s.length=100;localStorage.setItem('ms',JSON.stringify(s));
 }
 
-async function claude(sys,msgs,json=true){
-  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':API,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1500,system:sys,messages:msgs})});
-  const d=await r.json();if(d.error)throw new Error(d.error.message);
-  const txt=d.content.map(b=>b.text||'').join('');
-  if(!json)return txt;return JSON.parse(txt.replace(/```json|```/g,'').trim());
-}
-
 window.showAddCar=()=>{document.getElementById('add-car-f').style.display='block';};
 window.hideAddCar=()=>{document.getElementById('add-car-f').style.display='none';};
 
-window.addCar=async function(){
-  const m=document.getElementById('nc-mk').value;const mo=document.getElementById('nc-mo').value.trim();
-  const a=document.getElementById('nc-an').value.trim();const c=document.getElementById('nc-cb').value;
-  if(!m||!mo||!a||!c){toast('Remplir Marque, Modèle, Année et Carburant','er');return;}
-  const car={id:Date.now(),marque:m,modele:mo,annee:a,carbu:c,
-    kw:document.getElementById('nc-kw').value.trim(),cm:document.getElementById('nc-cm').value.trim().toUpperCase(),
-    vin:document.getElementById('nc-vn').value.trim().toUpperCase(),km:document.getElementById('nc-km').value.trim(),
-    nom:document.getElementById('nc-nm').value.trim(),score:85,addedAt:new Date().toISOString()};
-  cars.push(car);
-  if(CU){try{await updateDoc(doc(db,'users',CU.uid),{cars});}catch(e){}}
-  renderCars(cars);hideAddCar();toast('✅ Véhicule ajouté !','ok');
-  ss('gs-v',cars.length);
-  ['nc-mk','nc-mo','nc-an','nc-cb','nc-kw','nc-cm','nc-vn','nc-km','nc-nm'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-};
-
 function sc(s){return s>=80?'var(--green)':s>=60?'var(--accent)':'var(--red)';}
-
-window.selC=function(id){
-  selCar=cars.find(c=>c.id===id);if(!selCar)return;
-  const sv=(el,v)=>{const e=document.getElementById(el);if(e&&v)e.value=v;};
-  sv('d-mk',selCar.marque);sv('d-mo',selCar.modele);sv('d-an',selCar.annee);sv('d-cb',selCar.carbu);sv('d-kw',selCar.kw);sv('d-cm',selCar.cm);sv('d-km',selCar.km);
-  chkD();renderCars(cars);toast('✅ '+(selCar.nom||selCar.marque)+' sélectionné','ok');
-};
-
-window.updKm=function(id){
-  const km=prompt('Nouveau kilométrage:');if(!km)return;
-  const c=cars.find(x=>x.id===id);if(c){c.km=km;sUD({cars});renderCars(cars);toast('KM mis à jour','ok');}
-};
-
-window.delCar=async function(id){
-  if(!confirm('Supprimer ce véhicule ?'))return;
-  cars=cars.filter(c=>c.id!==id);await sUD({cars});if(selCar?.id===id)selCar=null;
-  renderCars(cars);ss('gs-v',cars.length);toast('Véhicule supprimé','ok');
-};
 
 function loadGS(){const s=JSON.parse(localStorage.getItem('ms')||'[]');ss('gs-d',s.filter(x=>x.cat==='diag').length);ss('gs-v',cars.length);}
 
-function renderMbrs(mbrs){
-  const el=document.getElementById('mbr-l');if(!el)return;
-  if(!mbrs.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:7px 0">Aucun membre.</div>';return;}
-  el.innerHTML=mbrs.map(m=>`<div class="gmb"><div><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff">${m.name||m.email}</div><div style="font-size:11px;color:var(--muted)">${m.email}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--accent);margin-top:2px">MÉCANICIEN</div></div><span class="fbadge">ACTIF</span></div>`).join('');
-}
-
-window.invMbr=async function(){
-  const em=document.getElementById('inv-em').value.trim();if(!em||!CU)return;
-  const snap=await getDoc(doc(db,'users',CU.uid));const mbrs=snap.data()?.members||[];
-  if(mbrs.length>=4){toast('Maximum 4 membres.','er');return;}
-  mbrs.push({email:em,name:em.split('@')[0],addedAt:new Date().toISOString()});
-  await updateDoc(doc(db,'users',CU.uid),{members:mbrs});
-  document.getElementById('inv-em').value='';renderMbrs(mbrs);ss('gs-m',mbrs.length+1);toast('✅ '+em+' invité !','ok');
-};
-
 window.copyPromo=function(){
   const code=document.getElementById('my-promo').textContent;
-  const txt='🔧 Utilise mon code '+code+' sur MecaIA pour des crédits bonus !\nmecaiabyloky.netlify.app';
+  const txt='🔧 Utilise mon code '+code+' sur MecaIA pour des crédits bonus !\nmecaiaauto.com';
   if(navigator.share)navigator.share({title:'MecaIA',text:txt});
   else navigator.clipboard.writeText(txt).then(()=>toast('Code copié !','ok'));
-};
-
-window.analyseUrg=async function(){
-  const desc=document.getElementById('urg-d').value.trim();const car=document.getElementById('urg-c').value.trim();
-  if(!desc){toast('Décrivez le problème','er');return;}
-  document.getElementById('urg-r').innerHTML='<div class="loader">ANALYSE<div class="lbar"><div class="lfill"></div></div></div>';
-  try{
-    const d=await claude('Expert mécanicien. Analyse urgence rapide. JSON sans markdown.',
-      [{role:'user',content:'Véhicule: '+(car||'non précisé')+'\nProblème: '+desc+'\nJSON:\n{"gravite":"STOP","rouler":false,"message":"explication courte","action":"quoi faire maintenant"}'}]);
-    const col={STOP:'var(--red)',ATTENTION:'var(--accent)',OK:'var(--green)'};const emj={STOP:'🔴',ATTENTION:'🟡',OK:'🟢'};
-    document.getElementById('urg-r').innerHTML=`<div style="margin-top:15px;background:var(--s2);border:2px solid ${col[d.gravite]||'var(--accent)'};border-radius:10px;padding:15px;text-align:center"><div style="font-size:44px;margin-bottom:7px">${emj[d.gravite]||'🟡'}</div><div style="font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:${col[d.gravite]||'var(--accent)'};margin-bottom:7px">${d.gravite}</div><div style="font-size:13px;line-height:1.7;margin-bottom:11px">${d.message}</div><div style="font-size:13px;color:var(--accent);font-weight:500">⚡ ${d.action}</div></div>`;
-  }catch(e){document.getElementById('urg-r').innerHTML='<div class="err-box">'+e.message+'</div>';}
-};
-
-window.doDiag=async function(){if(!useC()){toast('Plus de crédits!','er');return;}const code=document.getElementById('d-code').value.trim().toUpperCase();const mk=document.getElementById('d-mk').value;const mo=document.getElementById('d-mo').value.trim();const an=document.getElementById('d-an').value;const cb=document.getElementById('d-cb').value;const kw=document.getElementById('d-kw').value.trim();const km=document.getElementById('d-km').value.trim();const cm=document.getElementById('d-cm').value.trim().toUpperCase();const sy=document.getElementById('d-sy').value.trim();if(!mk||!mo||!an||!cb){toast('Remplir Marque, Modèle, Année, Carburant','er');CR++;majC();saveC();return;}const btn=document.getElementById('btn-d');btn.disabled=true;btn.textContent='⏳ DYLAN ANALYSE...';loader('zd');try{const veh=[mk,mo,cb,kw&&kw+'kW',an&&'('+an+')',km&&km+'km',cm&&'Moteur:'+cm].filter(Boolean).join(' ');const user_input=[code&&'Code OBD: '+code,'Véhicule: '+veh,sy&&'Symptômes: '+sy].filter(Boolean).join('\n');const response=await fetch('/.netlify/functions/dylan_agents',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_input,vehicle_marque:mk,vehicle_modele:mo,vehicle_km:parseInt(km)||null})});const data=await response.json();if(!data.success||!response.ok){throw new Error(data.error||'Dylan API error');}save('Diagnostic V3',mk+' '+mo+' — '+data.primary_diagnosis,'diag');if(CU){try{await updateDoc(doc(db,'users',CU.uid),{diagnostics:increment(1)});}catch(e){}}if(selCar){const impact=data.confidence_percent>80?2:5;selCar.score=Math.max(0,(selCar.score||85)-impact);await sUD({cars});}let sev='sevM';if(data.urgency==='immédiat')sev='sevH';else if(data.urgency==='préventif')sev='sevF';const confidence_color=data.confidence_percent>=80?'var(--green)':data.confidence_percent>=60?'var(--accent)':'var(--red)';const urgency_emoji=data.urgency==='immédiat'?'🔴':data.urgency==='bientôt'?'🟡':'🟢';const low_confidence_warning=data.confidence_percent<60?`<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:13px 15px;margin-bottom:13px;color:var(--red)">⚠️ Confiance basse (${data.confidence_percent}%). <button class="bsm" onclick="doFallbackInternet('${data.primary_diagnosis}')" style="margin-top:7px">🔍 Chercher sur Internet</button></div>`:'';const clarify_box=data.clarify_question&&data.clarify_question!=='Je pense avoir assez d\'infos.'?`<div class="cons cb2" style="margin-top:11px;"><strong>❓ Clarifications:</strong> ${data.clarify_question}</div>`:'';const result_html=`<div><div class="card"><div class="ch"><div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:2px">DYLAN V3</div><div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#fff">${data.primary_diagnosis}</div></div><div style="display:flex;gap:5px;align-items:center"><span class="sev ${sev}">${data.urgency.toUpperCase()}</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${confidence_color}">📊 ${data.confidence_percent}%</span><span style="font-size:10px;padding:3px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--border);color:${data.can_drive?'var(--green)':'var(--red)'}">${data.can_drive?'✓ Roule':'✗ Stop'}</span></div></div><div class="cb">${low_confidence_warning}<div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.12);border-radius:8px;padding:13px 15px;margin-bottom:13px"><div style="font-size:13px;line-height:1.75;color:#fff;font-weight:500">${data.primary_diagnosis}</div><div style="font-size:12px;color:var(--muted);margin-top:7px;line-height:1.6">Confiance: <strong style="color:${confidence_color}">${data.confidence_percent}%</strong> — Urgence: <strong>${urgency_emoji} ${data.urgency}</strong></div></div>${clarify_box}<div class="dv-box"><div class="dv-t">💶 ESTIMATION DU COÛT</div><div class="dv-r"><span>Coût estimé</span><span>${data.estimated_cost_min}€ — ${data.estimated_cost_max}€</span></div></div>${data.parts_needed&&data.parts_needed.length>0?`<div class="slbl">🔩 PIÈCES</div><div class="tags">${data.parts_needed.map(p=>'<span class="tag">'+p+'</span>').join('')}</div>`:''}<button class="bg" onclick="genPDF()">📄 PDF</button><button class="bb" onclick="shr('${data.primary_diagnosis}',${data.estimated_cost_min},${data.estimated_cost_max})">📤 PARTAGER</button></div><div class="rfooter"><div><span class="dot"></span>DYLAN V3</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div></div>`;document.getElementById('zd').innerHTML=result_html;toast('✅ Diagnostic V3 prêt','ok');}catch(error){CR++;majC();saveC();errB('zd',error.message);}btn.disabled=false;btn.textContent='⚡ DIAGNOSTIC IA (1 crédit)';};
-window.doFallbackInternet=async function(diagnosis){toast('🔍 Recherche...','ok');window.open(`https://www.google.com/search?q=${encodeURIComponent(diagnosis+' réparation auto')}`,'_blank');};
-window.togTools=function(has){
-  if(!has)document.getElementById('proc').innerHTML=`<div style="text-align:center;padding:18px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.18);border-radius:8px;margin-top:13px"><div style="font-size:22px;margin-bottom:7px">🔧</div><div style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:7px">Commandez les outils nécessaires</div><div style="font-size:12px;color:var(--muted);margin-bottom:13px">Retrouvez tous les outils sur Autodoc</div><a href="https://www.autodoc.be/fr/outils-atelier" target="_blank" style="text-decoration:none"><button class="bsm" style="font-size:12px;padding:7px 18px">VOIR LES OUTILS SUR AUTODOC →</button></a></div>`;
-};
-
-window.rateD=function(n){
-  document.querySelectorAll('#d-stars .star').forEach((s,i)=>s.className='star'+(i<n?' on':''));
-  const e=document.getElementById('rate-l');if(e)e.textContent=n+'/5';
-  save('Note '+n+'/5','Évaluation diagnostic','diag');toast('Merci !','ok');
 };
 
 window.genPDF=function(){
   try{
     const{jsPDF}=window.jspdf;const pdf=new jsPDF();let y=20;
     pdf.setFontSize(21);pdf.setTextColor(240,165,0);pdf.text('MecaIA — Rapport de Diagnostic',20,y);y+=10;
-    pdf.setFontSize(10);pdf.setTextColor(120,120,120);pdf.text('Créé par Loïc Declerck · loicdeclerck4020@gmail.com',20,y);y+=6;
-    pdf.text('mecaiabyloky.netlify.app · '+new Date().toLocaleString('fr-FR'),20,y);y+=13;
-    if(lastD){
-      pdf.setFontSize(15);pdf.setTextColor(0,0,0);pdf.text(lastD.code+' — '+lastD.titre,20,y);y+=9;
-      pdf.setFontSize(11);pdf.text('Sévérité: '+lastD.severite+' · '+(lastD.rouler?'Peut rouler':'Ne pas rouler'),20,y);y+=7;
-      pdf.text('Temps estimé: '+lastD.temps,20,y);y+=10;
-      pdf.setFontSize(12);pdf.setTextColor(240,165,0);pdf.text('Description:',20,y);y+=7;
-      pdf.setFontSize(10);pdf.setTextColor(50,50,50);
-      const lines=pdf.splitTextToSize(lastD.description,170);pdf.text(lines,20,y);y+=lines.length*6+9;
-      pdf.setFontSize(12);pdf.setTextColor(240,165,0);pdf.text('Estimation du coût:',20,y);y+=7;
-      pdf.setFontSize(10);pdf.setTextColor(50,50,50);
-      pdf.text('Main d\'oeuvre: '+(lastD.mo_min||50)+'€ — '+(lastD.mo_max||200)+'€',20,y);y+=6;
-      pdf.text('Pièces: '+(lastD.pieces_min||30)+'€ — '+(lastD.pieces_max||300)+'€',20,y);y+=6;
-      pdf.setFont(undefined,'bold');pdf.text('TOTAL: '+((lastD.mo_min||50)+(lastD.pieces_min||30))+'€ — '+((lastD.mo_max||200)+(lastD.pieces_max||300))+'€',20,y);y+=12;
-      if(lastD.conseil){pdf.setFont(undefined,'normal');pdf.setFontSize(9);pdf.setTextColor(100,100,100);const cl=pdf.splitTextToSize('Conseil: '+lastD.conseil,170);pdf.text(cl,20,y);y+=cl.length*5+7;}
-      pdf.setFontSize(8);pdf.setTextColor(150,150,150);pdf.text('* Estimation indicative. MecaIA © 2025 — Loïc Declerck — Belgique',20,y);
-    }
+    pdf.setFontSize(10);pdf.setTextColor(120,120,120);pdf.text('mecaiaauto.com · '+new Date().toLocaleString('fr-FR'),20,y);y+=13;
+    pdf.setFontSize(8);pdf.setTextColor(150,150,150);pdf.text('Généré par Dylan IA · MecaIA © 2025',20,y);
     pdf.save('diagnostic-mecaia-'+new Date().toISOString().split('T')[0]+'.pdf');toast('PDF téléchargé !','ok');
   }catch(e){toast('Erreur PDF: '+e.message,'er');}
 };
@@ -2169,28 +2031,6 @@ window.suiviReprendre = function(sessionId) {
 };
 window.searchS=function(q){renderS('all',q);};
 window.clearS=function(){if(confirm('Effacer tout ?')){localStorage.removeItem('ms');renderS();toast('Effacé','ok');}};
-
-function renderAC(){
-  const el=document.getElementById('al-cars');if(!el)return;
-  if(!cars.length){el.innerHTML='';return;}
-  el.innerHTML=`<div style="margin-bottom:10px">
-    <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:7px">CHARGER DEPUIS MON GARAGE</div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap">`+cars.map(c=>{
-      const mk=(c.marque||'').substring(0,3).toUpperCase();
-      const colors={'BMW':'#1c69d3','RENAULT':'#003189','PEUGEOT':'#003778','CITROËN':'#d82d1d','CIT':'#d82d1d','VOLKSWAGEN':'#003778','VW':'#003778','FORD':'#003478','TOYOTA':'#eb0a1e','OPEL':'#ef7b00'};
-      const bg=colors[mk]||colors[c.marque?.toUpperCase()]||'#555';
-      return`<button onclick="selAC('${c.id}')" style="display:flex;align-items:center;gap:7px;background:var(--s3);border:1px solid var(--bd);border-radius:7px;padding:6px 10px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='var(--bd)'">
-        <div style="width:28px;height:28px;border-radius:5px;background:${bg};color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${mk}</div>
-        <div style="text-align:left"><div style="font-size:11px;font-weight:600;color:var(--white)">${c.nom||c.marque+' '+c.modele}</div><div style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${c.annee||''} · ${c.carbu||''}</div></div>
-      </button>`;
-    }).join('')+'</div></div>';
-}
-window.selAC=function(id){
-  const c=cars.find(x=>x.id===id);if(!c)return;
-  const sv=(el,v)=>{const e=document.getElementById(el);if(e&&v)e.value=v;};
-  sv('a-mk',c.marque);sv('a-mo',c.modele);sv('a-an',c.annee);sv('a-km',c.km||'');
-  toast(c.nom||c.marque+' sélectionné','ok');
-};
 
 window.togF=function(el){const a=el.nextElementSibling;a.classList.toggle('on');el.querySelector('span:last-child').textContent=a.classList.contains('on')?'▲':'▼';};
 
@@ -2962,26 +2802,11 @@ window.doVIN = async function () {
   btn.disabled = false; btn.textContent = '🔍 DÉCODER CE VIN — GRATUIT';
 };
 
-window.doAlertes = async function () {
-  const mk = document.getElementById('a-mk').value.trim(); const mo = document.getElementById('a-mo').value.trim();
-  const an = document.getElementById('a-an').value.trim(); const km = document.getElementById('a-km').value.trim();
-  if (!km) { toast('Entrer le kilométrage', 'er'); return; }
-  if (!useC()) return;
-  loader('za'); save('Alertes entretien', [mk, mo, km + 'km'].filter(Boolean).join(' '), 'alerte');
-  try {
-    const r = await MecaIA.authedFetch('alerts_generate', { method: 'POST', body: { vehicle_marque: mk, vehicle_modele: mo, vehicle_annee: an, vehicle_km: parseInt(km) || km } });
-    if (r.status === 402) { openM('m-pay'); toast('Plus de crédits !', 'er'); return; }
-    const d = r.data;
-    if (!r.ok || !d || !d.success) throw new Error((d && d.error) || 'Erreur alertes');
-    document.getElementById('za').innerHTML = '<div>' + d.alertes.map(a => { const col = a.urgence === 'Immédiat' ? 'var(--red)' : a.urgence === 'Bientôt' ? 'var(--accent)' : 'var(--green)'; const sv = a.urgence === 'Immédiat' ? 'sevH' : a.urgence === 'Bientôt' ? 'sevM' : 'sevF'; return `<div class="ali" style="border-left:3px solid ${col}"><div style="font-size:19px;flex-shrink:0">${a.icon}</div><div style="flex:1"><div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">${a.titre}</div><div style="font-size:11px;color:var(--muted)">${a.desc}</div>${a.km_next ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);margin-top:2px">Prochain: ${a.km_next.toLocaleString()} km</div>` : ''}</div><span class="sev ${sv}">${a.urgence}</span></div>`; }).join('') + '</div>';
-    await refreshCredits();
-  } catch (e) { errB('za', e.message); }
-};
-
 /* ---- Paiement Stripe ---- */
 window.buyPack = async function (pkg) {
-  if (!CU) { toast("Connecte-toi d'abord", 'er'); return; }
-  const r = await MecaIA.authedFetch('stripe_checkout', { method: 'POST', body: { user_id: CU.id, package: pkg } });
+  const { data } = await MecaIA.supa.auth.getSession();
+  if (!data?.session) { toast("Connecte-toi d'abord", 'er'); return; }
+  const r = await MecaIA.authedFetch('stripe_checkout', { method: 'POST', body: { package: pkg } });
   if (r.ok && r.data && r.data.checkout_url) { window.location.href = r.data.checkout_url; }
   else { const msg = (r.data && r.data.error) || ('code ' + (r.status || '?')); toast('Erreur paiement: ' + msg, 'er'); }
 };
