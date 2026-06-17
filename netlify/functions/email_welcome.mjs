@@ -1,10 +1,10 @@
-﻿// EMAIL_WELCOME — bienvenue MecaIA via Resend
+// EMAIL_WELCOME — bienvenue MecaIA via Resend
 // Domaine mecaiaauto.com verifie dans Resend
-import { getUser, json, preflight } from "../lib/auth.mjs";
+import { getUser, json, preflight, serviceClient } from "../lib/auth.mjs";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE = (process.env.FRONTEND_URL || "https://mecaiaauto.com").replace(/\/$/, "");
-// HARDCODE : noreply@mecaiaauto.com verifie dans Resend — NE PAS utiliser onboarding@resend.dev
+// HARDCODE : noreply@mecaiaauto.com verifie dans Resend
 const EMAIL_FROM = "MecaIA <noreply@mecaiaauto.com>";
 
 export const handler = async (event) => {
@@ -75,9 +75,35 @@ export const handler = async (event) => {
     const data = await resp.json().catch(() => ({}));
     if (!resp.ok) {
       console.error("[EMAIL_WELCOME] Resend ERREUR:", resp.status, JSON.stringify(data));
+      // Logger l'échec aussi
+      try {
+        const supa = serviceClient();
+        await supa.from("email_logs").insert({
+          user_id: auth.id,
+          email_to: email,
+          email_type: "welcome",
+          subject: payload.subject,
+          status: "error",
+        });
+      } catch(_) {}
       return json(502, { success: false, error: data.message || "Envoi echoue", resend_status: resp.status });
     }
     console.log("[EMAIL_WELCOME] SUCCES:", data.id, "->", email);
+
+    // Logger le succès dans email_logs
+    try {
+      const supa = serviceClient();
+      await supa.from("email_logs").insert({
+        user_id: auth.id,
+        email_to: email,
+        email_type: "welcome",
+        subject: payload.subject,
+        status: "sent",
+      });
+    } catch (logErr) {
+      console.warn("[EMAIL_WELCOME] log failed:", logErr.message);
+    }
+
     return json(200, { success: true, id: data.id || null });
   } catch (e) {
     console.error("[EMAIL_WELCOME] EXCEPTION:", e.message);

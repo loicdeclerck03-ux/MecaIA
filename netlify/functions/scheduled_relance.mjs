@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // SCHEDULED_RELANCE.MJS — Cron Netlify
 // Tourne : tous les jours à 9h UTC
 // Mission : utilisateurs inactifs depuis 14j → email +1 crédit
@@ -14,7 +14,6 @@ const SITE           = (process.env.FRONTEND_URL || "https://mecaiaauto.com").re
 
 // Format Netlify scheduled function (v2)
 export default async (req, context) => {
-  // Sécurité : accepter les invocations cron Netlify + déclenchement manuel protégé
   let scheduled = false;
   try {
     const body = await req.json();
@@ -40,7 +39,6 @@ export default async (req, context) => {
   let envoyes = 0, erreurs = 0;
 
   try {
-    // 1) Récupérer les utilisateurs inactifs J+14 non encore relancés
     const { data: cibles, error } = await supabase.rpc("get_relance_targets");
     if (error) throw error;
     if (!cibles || !cibles.length) {
@@ -52,7 +50,6 @@ export default async (req, context) => {
 
     for (const u of cibles) {
       try {
-        // 2) Envoyer l'email via Resend
         const prenom = (u.name || "").trim().split(" ")[0] || "";
         const hello  = prenom ? `Bonjour ${prenom},` : "Bonjour,";
 
@@ -64,44 +61,42 @@ export default async (req, context) => {
   <div style="padding:28px 24px;background:#ffffff;border:1px solid #eee;border-top:none;border-radius:0 0 12px 12px">
     <h2 style="margin:0 0 14px;font-size:20px">${hello}</h2>
     <p style="font-size:15px;line-height:1.6;color:#333">
-      Ça fait un petit moment qu'on ne t'a pas vu sur MecaIA ! 👋
+      Ca fait un petit moment qu'on ne t'a pas vu sur MecaIA !
     </p>
     <p style="font-size:15px;line-height:1.6;color:#333">
-      Pour te souhaiter la bienvenue à nouveau, on t'a ajouté <strong>1 crédit gratuit</strong>
-      sur ton compte. 🎁
+      Pour te souhaiter la bienvenue a nouveau, on t'a ajoute <strong>1 credit gratuit</strong>
+      sur ton compte.
     </p>
     <p style="font-size:15px;line-height:1.6;color:#333">
-      Utilise-le pour poser une question à <strong>Dylan</strong>, ton expert auto IA.
+      Utilise-le pour poser une question a <strong>Dylan</strong>, ton expert auto IA.
     </p>
     <p style="text-align:center;margin:26px 0">
       <a href="${SITE}" style="display:inline-block;padding:13px 26px;background:#f0a500;color:#0b0f14;font-weight:bold;text-decoration:none;border-radius:8px">Retourner sur MecaIA</a>
     </p>
-    <p style="font-size:13px;line-height:1.6;color:#777">
-      Si tu n'utilises plus MecaIA, tu peux simplement ignorer cet email.
-    </p>
-    <p style="font-size:13px;color:#333">À très vite,<br>L'équipe MecaIA</p>
+    <p style="font-size:13px;color:#333">A tres vite,<br>L'equipe MecaIA</p>
   </div>
 </div>`;
 
+        const subject = "On t'a reserve 1 credit gratuit";
         const resp = await fetch("https://api.resend.com/emails", {
           method : "POST",
           headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-          body   : JSON.stringify({
-            from   : EMAIL_FROM,
-            to     : [u.email],
-            subject: "On t'a réservé 1 crédit gratuit 🎁",
-            html,
-          }),
+          body   : JSON.stringify({ from: EMAIL_FROM, to: [u.email], subject, html }),
         });
 
+        const resendData = await resp.json().catch(() => ({}));
         if (!resp.ok) {
-          const body = await resp.json().catch(() => ({}));
-          console.error(`[RELANCE] Resend erreur pour ${u.user_id}:`, body.message);
+          console.error(`[RELANCE] Resend erreur pour ${u.user_id}:`, resendData.message);
+          // Logger l'échec
+          supabase.from("email_logs").insert({
+            user_id: u.user_id, email_to: u.email,
+            email_type: "relance_j14", subject, status: "error",
+          }).catch(() => {});
           erreurs++;
           continue;
         }
 
-        // 3) Ajouter 1 crédit + marquer comme relancé (RPC atomique)
+        // Ajouter 1 crédit + marquer comme relancé (RPC atomique)
         const { error: addErr } = await supabase.rpc("add_relance_credit", { p_user_id: u.user_id });
         if (addErr) {
           console.error(`[RELANCE] add_relance_credit erreur pour ${u.user_id}:`, addErr.message);
@@ -111,6 +106,12 @@ export default async (req, context) => {
 
         console.log(`[RELANCE] ✅ ${u.email} relancé (+1 crédit)`);
         envoyes++;
+
+        // Logger le succès dans email_logs (fire-and-forget)
+        supabase.from("email_logs").insert({
+          user_id: u.user_id, email_to: u.email,
+          email_type: "relance_j14", subject, status: "sent",
+        }).catch(e => console.warn("[RELANCE] email_log:", e.message));
 
       } catch (err) {
         console.error(`[RELANCE] Erreur utilisateur ${u.user_id}:`, err.message);
@@ -133,5 +134,5 @@ export default async (req, context) => {
 };
 
 export const config = {
-  schedule: "0 9 * * *", // 9h UTC chaque jour
+  schedule: "0 9 * * *",
 };

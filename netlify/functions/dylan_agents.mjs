@@ -710,6 +710,30 @@ export const handler = async (event) => {
         hypRows.length ? supabase.from("diag_hypotheses").insert(hypRows) : Promise.resolve(),
         ctrlRows.length ? supabase.from("diag_controls").insert(ctrlRows) : Promise.resolve(),
       ]).catch(e => console.error("[DYLAN] matérialisation:", e.message));
+
+      // Sauvegarder le diagnostic dans user_diagnostics (historique + dashboard)
+      if (response.conclusion && state.vehicule) {
+        const { cause, bande, can_drive, urgency, cost_min, cost_max, parts_needed } = response.conclusion;
+        const bandePct = { faible: 30, probable: 60, forte: 80, tres_forte: 95 };
+        const vehicleId = state.vehicule.vehicle_id || null;
+        supabase.from("user_diagnostics").insert({
+          user_id: userId,
+          vehicle_id: vehicleId,
+          primary_diagnosis: cause || "Diagnostic complet",
+          symptoms: state.symptomes ? [state.symptomes] : null,
+          obd_codes: (state.contexte && state.contexte.codes ? state.contexte.codes : []).map(function(code) { return { code: code }; }),
+          causes: [{ cause: cause, confidence: bande }],
+          parts_needed: Array.isArray(parts_needed) ? parts_needed.map(function(p) { return { name: p }; }) : null,
+          confidence_percent: bandePct[bande] || 60,
+          urgency: urgency || "bientôt",
+          can_drive: can_drive !== false,
+          estimated_cost_min: cost_min || null,
+          estimated_cost_max: cost_max || null,
+          status: "active",
+          diagnosis_date: new Date().toISOString(),
+        }).then(function() { console.log("[DYLAN] user_diagnostics saved"); })
+          .catch(function(e) { console.warn("[DYLAN] user_diagnostics save failed:", e.message); });
+      }
     }
 
     return json(200, response);
