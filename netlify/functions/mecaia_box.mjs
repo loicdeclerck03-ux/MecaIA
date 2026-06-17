@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // MECAIA_BOX.MJS — Agent Dylan OBD2 Autonome v3 FINAL
 // 17/06/2026 — Version complète avec :
 //   - Diagnostic autonome complet
@@ -123,7 +123,7 @@ const DTC_KNOWLEDGE = {
   P0700: { desc:"Défaut boîte automatique — consulter les codes T en complément", urgency:"MEDIUM", causes:["nombreuses causes possibles","voir codes T07xx T08xx"], cost_estimate:"variable", action:"Lire les codes défauts boîte avec un outil spécifique" },
   // Batterie/alternateur
   P0562: { desc:"Tension batterie trop basse", urgency:"HIGH", causes:["batterie faible","alternateur HS","connexions batterie oxydées"], cost_estimate:"80-400€", action:"Mesurer tension batterie. Devrait être 12,6V repos, 14V moteur en marche." },
-  P0563: { desc:"Tension batterie trop haute", urgency:"MEDIUM", causes:["régulateur alternateur HS","surcharge du circuit"], cost_estimate:"150-500€", action:"Vérifier l'alternateur" },,
+  P0563: { desc:"Tension batterie trop haute", urgency:"MEDIUM", causes:["régulateur alternateur HS","surcharge du circuit"], cost_estimate:"150-500€", action:"Vérifier l'alternateur" },
 // ── Système d'admission / Turbo ────────────────────────────────────────────
   P0087: { desc:"Pression carburant insuffisante dans le rail (diesel direct)", urgency:"HIGH", causes:["pompe haute pression défaillante","filtre à carburant colmaté","injecteurs fuites retour","régulateur pression HS"], cost_estimate:"200-1500€", action:"Contrôle urgent — ne pas rouler à pleine charge. Vérifier filtre carburant en premier." },
   P0088: { desc:"Pression carburant rail trop haute", urgency:"HIGH", causes:["régulateur pression défaillant","vanne limiteur HS","capteur pression HS"], cost_estimate:"200-800€", action:"Diagnostic urgence pression rail nécessaire" },
