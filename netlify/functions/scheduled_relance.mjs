@@ -9,7 +9,7 @@
 import { serviceClient, json } from "../lib/auth.mjs";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const EMAIL_FROM = process.env.EMAIL_FROM_VERIFIED || "MecaIA <onboarding@resend.dev>";
+const EMAIL_FROM = process.env.EMAIL_FROM || "MecaIA <noreply@mecaiaauto.com>";
 const SITE           = (process.env.FRONTEND_URL || "https://mecaiaauto.com").replace(/\/$/, "");
 
 // Format Netlify scheduled function (v2)
