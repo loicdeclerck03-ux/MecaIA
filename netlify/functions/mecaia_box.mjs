@@ -123,7 +123,71 @@ const DTC_KNOWLEDGE = {
   P0700: { desc:"Défaut boîte automatique — consulter les codes T en complément", urgency:"MEDIUM", causes:["nombreuses causes possibles","voir codes T07xx T08xx"], cost_estimate:"variable", action:"Lire les codes défauts boîte avec un outil spécifique" },
   // Batterie/alternateur
   P0562: { desc:"Tension batterie trop basse", urgency:"HIGH", causes:["batterie faible","alternateur HS","connexions batterie oxydées"], cost_estimate:"80-400€", action:"Mesurer tension batterie. Devrait être 12,6V repos, 14V moteur en marche." },
-  P0563: { desc:"Tension batterie trop haute", urgency:"MEDIUM", causes:["régulateur alternateur HS","surcharge du circuit"], cost_estimate:"150-500€", action:"Vérifier l'alternateur" },
+  P0563: { desc:"Tension batterie trop haute", urgency:"MEDIUM", causes:["régulateur alternateur HS","surcharge du circuit"], cost_estimate:"150-500€", action:"Vérifier l'alternateur" },,
+// ── Système d'admission / Turbo ────────────────────────────────────────────
+  P0087: { desc:"Pression carburant insuffisante dans le rail (diesel direct)", urgency:"HIGH", causes:["pompe haute pression défaillante","filtre à carburant colmaté","injecteurs fuites retour","régulateur pression HS"], cost_estimate:"200-1500€", action:"Contrôle urgent — ne pas rouler à pleine charge. Vérifier filtre carburant en premier." },
+  P0088: { desc:"Pression carburant rail trop haute", urgency:"HIGH", causes:["régulateur pression défaillant","vanne limiteur HS","capteur pression HS"], cost_estimate:"200-800€", action:"Diagnostic urgence pression rail nécessaire" },
+  P0182: { desc:"Capteur température carburant — signal bas", urgency:"LOW", causes:["capteur HS","câblage"], cost_estimate:"50-200€", action:"Remplacer capteur température carburant" },
+  P0183: { desc:"Capteur température carburant — signal haut", urgency:"LOW", causes:["capteur HS","câblage court-circuit"], cost_estimate:"50-200€", action:"Remplacer capteur température carburant" },
+  P0299: { desc:"Sous-régime turbo — pression de suralimentation insuffisante", urgency:"HIGH", causes:["vanne N75 (régulation VNT) HS","turbine encrassée","durites suralimentation fuitantes","capteur pression turbo HS","turbo en fin de vie"], cost_estimate:"300-2000€", action:"Nettoyer vanne N75, vérifier durites. Si turbo bruyant, remplacement imminent." },
+  P0234: { desc:"Pression de suralimentation excessive (over-boost)", urgency:"HIGH", causes:["vanne N75 collée","capteur MAP HS","wastegate bloquée"], cost_estimate:"200-1500€", action:"Ne pas solliciter le moteur. Contrôle turbo urgent." },
+  P0238: { desc:"Signal capteur pression turbo trop élevé", urgency:"MEDIUM", causes:["capteur MAP HS","court-circuit câblage"], cost_estimate:"100-300€", action:"Remplacer capteur MAP/pression turbo" },
+  P0237: { desc:"Signal capteur pression turbo trop bas", urgency:"MEDIUM", causes:["capteur MAP HS","durite dépression bouchée"], cost_estimate:"100-300€", action:"Vérifier durite dépression + capteur MAP" },
+  // ── DPF / FAP (Filtre à Particules) ────────────────────────────────────────
+  P2002: { desc:"Efficacité filtre à particules insuffisante banque 1 (FAP colmaté)", urgency:"HIGH", causes:["FAP saturé (conduite urbaine trop fréquente)","voyant FAP ignoré trop longtemps","régénération incomplète","huile moteur dans FAP"], cost_estimate:"200-1500€", action:"Régénération forcée si possible. Si inefficace, nettoyage ou remplacement FAP." },
+  P2459: { desc:"Fréquence de régénération FAP anormale", urgency:"MEDIUM", causes:["conduite trop courte","thermostat HS (température insuffisante)","sonde différentielle FAP HS"], cost_estimate:"100-800€", action:"Faire une route à vitesse soutenue pour déclencher régénération" },
+  P2452: { desc:"Capteur pression différentielle FAP — circuit", urgency:"MEDIUM", causes:["sonde delta-P HS","tuyaux sonde colmatés","sonde encrassée"], cost_estimate:"100-400€", action:"Nettoyer ou remplacer la sonde différentielle FAP" },
+  P2453: { desc:"Signal capteur pression différentielle FAP trop bas", urgency:"MEDIUM", causes:["sonde HS","tuyau sonde bouché"], cost_estimate:"100-350€", action:"Remplacer sonde différentielle" },
+  P2454: { desc:"Signal capteur pression différentielle FAP trop haut", urgency:"MEDIUM", causes:["sonde HS","tuyau sonde percé"], cost_estimate:"100-350€", action:"Vérifier circuit sonde différentielle" },
+  // ── Système de refroidissement ─────────────────────────────────────────────
+  P0215: { desc:"Arrêt moteur commandé par ECU — sécurité", urgency:"HIGH", causes:["surchauffe moteur","capteur température HS","pression huile trop basse"], cost_estimate:"variable", action:"Ne pas redémarrer sans diagnostic. Vérifier niveaux refroidissement et huile." },
+  P0219: { desc:"Régime moteur excessif — survitesse", urgency:"HIGH", causes:["embrayage HS","calculateur défaillant"], cost_estimate:"variable", action:"Ne pas rouler — risque moteur" },
+  P0480: { desc:"Circuit ventilateur refroidissement — relais 1", urgency:"MEDIUM", causes:["relais ventilateur HS","câblage","motoventilateur HS"], cost_estimate:"80-300€", action:"Tester le relais ventilateur et le motoventilateur" },
+  P0481: { desc:"Circuit ventilateur refroidissement — relais 2", urgency:"MEDIUM", causes:["relais 2 HS","câblage"], cost_estimate:"80-300€", action:"Tester relais 2 et câblage" },
+  P0483: { desc:"Défaut validation motoventilateur — logique incohérente", urgency:"MEDIUM", causes:["motoventilateur court-circuit","câblage","relais HS"], cost_estimate:"100-400€", action:"Vérifier câblage motoventilateur et résistances" },
+  // ── Injection directe diesel ────────────────────────────────────────────────
+  P0200: { desc:"Circuit injecteurs — défaut général", urgency:"HIGH", causes:["injecteur(s) HS","câblage injecteurs","calculateur"], cost_estimate:"150-2000€", action:"Tester les injecteurs un par un (Actuator test)" },
+  P0261: { desc:"Injecteur cylindre 1 — tension faible", urgency:"HIGH", causes:["injecteur cyl.1 court-circuit","câblage"], cost_estimate:"200-600€", action:"Remplacer injecteur cyl.1" },
+  P0264: { desc:"Injecteur cylindre 2 — tension faible", urgency:"HIGH", causes:["injecteur cyl.2 HS"], cost_estimate:"200-600€", action:"Remplacer injecteur cyl.2" },
+  P0267: { desc:"Injecteur cylindre 3 — tension faible", urgency:"HIGH", causes:["injecteur cyl.3 HS"], cost_estimate:"200-600€", action:"Remplacer injecteur cyl.3" },
+  P0270: { desc:"Injecteur cylindre 4 — tension faible", urgency:"HIGH", causes:["injecteur cyl.4 HS"], cost_estimate:"200-600€", action:"Remplacer injecteur cyl.4" },
+  // ── Gestion du ralenti ─────────────────────────────────────────────────────
+  P0506: { desc:"Ralenti trop bas", urgency:"MEDIUM", causes:["encrassement corps papillon","vanne IAC HS","fuite d'air admission","injecteurs sales"], cost_estimate:"100-400€", action:"Nettoyer corps papillon et vanne IAC" },
+  P0507: { desc:"Ralenti trop élevé", urgency:"MEDIUM", causes:["corps papillon collé","vanne IAC bloquée ouverte","fuite d'air admission après MAF"], cost_estimate:"100-400€", action:"Nettoyer corps papillon. Vérifier durites admission." },
+  P0521: { desc:"Signal capteur pression huile hors plage", urgency:"HIGH", causes:["capteur pression huile HS","pression huile réellement basse","câblage"], cost_estimate:"50-500€", action:"Vérifier niveau et pression huile IMMÉDIATEMENT avant de rouler" },
+  P0522: { desc:"Signal capteur pression huile trop bas", urgency:"HIGH", causes:["pression huile insuffisante","capteur HS","filtre huile colmaté"], cost_estimate:"50-2000€", action:"ARRÊT IMMÉDIAT — risque de casse moteur si pression réellement basse" },
+  // ── Système électrique ─────────────────────────────────────────────────────
+  P0600: { desc:"Communication bus CAN — défaut général", urgency:"MEDIUM", causes:["câble CAN endommagé","calculateur défaillant","interférence électrique"], cost_estimate:"200-1000€", action:"Diagnostic réseau CAN nécessaire chez un professionnel" },
+  P0601: { desc:"Mémoire ROM calculateur moteur (ECU) corrompue", urgency:"HIGH", causes:["ECU défaillant","coupure tension pendant programmation"], cost_estimate:"500-2000€", action:"Recoding ou remplacement ECU nécessaire" },
+  P0605: { desc:"Erreur mémoire ROM interne ECU", urgency:"HIGH", causes:["ECU HS"], cost_estimate:"500-2000€", action:"Remplacement ou réparation ECU nécessaire" },
+  P0606: { desc:"ECU — processeur principal en défaut", urgency:"HIGH", causes:["ECU HS"], cost_estimate:"500-2000€", action:"Professionnel requis — ECU défaillant" },
+  P0642: { desc:"Tension référence capteur A trop basse (5V reference)", urgency:"MEDIUM", causes:["court-circuit sur circuit 5V","capteur HS court-circuit"], cost_estimate:"100-500€", action:"Identifier quel capteur tire le 5V à la masse" },
+  P0643: { desc:"Tension référence capteur A trop haute", urgency:"MEDIUM", causes:["câblage court-circuit alimentation","ECU HS"], cost_estimate:"100-500€", action:"Vérifier câblage 5V référence" },
+  // ── Système d'échappement / Lambda ─────────────────────────────────────────
+  P0136: { desc:"Circuit sonde lambda B1S2 (aval catalyseur) — défaut", urgency:"LOW", causes:["sonde lambda aval HS","câblage"], cost_estimate:"150-400€", action:"Remplacer sonde lambda aval banque 1" },
+  P0141: { desc:"Chauffage sonde lambda B1S2 — circuit défaillant", urgency:"LOW", causes:["résistance chauffage grillée"], cost_estimate:"150-400€", action:"Remplacer sonde lambda B1S2" },
+  P0156: { desc:"Circuit sonde lambda B2S2 — défaut", urgency:"LOW", causes:["sonde lambda aval B2 HS","câblage"], cost_estimate:"150-400€", action:"Remplacer sonde lambda aval banque 2" },
+  P0420_ALT: { desc:"Catalyseur B1 sous seuil — version aggravée", urgency:"MEDIUM", causes:["catalyseur HS — casse confirmée par sondes"], cost_estimate:"400-1500€", action:"Remplacement catalyseur" },
+  // ── Boîte automatique ──────────────────────────────────────────────────────
+  P0711: { desc:"Capteur température fluide boîte auto — signal incorrect", urgency:"MEDIUM", causes:["capteur HS","câblage","niveau ATF bas"], cost_estimate:"100-400€", action:"Vérifier niveau fluide boîte auto (ATF)" },
+  P0712: { desc:"Température fluide boîte auto — signal trop bas", urgency:"MEDIUM", causes:["capteur HS","court-circuit"], cost_estimate:"100-300€", action:"Vérifier capteur et câblage" },
+  P0713: { desc:"Température fluide boîte auto — signal trop haut", urgency:"HIGH", causes:["surchauffe boîte auto","manque ATF","radiateur ATF bouché"], cost_estimate:"200-2000€", action:"Vérifier niveau ATF. Surchauffe = danger pour la boîte." },
+  P0731: { desc:"Rapport 1 boîte auto — glissement", urgency:"HIGH", causes:["ATF dégradé","embrayage 1ère HS","solénoïde HS"], cost_estimate:"500-3000€", action:"Vidange ATF urgente. Si persiste, boîte en défaut mécanique." },
+  P0732: { desc:"Rapport 2 boîte auto — glissement", urgency:"HIGH", causes:["ATF dégradé","embrayage 2e HS"], cost_estimate:"500-3000€", action:"Vidange ATF. Diagnostic boîte auto." },
+  // ── Systèmes actifs sécurité ───────────────────────────────────────────────
+  C0031: { desc:"Capteur roue avant droite (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS","roue phonique endommagée","câblage"], cost_estimate:"100-300€", action:"ABS et ESP désactivés. Rouler prudemment. Remplacer capteur." },
+  C0034: { desc:"Capteur roue avant gauche (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS","roue phonique"], cost_estimate:"100-300€", action:"ABS et ESP désactivés. Remplacer capteur." },
+  C0037: { desc:"Capteur roue arrière droite (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS","roue phonique"], cost_estimate:"100-300€", action:"Remplacer capteur ABS roue arrière droite" },
+  C0040: { desc:"Capteur roue arrière gauche (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS"], cost_estimate:"100-300€", action:"Remplacer capteur ABS roue arrière gauche" },
+  // ── Système air conditionné ────────────────────────────────────────────────
+  B1000: { desc:"ECU module carrosserie — erreur interne", urgency:"LOW", causes:["module BCM HS","tension","câblage"], cost_estimate:"200-800€", action:"Diagnostic module BCM" },
+  P0532: { desc:"Capteur pression réfrigérant A/C — signal bas", urgency:"LOW", causes:["capteur pression A/C HS","fuite réfrigérant (R134a/R1234yf vide)"], cost_estimate:"100-500€", action:"Vérifier niveau réfrigérant A/C" },
+  P0533: { desc:"Capteur pression réfrigérant A/C — signal haut", urgency:"LOW", causes:["surpression circuit A/C","capteur HS"], cost_estimate:"100-400€", action:"Diagnostic circuit A/C" },
+  // ── Système de direction assistée électrique ───────────────────────────────
+  C0700: { desc:"Défaut système de direction assistée électrique (EPS)", urgency:"MEDIUM", causes:["moteur EPS HS","capteur angle volant","câblage"], cost_estimate:"300-1500€", action:"Direction plus lourde mais fonctionnelle. Diagnostic EPS." },
+  U0100: { desc:"Perte communication avec ECU moteur (CAN Bus)", urgency:"HIGH", causes:["câble CAN coupé","calculateur hors tension","connecteur dessoudé"], cost_estimate:"200-1500€", action:"Vérifier alimentation ECU et câble CAN. Professionnel recommandé." },
+  U0101: { desc:"Perte communication avec TCU (boîte auto)", urgency:"HIGH", causes:["câble CAN vers TCU","TCU HS"], cost_estimate:"200-1500€", action:"Diagnostic réseau CAN" },
+  U0121: { desc:"Perte communication avec module ABS/ESP", urgency:"HIGH", causes:["câble CAN","module ABS HS"], cost_estimate:"300-1500€", action:"Diagnostic CAN vers ABS. ABS/ESP inactifs." },
 };
 
 // ── Prompt système agent Dylan ──────────────────────────────────────────────
