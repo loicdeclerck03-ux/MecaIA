@@ -943,7 +943,8 @@ textarea{resize:vertical;min-height:70px}
       <button class="btn-lnav-ghost" onclick="goAuth('login')" id="l-l">Connexion</button>
       <button class="btn-lnav-acc" onclick="goAuth('register')" id="l-s">Commencer</button>
     </div>
-  </nav>
+    <button class="tab" id="t-box" onclick="showPg('box')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4"/><circle cx="8" cy="14" r="1.5" fill="currentColor"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/><circle cx="16" cy="14" r="1.5" fill="currentColor"/></svg>Box</button>
+</nav>
 
   <div class="l-hero">
     <div class="l-tag" id="l-tag">
@@ -1577,6 +1578,21 @@ textarea{resize:vertical;min-height:70px}
   </div>
 </div></div>
 
+
+<!-- == PAGE: MECAIA BOX == -->
+<div class="pg" id="pg-box"><div class="wrap">
+<style>
+.bxhero{text-align:center;padding:28px 0 18px}.bxhero h1{font-size:26px;font-weight:900;margin-bottom:8px}.bxhero h1 span{color:var(--acc)}.bxhero p{color:var(--muted);font-size:14px;max-width:480px;margin:0 auto;line-height:1.6}
+.bxfeat{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}.bxf{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:14px;text-align:center}.bxf .bfi{font-size:26px;margin-bottom:6px}.bxf .bft{font-weight:700;font-size:13px;margin-bottom:3px}.bxf .bfd{color:var(--muted);font-size:11px;line-height:1.5}
+.bxdl{background:var(--s2);border:1px solid rgba(232,160,0,.25);border-radius:var(--r-md);padding:20px;margin:12px 0;text-align:center}.bxdl h2{font-size:16px;font-weight:800;margin-bottom:5px}.bxdl .bxsub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.dlbtns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.dlbtn{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:11px 16px;cursor:pointer;transition:all .2s;min-width:145px;text-decoration:none;color:var(--tx)}.dlbtn:hover{border-color:var(--acc);transform:translateY(-1px)}.dlbtn .dli{font-size:22px}.dlbtn .dlp{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.dlbtn .dln{font-size:13px;font-weight:700}.dlsoon{background:var(--acc);color:#0a0a0a;font-size:9px;font-weight:800;padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle}
+.bxsteps{display:flex;flex-direction:column}.bxst{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--bd)}.bxst:last-child{border-bottom:none}.bxsn{width:28px;height:28px;border-radius:50%;background:var(--acc);color:#0a0a0a;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}.bxstt{font-weight:700;font-size:13px;margin-bottom:3px}.bxstd{color:var(--muted);font-size:12px;line-height:1.5}
+</style>
+<div class="bxhero"><h1>MECA<span>IA</span> BOX</h1><p>Le diagnostic automobile professionnel piloté par l'IA. Dylan analyse votre voiture en 30 secondes — codes défauts, solutions et coûts.</p></div>
+<div class="bxfeat"><div class="bxf"><div class="bfi">🔌</div><div class="bft">Connexion OBD2 auto</div><div class="bfd">Dylan détecte et se connecte au boitéier Bluetooth automatiquement</div></div><div class="bxf"><div class="bfi">🤖</div><div class="bft">IA pilote tout</div><div class="bfd">Dites scan ma voiture — Dylan lit VIN, codes et paramètres</div></div><div class="bxf"><div class="bfi">💬</div><div class="bft">Chat naturel</div><div class="bfd">Questions en français — réponses simples, pas de jargon</div></div><div class="bxf"><div class="bfi">💰</div><div class="bft">Solutions et coûts</div><div class="bfd">Causes, réparations et fourchette de prix pour chaque problème</div></div></div>
+<div class="bxdl"><h2>📲 Téléchargez l'application MecaIA</h2><div class="bxsub">MecaIA Box est accessible depuis nos applications desktop et mobile. Choisissez votre version :</div><div class="dlbtns"><a class="dlbtn" href="#" onclick="downloadApp('windows');return false"><div class="dli">🖥️</div><div><div class="dlp">Windows 10/11</div><div class="dln">MecaIA Desktop</div></div></a><a class="dlbtn" href="#" onclick="downloadApp('android');return false"><div class="dli">🤖</div><div><div class="dlp">Android 8+</div><div class="dln">MecaIA Android</div></div></a><a class="dlbtn" href="#" onclick="downloadApp('ios');return false"><div class="dli">📱</div><div><div class="dlp">iPhone / iPad</div><div class="dln">MecaIA iOS<span class="dlsoon">BIENTÔT</span></div></div></a></div></div>
+<div class="card"><div class="ch"><div class="ct">Comment ça marche ?</div></div><div class="cb"><div class="bxsteps"><div class="bxst"><div class="bxsn">1</div><div><div class="bxstt">Branchez le boitéier dans votre voiture</div><div class="bxstd">Port OBD2 sous le tableau de bord côté conducteur. Mettez le contact. LED allumée = prêt.</div></div></div><div class="bxst"><div class="bxsn">2</div><div><div class="bxstt">Ouvrez l'app MecaIA — connexion automatique</div><div class="bxstd">L'application détecte le boitéier Bluetooth automatiquement. Aucune configuration nécessaire.</div></div></div><div class="bxst"><div class="bxsn">3</div><div><div class="bxstt">Cliquez sur SCAN COMPLET ou dites-le à Dylan</div><div class="bxstd">Dylan lit le VIN, analyse tous les codes défauts et paramètres moteur en 30 secondes.</div></div></div><div class="bxst"><div class="bxsn">4</div><div><div class="bxstt">Diagnostic complet avec solutions et coûts</div><div class="bxstd">Dylan explique chaque problème, causes, solutions et urgence. Chatez librement avec lui.</div></div></div></div></div></div>
+</div></div>
 </div><!-- end #s-app -->
 
 <!-- ══════════════════════════════════════════════════
@@ -1646,7 +1662,7 @@ fr:{
   dyl:'Décrivez votre panne à Dylan : voyant allumé, bruit, code OBD, perte de puissance...',
   dylwelcome:"👋 Salut, moi c'est <strong>Dylan</strong>. Décrivez-moi votre panne (symptôme, voyant, bruit, code OBD…) et je vous aide à diagnostiquer.",
   out:'Déconnexion',
-  nav:['Dylan IA','Garage','VIN','Pièces','Suivi','FAQ','Tarifs'],
+  nav:['Dylan IA','Garage','VIN','Pièces','Suivi','FAQ','Tarifs','Box'],
   banner:'Crédits : ',bannerUnit:'1 crédit/utilisation · VIN gratuit',
 },
 nl:{
@@ -1672,7 +1688,7 @@ nl:{
   dyl:'Beschrijf uw panne aan Dylan: brandend lampje, geluid, OBD-code, vermogensverlies...',
   dylwelcome:"👋 Hallo, ik ben <strong>Dylan</strong>. Beschrijf uw panne (symptoom, lampje, geluid, OBD-code…) en ik help u diagnosticeren.",
   out:'Uitloggen',
-  nav:['Dylan IA','Garage','VIN','Onderdelen','Overzicht','FAQ','Tarieven'],
+  nav:['Dylan IA','Garage','VIN','Onderdelen','Overzicht','FAQ','Tarieven','Box'],
   banner:'Credits: ',bannerUnit:'1 credit/gebruik · VIN gratis',
 },
 en:{
@@ -1698,7 +1714,7 @@ en:{
   dyl:'Describe your problem to Dylan: warning light, noise, OBD code, loss of power...',
   dylwelcome:"👋 Hi, I'm <strong>Dylan</strong>. Describe your fault (symptom, warning light, noise, OBD code…) and I'll help you diagnose it.",
   out:'Log out',
-  nav:['Dylan AI','Garage','VIN','Parts','History','FAQ','Pricing'],
+  nav:['Dylan AI','Garage','VIN','Parts','History','FAQ','Pricing','Box'],
   banner:'Credits: ',bannerUnit:'1 credit/use · VIN free',
 },
 de:{
@@ -1724,7 +1740,7 @@ de:{
   dyl:'Beschreiben Sie Ihr Problem Dylan: Warnleuchte, Geräusch, OBD-Code, Leistungsverlust...',
   dylwelcome:"👋 Hallo, ich bin <strong>Dylan</strong>. Beschreiben Sie Ihren Fehler (Symptom, Warnleuchte, Geräusch, OBD-Code…) und ich helfe Ihnen bei der Diagnose.",
   out:'Abmelden',
-  nav:['Dylan KI','Garage','VIN','Teile','Verlauf','FAQ','Preise'],
+  nav:['Dylan KI','Garage','VIN','Teile','Verlauf','FAQ','Preise','Box'],
   banner:'Credits: ',bannerUnit:'1 Credit/Nutzung · VIN kostenlos',
 }
 };
@@ -1773,7 +1789,7 @@ window.setLang=function(l){
   const din=document.getElementById('dylan-in');if(din)din.placeholder=t.dyl;
   // App: nav tabs
   if (t.nav) {
-    const tabIds = ['t-diag','t-garage','t-vin','t-pieces','t-suivi','t-faq','t-tarifs'];
+    const tabIds = ['t-diag','t-garage','t-vin','t-pieces','t-suivi','t-faq','t-tarifs','t-box'];
     tabIds.forEach((id, i) => {
       const tb = document.getElementById(id);
       if (tb && t.nav[i]) {
@@ -2791,6 +2807,12 @@ window.dylanRender = function (data) {
   }
 };
 
+window.downloadApp=function(p){
+  if(p==='ios'){toast("App iOS bientôt sur l'App Store !",'ok');return;}
+  if(window.MecaIAElectron){toast("Vous utilisez déjà MecaIA Desktop !",'ok');return;}
+  if(window.Capacitor){toast("Vous utilisez l'app mobile MecaIA !",'ok');return;}
+  toast("Téléchargez l'app sur mecaiaauto.com",'ok');
+};
 window.dylanSend = async function () {
   const inp = document.getElementById('dylan-in'); if (!inp) return;
   const msg = inp.value.trim(); if (!msg) { toast('Écrivez votre message à Dylan', 'er'); return; }
