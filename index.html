@@ -900,10 +900,13 @@ textarea{resize:vertical;min-height:70px}
     <div class="mh" style="margin-bottom:0">Acheter des crédits</div>
   </div>
   <div class="ms">Paiement 100% sécurisé Stripe. Crédits activés immédiatement.</div>
-  <div class="pack on" id="pk1" onclick="buyPack('starter')"><div><div class="pkn">Starter — 8 crédits</div><div class="pks">0,62€/diagnostic · sans expiration</div></div><div class="pkp">4,99€</div></div>
-  <div class="pack" id="pk2" onclick="buyPack('standard')"><div><div class="pkn">Standard — 30 crédits</div><div class="pks">0,33€/diagnostic · sans expiration</div></div><div class="pkp">9,99€</div></div>
-  <div class="pack" id="pk3" onclick="buyPack('expert')"><div><div class="pkn">Expert — 80 crédits ⭐</div><div class="pks">0,25€/diagnostic · sans expiration</div></div><div class="pkp">19,99€</div></div>
-  <div class="pack" id="pk4" onclick="buyPack('monthly')" style="border-color:rgba(232,160,0,.5)"><div><div class="pkn">🔄 Mensuel — 20 cr/mois</div><div class="pks">0,40€/diagnostic · résiliable</div></div><div class="pkp">7,99€/mois</div></div>
+  <div class="pack on" id="pk1" onclick="buyPack('starter')"><div><div class="pkn">Starter — 8 cr</div><div class="pks">4,99€ · 0,62€/diag</div></div><div class="pkp">4,99€</div></div>
+  <div class="pack" id="pk2" onclick="buyPack('standard')"><div><div class="pkn">Standard — 30 cr ⭐</div><div class="pks">9,99€ · 0,33€/diag</div></div><div class="pkp">9,99€</div></div>
+  <div class="pack" id="pk3" onclick="buyPack('expert')"><div><div class="pkn">Expert — 80 cr</div><div class="pks">19,99€ · 0,25€/diag</div></div><div class="pkp">19,99€</div></div>
+  <div class="pack" id="pk4" onclick="buyPack('solo_monthly')"><div><div class="pkn">Solo Mensuel — 20cr/mois</div><div class="pks">7,99€/mois · résiliable</div></div><div class="pkp">7,99€/mois</div></div>
+  <div class="pack" id="pk5" onclick="buyPack('pro_monthly')"><div><div class="pkn">Pro Mensuel — 50cr/mois</div><div class="pks">12,99€/mois · OBD2 avancé</div></div><div class="pkp">12,99€/mois</div></div>
+  <div class="pack" id="pk6" onclick="buyPack('solo_annual')"><div><div class="pkn">Solo Annuel — 240cr</div><div class="pks">59,99€/an · économie 38%</div></div><div class="pkp">59,99€/an</div></div>
+  <div class="pack" id="pk7" onclick="buyPack('pro_annual')"><div><div class="pkn">Pro Annuel — 600cr</div><div class="pks">99,99€/an · économie 36%</div></div><div class="pkp">99,99€/an</div></div>
   <button class="bcl" onclick="closeM('m-pay')">Annuler</button>
   <div class="msec">
     <label>Code promo</label>
@@ -1518,8 +1521,8 @@ textarea{resize:vertical;min-height:70px}
           <button id="tog-ab" onclick="togTarifs('abo')" style="padding:5px 14px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:.2s">Abonnement <span style="font-size:9px;color:var(--green)">BIENTÔT</span></button>
         </div>
       </div>
-      <!-- Packs sans engagement -->
-      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:0 0 10px 2px">SANS ENGAGEMENT — CRÉDITS</div>
+      <!-- PACKS CRÉDITS — sans engagement -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:0 0 10px 2px">Packs crédits — sans engagement</div>
       <div class="plans">
         <div class="plan">
           <div class="pname">Starter</div>
@@ -1553,20 +1556,77 @@ textarea{resize:vertical;min-height:70px}
           <button class="bplan" onclick="buyPackage('expert')">Acheter</button>
         </div>
       </div>
-      <!-- Abonnement mensuel -->
-      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:18px 0 10px 2px">ABONNEMENT — RÉSILIABLE À TOUT MOMENT</div>
+
+      <!-- ABONNEMENTS MENSUELS -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px 2px">Abonnements mensuels — résiliables à tout moment</div>
       <div class="plans">
-        <div class="plan" style="border-color:rgba(232,160,0,.4);background:rgba(232,160,0,.04)">
-          <div class="pbadge" style="background:var(--acc);color:#0a0a0a">🔄 MENSUEL</div>
-          <div class="pname">MecaIA Mensuel</div>
+        <div class="plan" style="border-color:rgba(232,160,0,.35)">
+          <div class="pname">Solo</div>
           <div class="pprice">7,99<sub>€/mois</sub></div>
           <div class="pfeats">
             <div class="pfeat">20 crédits par mois</div>
             <div class="pfeat">0,40€/diagnostic</div>
             <div class="pfeat">Résiliation facile</div>
-            <div class="pfeat">Crédits restants conservés</div>
           </div>
-          <button class="bplan" style="background:var(--acc);color:#0a0a0a;border-color:var(--acc)" onclick="buyPackage('monthly')">S'abonner</button>
+          <button class="bplan" onclick="buyPackage('solo_monthly')">S'abonner</button>
+        </div>
+        <div class="plan star" style="border-color:var(--acc)">
+          <div class="pbadge" style="background:var(--acc);color:#0a0a0a">🔌 + BOX INCLUS</div>
+          <div class="pname">Pro</div>
+          <div class="pprice">12,99<sub>€/mois</sub></div>
+          <div class="pfeats">
+            <div class="pfeat">50 crédits par mois</div>
+            <div class="pfeat">0,26€/diagnostic</div>
+            <div class="pfeat">Accès OBD2 avancé</div>
+          </div>
+          <button class="bplan" style="background:var(--acc);color:#0a0a0a;border-color:var(--acc)" onclick="buyPackage('pro_monthly')">S'abonner</button>
+        </div>
+      </div>
+
+      <!-- ABONNEMENTS ANNUELS -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px 2px">Abonnements annuels — économisez jusqu'à 38%</div>
+      <div class="plans">
+        <div class="plan" style="border-color:rgba(232,160,0,.35)">
+          <div class="pbadge">💰 ÉCONOMIE 38%</div>
+          <div class="pname">Solo Annuel</div>
+          <div class="pprice">59,99<sub>€/an</sub></div>
+          <div class="pfeats">
+            <div class="pfeat">240 crédits</div>
+            <div class="pfeat">0,25€/diagnostic</div>
+            <div class="pfeat">= 4,99€/mois</div>
+          </div>
+          <button class="bplan" onclick="buyPackage('solo_annual')">S'abonner</button>
+        </div>
+        <div class="plan star" style="border-color:var(--acc)">
+          <div class="pbadge" style="background:var(--acc);color:#0a0a0a">💎 ÉCONOMIE 36%</div>
+          <div class="pname">Pro Annuel</div>
+          <div class="pprice">99,99<sub>€/an</sub></div>
+          <div class="pfeats">
+            <div class="pfeat">600 crédits</div>
+            <div class="pfeat">0,17€/diagnostic</div>
+            <div class="pfeat">= 8,33€/mois</div>
+          </div>
+          <button class="bplan" style="background:var(--acc);color:#0a0a0a;border-color:var(--acc)" onclick="buyPackage('pro_annual')">S'abonner</button>
+        </div>
+      </div>
+
+      <!-- MECAIA BOX -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px 2px">Boitier OBD2 MecaIA Box</div>
+      <div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:16px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-weight:800;font-size:15px;margin-bottom:4px">🔌 MecaIA Box — Boîtier OBD2 Bluetooth</div>
+            <div style="color:var(--muted);font-size:12px">Compatible iOS · Android · Windows · branchez et Dylan analyse automatiquement</div>
+            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+              <span style="background:var(--acc-b,rgba(232,160,0,.15));color:var(--acc);font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700">Bluetooth 5.2</span>
+              <span style="background:var(--acc-b,rgba(232,160,0,.15));color:var(--acc);font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700">Multimarque 1996+</span>
+              <span style="background:var(--acc-b,rgba(232,160,0,.15));color:var(--acc);font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700">10 crédits offerts</span>
+            </div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:22px;font-weight:900">39,99<span style="font-size:13px">€</span></div>
+            <button class="bplan" style="margin-top:6px;padding:8px 20px;font-size:12px" onclick="toast('Le boîtier MecaIA Box sera disponible prochainement. Rejoignez la liste d\'attente via la FAQ !','ok')">Pré-commander</button>
+          </div>
         </div>
       </div>
       <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:12px">
