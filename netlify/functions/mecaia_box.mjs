@@ -16,7 +16,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // ── Capacités par marque ────────────────────────────────────────────────────
 const BRAND_CAPABILITIES = {
-  vw:        { name:"Volkswagen", resets:["huile","dpf","frein","batt","papillon","injecteur"], actuators:["ventilateur","purge_evap","egr","injecteur_test","frein_parking"], options:["feux_journee","essuie_pluie","confort_fermeture","demarrage_sans_cle","lane_assist"], coding_level:"élevé" },
+  vw:        { name:"Volkswagen", resets:["huile","dpf","frein","batt","papillon","injecteur"], actuators:["ventilateur","purge_evap","egr","injecteur_test","frein_parking"], options:['feux_journee','essuie_pluie','confort_fermeture','demarrage_sans_cle','lane_assist','retros_rabattables','feux_bienvenue','feux_virage','klaxon_verrouillage'], coding_level:"élevé" },
   audi:      { name:"Audi", resets:["huile","dpf","frein","batt","papillon","injecteur","boite"], actuators:["ventilateur","purge_evap","egr","injecteur_test","frein_parking"], options:["feux_journee","essuie_pluie","lane_assist"], coding_level:"élevé" },
   seat:      { name:"SEAT", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"], coding_level:"moyen" },
   skoda:     { name:"Škoda", resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"], coding_level:"moyen" },
@@ -52,6 +52,11 @@ const OPTION_NAMES = {
   demarrage_sans_cle: "démarrage sans clé (Keyless)",
   lane_assist: "aide au maintien de voie",
   sport_display: "affichage sportif tableau de bord",
+  retros_rabattables: "rétroviseurs rabattables automatiques",
+  feux_bienvenue: "feux de bienvenue (Coming Home)",
+  feux_virage: "phares de virage (Cornering lights)",
+  klaxon_verrouillage: "bip klaxon confirmation verrouillage",
+  mode_sport_auto: "mode Sport automatique au démarrage",
 };
 
 const ACTUATOR_NAMES = {
@@ -216,7 +221,7 @@ Resets disponibles : ${resetsStr}
 ### "Quelles options puis-je débloquer ?"
 → Annonce que tu vas vérifier, envoie [CMD:read_options:${brand}], présente les résultats clairement
    Dis quelles sont activées et lesquelles peuvent être activées
-   Propose : "Laquelle voulez-vous activer ?"
+   Propose : "Laquelle voulez-vous activer ?" (feux jour, essuie-pluie, rétros rabattables, feux bienvenue, bip fermeture, sport auto, keyless...)
 
 ### "Je veux les feux de jour" / "Active les DRL"
 → Confirme l'action : "Je vais activer les feux de jour. Après, ils s'allumeront automatiquement au démarrage. C'est bon ?"
