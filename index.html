@@ -1649,16 +1649,94 @@ textarea{resize:vertical;min-height:70px}
 <!-- == PAGE: MECAIA BOX == -->
 <div class="pg" id="pg-box"><div class="wrap">
 <style>
-.bxhero{text-align:center;padding:28px 0 18px}.bxhero h1{font-size:26px;font-weight:900;margin-bottom:8px}.bxhero h1 span{color:var(--acc)}.bxhero p{color:var(--muted);font-size:14px;max-width:480px;margin:0 auto;line-height:1.6}
-.bxfeat{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}.bxf{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:14px;text-align:center}.bxf .bfi{font-size:26px;margin-bottom:6px}.bxf .bft{font-weight:700;font-size:13px;margin-bottom:3px}.bxf .bfd{color:var(--muted);font-size:11px;line-height:1.5}
-.bxdl{background:var(--s2);border:1px solid rgba(232,160,0,.25);border-radius:var(--r-md);padding:20px;margin:12px 0;text-align:center}.bxdl h2{font-size:16px;font-weight:800;margin-bottom:5px}.bxdl .bxsub{color:var(--muted);font-size:13px;margin-bottom:16px}
-.dlbtns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.dlbtn{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:11px 16px;cursor:pointer;transition:all .2s;min-width:145px;text-decoration:none;color:var(--tx)}.dlbtn:hover{border-color:var(--acc);transform:translateY(-1px)}.dlbtn .dli{font-size:22px}.dlbtn .dlp{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.dlbtn .dln{font-size:13px;font-weight:700}.dlsoon{background:var(--acc);color:#0a0a0a;font-size:9px;font-weight:800;padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle}
-.bxsteps{display:flex;flex-direction:column}.bxst{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--bd)}.bxst:last-child{border-bottom:none}.bxsn{width:28px;height:28px;border-radius:50%;background:var(--acc);color:#0a0a0a;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}.bxstt{font-weight:700;font-size:13px;margin-bottom:3px}.bxstd{color:var(--muted);font-size:12px;line-height:1.5}
+.bxhero{text-align:center;padding:28px 0 18px}
+.bxhero h1{font-size:26px;font-weight:900;margin-bottom:8px}
+.bxhero h1 span{color:var(--acc)}
+.bxhero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.6}
+.bxbadge{display:inline-block;background:rgba(232,160,0,.12);border:1px solid rgba(232,160,0,.3);color:var(--acc);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:14px;letter-spacing:.5px}
+.bxfeat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:14px 0}
+.bxf{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:12px;text-align:center;transition:border-color .2s}
+.bxf:hover{border-color:var(--acc)}
+.bxf .bfi{font-size:22px;margin-bottom:4px}
+.bxf .bft{font-weight:700;font-size:11px;margin-bottom:2px}
+.bxf .bfd{color:var(--muted);font-size:10px;line-height:1.5}
+.bxactions{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:14px;margin:10px 0}
+.bxactions h3{font-size:12px;font-weight:800;margin-bottom:10px;color:var(--acc)}
+.bxcmd{display:flex;flex-direction:column;gap:7px}
+.bxc{display:flex;align-items:flex-start;gap:9px;padding:7px;background:var(--bg);border-radius:7px;border:1px solid var(--bd)}
+.bxci{font-size:16px;flex-shrink:0;margin-top:1px}
+.bxcq{font-size:11px;color:var(--acc);font-weight:700;margin-bottom:2px}
+.bxcr{font-size:10px;color:var(--muted);line-height:1.4}
+.bxdl{background:var(--s2);border:1px solid rgba(232,160,0,.25);border-radius:var(--r-md);padding:18px;margin:10px 0;text-align:center}
+.bxdl h2{font-size:15px;font-weight:800;margin-bottom:4px}
+.bxdl .bxsub{color:var(--muted);font-size:12px;margin-bottom:14px}
+.dlbtns{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
+.dlbtn{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--bd);border-radius:9px;padding:10px 14px;cursor:pointer;transition:all .2s;min-width:130px;text-decoration:none;color:var(--tx)}
+.dlbtn:hover{border-color:var(--acc);transform:translateY(-1px)}
+.dlbtn .dli{font-size:20px}
+.dlbtn .dlp{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.dlbtn .dln{font-size:12px;font-weight:700}
+.dlsoon{background:var(--acc);color:#0a0a0a;font-size:8px;font-weight:800;padding:1px 4px;border-radius:3px;margin-left:3px;vertical-align:middle}
+.bxcompat{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:12px;margin:8px 0;font-size:10px;color:var(--muted);text-align:center;line-height:1.8}
+.bxcompat strong{color:var(--tx)}
+.bxsteps{display:flex;flex-direction:column}
+.bxst{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.bxst:last-child{border-bottom:none}
+.bxsn{width:24px;height:24px;border-radius:50%;background:var(--acc);color:#0a0a0a;font-weight:900;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.bxstt{font-weight:700;font-size:12px;margin-bottom:2px}
+.bxstd{color:var(--muted);font-size:11px;line-height:1.5}
 </style>
-<div class="bxhero"><h1>MECA<span>IA</span> BOX</h1><p>Le diagnostic automobile professionnel piloté par l'IA. Dylan analyse votre voiture en 30 secondes — codes défauts, solutions et coûts.</p></div>
-<div class="bxfeat"><div class="bxf"><div class="bfi">🔌</div><div class="bft">Connexion OBD2 auto</div><div class="bfd">Dylan détecte et se connecte au boitéier Bluetooth automatiquement</div></div><div class="bxf"><div class="bfi">🤖</div><div class="bft">IA pilote tout</div><div class="bfd">Dites scan ma voiture — Dylan lit VIN, codes et paramètres</div></div><div class="bxf"><div class="bfi">💬</div><div class="bft">Chat naturel</div><div class="bfd">Questions en français — réponses simples, pas de jargon</div></div><div class="bxf"><div class="bfi">💰</div><div class="bft">Solutions et coûts</div><div class="bfd">Causes, réparations et fourchette de prix pour chaque problème</div></div></div>
-<div class="bxdl"><h2>📲 Téléchargez l'application MecaIA</h2><div class="bxsub">MecaIA Box est accessible depuis nos applications desktop et mobile. Choisissez votre version :</div><div class="dlbtns"><a class="dlbtn" href="#" onclick="downloadApp('windows');return false"><div class="dli">🖥️</div><div><div class="dlp">Windows 10/11</div><div class="dln">MecaIA Desktop</div></div></a><a class="dlbtn" href="#" onclick="downloadApp('android');return false"><div class="dli">🤖</div><div><div class="dlp">Android 8+</div><div class="dln">MecaIA Android</div></div></a><a class="dlbtn" href="#" onclick="downloadApp('ios');return false"><div class="dli">📱</div><div><div class="dlp">iPhone / iPad</div><div class="dln">MecaIA iOS<span class="dlsoon">BIENTÔT</span></div></div></a></div></div>
-<div class="card"><div class="ch"><div class="ct">Comment ça marche ?</div></div><div class="cb"><div class="bxsteps"><div class="bxst"><div class="bxsn">1</div><div><div class="bxstt">Branchez le boitéier dans votre voiture</div><div class="bxstd">Port OBD2 sous le tableau de bord côté conducteur. Mettez le contact. LED allumée = prêt.</div></div></div><div class="bxst"><div class="bxsn">2</div><div><div class="bxstt">Ouvrez l'app MecaIA — connexion automatique</div><div class="bxstd">L'application détecte le boitéier Bluetooth automatiquement. Aucune configuration nécessaire.</div></div></div><div class="bxst"><div class="bxsn">3</div><div><div class="bxstt">Cliquez sur SCAN COMPLET ou dites-le à Dylan</div><div class="bxstd">Dylan lit le VIN, analyse tous les codes défauts et paramètres moteur en 30 secondes.</div></div></div><div class="bxst"><div class="bxsn">4</div><div><div class="bxstt">Diagnostic complet avec solutions et coûts</div><div class="bxstd">Dylan explique chaque problème, causes, solutions et urgence. Chatez librement avec lui.</div></div></div></div></div></div>
+
+<div class="bxhero">
+<div class="bxbadge">NOUVEAU &#x2014; AGENT OBD2 IA</div>
+<h1>MECA<span>IA</span> BOX</h1>
+<p>Votre m&#xe9;canicien IA personnel. Branchez le boitier, parlez &#xe0; Dylan en langage naturel &#x2014; il s&#x2019;occupe de tout.</p>
+</div>
+
+<div class="bxfeat">
+<div class="bxf"><div class="bfi">&#x1F50D;</div><div class="bft">Scan complet auto</div><div class="bfd">VIN, codes d&#xe9;fauts, param&#xe8;tres moteur, moniteurs, Freeze Frame</div></div>
+<div class="bxf"><div class="bfi">&#x1F4A1;</div><div class="bft">Options &amp; Coding</div><div class="bfd">R&#xe9;tros rabattables, feux DRL, Keyless, Coming Home &#x2014; 14 options</div></div>
+<div class="bxf"><div class="bfi">&#x1F527;</div><div class="bft">Tests actionneurs</div><div class="bfd">Ventilateur, EGR, EVAP, EPB freins &#x2014; Dylan active et v&#xe9;rifie</div></div>
+<div class="bxf"><div class="bfi">&#x1F504;</div><div class="bft">Resets service</div><div class="bfd">Vidange, FAP, freins, batterie, papillon &#x2014; 7 remises &#xe0; z&#xe9;ro</div></div>
+<div class="bxf"><div class="bfi">&#x1F6D1;</div><div class="bft">Mode entretien</div><div class="bfd">EPB ouvert pour plaquettes &#x2014; Dylan guide &#xe9;tape par &#xe9;tape</div></div>
+<div class="bxf"><div class="bfi">&#x1F4CA;</div><div class="bft">Temps r&#xe9;el</div><div class="bfd">30+ PIDs live avec alertes surchauffe, batterie, huile</div></div>
+</div>
+
+<div class="bxactions">
+<h3>&#x1F4AC; Commandes Dylan &#x2014; parlez naturellement</h3>
+<div class="bxcmd">
+<div class="bxc"><div class="bxci">&#x1F50D;</div><div><div class="bxcq">&#x22;Dylan, j&#x27;ai branch&#xe9; le boitier, trouve la panne&#x22;</div><div class="bxcr">&#x2192; Scan complet automatique + analyse + causes + co&#xfb;t estim&#xe9;</div></div></div>
+<div class="bxc"><div class="bxci">&#x1F4A1;</div><div><div class="bxcq">&#x22;Quelles options puis-je d&#xe9;bloquer sur ma voiture ?&#x22;</div><div class="bxcr">&#x2192; Dylan v&#xe9;rifie, pr&#xe9;sente les options, active celle que vous voulez</div></div></div>
+<div class="bxc"><div class="bxci">&#x1F6D1;</div><div><div class="bxcq">&#x22;Je veux changer mes plaquettes arri&#xe8;re&#x22;</div><div class="bxcr">&#x2192; Mode entretien EPB + guide remplacement + refermeture pistons</div></div></div>
+<div class="bxc"><div class="bxci">&#x1F300;</div><div><div class="bxcq">&#x22;Est-ce que mon ventilateur tourne ?&#x22;</div><div class="bxcr">&#x2192; Dylan l&#x27;active, vous l&#x27;entendez, r&#xe9;sultat imm&#xe9;diat</div></div></div>
+<div class="bxc"><div class="bxci">&#x1F6E2;&#xfe0f;</div><div><div class="bxcq">&#x22;J&#x27;ai fait la vidange, remets l&#x27;huile &#xe0; z&#xe9;ro&#x22;</div><div class="bxcr">&#x2192; Confirmation + reset compteur vidange</div></div></div>
+</div>
+</div>
+
+<div class="bxcompat">
+<strong>26 marques compatibles &#xb7;</strong> VW &#xb7; Audi &#xb7; SEAT &#xb7; Skoda &#xb7; Peugeot &#xb7; Citro&#xebn; &#xb7; Opel &#xb7; Renault &#xb7; Dacia &#xb7; BMW &#xb7; MINI &#xb7; Mercedes &#xb7; Ford &#xb7; Toyota &#xb7; Lexus &#xb7; Honda &#xb7; Hyundai &#xb7; Kia &#xb7; Fiat &#xb7; Alfa Romeo &#xb7; Volvo &#xb7; Mazda &#xb7; Nissan &#xb7; Subaru &#xb7; Suzuki &#xb7; Mitsubishi<br>
+<strong>Tout v&#xe9;hicule &#x2265; 1996</strong> (EOBD Europe &#x2265; 2001) &#xb7; Protocoles CAN ISO 15765 &#xb7; KWP2000 &#xb7; ISO 9141-2 &#xb7; SAE J1850
+</div>
+
+<div class="bxdl">
+<h2>&#x1F4F2; T&#xe9;l&#xe9;chargez l&#x27;application MecaIA</h2>
+<div class="bxsub">Compatible Windows, Android et bient&#xf4;t iPhone. Un seul boitier Bluetooth OBD2 suffit.</div>
+<div class="dlbtns">
+<a class="dlbtn" href="#" onclick="downloadApp('windows');return false"><div class="dli">&#x1F5A5;&#xfe0f;</div><div><div class="dlp">Windows 10/11</div><div class="dln">MecaIA Desktop</div></div></a>
+<a class="dlbtn" href="#" onclick="downloadApp('android');return false"><div class="dli">&#x1F4F1;</div><div><div class="dlp">Android 8+</div><div class="dln">MecaIA Android</div></div></a>
+<a class="dlbtn" href="#" onclick="downloadApp('ios');return false"><div class="dli">&#x1F34E;</div><div><div class="dlp">iPhone / iPad</div><div class="dln">MecaIA iOS<span class="dlsoon">BIENT&#xd4;T</span></div></div></a>
+</div>
+</div>
+
+<div class="card"><div class="ch"><div class="ct">Comment &#xe7;a marche ?</div></div><div class="cb">
+<div class="bxsteps">
+<div class="bxst"><div class="bxsn">1</div><div><div class="bxstt">Branchez le boitier dans votre voiture</div><div class="bxstd">Port OBD2 sous le tableau de bord c&#xf4;t&#xe9; conducteur. Mettez le contact. LED allum&#xe9;e = pr&#xeat;t.</div></div></div>
+<div class="bxst"><div class="bxsn">2</div><div><div class="bxstt">Ouvrez l&#x27;app MecaIA &#x2014; connexion automatique</div><div class="bxstd">L&#x27;application d&#xe9;tecte le boitier Bluetooth automatiquement. Aucune configuration n&#xe9;cessaire.</div></div></div>
+<div class="bxst"><div class="bxsn">3</div><div><div class="bxstt">Parlez &#xe0; Dylan en langage naturel</div><div class="bxstd">Dites simplement ce que vous voulez &#x2014; Dylan comprend et agit. Pas besoin de conna&#xee;tre la m&#xe9;canique.</div></div></div>
+<div class="bxst"><div class="bxsn">4</div><div><div class="bxstt">Dylan fait tout : scan, analyse, actions</div><div class="bxstd">Diagnostic complet, activation d&#x27;options, mode entretien, resets &#x2014; tout depuis une conversation.</div></div></div>
+</div>
+</div></div>
+
 </div></div>
 </div><!-- end #s-app -->
 
