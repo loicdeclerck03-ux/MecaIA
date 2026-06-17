@@ -821,7 +821,63 @@ textarea{resize:vertical;min-height:70px}
 @keyframes scanDash{0%{stroke-dashoffset:200}100%{stroke-dashoffset:0}}
 @keyframes scanLine{0%,100%{transform:translateY(-24px);opacity:.3}50%{transform:translateY(24px);opacity:1}}
 </style>
-</head>
+<script>
+// MecaIA Native Bridge — détection Electron/Capacitor
+(function(){
+  window.MecaIA_isNative=false;
+  window.MecaIA_platform='web';
+  // Electron (preload expose MecaIAElectron)
+  if(window.MecaIAElectron&&window.MecaIAElectron.isDesktop){
+    window.MecaIA_isNative=true;
+    window.MecaIA_platform='desktop';
+  }
+  // Capacitor (charge après DOMContentLoaded)
+  if(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform()){
+    window.MecaIA_isNative=true;
+    window.MecaIA_platform=window.Capacitor.getPlatform();
+  }
+  // Injecter bouton OBD2 dans l'interface Dylan quand natif
+  function injectOBD2(){
+    if(!window.MecaIA_isNative)return;
+    var actions=document.querySelector('.dylan-actions');
+    if(!actions||document.getElementById('btn-obd2-native'))return;
+    var btn=document.createElement('button');
+    btn.id='btn-obd2-native';
+    btn.className='bp';
+    btn.title='Connecter boitier OBD2 MecaIA Box';
+    btn.style.cssText='margin-top:0;background:var(--acc-b,#e8a000);color:#0a0a0a;font-weight:700;gap:4px;display:flex;align-items:center;';
+    btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="8" width="20" height="12" rx="2"/><path d="M7 8V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3"/><circle cx="8" cy="14" r="1" fill="currentColor"/><circle cx="12" cy="14" r="1" fill="currentColor"/><circle cx="16" cy="14" r="1" fill="currentColor"/></svg>OBD2';
+    btn.onclick=function(){
+      if(window.MecaIA_platform==='desktop'&&window.MecaIAElectron&&window.MecaIAElectron.openOBD2){
+        window.MecaIAElectron.openOBD2();
+      } else if(window.MecaIANative&&window.MecaIANative.obd2){
+        window.MecaIANative.obd2.init().then(function(){
+          if(window.toast)toast('Scan boitier OBD2...','ok');
+        });
+      } else {
+        if(window.toast)toast('Boitier OBD2 disponible dans l\'app desktop/mobile','info');
+      }
+    };
+    // Insérer après le bouton photo
+    var photobtn=actions.querySelector('button:nth-child(2)');
+    if(photobtn&&photobtn.nextSibling){
+      actions.insertBefore(btn,photobtn.nextSibling);
+    } else {
+      actions.appendChild(btn);
+    }
+  }
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(injectOBD2,400);});
+  // Écouter push notifications Capacitor
+  window.addEventListener('mecaia-push',function(e){
+    var page=e.detail&&e.detail.data&&e.detail.data.page;
+    if(page&&window.navTo)window.navTo(page);
+  });
+  // Reconnexion réseau (Capacitor)
+  window.addEventListener('mecaia-network',function(e){
+    if(e.detail&&e.detail.connected&&window.refreshCredits)window.refreshCredits();
+  });
+})();
+</script></head>
 <body>
 
 <!-- LOADING -->
