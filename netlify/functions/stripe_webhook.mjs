@@ -1,10 +1,9 @@
 // ============================================================
-// STRIPE_WEBHOOK.MJS
-// Source de vérité du paiement : Stripe appelle cette fonction.
-// - Vérifie la SIGNATURE (STRIPE_WEBHOOK_SECRET) -> non spoofable
-// - Crédite de façon IDEMPOTENTE (un événement = un crédit max)
-// - Utilise la clé SERVICE (SUPABASE_SECRET) car il n'y a pas
-//   d'utilisateur connecté dans un webhook.
+// STRIPE_WEBHOOK.MJS — v2 (17/06/2026)
+// Gère :
+//   checkout.session.completed  → paiements one-time (crédits immédiats)
+//   invoice.payment_succeeded   → renouvellements abonnement mensuel
+// Idempotence : clé unique par event Stripe (event.id ou invoice.id)
 // ============================================================
 
 import Stripe from "stripe";
@@ -18,16 +17,14 @@ export const handler = async (event) => {
     return { statusCode: 405, body: "Method not allowed" };
   }
 
-  const sig =
-    event.headers["stripe-signature"] || event.headers["Stripe-Signature"];
+  const sig    = event.headers["stripe-signature"] || event.headers["Stripe-Signature"];
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!sig || !secret) {
     return { statusCode: 400, body: "Missing signature or webhook secret" };
   }
 
-  // IMPORTANT : Stripe exige le corps BRUT pour vérifier la signature.
-  // Netlify peut encoder le body en base64 -> on le restitue tel quel.
+  // Stripe exige le corps RAW pour vérifier la signature
   const rawBody = event.isBase64Encoded
     ? Buffer.from(event.body, "base64")
     : event.body;
@@ -37,52 +34,94 @@ export const handler = async (event) => {
     stripeEvent = stripe.webhooks.constructEvent(rawBody, sig, secret);
   } catch (err) {
     console.error("[STRIPE_WEBHOOK] signature invalide:", err.message);
-    return { statusCode: 400, body: `Webhook signature verification failed` };
+    return { statusCode: 400, body: "Webhook signature verification failed" };
   }
 
   try {
+
+    // ── CAS 1 : Paiement one-time complété ────────────────────────────────
     if (stripeEvent.type === "checkout.session.completed") {
       const session = stripeEvent.data.object;
 
-      // Sécurité : on ne crédite que si le paiement est bien réglé.
+      // Ignorer les sessions d'abonnement (traitées par invoice.payment_succeeded)
+      if (session.mode === "subscription") {
+        console.log("[STRIPE_WEBHOOK] checkout subscription → handled by invoice event");
+        return { statusCode: 200, body: JSON.stringify({ received: true }) };
+      }
+
       if (session.payment_status !== "paid") {
         return { statusCode: 200, body: "ignored: not paid" };
       }
 
-      const userId = session.metadata?.user_id;
-      const credits = parseFloat(session.metadata?.credits || "0");
+      const userId       = session.metadata?.user_id;
+      const credits      = parseFloat(session.metadata?.credits      || "0");
       const unlimitedDays = parseInt(session.metadata?.unlimited_days || "0", 10);
 
-      // Il faut un utilisateur ET soit des crédits, soit un pass illimité.
       if (!userId || (!(credits > 0) && !(unlimitedDays > 0))) {
         console.error("[STRIPE_WEBHOOK] metadata incomplet:", session.metadata);
-        // 200 pour éviter que Stripe ne réessaie en boucle un event inexploitable.
         return { statusCode: 200, body: "ignored: bad metadata" };
       }
 
       const { data, error } = await supabase.rpc("apply_stripe_purchase", {
-        p_event_id: session.id, // clé = n° de commande (même que le filet -> jamais de double crédit)
-        p_session_id: session.id,
-        p_user_id: userId,
-        p_credits: credits,
+        p_event_id    : session.id,
+        p_session_id  : session.id,
+        p_user_id     : userId,
+        p_credits     : credits,
         p_unlimited_days: unlimitedDays,
-        p_description: `Achat ${session.metadata?.package || "credits"}`,
+        p_description : `Achat ${session.metadata?.package || "credits"}`,
       });
 
       if (error) {
         console.error("[STRIPE_WEBHOOK] application échouée:", error.message);
-        // 500 -> Stripe réessaiera ; l'idempotence empêche le double traitement.
         return { statusCode: 500, body: "apply failed" };
       }
 
       const row = data && data[0];
-      console.log(
-        `[STRIPE_WEBHOOK] ${row?.message} (${row?.kind}) user=${userId} credits=${credits} unlimitedDays=${unlimitedDays}`
-      );
+      console.log(`[STRIPE_WEBHOOK] one-time ${row?.message} (${row?.kind}) user=${userId} credits=${credits}`);
     }
 
-    // Toujours 200 sur les events qu'on ne traite pas (sinon Stripe réessaie).
+    // ── CAS 2 : Renouvellement abonnement mensuel ────────────────────────
+    else if (stripeEvent.type === "invoice.payment_succeeded") {
+      const invoice = stripeEvent.data.object;
+
+      // On ne traite que les factures liées à un abonnement
+      if (!invoice.subscription) {
+        return { statusCode: 200, body: "ignored: no subscription" };
+      }
+
+      // Récupérer la subscription pour obtenir les métadonnées user_id/credits
+      const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+      const meta = subscription.metadata || {};
+
+      const userId  = meta.user_id;
+      const credits = parseFloat(meta.credits || "0");
+
+      if (!userId || !(credits > 0)) {
+        console.error("[STRIPE_WEBHOOK] subscription metadata manquante:", meta);
+        return { statusCode: 200, body: "ignored: bad subscription metadata" };
+      }
+
+      // Clé d'idempotence = invoice.id (unique par facture Stripe)
+      const { data, error } = await supabase.rpc("apply_stripe_purchase", {
+        p_event_id    : invoice.id,
+        p_session_id  : invoice.id,
+        p_user_id     : userId,
+        p_credits     : credits,
+        p_unlimited_days: 0,
+        p_description : `Abonnement mensuel MecaIA (${invoice.id.slice(-8)})`,
+      });
+
+      if (error) {
+        console.error("[STRIPE_WEBHOOK] abonnement application échouée:", error.message);
+        return { statusCode: 500, body: "apply failed" };
+      }
+
+      const row = data && data[0];
+      console.log(`[STRIPE_WEBHOOK] subscription renewal ${row?.message} user=${userId} +${credits}cr`);
+    }
+
     return { statusCode: 200, body: JSON.stringify({ received: true }) };
+
   } catch (err) {
     console.error("[STRIPE_WEBHOOK] erreur:", err.message);
     return { statusCode: 500, body: "handler error" };
