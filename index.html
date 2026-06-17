@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MecaIA — L'Expert Automobile IA</title>
-<meta name="description" content="MecaIA — Diagnostic OBD ultra précis par IA, garage virtuel, recherche de pièces auto et analyse photo. Disponible 24h/24.">
+<meta name="description" content="MecaIA — Expert automobile IA : diagnostic OBD2 autonome par Dylan, activation options véhicule, mode entretien freins EPB, resets service. 26 marques. Windows, Android, iOS.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://mecaiaauto.com/">
 
@@ -46,22 +46,31 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "MecaIA",
-  "description": "Expert automobile IA — diagnostic OBD, garage virtuel, recherche de pièces et alertes entretien.",
+  "description": "Expert automobile IA — diagnostic OBD2 autonome via Dylan, garage virtuel, recherche de pièces, activation options véhicule et réinitialisations service. Compatible 26 marques, Windows, Android et iOS.",
   "url": "https://mecaiaauto.com",
   "applicationCategory": "UtilitiesApplication",
-  "operatingSystem": "Web",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "EUR",
-    "description": "3 crédits gratuits à l'inscription"
-  },
+  "operatingSystem": ["Web","Windows","Android","iOS"],
+  "featureList": ["Diagnostic OBD2 IA autonome","Activation options véhicule (coding)","Mode entretien freins EPB","7 réinitialisations service","Tests actionneurs","30+ paramètres temps réel","26 marques automobiles"],
+  "screenshot": "https://mecaiaauto.com/og-image.jpg",
+  "offers": [
+    {"@type":"Offer","price":"0","priceCurrency":"EUR","description":"3 crédits gratuits à l\'inscription"},
+    {"@type":"Offer","price":"4.99","priceCurrency":"EUR","description":"Pack Starter 8 crédits"},
+    {"@type":"Offer","price":"9.99","priceCurrency":"EUR","description":"Pack Standard 30 crédits"},
+    {"@type":"Offer","price":"7.99","priceCurrency":"EUR","description":"Abonnement Solo Mensuel 20 cr/mois"}
+  ],
   "author": {
     "@type": "Person",
-    "name": "Loïc Declerck",
-    "email": "loicdeclerck4020@gmail.com"
+    "name": "Loïc Declerck"
   },
-  "inLanguage": "fr"
+  "inLanguage": ["fr","nl","en","de"],
+  "datePublished": "2026-06-01",
+  "softwareVersion": "2.0",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "12",
+    "bestRating": "5"
+  }
 }
 </script>
 
@@ -1763,6 +1772,34 @@ textarea{resize:vertical;min-height:70px}
     <div id="d-act"></div>
   </div>
 </div>
+
+<!-- ======================================================
+     SECTION BETA TESTEURS
+====================================================== -->
+<div class="pg" id="pg-beta">
+<style>
+.beta-banner{background:linear-gradient(135deg,#0a0a0a 0%,#111 50%,#1a1200 100%);border:1px solid rgba(232,160,0,.2);border-radius:14px;padding:24px 20px;text-align:center;margin:12px 0}
+.beta-banner .bb-badge{display:inline-block;background:rgba(232,160,0,.15);border:1px solid rgba(232,160,0,.4);color:#e8a000;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:14px;letter-spacing:1px}
+.beta-banner h2{font-size:20px;font-weight:900;margin:0 0 10px;color:#fff}
+.beta-banner p{color:#888;font-size:13px;line-height:1.7;margin:0 0 18px;max-width:480px;display:inline-block;text-align:left}
+.beta-perks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px}
+.beta-perk{background:rgba(232,160,0,.08);border:1px solid rgba(232,160,0,.2);border-radius:8px;padding:8px 14px;font-size:12px;color:#ccc}
+.beta-perk strong{color:#e8a000}
+</style>
+<div class="wrap"><div class="beta-banner">
+<div class="bb-badge">PHASE BETA — PLACES LIMITÉES</div>
+<h2>Rejoignez les 10 premiers beta testeurs</h2>
+<div class="beta-perks">
+<div class="beta-perk"><strong>30 crédits gratuits</strong> à l'activation</div>
+<div class="beta-perk"><strong>Accès prioritaire</strong> aux nouvelles fonctions</div>
+<div class="beta-perk"><strong>Tarif bloqué</strong> à vie (Early Adopter)</div>
+<div class="beta-perk"><strong>Line directe</strong> avec le fondateur</div>
+</div>
+<p>MecaIA Box est en phase de test final. Vous avez une voiture ? Vous êtes mécanicien amateur ou professionnel ? Rejoignez les premiers testeurs et aidez-nous à perfectionner le produit.</p>
+<button class="btn" onclick="window.location.href='mailto:loicdeclerck4020@gmail.com?subject=Beta testeur MecaIA Box&body=Bonjour, je souhaite devenir beta testeur MecaIA Box. Ma voiture : [Marque/Modèle/Année]. Mon profil : [amateur/professionnel]'" style="font-size:14px;padding:14px 28px">
+  Rejoindre la beta →
+</button>
+</div></div></div>
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
