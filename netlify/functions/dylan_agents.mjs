@@ -102,8 +102,10 @@ function recalcStatut(hyp) {
 
 function contexteSuffisant(state) {
   const c = state.contexte || {};
-  return !!(c.symptome && String(c.symptome).trim().length > 2) &&
-         !!(c.chaud_froid || c.permanent_intermittent || (Array.isArray(c.codes) && c.codes.length));
+  const hasSymptome = !!(c.symptome && String(c.symptome).trim().length > 2);
+  const hasEnv = !!(c.chaud_froid || c.permanent_intermittent || (Array.isArray(c.codes) && c.codes.length));
+  // Anti-boucle : apres 3 tours, le symptome seul suffit (le prompt vise max 3 questions de contexte).
+  return hasSymptome && (hasEnv || (state.tour || 0) >= 3);
 }
 
 function peutConclure(state) {
@@ -534,6 +536,10 @@ export const handler = async (event) => {
 
     // ---- 6) Fusion état + transitions déterministes ----
     if (parsed.contexte) state.contexte = { ...state.contexte, ...parsed.contexte };
+    // Capture deterministe du symptome initial : ne pas dependre du LLM pour le renseigner (cause du blocage en CONTEXTE).
+    if ((!state.contexte.symptome || String(state.contexte.symptome).trim().length < 3) && user_input && String(user_input).trim().length >= 3) {
+      state.contexte.symptome = String(user_input).trim().slice(0, 300);
+    }
     if (parsed.registre === "concis" || parsed.registre === "detaille") state.registre = parsed.registre;
 
     if (Array.isArray(parsed.hypotheses) && parsed.hypotheses.length) {

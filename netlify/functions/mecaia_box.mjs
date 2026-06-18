@@ -5,7 +5,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
-import { json, preflight } from "../lib/auth.mjs";
+import { getUser, json, preflight } from "../lib/auth.mjs";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY,
@@ -13,7 +13,7 @@ const anthropic = new Anthropic({
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SECRET
 );
 
 // ── Capacités OBD2 par marque ───────────────────────────────────────────────────
@@ -183,6 +183,11 @@ export const handler = async (event) => {
       userMsg, vehicleData, isOBD2Scan,
     } = body;
 
+    // Securite anti-IDOR : si un JWT est present, il prime sur user_id du body.
+    const _auth = await getUser(event);
+    const _uid = _auth ? _auth.userId : user_id;
+    if (!_auth && user_id) console.warn("[mecaia_box] appel sans JWT, fallback user_id du body (a securiser cote app Box)");
+
     // Normalisation
     const finalMessages = messages.length ? messages : userMsg ? [{ role:"user", content: userMsg }] : [];
     const ctx = vehicle_context || vehicleData || {};
@@ -197,7 +202,7 @@ export const handler = async (event) => {
     // Requêtes parallèles : DTC Supabase + véhicules garage
     const [dtcInfo, garageVehicles] = await Promise.all([
       lookupDTCs(allCodes, brand),
-      getGarageVehicles(user_id),
+      getGarageVehicles(_uid),
     ]);
 
     const caps = BRAND_CAPS[brand] || BRAND_CAPS.default;
