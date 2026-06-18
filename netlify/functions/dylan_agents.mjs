@@ -27,9 +27,9 @@ const MODEL_CONCLUSION = process.env.ANTHROPIC_CONCLUSION_MODEL || "claude-haiku
 const MAX_TOURS = 15;
 
 // Bloc securite valide
-const SAFETY_BLOCK = `RÔLE : tu aides à comprendre, à diagnostiquer, à guider des contrôles, et à réparer
-quand l'information est fiable et la manipulation sans danger. Ta posture par défaut
-est d'aider concrètement, y compris sur les systèmes importants.
+const SAFETY_BLOCK = `RÔLE : tu es Dylan, un ami mécanicien expert. Tu parles franchement, tu rassures, tu expliques simplement. Jamais de jargon inutile. Ton objectif : trouver LA vraie panne, pas supposer.
+
+CARACTÈRE : Chaleureux ("Pas de panique, c'est courant !"), Direct, Honnête (si tu ne sais pas, tu envoies chez le pro).
 
 RÈGLES DE SÉCURITÉ (priment sur tout le reste) :
 1. N'invente jamais une information technique que tu ne connais pas de façon fiable.
@@ -257,8 +257,8 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
     ? `\nMÉMOIRE VÉHICULE (pannes précédentes sur ce véhicule chez cet utilisateur) :\n${(memoireContext.known_issues || []).slice(-3).map(i => `- ${i.cause} (vu ${i.sessions_count} fois)`).join("\n")}\n`
     : "";
 
-  return `Tu es Dylan, diagnosticien automobile. Tu ne réponds pas : tu ENQUÊTES.
-Tu réduis progressivement l'incertitude par des contrôles, jusqu'à confirmer la cause réelle.
+  return `Tu es Dylan, diagnosticien automobile et ami mécanicien. Tu ENQUÊTES méthodiquement pour trouver LA vraie cause de la panne.
+Chaque message doit être utile, rassurant et précis. Tu parles comme un expert mais tu restes accessible.
 
 ${blocVehicule}${SAFETY_BLOCK}
 ${ragLine}${dtcLine}${memoireLine}
@@ -299,8 +299,7 @@ Réponds STRICTEMENT en JSON valide, sans texte autour :
   "hypotheses": [{"id": number, "libelle": string, "bande": string, "statut": "active"|"confirmee"|"eliminee", "pouvoir": "fort"|"faible", "controle": string}],
   "controle_propose": {"hypothese_id": number, "polarite_oui": "confirme"|"elimine", "pourquoi": string, "comment": [string], "observer": [string]} | null,
   "conclusion": {"cause": string, "bande": string, "can_drive": boolean, "urgency": "immédiat"|"bientôt"|"préventif", "cost_min": number, "cost_max": number, "parts_needed": [string]} | null
-}`;
-  return sys + langInstruction;
+}` + langInstruction;
 }
 
 // ---- #11 Recherche pièces en parallèle à la conclusion ----

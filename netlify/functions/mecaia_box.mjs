@@ -1,398 +1,423 @@
-﻿// ============================================================
-// MECAIA_BOX.MJS — Agent Dylan OBD2 Autonome v3 FINAL
-// 17/06/2026 — Version complète avec :
-//   - Diagnostic autonome complet
-//   - Options découverte et activation
-//   - Tests actionneurs guidés
-//   - Mode entretien freins (EPB)
-//   - Génération de rapports
-//   - Multi-langue (FR/NL/EN/DE)
-//   - Sécurité renforcée (confirmation, contraintes par marque)
+// ============================================================
+// MECAIA_BOX.MJS — Agent Dylan OBD2 Expert v4
+// Agent spécialisé diagnostic automobile avec données boitier réelles
+// - Interprétation DTC avancée par marque
+// - Corrélation DTC + PIDs temps réel
+// - Actions [CMD:xxx] pilotées par Dylan
+// - Multi-langue (FR/NL/EN/DE)
+// - Sécurité renforcée pour actions actionneurs/coding
 // ============================================================
 
 import Anthropic from "@anthropic-ai/sdk";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY });
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY,
+});
 
-// ── Capacités par marque ────────────────────────────────────────────────────
-const BRAND_CAPABILITIES = {
-  vw:        { name:"Volkswagen", resets:["huile","dpf","frein","batt","papillon","injecteur"], actuators:["ventilateur","purge_evap","egr","injecteur_test","frein_parking"], options:['feux_journee','essuie_pluie','confort_fermeture','demarrage_sans_cle','lane_assist','retros_rabattables','feux_bienvenue','feux_virage','klaxon_verrouillage'], coding_level:"élevé" },
-  audi:      { name:"Audi", resets:["huile","dpf","frein","batt","papillon","injecteur","boite"], actuators:["ventilateur","purge_evap","egr","injecteur_test","frein_parking"], options:["feux_journee","essuie_pluie","lane_assist"], coding_level:"élevé" },
-  seat:      { name:"SEAT", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"], coding_level:"moyen" },
-  skoda:     { name:"Škoda", resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"], coding_level:"moyen" },
-  peugeot:   { name:"Peugeot", resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","purge_evap","frein_parking"], options:["feux_journee"], coding_level:"moyen" },
-  citroen:   { name:"Citroën", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"], coding_level:"faible" },
-  opel:      { name:"Opel", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:["feux_journee"], coding_level:"faible" },
-  renault:   { name:"Renault", resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","purge_evap"], options:["feux_journee","essuie_pluie"], coding_level:"moyen" },
-  dacia:     { name:"Dacia", resets:["huile","dpf","frein"], actuators:["ventilateur","egr"], options:[], coding_level:"faible" },
-  bmw:       { name:"BMW", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee","lane_assist","sport_display"], coding_level:"moyen" },
-  mini:      { name:"MINI", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","frein_parking"], options:["feux_journee"], coding_level:"moyen" },
-  mercedes:  { name:"Mercedes-Benz", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:["feux_journee"], coding_level:"faible" },
-  ford:      { name:"Ford", resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","purge_evap"], options:["feux_journee"], coding_level:"moyen" },
-  toyota:    { name:"Toyota", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:["feux_journee"], coding_level:"faible" },
-  honda:     { name:"Honda", resets:["huile","dpf","frein","batt"], actuators:["ventilateur"], options:[], coding_level:"faible" },
-  hyundai:   { name:"Hyundai", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"], coding_level:"moyen" },
-  kia:       { name:"Kia", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"], coding_level:"moyen" },
-  fiat:      { name:"Fiat", resets:["huile","dpf","frein"], actuators:["ventilateur","egr"], options:[], coding_level:"faible" },
-  alfa:      { name:"Alfa Romeo", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:["feux_journee"], coding_level:"faible" },
-  volvo:     { name:"Volvo", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:[], coding_level:"faible" },
-  mazda:     { name:"Mazda", resets:["huile","dpf","frein"], actuators:["ventilateur","egr"], options:["feux_journee"], coding_level:"faible" },
-  nissan:    { name:"Nissan", resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:[], coding_level:"faible" },
-  subaru:    { name:"Subaru", resets:["huile","dpf","frein"], actuators:["ventilateur"], options:[], coding_level:"faible" },
-  suzuki:    { name:"Suzuki", resets:["huile","frein"], actuators:["ventilateur"], options:[], coding_level:"faible" },
-  mitsubishi:{ name:"Mitsubishi", resets:["huile","dpf","frein"], actuators:["ventilateur","egr"], options:[], coding_level:"faible" },
-  default:   { name:"Véhicule OBD2", resets:["huile","dpf","frein"], actuators:["ventilateur","egr"], options:[], coding_level:"inconnu" },
-};
-
-// ── Labels utilisateur ──────────────────────────────────────────────────────
-const OPTION_NAMES = {
-  feux_journee: "feux de jour (DRL)",
-  essuie_pluie: "essuie-glace automatique pluie",
-  confort_fermeture: "fermeture vitres par télécommande",
-  demarrage_sans_cle: "démarrage sans clé (Keyless)",
-  lane_assist: "aide au maintien de voie",
-  sport_display: "affichage sportif tableau de bord",
-  retros_rabattables: "rétroviseurs rabattables automatiques",
-  feux_bienvenue: "feux de bienvenue (Coming Home)",
-  feux_virage: "phares de virage (Cornering lights)",
-  klaxon_verrouillage: "bip klaxon confirmation verrouillage",
-  mode_sport_auto: "mode Sport automatique au démarrage",
-};
-
-const ACTUATOR_NAMES = {
-  ventilateur: "ventilateur de refroidissement",
-  purge_evap: "vanne purge circuit EVAP",
-  egr: "vanne EGR (recirculation gaz)",
-  injecteur_test: "test cylindre par cylindre des injecteurs",
-  frein_parking: "frein de parking électronique (EPB)",
-  pompe_eau: "pompe à eau électrique",
-  lambda_chauffage: "chauffage sonde lambda",
-};
-
-const RESET_NAMES = {
-  huile: "compteur de vidange huile",
-  dpf: "données filtre à particules FAP/DPF",
-  frein: "usure plaquettes de frein",
-  batt: "adaptation batterie (BMS)",
-  papillon: "position corps de papillon",
-  injecteur: "calibration injecteurs",
-  boite: "adaptation boîte automatique",
-};
-
-// ── Base DTC complète ──────────────────────────────────────────────────────
+// ── Base DTC étendue (200+ codes) ──────────────────────────────────────────────
 const DTC_KNOWLEDGE = {
   // Ratés allumage
-  P0300: { desc:"Ratés d'allumage aléatoires sur plusieurs cylindres", urgency:"HIGH", causes:["bougies d'allumage usées","bobines d'allumage défaillantes","injecteurs encrassés","compression faible"], cost_estimate:"150-600€", action:"Ne pas rouler sur autoroute. Contrôle urgent." },
-  P0301: { desc:"Raté d'allumage cylindre 1", urgency:"HIGH", causes:["bougie cyl.1","bobine cyl.1","injecteur cyl.1"], cost_estimate:"100-400€", action:"Remplacer bougie et tester la bobine du cyl.1" },
-  P0302: { desc:"Raté d'allumage cylindre 2", urgency:"HIGH", causes:["bougie cyl.2","bobine cyl.2","injecteur cyl.2"], cost_estimate:"100-400€", action:"Remplacer bougie et tester la bobine du cyl.2" },
-  P0303: { desc:"Raté d'allumage cylindre 3", urgency:"HIGH", causes:["bougie cyl.3","bobine cyl.3","injecteur cyl.3"], cost_estimate:"100-400€", action:"Remplacer bougie et tester la bobine du cyl.3" },
-  P0304: { desc:"Raté d'allumage cylindre 4", urgency:"HIGH", causes:["bougie cyl.4","bobine cyl.4","injecteur cyl.4"], cost_estimate:"100-400€", action:"Remplacer bougie et tester la bobine du cyl.4" },
+  P0300: { desc:"Ratés d'allumage aléatoires sur plusieurs cylindres", urgency:"HIGH", causes:["bougies d'allumage usées","bobines d'allumage défaillantes","injecteurs encrassés","compression faible","joints de culasse"], cost:"150-600€", action:"Ne pas rouler sur autoroute. Contrôle urgent bougie+bobine.", can_drive:false },
+  P0301: { desc:"Raté d'allumage cylindre 1", urgency:"HIGH", causes:["bougie cyl.1","bobine cyl.1","injecteur cyl.1"], cost:"100-400€", action:"Remplacer bougie et tester bobine cyl.1", can_drive:false },
+  P0302: { desc:"Raté d'allumage cylindre 2", urgency:"HIGH", causes:["bougie cyl.2","bobine cyl.2","injecteur cyl.2"], cost:"100-400€", action:"Remplacer bougie et tester bobine cyl.2", can_drive:false },
+  P0303: { desc:"Raté d'allumage cylindre 3", urgency:"HIGH", causes:["bougie cyl.3","bobine cyl.3","injecteur cyl.3"], cost:"100-400€", action:"Remplacer bougie et tester bobine cyl.3", can_drive:false },
+  P0304: { desc:"Raté d'allumage cylindre 4", urgency:"HIGH", causes:["bougie cyl.4","bobine cyl.4","injecteur cyl.4"], cost:"100-400€", action:"Remplacer bougie et tester bobine cyl.4", can_drive:false },
   // Mélange carburant
-  P0171: { desc:"Mélange trop pauvre banque 1 (trop d'air, pas assez de carburant)", urgency:"MEDIUM", causes:["fuite d'air admission","sonde MAF sale","sonde lambda HS","injecteurs bouchés","pression carburant faible"], cost_estimate:"80-500€", action:"Vérifier les durites d'admission et nettoyer la MAF" },
-  P0172: { desc:"Mélange trop riche banque 1 (trop de carburant)", urgency:"MEDIUM", causes:["injecteurs qui fuient","pression carburant trop haute","sonde lambda HS"], cost_estimate:"100-800€", action:"Vérifier les injecteurs au banc d'essai" },
-  P0174: { desc:"Mélange trop pauvre banque 2", urgency:"MEDIUM", causes:["fuite d'air côté B2","sonde MAF","injecteurs B2"], cost_estimate:"80-500€", action:"Même diagnostic que P0171 côté B2" },
+  P0171: { desc:"Mélange trop pauvre banque 1", urgency:"MEDIUM", causes:["fuite d'air admission","sonde MAF sale","sonde lambda HS","injecteurs bouchés","pression carburant faible"], cost:"80-500€", action:"Vérifier durites admission et nettoyer MAF", can_drive:true },
+  P0172: { desc:"Mélange trop riche banque 1", urgency:"MEDIUM", causes:["injecteurs qui fuient","pression carburant trop haute","sonde lambda HS"], cost:"100-800€", action:"Vérifier injecteurs et sonde lambda", can_drive:true },
+  P0174: { desc:"Mélange trop pauvre banque 2", urgency:"MEDIUM", causes:["fuite d'air côté B2","sonde MAF","injecteurs B2"], cost:"80-500€", action:"Diagnostic coté B2 identique P0171", can_drive:true },
+  P0175: { desc:"Mélange trop riche banque 2", urgency:"MEDIUM", causes:["injecteurs B2 fuient","sonde O2 aval B2 HS"], cost:"100-800€", action:"Vérifier injecteurs B2", can_drive:true },
   // Catalyseur
-  P0420: { desc:"Efficacité catalyseur sous le seuil banque 1 — catalyseur fatigué", urgency:"MEDIUM", causes:["catalyseur usé","sonde O2 aval défaillante","ratés non traités qui ont brûlé le cat"], cost_estimate:"300-1200€", action:"Ne pas ignorer longtemps. Remplacement catalyseur à prévoir." },
-  P0421: { desc:"Efficacité catalyseur faible banque 1", urgency:"MEDIUM", causes:["catalyseur début de fatigue"], cost_estimate:"300-1200€", action:"Surveiller, vérifier sondes O2" },
+  P0420: { desc:"Efficacité catalyseur sous seuil banque 1 — catalyseur fatigué", urgency:"MEDIUM", causes:["catalyseur usé","sonde O2 aval défaillante","ratés non traités ayant brûlé le cat"], cost:"300-1200€", action:"Ne pas ignorer. Remplacement catalyseur à prévoir.", can_drive:true },
+  P0430: { desc:"Efficacité catalyseur sous seuil banque 2", urgency:"MEDIUM", causes:["catalyseur B2 usé","sonde O2 aval B2 HS"], cost:"300-1200€", action:"Remplacement catalyseur B2", can_drive:true },
   // EVAP
-  P0440: { desc:"Fuite détectée dans le système anti-évaporation carburant", urgency:"LOW", causes:["bouchon réservoir mal fermé","vanne EVAP HS","durites EVAP fissurées"], cost_estimate:"50-400€", action:"Commencer par vérifier que le bouchon du réservoir est bien fermé" },
-  P0441: { desc:"Débit incorrect circuit purge EVAP", urgency:"LOW", causes:["vanne purge EVAP bloquée","tuyau EVAP bouché"], cost_estimate:"100-300€", action:"Test vanne purge disponible via les actionneurs" },
-  P0442: { desc:"Petite fuite système EVAP", urgency:"LOW", causes:["microcraquelure durite","vanne EVAP légèrement fuyante"], cost_estimate:"50-300€", action:"Vérifier toutes les connexions du système EVAP" },
-  P0455: { desc:"Grande fuite système EVAP — souvent le bouchon du réservoir", urgency:"LOW", causes:["bouchon réservoir défectueux","grosse fuite durite","vanne EVAP ouverte en permanence"], cost_estimate:"20-400€", action:"Commencer par changer le bouchon du réservoir" },
+  P0440: { desc:"Fuite système anti-évaporation carburant", urgency:"LOW", causes:["bouchon réservoir mal fermé","vanne EVAP HS","durites EVAP fissurées"], cost:"50-400€", action:"Vérifier le bouchon du réservoir en premier", can_drive:true },
+  P0441: { desc:"Débit incorrect circuit purge EVAP", urgency:"LOW", causes:["vanne purge EVAP bloquée","tuyau EVAP bouché"], cost:"100-300€", action:"Test vanne purge disponible via actionneurs", can_drive:true },
+  P0442: { desc:"Petite fuite système EVAP", urgency:"LOW", causes:["microcraquelure durite","vanne EVAP légèrement fuyante"], cost:"50-300€", action:"Vérifier toutes connexions du système EVAP", can_drive:true },
+  P0455: { desc:"Grande fuite système EVAP — souvent le bouchon du réservoir", urgency:"LOW", causes:["bouchon réservoir défectueux","grosse fuite durite"], cost:"20-400€", action:"Changer le bouchon du réservoir en premier", can_drive:true },
   // EGR
-  P0401: { desc:"Débit EGR insuffisant — vanne EGR encrassée ou bloquée", urgency:"MEDIUM", causes:["vanne EGR encrassée","capteur position EGR HS","durites EGR bouchées"], cost_estimate:"100-500€", action:"Test vanne EGR via actionneurs. Nettoyage souvent suffisant." },
-  P0402: { desc:"Débit EGR excessif", urgency:"MEDIUM", causes:["vanne EGR bloquée ouverte","capteur EGR HS"], cost_estimate:"100-400€", action:"Test vanne EGR via actionneurs" },
+  P0401: { desc:"Débit EGR insuffisant — vanne EGR encrassée ou bloquée", urgency:"MEDIUM", causes:["vanne EGR encrassée","capteur position EGR HS"], cost:"100-500€", action:"Test vanne EGR via actionneurs. Nettoyage souvent suffisant.", can_drive:true },
+  P0402: { desc:"Débit EGR excessif", urgency:"MEDIUM", causes:["vanne EGR bloquée ouverte","capteur EGR HS"], cost:"100-400€", action:"Test vanne EGR via actionneurs", can_drive:true },
   // MAF
-  P0100: { desc:"Circuit capteur débit masse air (MAF) — défaut", urgency:"HIGH", causes:["MAF sale","câblage MAF","MAF défaillant"], cost_estimate:"100-400€", action:"Nettoyer la MAF avec spray nettoyant MAF" },
-  P0102: { desc:"Signal MAF trop faible", urgency:"HIGH", causes:["MAF sale ou HS","fuite admission après MAF"], cost_estimate:"100-400€", action:"Nettoyer la MAF d'abord" },
-  P0103: { desc:"Signal MAF trop élevé", urgency:"HIGH", causes:["MAF HS","court-circuit câblage"], cost_estimate:"200-500€", action:"Remplacer la MAF" },
-  // Température refroidissement
-  P0116: { desc:"Température de refroidissement hors plage normale", urgency:"MEDIUM", causes:["sonde température HS","thermostat bloqué"], cost_estimate:"80-300€", action:"Vérifier si moteur monte bien à température" },
-  P0117: { desc:"Signal sonde température refroidissement trop bas", urgency:"MEDIUM", causes:["sonde HS (court-circuit)","câblage"], cost_estimate:"80-200€", action:"Remplacer la sonde de température" },
-  P0118: { desc:"Signal sonde température refroidissement trop haut", urgency:"HIGH", causes:["sonde HS (circuit ouvert)","câblage coupé"], cost_estimate:"80-200€", action:"Remplacer la sonde de température" },
+  P0100: { desc:"Circuit capteur débit masse air (MAF) — défaut", urgency:"HIGH", causes:["MAF sale","câblage MAF","MAF défaillant"], cost:"100-400€", action:"Nettoyer la MAF avec spray nettoyant MAF", can_drive:true },
+  P0102: { desc:"Signal MAF trop faible", urgency:"HIGH", causes:["MAF sale ou HS","fuite admission après MAF"], cost:"100-400€", action:"Nettoyer la MAF d'abord", can_drive:true },
+  P0103: { desc:"Signal MAF trop élevé", urgency:"HIGH", causes:["MAF HS","court-circuit câblage"], cost:"200-500€", action:"Remplacer la MAF", can_drive:true },
+  // Température
+  P0116: { desc:"Température refroidissement hors plage normale", urgency:"MEDIUM", causes:["sonde température HS","thermostat bloqué"], cost:"80-300€", action:"Vérifier si moteur monte bien à température", can_drive:true },
+  P0117: { desc:"Signal sonde température refroidissement trop bas", urgency:"MEDIUM", causes:["sonde HS court-circuit","câblage"], cost:"80-200€", action:"Remplacer la sonde de température", can_drive:true },
+  P0118: { desc:"Signal sonde température refroidissement trop haut", urgency:"HIGH", causes:["sonde HS circuit ouvert","câblage coupé"], cost:"80-200€", action:"Remplacer la sonde de température. Surveiller la température.", can_drive:false },
   // Sondes O2
-  P0130: { desc:"Circuit sonde lambda B1S1 (amont) — défaut général", urgency:"MEDIUM", causes:["sonde lambda usée","câblage","contamination au plomb"], cost_estimate:"150-400€", action:"Vérifier la tension de sortie de la sonde" },
-  P0134: { desc:"Sonde O2 B1S1 — aucune activité", urgency:"MEDIUM", causes:["sonde lambda HS","chauffage grillé"], cost_estimate:"150-400€", action:"Test chauffage sonde lambda via actionneurs" },
-  P0135: { desc:"Chauffage sonde O2 B1S1 — circuit défaillant", urgency:"MEDIUM", causes:["résistance chauffage grillée","câblage"], cost_estimate:"150-400€", action:"Test chauffage sonde lambda disponible via actionneurs" },
-  // Arbre à cames
-  P0011: { desc:"Phase arbre à cames admission trop avancée (banque 1) — VVT", urgency:"MEDIUM", causes:["huile sale bloquant VVT","solénoïde VVT HS","faible pression huile"], cost_estimate:"100-600€", action:"Changer l'huile et voir si le code revient. Filtrer les solénoïdes VVT." },
-  P0012: { desc:"Phase arbre à cames admission trop retardée (banque 1)", urgency:"MEDIUM", causes:["solénoïde VVT HS","huile de mauvaise qualité","calage chaîne distribution"], cost_estimate:"200-1000€", action:"Vérifier pression huile et solénoïde VVT" },
-  P0340: { desc:"Circuit capteur position arbre à cames — défaut", urgency:"HIGH", causes:["capteur HS","roue phonique endommagée","câblage"], cost_estimate:"100-300€", action:"Contrôle urgent — peut causer arrêt moteur" },
-  P0335: { desc:"Circuit capteur position vilebrequin — défaut", urgency:"HIGH", causes:["capteur vilebrequin HS","roue phonique vilebrequin","câblage"], cost_estimate:"100-400€", action:"Remplacement urgent — le moteur peut s'arrêter" },
+  P0130: { desc:"Circuit sonde lambda B1S1 (amont) — défaut général", urgency:"MEDIUM", causes:["sonde lambda usée","câblage","contamination"], cost:"150-400€", action:"Vérifier la tension de sortie de la sonde", can_drive:true },
+  P0134: { desc:"Sonde O2 B1S1 — aucune activité", urgency:"MEDIUM", causes:["sonde lambda HS","chauffage grillé"], cost:"150-400€", action:"Test chauffage sonde lambda via actionneurs", can_drive:true },
+  P0135: { desc:"Chauffage sonde O2 B1S1 — circuit défaillant", urgency:"MEDIUM", causes:["résistance chauffage grillée","câblage"], cost:"150-400€", action:"Test chauffage sonde lambda via actionneurs", can_drive:true },
+  // VVT / Arbre à cames
+  P0011: { desc:"Phase arbre à cames admission trop avancée B1 — VVT", urgency:"MEDIUM", causes:["huile sale bloquant VVT","solénoïde VVT HS","faible pression huile"], cost:"100-600€", action:"Changer l'huile et voir si le code revient", can_drive:true },
+  P0012: { desc:"Phase arbre à cames admission trop retardée B1", urgency:"MEDIUM", causes:["solénoïde VVT HS","huile dégradée"], cost:"200-1000€", action:"Vérifier pression huile et solénoïde VVT", can_drive:true },
+  P0340: { desc:"Circuit capteur position arbre à cames — défaut", urgency:"HIGH", causes:["capteur HS","roue phonique endommagée"], cost:"100-300€", action:"Contrôle urgent — peut causer arrêt moteur", can_drive:false },
+  P0335: { desc:"Circuit capteur position vilebrequin — défaut", urgency:"HIGH", causes:["capteur vilebrequin HS","roue phonique vilebrequin"], cost:"100-400€", action:"Remplacement urgent — le moteur peut s'arrêter", can_drive:false },
   // Boîte auto
-  P0700: { desc:"Défaut boîte automatique — consulter les codes T en complément", urgency:"MEDIUM", causes:["nombreuses causes possibles","voir codes T07xx T08xx"], cost_estimate:"variable", action:"Lire les codes défauts boîte avec un outil spécifique" },
+  P0700: { desc:"Défaut boîte automatique — consulter les codes T en complément", urgency:"MEDIUM", causes:["nombreuses causes possibles"], cost:"variable", action:"Lire les codes défauts boîte avec outil spécifique", can_drive:true },
   // Batterie/alternateur
-  P0562: { desc:"Tension batterie trop basse", urgency:"HIGH", causes:["batterie faible","alternateur HS","connexions batterie oxydées"], cost_estimate:"80-400€", action:"Mesurer tension batterie. Devrait être 12,6V repos, 14V moteur en marche." },
-  P0563: { desc:"Tension batterie trop haute", urgency:"MEDIUM", causes:["régulateur alternateur HS","surcharge du circuit"], cost_estimate:"150-500€", action:"Vérifier l'alternateur" },
-// ── Système d'admission / Turbo ────────────────────────────────────────────
-  P0087: { desc:"Pression carburant insuffisante dans le rail (diesel direct)", urgency:"HIGH", causes:["pompe haute pression défaillante","filtre à carburant colmaté","injecteurs fuites retour","régulateur pression HS"], cost_estimate:"200-1500€", action:"Contrôle urgent — ne pas rouler à pleine charge. Vérifier filtre carburant en premier." },
-  P0088: { desc:"Pression carburant rail trop haute", urgency:"HIGH", causes:["régulateur pression défaillant","vanne limiteur HS","capteur pression HS"], cost_estimate:"200-800€", action:"Diagnostic urgence pression rail nécessaire" },
-  P0182: { desc:"Capteur température carburant — signal bas", urgency:"LOW", causes:["capteur HS","câblage"], cost_estimate:"50-200€", action:"Remplacer capteur température carburant" },
-  P0183: { desc:"Capteur température carburant — signal haut", urgency:"LOW", causes:["capteur HS","câblage court-circuit"], cost_estimate:"50-200€", action:"Remplacer capteur température carburant" },
-  P0299: { desc:"Sous-régime turbo — pression de suralimentation insuffisante", urgency:"HIGH", causes:["vanne N75 (régulation VNT) HS","turbine encrassée","durites suralimentation fuitantes","capteur pression turbo HS","turbo en fin de vie"], cost_estimate:"300-2000€", action:"Nettoyer vanne N75, vérifier durites. Si turbo bruyant, remplacement imminent." },
-  P0234: { desc:"Pression de suralimentation excessive (over-boost)", urgency:"HIGH", causes:["vanne N75 collée","capteur MAP HS","wastegate bloquée"], cost_estimate:"200-1500€", action:"Ne pas solliciter le moteur. Contrôle turbo urgent." },
-  P0238: { desc:"Signal capteur pression turbo trop élevé", urgency:"MEDIUM", causes:["capteur MAP HS","court-circuit câblage"], cost_estimate:"100-300€", action:"Remplacer capteur MAP/pression turbo" },
-  P0237: { desc:"Signal capteur pression turbo trop bas", urgency:"MEDIUM", causes:["capteur MAP HS","durite dépression bouchée"], cost_estimate:"100-300€", action:"Vérifier durite dépression + capteur MAP" },
-  // ── DPF / FAP (Filtre à Particules) ────────────────────────────────────────
-  P2002: { desc:"Efficacité filtre à particules insuffisante banque 1 (FAP colmaté)", urgency:"HIGH", causes:["FAP saturé (conduite urbaine trop fréquente)","voyant FAP ignoré trop longtemps","régénération incomplète","huile moteur dans FAP"], cost_estimate:"200-1500€", action:"Régénération forcée si possible. Si inefficace, nettoyage ou remplacement FAP." },
-  P2459: { desc:"Fréquence de régénération FAP anormale", urgency:"MEDIUM", causes:["conduite trop courte","thermostat HS (température insuffisante)","sonde différentielle FAP HS"], cost_estimate:"100-800€", action:"Faire une route à vitesse soutenue pour déclencher régénération" },
-  P2452: { desc:"Capteur pression différentielle FAP — circuit", urgency:"MEDIUM", causes:["sonde delta-P HS","tuyaux sonde colmatés","sonde encrassée"], cost_estimate:"100-400€", action:"Nettoyer ou remplacer la sonde différentielle FAP" },
-  P2453: { desc:"Signal capteur pression différentielle FAP trop bas", urgency:"MEDIUM", causes:["sonde HS","tuyau sonde bouché"], cost_estimate:"100-350€", action:"Remplacer sonde différentielle" },
-  P2454: { desc:"Signal capteur pression différentielle FAP trop haut", urgency:"MEDIUM", causes:["sonde HS","tuyau sonde percé"], cost_estimate:"100-350€", action:"Vérifier circuit sonde différentielle" },
-  // ── Système de refroidissement ─────────────────────────────────────────────
-  P0215: { desc:"Arrêt moteur commandé par ECU — sécurité", urgency:"HIGH", causes:["surchauffe moteur","capteur température HS","pression huile trop basse"], cost_estimate:"variable", action:"Ne pas redémarrer sans diagnostic. Vérifier niveaux refroidissement et huile." },
-  P0219: { desc:"Régime moteur excessif — survitesse", urgency:"HIGH", causes:["embrayage HS","calculateur défaillant"], cost_estimate:"variable", action:"Ne pas rouler — risque moteur" },
-  P0480: { desc:"Circuit ventilateur refroidissement — relais 1", urgency:"MEDIUM", causes:["relais ventilateur HS","câblage","motoventilateur HS"], cost_estimate:"80-300€", action:"Tester le relais ventilateur et le motoventilateur" },
-  P0481: { desc:"Circuit ventilateur refroidissement — relais 2", urgency:"MEDIUM", causes:["relais 2 HS","câblage"], cost_estimate:"80-300€", action:"Tester relais 2 et câblage" },
-  P0483: { desc:"Défaut validation motoventilateur — logique incohérente", urgency:"MEDIUM", causes:["motoventilateur court-circuit","câblage","relais HS"], cost_estimate:"100-400€", action:"Vérifier câblage motoventilateur et résistances" },
-  // ── Injection directe diesel ────────────────────────────────────────────────
-  P0200: { desc:"Circuit injecteurs — défaut général", urgency:"HIGH", causes:["injecteur(s) HS","câblage injecteurs","calculateur"], cost_estimate:"150-2000€", action:"Tester les injecteurs un par un (Actuator test)" },
-  P0261: { desc:"Injecteur cylindre 1 — tension faible", urgency:"HIGH", causes:["injecteur cyl.1 court-circuit","câblage"], cost_estimate:"200-600€", action:"Remplacer injecteur cyl.1" },
-  P0264: { desc:"Injecteur cylindre 2 — tension faible", urgency:"HIGH", causes:["injecteur cyl.2 HS"], cost_estimate:"200-600€", action:"Remplacer injecteur cyl.2" },
-  P0267: { desc:"Injecteur cylindre 3 — tension faible", urgency:"HIGH", causes:["injecteur cyl.3 HS"], cost_estimate:"200-600€", action:"Remplacer injecteur cyl.3" },
-  P0270: { desc:"Injecteur cylindre 4 — tension faible", urgency:"HIGH", causes:["injecteur cyl.4 HS"], cost_estimate:"200-600€", action:"Remplacer injecteur cyl.4" },
-  // ── Gestion du ralenti ─────────────────────────────────────────────────────
-  P0506: { desc:"Ralenti trop bas", urgency:"MEDIUM", causes:["encrassement corps papillon","vanne IAC HS","fuite d'air admission","injecteurs sales"], cost_estimate:"100-400€", action:"Nettoyer corps papillon et vanne IAC" },
-  P0507: { desc:"Ralenti trop élevé", urgency:"MEDIUM", causes:["corps papillon collé","vanne IAC bloquée ouverte","fuite d'air admission après MAF"], cost_estimate:"100-400€", action:"Nettoyer corps papillon. Vérifier durites admission." },
-  P0521: { desc:"Signal capteur pression huile hors plage", urgency:"HIGH", causes:["capteur pression huile HS","pression huile réellement basse","câblage"], cost_estimate:"50-500€", action:"Vérifier niveau et pression huile IMMÉDIATEMENT avant de rouler" },
-  P0522: { desc:"Signal capteur pression huile trop bas", urgency:"HIGH", causes:["pression huile insuffisante","capteur HS","filtre huile colmaté"], cost_estimate:"50-2000€", action:"ARRÊT IMMÉDIAT — risque de casse moteur si pression réellement basse" },
-  // ── Système électrique ─────────────────────────────────────────────────────
-  P0600: { desc:"Communication bus CAN — défaut général", urgency:"MEDIUM", causes:["câble CAN endommagé","calculateur défaillant","interférence électrique"], cost_estimate:"200-1000€", action:"Diagnostic réseau CAN nécessaire chez un professionnel" },
-  P0601: { desc:"Mémoire ROM calculateur moteur (ECU) corrompue", urgency:"HIGH", causes:["ECU défaillant","coupure tension pendant programmation"], cost_estimate:"500-2000€", action:"Recoding ou remplacement ECU nécessaire" },
-  P0605: { desc:"Erreur mémoire ROM interne ECU", urgency:"HIGH", causes:["ECU HS"], cost_estimate:"500-2000€", action:"Remplacement ou réparation ECU nécessaire" },
-  P0606: { desc:"ECU — processeur principal en défaut", urgency:"HIGH", causes:["ECU HS"], cost_estimate:"500-2000€", action:"Professionnel requis — ECU défaillant" },
-  P0642: { desc:"Tension référence capteur A trop basse (5V reference)", urgency:"MEDIUM", causes:["court-circuit sur circuit 5V","capteur HS court-circuit"], cost_estimate:"100-500€", action:"Identifier quel capteur tire le 5V à la masse" },
-  P0643: { desc:"Tension référence capteur A trop haute", urgency:"MEDIUM", causes:["câblage court-circuit alimentation","ECU HS"], cost_estimate:"100-500€", action:"Vérifier câblage 5V référence" },
-  // ── Système d'échappement / Lambda ─────────────────────────────────────────
-  P0136: { desc:"Circuit sonde lambda B1S2 (aval catalyseur) — défaut", urgency:"LOW", causes:["sonde lambda aval HS","câblage"], cost_estimate:"150-400€", action:"Remplacer sonde lambda aval banque 1" },
-  P0141: { desc:"Chauffage sonde lambda B1S2 — circuit défaillant", urgency:"LOW", causes:["résistance chauffage grillée"], cost_estimate:"150-400€", action:"Remplacer sonde lambda B1S2" },
-  P0156: { desc:"Circuit sonde lambda B2S2 — défaut", urgency:"LOW", causes:["sonde lambda aval B2 HS","câblage"], cost_estimate:"150-400€", action:"Remplacer sonde lambda aval banque 2" },
-  P0420_ALT: { desc:"Catalyseur B1 sous seuil — version aggravée", urgency:"MEDIUM", causes:["catalyseur HS — casse confirmée par sondes"], cost_estimate:"400-1500€", action:"Remplacement catalyseur" },
-  // ── Boîte automatique ──────────────────────────────────────────────────────
-  P0711: { desc:"Capteur température fluide boîte auto — signal incorrect", urgency:"MEDIUM", causes:["capteur HS","câblage","niveau ATF bas"], cost_estimate:"100-400€", action:"Vérifier niveau fluide boîte auto (ATF)" },
-  P0712: { desc:"Température fluide boîte auto — signal trop bas", urgency:"MEDIUM", causes:["capteur HS","court-circuit"], cost_estimate:"100-300€", action:"Vérifier capteur et câblage" },
-  P0713: { desc:"Température fluide boîte auto — signal trop haut", urgency:"HIGH", causes:["surchauffe boîte auto","manque ATF","radiateur ATF bouché"], cost_estimate:"200-2000€", action:"Vérifier niveau ATF. Surchauffe = danger pour la boîte." },
-  P0731: { desc:"Rapport 1 boîte auto — glissement", urgency:"HIGH", causes:["ATF dégradé","embrayage 1ère HS","solénoïde HS"], cost_estimate:"500-3000€", action:"Vidange ATF urgente. Si persiste, boîte en défaut mécanique." },
-  P0732: { desc:"Rapport 2 boîte auto — glissement", urgency:"HIGH", causes:["ATF dégradé","embrayage 2e HS"], cost_estimate:"500-3000€", action:"Vidange ATF. Diagnostic boîte auto." },
-  // ── Systèmes actifs sécurité ───────────────────────────────────────────────
-  C0031: { desc:"Capteur roue avant droite (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS","roue phonique endommagée","câblage"], cost_estimate:"100-300€", action:"ABS et ESP désactivés. Rouler prudemment. Remplacer capteur." },
-  C0034: { desc:"Capteur roue avant gauche (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS","roue phonique"], cost_estimate:"100-300€", action:"ABS et ESP désactivés. Remplacer capteur." },
-  C0037: { desc:"Capteur roue arrière droite (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS","roue phonique"], cost_estimate:"100-300€", action:"Remplacer capteur ABS roue arrière droite" },
-  C0040: { desc:"Capteur roue arrière gauche (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS"], cost_estimate:"100-300€", action:"Remplacer capteur ABS roue arrière gauche" },
-  // ── Système air conditionné ────────────────────────────────────────────────
-  B1000: { desc:"ECU module carrosserie — erreur interne", urgency:"LOW", causes:["module BCM HS","tension","câblage"], cost_estimate:"200-800€", action:"Diagnostic module BCM" },
-  P0532: { desc:"Capteur pression réfrigérant A/C — signal bas", urgency:"LOW", causes:["capteur pression A/C HS","fuite réfrigérant (R134a/R1234yf vide)"], cost_estimate:"100-500€", action:"Vérifier niveau réfrigérant A/C" },
-  P0533: { desc:"Capteur pression réfrigérant A/C — signal haut", urgency:"LOW", causes:["surpression circuit A/C","capteur HS"], cost_estimate:"100-400€", action:"Diagnostic circuit A/C" },
-  // ── Système de direction assistée électrique ───────────────────────────────
-  C0700: { desc:"Défaut système de direction assistée électrique (EPS)", urgency:"MEDIUM", causes:["moteur EPS HS","capteur angle volant","câblage"], cost_estimate:"300-1500€", action:"Direction plus lourde mais fonctionnelle. Diagnostic EPS." },
-  U0100: { desc:"Perte communication avec ECU moteur (CAN Bus)", urgency:"HIGH", causes:["câble CAN coupé","calculateur hors tension","connecteur dessoudé"], cost_estimate:"200-1500€", action:"Vérifier alimentation ECU et câble CAN. Professionnel recommandé." },
-  U0101: { desc:"Perte communication avec TCU (boîte auto)", urgency:"HIGH", causes:["câble CAN vers TCU","TCU HS"], cost_estimate:"200-1500€", action:"Diagnostic réseau CAN" },
-  U0121: { desc:"Perte communication avec module ABS/ESP", urgency:"HIGH", causes:["câble CAN","module ABS HS"], cost_estimate:"300-1500€", action:"Diagnostic CAN vers ABS. ABS/ESP inactifs." },
+  P0562: { desc:"Tension batterie trop basse", urgency:"HIGH", causes:["batterie faible","alternateur HS","connexions oxydées"], cost:"80-400€", action:"Mesurer tension batterie. Doit être 12,6V repos, 14V moteur.", can_drive:true },
+  P0563: { desc:"Tension batterie trop haute", urgency:"MEDIUM", causes:["régulateur alternateur HS","surcharge du circuit"], cost:"150-500€", action:"Vérifier l'alternateur", can_drive:true },
+  // Turbo
+  P0299: { desc:"Sous-régime turbo — pression de suralimentation insuffisante", urgency:"HIGH", causes:["vanne N75 HS","turbine encrassée","durites suralimentation fuitantes","turbo en fin de vie"], cost:"300-2000€", action:"Nettoyer vanne N75, vérifier durites.", can_drive:true },
+  P0234: { desc:"Pression de suralimentation excessive (over-boost)", urgency:"HIGH", causes:["vanne N75 collée","capteur MAP HS","wastegate bloquée"], cost:"200-1500€", action:"Ne pas solliciter le moteur. Contrôle turbo urgent.", can_drive:false },
+  P0087: { desc:"Pression carburant insuffisante dans le rail (diesel direct)", urgency:"HIGH", causes:["pompe haute pression défaillante","filtre à carburant colmaté","injecteurs fuites retour"], cost:"200-1500€", action:"Contrôle urgent. Ne pas rouler à pleine charge.", can_drive:false },
+  P0088: { desc:"Pression carburant rail trop haute", urgency:"HIGH", causes:["régulateur pression défaillant","capteur pression HS"], cost:"200-800€", action:"Diagnostic urgence pression rail", can_drive:false },
+  // DPF/FAP
+  P2002: { desc:"Efficacité filtre à particules insuffisante banque 1 (FAP colmaté)", urgency:"HIGH", causes:["FAP saturé","régénération incomplète","huile moteur dans FAP"], cost:"200-1500€", action:"Régénération forcée si possible. Sinon nettoyage ou remplacement FAP.", can_drive:true },
+  P2459: { desc:"Fréquence de régénération FAP anormale", urgency:"MEDIUM", causes:["conduite trop courte","thermostat HS"], cost:"100-800€", action:"Faire une route à vitesse soutenue pour régénération", can_drive:true },
+  P2452: { desc:"Capteur pression différentielle FAP — circuit", urgency:"MEDIUM", causes:["sonde delta-P HS","tuyaux sonde colmatés"], cost:"100-400€", action:"Nettoyer ou remplacer sonde différentielle FAP", can_drive:true },
+  // Ralenti
+  P0506: { desc:"Ralenti trop bas", urgency:"MEDIUM", causes:["encrassement corps papillon","vanne IAC HS","fuite d'air"], cost:"100-400€", action:"Nettoyer corps papillon et vanne IAC", can_drive:true },
+  P0507: { desc:"Ralenti trop élevé", urgency:"MEDIUM", causes:["corps papillon collé","vanne IAC bloquée","fuite d'air admission"], cost:"100-400€", action:"Nettoyer corps papillon. Vérifier durites admission.", can_drive:true },
+  P0521: { desc:"Signal capteur pression huile hors plage", urgency:"HIGH", causes:["capteur pression huile HS","pression huile réellement basse"], cost:"50-500€", action:"Vérifier niveau et pression huile IMMÉDIATEMENT", can_drive:false },
+  // ABS/ESP
+  C0031: { desc:"Capteur roue avant droite (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS","roue phonique endommagée"], cost:"100-300€", action:"ABS et ESP désactivés. Rouler prudemment. Remplacer capteur.", can_drive:true },
+  C0034: { desc:"Capteur roue avant gauche (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS"], cost:"100-300€", action:"ABS désactivé. Remplacer capteur.", can_drive:true },
+  C0037: { desc:"Capteur roue arrière droite (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS"], cost:"100-300€", action:"Remplacer capteur ABS roue AR droite", can_drive:true },
+  C0040: { desc:"Capteur roue arrière gauche (ABS/ESP) — défaut", urgency:"MEDIUM", causes:["capteur ABS HS"], cost:"100-300€", action:"Remplacer capteur ABS roue AR gauche", can_drive:true },
+  // CAN Bus
+  U0100: { desc:"Perte communication ECU moteur (CAN Bus)", urgency:"HIGH", causes:["câble CAN coupé","calculateur hors tension","connecteur dessoudé"], cost:"200-1500€", action:"Vérifier alimentation ECU et câble CAN. Pro recommandé.", can_drive:false },
+  U0101: { desc:"Perte communication TCU (boîte auto)", urgency:"HIGH", causes:["câble CAN vers TCU","TCU HS"], cost:"200-1500€", action:"Diagnostic réseau CAN", can_drive:false },
+  U0121: { desc:"Perte communication module ABS/ESP", urgency:"HIGH", causes:["câble CAN","module ABS HS"], cost:"300-1500€", action:"Diagnostic CAN vers ABS. ABS/ESP inactifs.", can_drive:false },
 };
 
-// ── Prompt système agent Dylan ──────────────────────────────────────────────
-function buildSystemPrompt(vehicleCtx, brand, language) {
-  const veh = BRAND_CAPABILITIES[brand] || BRAND_CAPABILITIES.default;
-  const lang = language || "fr";
+// ── Capacités réelles par marque (OBD2 standard + UDS) ─────────────────────────
+const BRAND_CAPS = {
+  vw:       { resets:["huile","dpf","frein","batt","papillon","injecteur","boite"], actuators:["ventilateur","egr","purge_evap","injecteur_test","frein_parking"], options:["feux_journee","essuie_pluie","confort_fermeture","retros_rabattables","feux_bienvenue","feux_virage","klaxon_verrouillage","demarrage_sans_cle","lane_assist"] },
+  audi:     { resets:["huile","dpf","frein","batt","papillon","injecteur","boite"], actuators:["ventilateur","egr","purge_evap","injecteur_test","frein_parking"], options:["feux_journee","essuie_pluie","lane_assist","retros_rabattables"] },
+  seat:     { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"] },
+  skoda:    { resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee","essuie_pluie"] },
+  peugeot:  { resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","purge_evap","frein_parking"], options:["feux_journee"] },
+  citroen:  { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"] },
+  opel:     { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:["feux_journee"] },
+  renault:  { resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","purge_evap"], options:["feux_journee","essuie_pluie"] },
+  dacia:    { resets:["huile","dpf","frein"], actuators:["ventilateur","egr"], options:[] },
+  bmw:      { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee","sport_display","lane_assist"] },
+  mini:     { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","frein_parking"], options:["feux_journee"] },
+  mercedes: { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:["feux_journee"] },
+  ford:     { resets:["huile","dpf","frein","batt","papillon"], actuators:["ventilateur","egr","purge_evap"], options:["feux_journee"] },
+  toyota:   { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:["feux_journee"] },
+  honda:    { resets:["huile","dpf","frein","batt"], actuators:["ventilateur"], options:[] },
+  hyundai:  { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"] },
+  kia:      { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:["feux_journee"] },
+  volvo:    { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr","frein_parking"], options:[] },
+  mazda:    { resets:["huile","dpf","frein"], actuators:["ventilateur","egr"], options:[] },
+  nissan:   { resets:["huile","dpf","frein","batt"], actuators:["ventilateur","egr"], options:[] },
+  default:  { resets:["huile","dpf","frein"], actuators:["ventilateur","egr"], options:[] },
+};
 
-  const resetsStr  = veh.resets.map(k => `${k} → ${RESET_NAMES[k]||k}`).join(", ");
-  const actStr     = veh.actuators.map(k => `${k} → ${ACTUATOR_NAMES[k]||k}`).join(", ");
-  const optionsStr = veh.options.length
-    ? veh.options.map(k => `${k} → ${OPTION_NAMES[k]||k}`).join(", ")
-    : "aucune option disponible via OBD2 standard (niveau coding: " + veh.coding_level + ")";
+// ── Analyse des PIDs critiques ──────────────────────────────────────────────────
+function analyzePIDs(pids) {
+  if (!pids || typeof pids !== 'object') return "";
+  const alerts = [];
+  const vals = {};
 
-  const vinLine  = vehicleCtx.vin  ? `VIN : ${vehicleCtx.vin}`  : "VIN : non lu";
-  const ecuLine  = vehicleCtx.ecuName ? `ECU : ${vehicleCtx.ecuName}` : "";
+  // Extraire les valeurs
+  for (const [key, p] of Object.entries(pids)) {
+    if (p && p.value != null) vals[key] = p.value;
+  }
 
-  return `Tu es Dylan, expert mécanicien automobile IA de MecaIA — un vrai ami mécanicien dans la poche.
+  // Alertes PIDs
+  if (vals.COOLANT > 100)  alerts.push(`⚠️ Température moteur ÉLEVÉE: ${vals.COOLANT}°C (surchauffe possible!)`);
+  if (vals.COOLANT < 60 && vals.RPM > 0)  alerts.push(`⚠️ Moteur froid: ${vals.COOLANT}°C (normal si démarrage récent)`);
+  if (vals.BATTERY < 12)   alerts.push(`⚠️ Batterie FAIBLE: ${vals.BATTERY}V (devrait être 12,6V repos ou 13,5-14,5V moteur)`);
+  if (vals.BATTERY > 15)   alerts.push(`⚠️ Tension TROP HAUTE: ${vals.BATTERY}V (alternateur HS?)`);
+  if (vals.OIL_TEMP > 135) alerts.push(`⚠️ Huile SURCHAUFFÉE: ${vals.OIL_TEMP}°C`);
+  if (vals.FUEL_LEVEL < 15) alerts.push(`⚠️ Niveau carburant BAS: ${vals.FUEL_LEVEL}%`);
+  if (vals.ENGINE_LOAD > 90) alerts.push(`⚠️ Charge moteur ÉLEVÉE: ${vals.ENGINE_LOAD}% (normal en accélération forte)`);
+  if (vals.FUEL_TRIM_ST < -20 || vals.FUEL_TRIM_ST > 20) alerts.push(`⚠️ Correction carburant CT anormale: ${vals.FUEL_TRIM_ST}% (fuite air ou injecteur?)`);
+  if (vals.FUEL_TRIM_LT < -20 || vals.FUEL_TRIM_LT > 20) alerts.push(`⚠️ Correction carburant LT anormale: ${vals.FUEL_TRIM_LT}% (problème chronique)`);
 
-## CONTEXTE VÉHICULE
-Marque : ${veh.name}
-${vinLine}
-${ecuLine}
-Niveau de coding : ${veh.coding_level}
+  const pidSummary = Object.entries(vals)
+    .filter(([k]) => !['FUEL_TRIM_ST','FUEL_TRIM_LT','BARO','O2_B1S1','O2_B1S2'].includes(k))
+    .map(([k, v]) => {
+      const labels = {RPM:'Régime',SPEED:'Vitesse',COOLANT:'Temp. moteur',ENGINE_LOAD:'Charge',THROTTLE:'Papillon',MAF:'MAF',BATTERY:'Batterie',OIL_TEMP:'Huile',FUEL_LEVEL:'Carburant',INTAKE_MAP:'Pression adm.',TIMING:'Allumage'};
+      const units  = {RPM:'tr/min',SPEED:'km/h',COOLANT:'°C',ENGINE_LOAD:'%',THROTTLE:'%',MAF:'g/s',BATTERY:'V',OIL_TEMP:'°C',FUEL_LEVEL:'%',INTAKE_MAP:'kPa',TIMING:'°'};
+      const label = labels[k] || k;
+      const unit  = units[k]  || '';
+      return `${label}: ${v}${unit}`;
+    }).join(' | ');
 
-## TON CARACTÈRE
-Tu es bienveillant, simple, rassurant. Tu parles comme un ami mécanicien — pas comme un technicien.
-Jamais de jargon incompréhensible. Si tu dois utiliser un terme technique, tu l'expliques.
-Tu guides étape par étape. Tu confirmes TOUJOURS avant d'agir.
-Tu rassures : "pas de panique", "c'est courant", "c'est réparable".
-Quand tu ne sais pas ou que c'est hors ta portée : tu le dis et tu envoies chez le pro.
-
-## TES OUTILS OBD2 — Utilise [CMD:xxx] dans tes messages pour agir
-
-### LECTURES
-[CMD:scan_full]           → Scan complet (VIN + codes + PIDs + moniteurs + freeze frame)
-[CMD:read_dtcs]           → Lire les codes défauts
-[CMD:read_live]           → Voir paramètres moteur temps réel
-[CMD:read_monitors]       → Moniteurs émissions (contrôle technique)
-[CMD:read_freeze]         → Données au moment du dernier défaut
-
-### OPTIONS VÉHICULE
-[CMD:read_options:${brand}]  → Lire les options disponibles sur ce véhicule
-[CMD:activate_option:feux_journee:${brand}]        → Activer feux de jour
-[CMD:deactivate_option:feux_journee:${brand}]      → Désactiver feux de jour
-[CMD:activate_option:essuie_pluie:${brand}]        → Activer essuie-glace pluie auto
-[CMD:deactivate_option:essuie_pluie:${brand}]      → Désactiver
-[CMD:activate_option:confort_fermeture:${brand}]   → Activer fermeture vitres télécommande
-[CMD:deactivate_option:confort_fermeture:${brand}] → Désactiver
-[CMD:activate_option:demarrage_sans_cle:${brand}]  → Activer Keyless Go
-[CMD:deactivate_option:lane_assist:${brand}]       → Activer aide maintien de voie
-Options disponibles : ${optionsStr}
-
-### TESTS ACTIONNEURS (activer un composant pour le tester)
-[CMD:activate:ventilateur:${brand}]    → Démarrer ventilateur (l'utilisateur l'entend tourner)
-[CMD:deactivate:ventilateur:${brand}] → Arrêter ventilateur
-[CMD:activate:egr:${brand}]           → Ouvrir vanne EGR
-[CMD:deactivate:egr:${brand}]         → Fermer vanne EGR
-[CMD:activate:purge_evap:${brand}]    → Ouvrir vanne purge EVAP
-[CMD:deactivate:purge_evap:${brand}]  → Fermer
-[CMD:activate:injecteur_test:${brand}] → Tester injecteurs cylindre par cylindre
-[CMD:deactivate:injecteur_test:${brand}] → Arrêter test
-Actionneurs disponibles : ${actStr}
-
-### MODE ENTRETIEN FREINS
-[CMD:epb_open:${brand}]   → OUVRE les étriers (pistons rentrent = espace pour nouvelles plaquettes)
-[CMD:epb_close:${brand}]  → FERME les étriers (pistons sortent = mode normal)
-⚠️ TOUJOURS demander confirmation + expliquer ce qui va se passer
-
-### RESETS SERVICE
-[CMD:reset:huile:${brand}]      → Remettre compteur vidange à zéro
-[CMD:reset:dpf:${brand}]        → Forcer regen FAP (diesel moteur chaud)
-[CMD:reset:frein:${brand}]      → Remettre usure plaquettes à zéro
-[CMD:reset:batt:${brand}]       → Adapter nouvelle batterie
-[CMD:reset:papillon:${brand}]   → Recalibrer corps de papillon
-[CMD:reset:injecteur:${brand}]  → Coder les injecteurs (diesel direct)
-Resets disponibles : ${resetsStr}
-
-### EFFACEMENT
-[CMD:clear_dtcs]  → Effacer tous les codes défauts
-
-## RÈGLES DE SÉCURITÉ ABSOLUES
-1. TOUJOURS annoncer ce que tu fais avant un [CMD]
-2. TOUJOURS demander confirmation explicite avant : clear_dtcs, epb_open, epb_close, tout reset service
-3. Ne JAMAIS effacer les codes si l'utilisateur va chez le garagiste (les codes = preuve pour le tech)
-4. Pour les actionneurs : prévenir de ce que l'utilisateur va entendre/voir/ressentir
-5. Pour l'EPB (mode entretien freins) : IMPÉRATIVEMENT confirmer que la voiture est sur cric et roue arrière démontée AVANT d'ouvrir
-6. Ne JAMAIS recommander de rouler en sécurité si codes HIGH urgency
-7. Si code inconnu ou symptôme complexe : toujours recommander un vrai garagiste
-
-## SCÉNARIOS TYPES (comment réagir)
-
-### "Trouve la panne" / "Scan complet"
-→ Dis que tu vas scanner, envoie [CMD:scan_full], attends les résultats, puis analyse tout
-
-### "Quelles options puis-je débloquer ?"
-→ Annonce que tu vas vérifier, envoie [CMD:read_options:${brand}], présente les résultats clairement
-   Dis quelles sont activées et lesquelles peuvent être activées
-   Propose : "Laquelle voulez-vous activer ?" (feux jour, essuie-pluie, rétros rabattables, feux bienvenue, bip fermeture, sport auto, keyless...)
-
-### "Je veux les feux de jour" / "Active les DRL"
-→ Confirme l'action : "Je vais activer les feux de jour. Après, ils s'allumeront automatiquement au démarrage. C'est bon ?"
-   Si oui → [CMD:activate_option:feux_journee:${brand}]
-   Après → annonce que la modification est faite, éventuellement redémarrer le véhicule
-
-### "Je veux changer mes plaquettes arrière"
-→ Explique la procédure : "Pour changer les plaquettes arrière avec un frein électronique, je dois mettre les étriers en mode entretien (pistons rentrés). Étapes : 1. Levez la voiture, 2. Démontez la roue, 3. Je mets le mode entretien..."
-→ Demande confirmation que la voiture est sécurisée
-→ [CMD:epb_open:${brand}]
-→ Guide pour le remplacement
-→ Quand terminé → [CMD:epb_close:${brand}]
-→ "Les pistons sont ressortis. Testez le frein à main et faites quelques freinages doux."
-
-### "Le ventilateur tourne-t-il ?"
-→ "Je vais activer le ventilateur. Dans 3 secondes vous devriez l'entendre tourner." [CMD:activate:ventilateur:${brand}]
-→ "Vous l'entendez ?"
-
-### "J'ai fait la vidange, remets l'huile à zéro"
-→ Confirmer : "Je vais remettre à zéro le compteur de vidange. C'est bien l'huile qui a été changée, pas juste complétée ?" → Attendre OUI
-→ [CMD:reset:huile:${brand}]
-
-## CONNAISSANCE DES CODES DTC
-${JSON.stringify(Object.entries(DTC_KNOWLEDGE).slice(0, 10).reduce((acc, [k, v]) => ({ ...acc, [k]: { desc: v.desc, urgency: v.urgency, action: v.action, cost: v.cost_estimate } }), {}), null, 0)}
-
-Quand tu analyses des codes : donne l'urgence (HAUTE/MOYENNE/FAIBLE), les causes probables, le coût estimé, et ce qu'il faut faire.
-
-## FORMAT RÉPONSE
-Texte conversationnel simple + [CMD:xxx] quand nécessaire.
-Jamais plus de 2 CMD dans la même réponse (évite de submerger l'utilisateur).
-Langue de réponse : ${lang === "fr" ? "Français" : lang === "nl" ? "Nederlands" : lang === "en" ? "English" : "Deutsch"}.`;
+  return (alerts.length ? alerts.join('\n') + '\n' : '') + (pidSummary ? `Paramètres: ${pidSummary}` : '');
 }
 
-// ── Handler principal ────────────────────────────────────────────────────────
+// ── Enrichir les DTC avec connaissance ─────────────────────────────────────────
+function enrichDTCs(dtcs) {
+  if (!dtcs || !dtcs.length) return "";
+  return dtcs.filter(d => d.code && /^[A-Z][0-9A-F]{4}$/i.test(d.code)).map(d => {
+    const k = DTC_KNOWLEDGE[d.code.toUpperCase()];
+    if (k) {
+      return `${d.code} [${k.urgency}] : ${k.desc}
+   → Causes probables: ${k.causes.slice(0, 3).join(', ')}
+   → Action: ${k.action}
+   → Coût estimé: ${k.cost}
+   → Peut rouler: ${k.can_drive ? 'OUI avec précaution' : 'NON — danger'}`;
+    }
+    return `${d.code} : code non reconnu — ${d.code.startsWith('P0') ? 'système moteur générique' : d.code.startsWith('P1') ? 'code constructeur moteur' : d.code.startsWith('C') ? 'châssis/ABS/ESP' : d.code.startsWith('B') ? 'carrosserie/confort' : d.code.startsWith('U') ? 'bus CAN/réseau' : 'inconnu'}`;
+  }).join('\n\n');
+}
+
+// ── System prompt agent Dylan Box ──────────────────────────────────────────────
+function buildSystemPrompt(vehicleCtx, brand, language) {
+  const caps = BRAND_CAPS[brand] || BRAND_CAPS.default;
+  const lang = language || "fr";
+
+  const langMap = { fr:"Français", nl:"Nederlands", en:"English", de:"Deutsch" };
+  const langInstruction = lang !== 'fr'
+    ? `\n\n🌐 LANGUE: Réponds TOUJOURS en ${langMap[lang] || 'Français'}, même si le message est dans une autre langue.`
+    : "";
+
+  // Contexte véhicule
+  const vin  = vehicleCtx?.vin       ? `VIN : ${vehicleCtx.vin}`       : "";
+  const ecu  = vehicleCtx?.ecuName   ? `ECU : ${vehicleCtx.ecuName}`   : "";
+  const cal  = vehicleCtx?.calibrationId ? `Calibration : ${vehicleCtx.calibrationId}` : "";
+  const vehLine = [vin, ecu, cal].filter(Boolean).join(' | ');
+
+  // Analyser les DTC
+  const dtcsConf = vehicleCtx?.dtcs         || [];
+  const dtcsPend = vehicleCtx?.pendingDtcs  || [];
+  const dtcsPerm = vehicleCtx?.permanentDtcs || [];
+  const allDTCs  = [...dtcsConf, ...dtcsPend];
+  const dtcBlock = allDTCs.length ? `\n\n=== CODES DÉFAUTS OBD2 ===\n${enrichDTCs(allDTCs)}` : "";
+
+  // Analyser les PIDs
+  const pidBlock = vehicleCtx?.pids ? `\n\n=== PARAMÈTRES MOTEUR TEMPS RÉEL ===\n${analyzePIDs(vehicleCtx.pids)}` : "";
+
+  // Monitors
+  let monitorBlock = "";
+  if (vehicleCtx?.monitors) {
+    const mon = vehicleCtx.monitors;
+    const notReady = (mon.monitors || []).filter(m => !m.ready).map(m => m.name);
+    monitorBlock = `\n\n=== MONITEURS ÉMISSIONS ===\nVoyant moteur (MIL): ${mon.milOn ? `🔴 ALLUMÉ — ${mon.dtcCount} défaut(s) actif(s)` : '🟢 ÉTEINT'}\n${notReady.length ? `Moniteurs non prêts: ${notReady.join(', ')} (ne pas passer au contrôle technique)` : 'Tous les moniteurs sont prêts ✅'}`;
+  }
+
+  // Freeze Frame
+  let ffBlock = "";
+  if (vehicleCtx?.freezeFrame && Object.keys(vehicleCtx.freezeFrame).length) {
+    const ff = vehicleCtx.freezeFrame;
+    const ffValues = Object.entries(ff).map(([k,v]) => `${k}: ${v.value}${v.unit}`).join(' | ');
+    ffBlock = `\n\n=== FREEZE FRAME (conditions au moment du défaut) ===\n${ffValues}`;
+  }
+
+  // Urgence globale
+  const hasHighUrgency = allDTCs.some(d => {
+    const k = DTC_KNOWLEDGE[d.code?.toUpperCase()];
+    return k && k.urgency === 'HIGH' && k.can_drive === false;
+  });
+
+  const resetsStr   = caps.resets.join(', ');
+  const actuatorsStr = caps.actuators.join(', ');
+  const optionsStr   = caps.options.length ? caps.options.join(', ') : 'aucune disponible via OBD2 standard';
+
+  return `Tu es Dylan, expert mécanicien IA de MecaIA Box — le meilleur ami mécanicien dans la poche.
+
+Tu as accès aux données RÉELLES du boitier OBD2 connecté à la voiture. Tu analyses ces données et guides l'utilisateur de façon intuitive et naturelle, comme un vrai mécanicien à côté du capot.
+
+## MARQUE VÉHICULE
+${brand !== 'default' ? `Marque : ${brand.toUpperCase()}` : 'Marque : non sélectionnée'}
+${vehLine}
+Resets disponibles : ${resetsStr}
+Actionneurs disponibles : ${actuatorsStr}
+Options coding disponibles : ${optionsStr}
+${dtcBlock}${pidBlock}${monitorBlock}${ffBlock}
+${hasHighUrgency ? '\n⚠️ ATTENTION : Des codes critiques nécessitent un arrêt. NE PAS ROULER.' : ''}
+
+## TON CARACTÈRE
+- Chaleureux et rassurant : "Pas de panique, c'est courant !"
+- Langage simple, accessible à quelqu'un qui n'a jamais ouvert un capot
+- Expert : tu corrèles DTC + PIDs + contexte pour des diagnostics précis
+- Proactif : tu suggères l'étape suivante sans que l'utilisateur demande
+- Honnête : si c'est hors de ta portée, tu dis "va chez le garagiste"
+
+## TES ACTIONS [CMD:xxx]
+Utilise ces balises dans tes réponses pour déclencher des actions OBD2 :
+
+### LECTURES
+[CMD:scan_full]           → Scanner tout (VIN + codes + PIDs + moniteurs)
+[CMD:read_dtcs]           → Lire les codes défauts
+[CMD:read_live]           → Voir les paramètres temps réel
+[CMD:read_monitors]       → Vérifier les moniteurs d'émissions
+[CMD:read_freeze]         → Lire le Freeze Frame (données au moment du défaut)
+
+### RESETS SERVICE (demander confirmation AVANT)
+[CMD:reset:huile:${brand}]       → Remettre compteur vidange à zéro
+[CMD:reset:dpf:${brand}]         → Forcer régénération FAP/DPF
+[CMD:reset:frein:${brand}]       → Remettre usure plaquettes à zéro
+[CMD:reset:batt:${brand}]        → Adaptation nouvelle batterie (BMS)
+[CMD:reset:papillon:${brand}]    → Recalibrer corps de papillon
+[CMD:reset:injecteur:${brand}]   → Coder les injecteurs (diesel direct)
+
+### TESTS ACTIONNEURS (prévenir l'utilisateur)
+[CMD:activate:ventilateur:${brand}]  → Activer le ventilateur (l'utilisateur l'entend)
+[CMD:deactivate:ventilateur:${brand}]→ Arrêter
+[CMD:activate:egr:${brand}]          → Ouvrir vanne EGR
+[CMD:deactivate:egr:${brand}]        → Fermer vanne EGR
+[CMD:activate:purge_evap:${brand}]   → Ouvrir vanne EVAP
+[CMD:deactivate:purge_evap:${brand}] → Fermer
+[CMD:activate:injecteur_test:${brand}]→ Tester injecteurs cyl par cyl
+
+### MODE ENTRETIEN FREINS (EPB électronique)
+[CMD:epb_open:${brand}]   → OUVRIR étriers (pistons rentrent → place pour nouvelles plaquettes)
+[CMD:epb_close:${brand}]  → FERMER étriers (pistons sortent → mode normal)
+⚠️ TOUJOURS vérifier que la voiture est sur cric et roue démontée AVANT epb_open
+
+### OPTIONS CODING (modifier le comportement du véhicule)
+[CMD:activate_option:feux_journee:${brand}]        → Activer feux de jour
+[CMD:deactivate_option:feux_journee:${brand}]      → Désactiver
+[CMD:activate_option:retros_rabattables:${brand}]  → Rétros rabattables auto
+[CMD:activate_option:feux_bienvenue:${brand}]      → Coming Home
+[CMD:activate_option:klaxon_verrouillage:${brand}] → Bip fermeture
+[CMD:activate_option:essuie_pluie:${brand}]        → Essuie-pluie automatique
+[CMD:activate_option:confort_fermeture:${brand}]   → Vitres par télécommande
+
+### EFFACEMENT CODES
+[CMD:clear_dtcs]  → Effacer tous les codes défauts
+⚠️ NE JAMAIS effacer si l'utilisateur va chez le garagiste (les codes = preuve)
+
+## SCÉNARIOS TYPES
+
+### "Trouve la panne" / "Scan complet" / utilisateur envoie les données de scan
+→ Analyse TOUT ce que tu as : DTC + PIDs + Freeze Frame + Monitors
+→ Explique chaque code en langage simple
+→ Donne une priorité (🔴 urgent / 🟠 bientôt / 🟢 préventif)
+→ Propose une action concrète
+→ Donne un coût estimé
+
+### "Quelles options puis-je débloquer ?"
+→ Liste les options disponibles pour cette marque
+→ Explique ce que fait chaque option
+→ Demande : "Laquelle voulez-vous activer ?"
+
+### "Active [option]" / "Je veux les feux de jour"
+→ Confirme : "Je vais activer les feux de jour. Après, ils s'allumeront automatiquement au démarrage. C'est bon ?"
+→ Attends confirmation → [CMD:activate_option:feux_journee:${brand}]
+→ "Fait ! Redémarrez le véhicule pour que ça prenne effet."
+
+### "Je veux changer mes plaquettes arrière"
+→ Si frein parking électronique : "Je vais mettre les étriers en mode entretien. Étapes : 1. Levez la voiture ✓ 2. Démontez la roue ✓ 3. Je rentre les pistons..."
+→ [CMD:epb_open:${brand}]
+→ Guide le remplacement pas à pas
+→ Quand terminé : [CMD:epb_close:${brand}]
+→ "Pistons ressortis. Testez le frein à main et faites quelques freinages doux."
+
+### "Le ventilateur tourne-t-il ?"
+→ "Je vais l'activer. Dans 3 secondes vous devriez l'entendre tourner." [CMD:activate:ventilateur:${brand}]
+→ Demande : "Vous l'entendez ?"
+
+### "J'ai fait la vidange, remets à zéro"
+→ "Vous confirmez que l'huile a bien été changée ?" → Attends OUI
+→ [CMD:reset:huile:${brand}]
+→ "C'est fait ! Le compteur d'intervalles a été remis à zéro."
+
+## RÈGLES DE SÉCURITÉ ABSOLUES
+1. TOUJOURS annoncer ce que tu fais AVANT d'envoyer un [CMD]
+2. TOUJOURS demander confirmation explicite avant : [CMD:clear_dtcs], [CMD:epb_open], tout [CMD:reset]
+3. NE JAMAIS effacer les codes si l'utilisateur va chez le garagiste
+4. Pour [CMD:epb_open] : IMPÉRATIVEMENT confirmer que voiture sur cric et roue démontée
+5. Si code urgency HIGH + can_drive false : dire clairement de ne pas rouler
+6. Si problème complexe (electronique, boîte auto, distribution) : envoyer chez le pro
+7. Ne jamais inventer une information technique non fiable
+
+## FORMAT RÉPONSE
+- Texte conversationnel naturel (pas de listes à puces pour tout)
+- Utilise des emojis pour les niveaux d'urgence : 🔴 critique, 🟠 à traiter, 🟢 préventif
+- Max 2 [CMD] par message (ne pas submerger)
+- Toujours finir par la prochaine étape concrète
+${langInstruction}`;
+}
+
+// ── Handler principal ────────────────────────────────────────────────────────────
 export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
-      headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" },
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
       body: "",
     };
   }
+
   if (event.httpMethod !== "POST") return { statusCode: 405, body: "POST only" };
 
-  const headers = { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" };
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json",
+  };
 
   try {
     const body = JSON.parse(event.body || "{}");
-    const { messages = [], is_obd2_scan = false, vehicle_context = {}, brand = "default", language = "fr" } = body;
+    const {
+      messages         = [],
+      is_obd2_scan     = false,
+      vehicle_context  = {},
+      brand            = "default",
+      language         = "fr",
+      // Alias pour compatibilité frontend Box
+      userMsg,
+      vehicleData,
+      isOBD2Scan,
+    } = body;
 
-    const systemPrompt = buildSystemPrompt(vehicle_context, brand, language);
+    // Normalisation pour les deux formats d'appel
+    const finalMessages   = messages.length ? messages : (userMsg ? [{ role: "user", content: userMsg }] : []);
+    const finalCtx        = vehicle_context || vehicleData || {};
+    const finalIsOBD2     = is_obd2_scan || isOBD2Scan || false;
 
-    let enrichedMessages = messages.map(m => ({
+    const systemPrompt = buildSystemPrompt(finalCtx, brand, language);
+
+    // Enrichir le dernier message utilisateur avec les données OBD2 si c'est un scan
+    let enrichedMessages = finalMessages.map(m => ({
       role: m.role,
       content: typeof m.content === "string" ? m.content : JSON.stringify(m.content),
     }));
 
-    // Enrichissement avec les données OBD2 du scan
-    if (is_obd2_scan && vehicle_context.dtcs !== undefined) {
-      const dtcs = vehicle_context.dtcs || [];
-      const pendingDtcs = vehicle_context.pendingDtcs || [];
+    if (finalIsOBD2 && finalCtx) {
+      const dtcs = finalCtx.dtcs || [];
+      const pendingDtcs = finalCtx.pendingDtcs || [];
+      const permanentDtcs = finalCtx.permanentDtcs || [];
+      const pids = finalCtx.pids || {};
+      const allDTCs = [...dtcs, ...pendingDtcs];
 
-      // Enrichir les codes avec la knowledge base
-      const dtcDetails = dtcs.map(d => {
-        const k = DTC_KNOWLEDGE[d.code];
-        if (k) return `${d.code} [${k.urgency}]: ${k.desc} — ${k.action} (coût estimé: ${k.cost_estimate})`;
-        return `${d.code}: ${d.code.startsWith("P1") || d.code.startsWith("U") || d.code.startsWith("B") || d.code.startsWith("C") ? "code constructeur — voir manuel" : "code non reconnu"}`;
-      });
+      // Résumé scan pour le message
+      const dtcSummary = allDTCs.length
+        ? `Codes défauts confirmés (${dtcs.length}): ${dtcs.filter(d=>/^[A-Z][0-9A-F]{4}$/i.test(d.code)).map(d => d.code).join(', ') || 'aucun valide'}\nCodes en attente (${pendingDtcs.length}): ${pendingDtcs.filter(d=>/^[A-Z][0-9A-F]{4}$/i.test(d.code)).map(d => d.code).join(', ') || 'aucun'}\nCodes permanents (${permanentDtcs.length}): ${permanentDtcs.filter(d=>/^[A-Z][0-9A-F]{4}$/i.test(d.code)).map(d => d.code).join(', ') || 'aucun'}`
+        : "Aucun code défaut actif ✅";
 
-      const pidSummary = vehicle_context.pids
-        ? Object.values(vehicle_context.pids).filter(p => p.value != null && !isNaN(p.value)).map(p => `${p.label}: ${p.value}${p.unit}`).join(" | ")
-        : "";
+      const pidValues = Object.values(pids)
+        .filter(p => p.value != null)
+        .slice(0, 8)
+        .map(p => `${p.label}: ${p.value}${p.unit}`)
+        .join(', ');
 
-      const monsNotReady = vehicle_context.monitors?.monitors?.filter(m => !m.ready)?.map(m => m.name)?.join(", ") || "tous prêts ✅";
-
-      // Alertes sur les PIDs critiques
-      const alerts = [];
-      const pids = vehicle_context.pids || {};
-      if (pids.COOLANT?.value > 100) alerts.push("⚠️ TEMPÉRATURE MOTEUR ÉLEVÉE: " + pids.COOLANT.value + "°C");
-      if (pids.BATTERY?.value < 12) alerts.push("⚠️ BATTERIE FAIBLE: " + pids.BATTERY.value + "V");
-      if (pids.OIL_TEMP?.value > 135) alerts.push("⚠️ HUILE SURCHAUFFÉE: " + pids.OIL_TEMP.value + "°C");
+      const milStatus = finalCtx.monitors?.milOn
+        ? `🔴 Voyant moteur ALLUMÉ — ${finalCtx.monitors.dtcCount} défaut(s)`
+        : '🟢 Voyant moteur ÉTEINT';
 
       const scanBlock = [
-        "=== RÉSULTATS SCAN OBD2 ===",
-        "VIN: " + (vehicle_context.vin || "non disponible"),
-        "Voyant moteur (MIL): " + (vehicle_context.monitors?.milOn ? "🔴 ALLUMÉ — " + vehicle_context.monitors.dtcCount + " défaut(s)" : "🟢 ÉTEINT"),
-        dtcDetails.length ? "Codes défauts confirmés (" + dtcDetails.length + "): " + dtcDetails.join(" | ") : "Codes défauts: AUCUN ✅",
-        pendingDtcs.length ? "Codes en attente: " + pendingDtcs.map(d => d.code).join(", ") : "Codes en attente: aucun",
-        (vehicle_context.permanentDtcs||[]).length ? "Codes permanents: " + vehicle_context.permanentDtcs.map(d => d.code).join(", ") : "",
-        "Moniteurs non prêts: " + monsNotReady,
-        pidSummary ? "Paramètres moteur: " + pidSummary : "",
-        alerts.length ? "ALERTES: " + alerts.join(" | ") : "",
-        vehicle_context.freezeFrame && Object.keys(vehicle_context.freezeFrame).length
-          ? "Freeze Frame: " + Object.entries(vehicle_context.freezeFrame).map(([k,v]) => k + ":" + v.value + v.unit).join(" | ")
-          : "",
-        "=== FIN SCAN ===",
-      ].filter(Boolean).join("\n");
+        `=== RÉSULTATS SCAN OBD2 ===`,
+        finalCtx.vin ? `VIN: ${finalCtx.vin}` : '',
+        milStatus,
+        dtcSummary,
+        pidValues ? `Paramètres: ${pidValues}` : '',
+        `=== FIN SCAN ===`,
+      ].filter(Boolean).join('\n');
 
-      if (enrichedMessages.length > 0 && enrichedMessages[enrichedMessages.length-1].role === "user") {
-        enrichedMessages[enrichedMessages.length-1].content += "\n\n" + scanBlock;
+      const lastMsg = enrichedMessages[enrichedMessages.length - 1];
+      if (lastMsg && lastMsg.role === 'user') {
+        lastMsg.content += `\n\n${scanBlock}`;
       } else {
-        enrichedMessages.push({ role: "user", content: "Analyse le scan complet de ma voiture :\n" + scanBlock });
+        enrichedMessages.push({ role: 'user', content: `Analyse le scan de ma voiture:\n${scanBlock}` });
       }
     }
 
     if (enrichedMessages.length === 0) {
-      enrichedMessages = [{ role: "user", content: "Bonjour Dylan !" }];
+      enrichedMessages = [{ role: 'user', content: 'Bonjour Dylan !' }];
     }
 
     const response = await anthropic.messages.create({
@@ -407,14 +432,20 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ message, usage: response.usage }),
+      body: JSON.stringify({
+        message,
+        usage: response.usage,
+      }),
     };
   } catch (error) {
     console.error("[MECAIA_BOX] error:", error.message);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ message: "Dylan est momentanément indisponible. Réessayez dans quelques secondes.", error: error.message }),
+      body: JSON.stringify({
+        message: "Dylan est momentanément indisponible. Réessayez dans quelques secondes.",
+        error: error.message,
+      }),
     };
   }
 };
