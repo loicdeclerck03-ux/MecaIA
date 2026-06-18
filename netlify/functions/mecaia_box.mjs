@@ -12,7 +12,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY });
 
 // ── Capacités par marque ────────────────────────────────────────────────────
 const BRAND_CAPABILITIES = {
