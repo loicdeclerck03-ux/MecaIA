@@ -535,9 +535,14 @@ export const handler = async (event) => {
     }
 
     // ---- 6) Fusion état + transitions déterministes ----
-    if (parsed.contexte) state.contexte = { ...state.contexte, ...parsed.contexte };
-    // Capture deterministe du symptome initial : ne pas dependre du LLM pour le renseigner (cause du blocage en CONTEXTE).
-    if ((!state.contexte.symptome || String(state.contexte.symptome).trim().length < 3) && user_input && String(user_input).trim().length >= 3) {
+    if (parsed.contexte) {
+      const incoming = { ...parsed.contexte };
+      // Ne jamais ecraser un symptome deja capture par une valeur vide/floue renvoyee par le LLM.
+      if (!incoming.symptome || String(incoming.symptome).trim().length < 3) delete incoming.symptome;
+      state.contexte = { ...state.contexte, ...incoming };
+    }
+    // Capture deterministe du symptome au 1er tour uniquement, puis verrouille (cause du blocage en CONTEXTE).
+    if (!state.contexte.symptome && (state.tour || 0) <= 1 && user_input && String(user_input).trim().length >= 3) {
       state.contexte.symptome = String(user_input).trim().slice(0, 300);
     }
     if (parsed.registre === "concis" || parsed.registre === "detaille") state.registre = parsed.registre;
@@ -597,6 +602,10 @@ export const handler = async (event) => {
     }
     if (etatAvant === "CONTEXTE" && etat !== "CONTEXTE" && !contexteSuffisant(state)) {
       etat = "CONTEXTE";
+    }
+    // Anti-boucle : si le contexte est suffisant et Dylan reste bloque en CONTEXTE, on avance vers HYPOTHESES.
+    if (etat === "CONTEXTE" && contexteSuffisant(state) && ((state.tour || 0) >= 3 || (state.hypotheses && state.hypotheses.length))) {
+      etat = "HYPOTHESES";
     }
 
     let hypConclue = null;
