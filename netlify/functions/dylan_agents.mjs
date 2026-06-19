@@ -492,32 +492,37 @@ export const handler = async (event) => {
       const make = (vehicle && vehicle.make) || vehicle_marque || null;
       const model = (vehicle && vehicle.model) || vehicle_modele || null;
       const year = (vehicle && parseInt(vehicle.year)) || null;
-      if (make) {
-        try {
-          // Recherche par make + year en premier
-          let q = supabase.from('vehicle_specs').select('*').ilike('make', make);
-          if (year) q = q.lte('year_from', year).gte('year_to', year);
-          // Si model fourni : chercher dans model, engine ET generation (pas seulement model)
-          if (model) {
-            const tokens = model.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(/\s+/).filter(t => t.length >= 2 && t !== 'de' && t !== 'le');
-            if (tokens.length > 0) {
-              const orParts = tokens.flatMap(t => [`model.ilike.%${t}%`, `engine.ilike.%${t}%`, `generation.ilike.%${t}%`]).join(',');
-              q = q.or(orParts);
-            }
-          }
-          let { data: specs } = await q.limit(1).maybeSingle();
-          // Fallback : si rien trouvé, retourner n'importe quelle motorisation du même make/year
-          if (!specs && year) {
-            const fb = await supabase.from('vehicle_specs').select('*').ilike('make', make)
-              .lte('year_from', year).gte('year_to', year).limit(1).maybeSingle();
-            specs = fb.data;
-          }
-          const carnet = formatCarnet(specs, { make, model, year });
-          return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ success: true, mode: 'carnet_entretien', message: carnet,
-              session_id: session_id || null }) };
-        } catch(e) { console.error('[DYLAN] carnet:', e.message); }
+      if (!make) {
+        // Pas de véhicule sélectionné — message d'aide
+        return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ success: true, mode: 'carnet_entretien',
+            message: '\ud83d\udccb **Carnet d\'entretien**\n\nSélectionnez d\'abord votre véhicule dans le sélecteur ci-dessus (cliquez sur votre voiture dans la liste), puis demandez à nouveau le carnet.',
+            session_id: session_id || null }) };
       }
+      try {
+      // Recherche par make + year en premier
+      let q = supabase.from('vehicle_specs').select('*').ilike('make', make);
+      if (year) q = q.lte('year_from', year).gte('year_to', year);
+      // Si model fourni : chercher dans model, engine ET generation (pas seulement model)
+      if (model) {
+      const tokens = model.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(/\s+/).filter(t => t.length >= 2 && t !== 'de' && t !== 'le');
+      if (tokens.length > 0) {
+      const orParts = tokens.flatMap(t => [`model.ilike.%${t}%`, `engine.ilike.%${t}%`, `generation.ilike.%${t}%`]).join(',');
+      q = q.or(orParts);
+      }
+      }
+      let { data: specs } = await q.limit(1).maybeSingle();
+      // Fallback : si rien trouvé, retourner n'importe quelle motorisation du même make/year
+      if (!specs && year) {
+      const fb = await supabase.from('vehicle_specs').select('*').ilike('make', make)
+      .lte('year_from', year).gte('year_to', year).limit(1).maybeSingle();
+      specs = fb.data;
+      }
+      const carnet = formatCarnet(specs, { make, model, year });
+      return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ success: true, mode: 'carnet_entretien', message: carnet,
+      session_id: session_id || null }) };
+      } catch(e) { console.error('[DYLAN] carnet:', e.message); }
     }
 
     if (!session_id && (!user_input || String(user_input).trim().length < 3)) {
