@@ -494,10 +494,24 @@ export const handler = async (event) => {
       const year = (vehicle && parseInt(vehicle.year)) || null;
       if (make) {
         try {
+          // Recherche par make + year en premier
           let q = supabase.from('vehicle_specs').select('*').ilike('make', make);
-          if (model) q = q.ilike('model', `%${model.split(' ')[0]}%`);
           if (year) q = q.lte('year_from', year).gte('year_to', year);
-          const { data: specs } = await q.limit(1).maybeSingle();
+          // Si model fourni : chercher dans model, engine ET generation (pas seulement model)
+          if (model) {
+            const tokens = model.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(/\s+/).filter(t => t.length >= 2 && t !== 'de' && t !== 'le');
+            if (tokens.length > 0) {
+              const orParts = tokens.flatMap(t => [`model.ilike.%${t}%`, `engine.ilike.%${t}%`, `generation.ilike.%${t}%`]).join(',');
+              q = q.or(orParts);
+            }
+          }
+          let { data: specs } = await q.limit(1).maybeSingle();
+          // Fallback : si rien trouvé, retourner n'importe quelle motorisation du même make/year
+          if (!specs && year) {
+            const fb = await supabase.from('vehicle_specs').select('*').ilike('make', make)
+              .lte('year_from', year).gte('year_to', year).limit(1).maybeSingle();
+            specs = fb.data;
+          }
           const carnet = formatCarnet(specs, { make, model, year });
           return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ success: true, mode: 'carnet_entretien', message: carnet,
