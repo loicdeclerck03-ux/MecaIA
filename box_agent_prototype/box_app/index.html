@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MecaIA Box</title>
+<style>
+  :root { --bg:#0e1116; --panel:#161b22; --line:#262d36; --txt:#e6edf3; --mut:#8b949e; --accent:#3fb950; --blue:#388bfd; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--txt); display:flex; flex-direction:column; height:100vh; }
+  header { padding:11px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0 6px 0 0; font-weight:700; }
+  .tag { font-size:11px; padding:3px 8px; border-radius:20px; background:var(--panel); color:var(--mut); border:1px solid var(--line); }
+  .setup { padding:12px 16px; border-bottom:1px solid var(--line); max-width:880px; margin:0 auto; width:100%; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px; }
+  label { font-size:11px; color:var(--mut); }
+  select, input { padding:8px 10px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:8px; font:inherit; }
+  .grow { flex:1; min-width:120px; }
+  button { font:inherit; padding:9px 14px; border:0; border-radius:8px; cursor:pointer; font-weight:700; }
+  #find { background:var(--accent); color:#021; font-size:15px; padding:12px 18px; flex:1; }
+  #vin { background:var(--panel); color:var(--txt); border:1px solid var(--line); }
+  button:disabled { opacity:.45; cursor:default; }
+  .muted { font-size:11px; color:var(--mut); }
+  main { flex:1; overflow-y:auto; }
+  .chat { max-width:880px; margin:0 auto; padding:16px; display:flex; flex-direction:column; gap:9px; }
+  .msg { padding:10px 13px; border-radius:12px; border:1px solid var(--line); max-width:88%; white-space:pre-wrap; line-height:1.45; font-size:14px; animation:fade .25s ease; }
+  @keyframes fade { from{opacity:0; transform:translateY(4px);} to{opacity:1;} }
+  .user { align-self:flex-end; background:#1c2733; border-color:#26405e; }
+  .dylan { align-self:flex-start; background:var(--panel); } .dylan b { color:var(--accent); }
+  .tool { align-self:flex-start; background:transparent; border:0; color:var(--blue); font-size:12.5px; padding:1px 4px; font-family:ui-monospace,Menlo,monospace; }
+  .obd { align-self:flex-start; background:#10161d; border-color:#243; color:var(--mut); font-size:12.5px; font-family:ui-monospace,Menlo,monospace; }
+  .error { align-self:center; background:#3d1d1d; border-color:#5e2626; color:#ffb4b4; }
+  footer { border-top:1px solid var(--line); padding:11px 16px; }
+  .inrow { max-width:880px; margin:0 auto; display:flex; gap:8px; }
+  #input { flex:1; padding:11px 13px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🔧 MecaIA Box</h1>
+  <span class="tag" id="t-dylan">…</span><span class="tag" id="t-obd">…</span><span class="tag" id="t-db">…</span>
+</header>
+
+<div class="setup">
+  <div class="row">
+    <label>Voiture branchée (panne cachée à trouver)</label>
+    <select id="scenario" class="grow"></select>
+  </div>
+  <div class="row">
+    <label>Véhicule&nbsp;:</label>
+    <input id="v-brand" placeholder="Marque" style="width:120px" />
+    <input id="v-model" placeholder="Modèle" style="width:120px" />
+    <input id="v-year" placeholder="Année" style="width:80px" />
+    <select id="v-fuel"><option value="">Carburant</option><option>essence</option><option>diesel</option><option>hybride</option><option>électrique</option></select>
+    <span class="muted">(laisse vide → détecté par la Box)</span>
+  </div>
+  <div class="row">
+    <button id="find">🔍 Trouve la panne</button>
+    <button id="vin">Détecter le véhicule (VIN)</button>
+  </div>
+</div>
+
+<main><div class="chat" id="chat"></div></main>
+<footer><div class="inrow">
+  <input id="input" placeholder="Pose une question à Dylan… (ex : et si je change juste la sonde ?)" disabled />
+  <button id="send" disabled style="background:var(--blue);color:#021">Envoyer</button>
+</div></footer>
+
+<script>
+const $ = s => document.querySelector(s);
+let scenarios = [], session = null, autoPrompt = "";
+const esc = s => (s||"").replace(/[&<>]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const ICON = { user:"🧑 ", dylan:"", tool:"🔧 ", obd:"📟 ", error:"⚠️ " };
+
+function bubble(step) {
+  const d = document.createElement("div"); d.className = "msg " + step.role;
+  if (step.role === "dylan") d.innerHTML = "<b>Dylan</b><br>" + esc(step.text);
+  else d.textContent = (ICON[step.role] || "") + step.text;
+  $("#chat").appendChild(d); d.scrollIntoView({ behavior:"smooth", block:"end" });
+}
+async function render(steps) { for (const s of steps) { bubble(s); await sleep(s.role === "dylan" ? 450 : 220); } }
+const override = () => ({ brand: $("#v-brand").value.trim(), model: $("#v-model").value.trim(), year: $("#v-year").value.trim(), fuel: $("#v-fuel").value });
+
+async function init() {
+  const r = await fetch("/scenarios").then(r => r.json()); scenarios = r.scenarios; autoPrompt = r.autoPrompt;
+  $("#t-dylan").textContent = "Dylan : " + (r.mock ? "scripté (pas de clé)" : "réel (Claude)");
+  $("#t-obd").textContent = "OBD : " + (r.serial ? "adaptateur " + r.serial : "simulé");
+  $("#t-db").textContent = "Base : " + (r.db ? "réelle (18k)" : "simulée");
+  $("#scenario").innerHTML = scenarios.map(s => `<option value="${s.id}">${s.vehicle}</option>`).join("");
+}
+
+async function startSession() {
+  const r = await fetch("/start", { method:"POST", headers:{ "content-type":"application/json" },
+    body: JSON.stringify({ scenarioId: $("#scenario").value, vehicleOverride: override() }) }).then(r => r.json());
+  session = r.sessionId;
+  bubble({ role:"obd", text:"Connecté — " + r.vehicle + " (niveau " + r.level + ")" });
+  $("#input").disabled = false; $("#send").disabled = false;
+  return r;
+}
+async function postMsg(text, showUser) {
+  if (showUser) bubble({ role:"user", text });
+  const r = await fetch("/message", { method:"POST", headers:{ "content-type":"application/json" }, body: JSON.stringify({ sessionId: session, text }) }).then(r => r.json());
+  await render(r.steps || []);
+}
+
+$("#find").addEventListener("click", async () => {
+  $("#chat").innerHTML = ""; $("#find").disabled = true; $("#vin").disabled = true;
+  try { await startSession(); await postMsg(autoPrompt, false); }
+  catch (e) { bubble({ role:"error", text:e.message }); }
+  $("#find").disabled = false; $("#vin").disabled = false; $("#input").focus();
+});
+$("#vin").addEventListener("click", async () => {
+  $("#find").disabled = true; $("#vin").disabled = true;
+  try { if (!session) await startSession(); await postMsg("Lis le VIN et dis-moi quelle voiture c'est.", true); }
+  catch (e) { bubble({ role:"error", text:e.message }); }
+  $("#find").disabled = false; $("#vin").disabled = false;
+});
+async function sendMsg() {
+  const text = $("#input").value.trim(); if (!text || !session) return;
+  $("#input").value = ""; $("#input").disabled = true; $("#send").disabled = true;
+  try { await postMsg(text, true); } catch (e) { bubble({ role:"error", text:e.message }); }
+  $("#input").disabled = false; $("#send").disabled = false; $("#input").focus();
+}
+$("#send").addEventListener("click", sendMsg);
+$("#input").addEventListener("keydown", e => { if (e.key === "Enter") sendMsg(); });
+init();
+</script>
+</body>
+</html>

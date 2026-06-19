@@ -1,0 +1,16 @@
+{
+  "name": "box_app",
+  "version": "1.0.0",
+  "description": "App locale = **chat avec Dylan** qui pilote la boucle agentique complète (il décide, exécute, analyse, conclut, mémorise). Clé API côté serveur, jamais dans le navigateur. Deux exécuteurs OBD : **simulé** (testable maintenant) et **adaptateur réel** (pré-câblé, à activer quand tu branches).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "serialport": "^13.0.0"
+  }
+}

@@ -1,0 +1,58 @@
+Token OK (len 1010)
+
+>> 1. Diesel perte puissance P0299 (turbo/VNT)
+   -> CONCLUSION | 7 tours | max 11843ms tot 58805ms
+   -> Fuite d'air au système de suralimentation (durite intercooler ou raccord) [tres_forte] 480-2150 EUR
+   -> urgence: bientôt | roulable: true
+   -> msg: Salut ! Bon, on a confirmé les deux problèmes. La fuite d'air (durite ou raccord intercooler) PLUS le turbo encrassé travaillent ensemble pour pourrir ta puissa
+
+>> 2. Essence rates ralenti P0300
+   -> CONTEXTE | 12 tours | max 5087ms tot 41572ms
+   -> non conclu
+   -> msg: Salut ! Pas de panique, les ratés multi-cylindres c'est courant sur une Clio essence comme la tienne. Pour bien te diagnostiquer, je dois comprendre ce que tu r
+
+>> 3. Diesel EGR P0401
+   -> CONTEXTE | 12 tours | max 4337ms tot 42941ms
+   -> non conclu
+   -> msg: Salut ! Bon, on a un code P0401 qui parle d'un problème d'EGR (système de recirculation des gaz). Avant d'aller plus loin, dis-moi : est-ce que le moteur consom
+
+>> 4. Demarrage difficile a froid (batterie/alternateur)
+   -> CONTEXTE | 12 tours | max 3757ms tot 36999ms
+   -> non conclu
+   -> msg: Pas de panique, on va trouver ensemble ! Dis-moi : qu'est-ce qui se passe en ce moment avec ta voiture — elle ne démarre plus, elle cale, elle perd de la puissa
+
+>> 5. Voyant ABS + bruit roue
+   -> CONTEXTE | 3 tours | max 22780ms tot 29274ms
+   -> HTTP 502 :: {"success":false,"error":"Dylan réfléchit encore — réessaie dans 5 secondes."}
+   -> msg: D'accord, le voyant ABS est allumé sans interruption — c'est une panne stable, pas intermittente. Ce bruit à la roue avant droite : est-ce un grincement, un cla
+
+>> 6. Fumee blanche + perte liquide (joint culasse / SECURITE surchauffe)
+   -> CONTEXTE | 12 tours | max 6964ms tot 43832ms
+   -> non conclu
+   -> msg: Salut ! Pas de panique, on va clarifier ensemble. Qu'est-ce que tu remarques en ce moment avec ta BMW — le moteur ne démarre pas, il cale, il fume, il fait du b
+
+>> 7. A-coups boite auto
+   -> CONTEXTE | 12 tours | max 3325ms tot 36123ms
+   -> non conclu
+   -> msg: Salut ! Pas de souci, on va trouver ensemble 🔧 Quel est le problème principal que tu remarques sur ta A4 — elle ne démarre pas, elle broute, elle perd de la pu
+
+>> 8. Clim ne refroidit plus
+   -> CONTEXTE | 12 tours | max 5869ms tot 39185ms
+   -> non conclu
+   -> msg: Salut ! Pas de souci, on va trouver ensemble. Qu'est-ce que tu observes en ce moment sur ta Yaris — un bruit bizarre, un problème de démarrage, un voyant allumé
+
+>> 9. Essence catalyseur P0420
+   -> CONTEXTE | 12 tours | max 7010ms tot 49132ms
+   -> non conclu
+   -> msg: Pas de souci, on va clarifier ensemble ! Avant que le voyant s'allume, tu as remarqué quelque chose d'anormal : une perte de puissance, des à-coups, une consomm
+
+>> 10. Claquement moteur a froid (URGENCE potentielle)
+   -> CONTEXTE | 12 tours | max 3694ms tot 37067ms
+   -> non conclu
+   -> msg: Salut ! Pas de souci, on va trouver ensemble. Dis-moi : qu'est-ce que tu remarques en ce moment sur ta Mercedes — est-ce qu'elle fait du bruit, elle consomme pl
+
+====================================
+CONCLUSIONS atteintes : 1/10
+504 (timeout)         : 0
+Latence max 1 appel   : 22780 ms
+====================================
