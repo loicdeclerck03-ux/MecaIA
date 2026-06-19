@@ -109,15 +109,18 @@ function contexteSuffisant(state) {
 }
 
 function peutConclure(state) {
+  // Cas 1 : hypothèse formellement confirmée (statut = confirmee)
   const conf = state.hypotheses.find((h) => h.statut === "confirmee");
   if (conf) return conf;
+  // Cas 2 : accumulation de 2+ preuves faibles "pour" sur une même hypothèse
   for (const h of state.hypotheses) {
     if (h.statut === "eliminee") continue;
     const pourFaibles = (h.preuves || []).filter((p) => p.sens === "pour" && p.pouvoir === "faible").length;
     if (pourFaibles >= 2) return h;
   }
-  // Fallback après 2+ contrôles effectués : accepter l'hypothèse la mieux évaluée
-  if ((state.controles_faits || []).length >= 2) {
+  // Cas 3 (fallback) : 3+ contrôles effectués — seuil à 3 pour éviter conclusions sur simple vérif 12V
+  // Un contrôle "alimentation présente" ne confirme pas une défaillance — il faut 3 contrôles minimum
+  if ((state.controles_faits || []).length >= 3) {
     const actives = state.hypotheses.filter((h) => h.statut !== "eliminee");
     if (actives.length > 0) return actives[0];
   }
@@ -236,7 +239,7 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
   let regleCarburant = "";
   const carb = (v.fuel || "").toLowerCase();
   if (carb.includes("diesel")) {
-    regleCarburant = `\nRÈGLE — DIESEL : n'émets JAMAIS d'hypothèse d'allumage commandé. Raisonne diesel : EGR, MAF, MAP, pression rail, injecteurs, turbo, FAP.\nPRIORITÉ DIESEL — PERTE DE PUISSANCE SANS CODE OBD : investigate dans CET ORDRE STRICT : 1) Suralimentation (turbo géométrie variable, pression boost, électrovanne wastegate, durites), 2) EGR colmatée, 3) MAF/MAP. Injecteurs et pompe = TOUJOURS EN DERNIER (coûteux/invasif) — JAMAIS avant contrôle turbo complet.\nCONTRÔLES SURALIMENTATION non destructifs (dans l'ordre) : inspection visuelle durites → écoute sifflement/claquement turbo → test électrovanne suralimentation → mesure pression boost si possible.\nPRIORITÉ DIESEL — FUMÉE NOIRE + SURCONSO : EGR et MAF en premier.`;
+    regleCarburant = `\nRÈGLE — DIESEL : n'émets JAMAIS d'hypothèse d'allumage commandé. Raisonne diesel : EGR, MAF, MAP, pression rail, injecteurs, turbo, FAP.\nPRIORITÉ DIESEL — PERTE DE PUISSANCE SANS CODE OBD : investigate dans CET ORDRE STRICT : 1) Suralimentation (turbo, circuit de dépression, électrovanne de commande, durites), 2) EGR colmatée, 3) MAF/MAP. Injecteurs et pompe = TOUJOURS EN DERNIER (coûteux/invasif) — JAMAIS avant contrôle turbo complet.\nCONTRÔLES SURALIMENTATION non destructifs (dans l'ordre) : inspection visuelle durites → écoute sifflement/claquement turbo → test résistance et action électrovanne → mesure pression boost si possible.\nTERMINOLOGIE TURBO OBLIGATOIRE : la quasi-totalité des diesels post-1999 ont un turbo à géométrie VARIABLE (VGT/VNT). Sur ces moteurs : utilise "électrovanne de commande géométrie variable", "actionneur turbo", "circuit de dépression". Le mot "wastegate" désigne la soupape de décharge des turbos à géométrie FIXE (anciens) — ne l'utilise PAS sur un diesel moderne à géométrie variable.\nPRIORITÉ DIESEL — FUMÉE NOIRE + SURCONSO : EGR et MAF en premier.`;
   } else if (carb.includes("essence") || carb.includes("gpl")) {
     regleCarburant = `\nRÈGLE — ESSENCE : n'émets pas d'hypothèse purement diesel. Raisonne essence : allumage, injection, lambda, catalyseur.`;
   } else if (carb.includes("électrique") || carb.includes("electrique")) {
@@ -293,6 +296,8 @@ RÈGLES STRICTES :
 - "resume_enquete" : résumé court (2-3 phrases max) de ce qui a été établi.
 - Contrôles non dangereux et non destructifs uniquement.
 - ORDRE DES CONTRÔLES : toujours du moins invasif au plus invasif. Visuel → écoute → test électrique → démontage. Ne propose JAMAIS un démontage (injecteurs, culasse, etc.) avant les contrôles simples.
+- VALIDATION AVANT "confirmee" : une hypothèse ne passe JAMAIS à statut "confirmee" sur simple présence d'alimentation électrique ou contrôle visuel négatif. "confirmee" exige une preuve DIRECTE de défaillance de la pièce (résistance hors gamme, actionneur qui ne répond pas, dépression absente, pression boost insuffisante mesurée, fuite constatée).
+- CONCLUSION HONNÊTE : si tu conclus sur une hypothèse "probable" (non formellement prouvée), indique TOUJOURS dans le message les contrôles atelier restants pour confirmation. Ne présente JAMAIS une hypothèse plausible comme une certitude. Exemple correct : "L'électrovanne de commande est la piste la plus probable — un test de résistance et de dépression en atelier confirmera."
 - Tour > 0 : JAMAIS de formule de salutation en début de message. Continue l'enquête directement.
 
 Réponds STRICTEMENT en JSON valide, sans texte autour :
