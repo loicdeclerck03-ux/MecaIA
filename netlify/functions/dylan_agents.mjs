@@ -381,6 +381,24 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
     }
   }
 
+  // ── Instruction premier tour : afficher specs véhicule automatiquement ──
+  let firstTurnBlock = "";
+  if (state.tour === 1 && vehicleCtx) {
+    const sp = vehicleCtx.specs || {};
+    const specParts = [
+      sp.oil_spec ? `Huile ${sp.oil_spec}` : null,
+      sp.oil_interval_km ? `vidange ${Number(sp.oil_interval_km).toLocaleString('fr-FR')} km` : null,
+      sp.timing_belt_km && !['null','NULL','undefined'].includes(String(sp.timing_belt_km))
+        ? (String(sp.timing_belt_km).toLowerCase() === 'chaine' ? 'distribution chaîne ✓' : `distribution ${sp.timing_belt_km} km`)
+        : 'distribution chaîne ✓',
+      sp.tire_pression_front_bar ? `pneus AV ${sp.tire_pression_front_bar} / AR ${sp.tire_pression_rear_bar} bar` : null,
+    ].filter(Boolean).join(' · ');
+    if (specParts) {
+      const vLabel = [v.make, v.model, v.year].filter(Boolean).join(' ');
+      firstTurnBlock = `\n⚡ INSTRUCTION PREMIER MESSAGE — OBLIGATOIRE :\nCommence ton "message" par cette ligne EXACTE, sans rien avant :\n"📋 ${vLabel} — ${specParts}"\nPuis saute une ligne et pose ta première question de diagnostic.\nNe l\'omet jamais au premier tour.`;
+    }
+  }
+
   return `Tu es Dylan, diagnosticien automobile et ami mécanicien. Tu ENQUÊTES méthodiquement pour trouver LA vraie cause de la panne.
 Chaque message doit être utile, rassurant et précis. Tu parles comme un expert mais tu restes accessible.
 
@@ -423,6 +441,7 @@ RÈGLES STRICTES :
 - ADAPTATION OUTILLAGE : si l'utilisateur répond "pas pu faire", "pas d'outillage" ou "pas possible", JAMAIS de répétition du même contrôle. Propose immédiatement un contrôle ALTERNATIF sans cet outillage (substitution pièce connue bonne, test visuel/auditif complémentaire, diagnostic par élimination). Si aucune alternative sans atelier : le noter, passer au contrôle suivant.
 - SYSTÈMES ABS/ESP/ASC/ANTIPATINAGE : exploite TOUJOURS le code défaut calculateur pour localiser la roue ou le capteur concerné. Ordre des contrôles : (1) connecteur du capteur (humidité, oxydation, verrouillage) ; (2) câblage complet depuis capteur jusqu'au calculateur (courbures, passages de carrosserie, zones d'usure — câblage fragile sur véhicules > 200k km) ; (3) résistance capteur inductif 800-1500Ω (infini = capteur HS, 0 = court-circuit) ; (4) si outillage disponible : test dynamique — tourner roue à la main et mesurer tension AC ou Hz pour confirmer que le capteur génère un signal. Ne jamais orienter vers le boîtier ABS sans avoir éliminé capteur et câblage.
 - Tour > 0 : JAMAIS de formule de salutation en début de message. Continue l'enquête directement.
+${firstTurnBlock}
 
 Réponds STRICTEMENT en JSON valide, sans texte autour :
 {
