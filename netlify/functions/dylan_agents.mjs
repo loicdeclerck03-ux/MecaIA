@@ -236,7 +236,7 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
   let regleCarburant = "";
   const carb = (v.fuel || "").toLowerCase();
   if (carb.includes("diesel")) {
-    regleCarburant = `\nRÈGLE — DIESEL : n'émets JAMAIS d'hypothèse d'allumage commandé. Raisonne diesel : EGR, MAF, MAP, pression rail, injecteurs, turbo, FAP.`;
+    regleCarburant = `\nRÈGLE — DIESEL : n'émets JAMAIS d'hypothèse d'allumage commandé. Raisonne diesel : EGR, MAF, MAP, pression rail, injecteurs, turbo, FAP.\nPRIORITÉ DIESEL — PERTE DE PUISSANCE SANS CODE OBD : investigate dans CET ORDRE STRICT : 1) Suralimentation (turbo géométrie variable, pression boost, électrovanne wastegate, durites), 2) EGR colmatée, 3) MAF/MAP. Injecteurs et pompe = TOUJOURS EN DERNIER (coûteux/invasif) — JAMAIS avant contrôle turbo complet.\nCONTRÔLES SURALIMENTATION non destructifs (dans l'ordre) : inspection visuelle durites → écoute sifflement/claquement turbo → test électrovanne suralimentation → mesure pression boost si possible.\nPRIORITÉ DIESEL — FUMÉE NOIRE + SURCONSO : EGR et MAF en premier.`;
   } else if (carb.includes("essence") || carb.includes("gpl")) {
     regleCarburant = `\nRÈGLE — ESSENCE : n'émets pas d'hypothèse purement diesel. Raisonne essence : allumage, injection, lambda, catalyseur.`;
   } else if (carb.includes("électrique") || carb.includes("electrique")) {
@@ -271,7 +271,9 @@ MÉTHODE (un seul tour à la fois) :
 - CONTEXTE : si le contexte est incomplet, pose EXACTEMENT UNE seule question dans "message".
   Jamais deux phrases interrogatives dans le même message. Une question = une seule phrase.
   Ne propose pas encore d'hypothèse.
-  NE REDEMANDE JAMAIS une information déjà présente.
+  NE REDEMANDE JAMAIS une information déjà présente dans le JSON d'état ci-dessus.
+  Si contexte.symptome est rempli : INTERDIT de demander "quel est ton symptôme" ou formule équivalente.
+  Si tour > 0 : INTERDIT de commencer le message par une salutation ("Salut !", "Bonjour", etc.) — va directement au sujet.
   ⚡ PASSAGE RAPIDE À HYPOTHESES : dès que tu as (1) le symptôme principal ET (2) l'environnement
   d'apparition (froid/chaud OU permanent/intermittent OU un code OBD), PASSE À HYPOTHESES.
   Maximum 3 questions en CONTEXTE — ne prolonge pas inutilement cette phase.
@@ -290,6 +292,8 @@ RÈGLES STRICTES :
 - "parts_needed" UNIQUEMENT en CONCLUSION.
 - "resume_enquete" : résumé court (2-3 phrases max) de ce qui a été établi.
 - Contrôles non dangereux et non destructifs uniquement.
+- ORDRE DES CONTRÔLES : toujours du moins invasif au plus invasif. Visuel → écoute → test électrique → démontage. Ne propose JAMAIS un démontage (injecteurs, culasse, etc.) avant les contrôles simples.
+- Tour > 0 : JAMAIS de formule de salutation en début de message. Continue l'enquête directement.
 
 Réponds STRICTEMENT en JSON valide, sans texte autour :
 {
