@@ -26,6 +26,47 @@ const MODEL_CONCLUSION = process.env.ANTHROPIC_CONCLUSION_MODEL || "claude-haiku
 // Plafond anti-derive de cout — 15 tours (3 contexte + 1 hyp + 4 controles + 1 conclu + marge)
 const MAX_TOURS = 15;
 
+// ──────────────────────────────────────────────────────────────
+// FICHES OUTILS — mini-guides injectés quand l'outil est mentionné
+// ──────────────────────────────────────────────────────────────
+const TOOL_GUIDES = {
+  "multimètre": `📏 Utiliser le multimètre :
+• Mode V DC → tension batterie/circuit (moteur allumé)
+• Mode Ω → résistance (circuit ÉTEINT obligatoire)
+• Mode A → courant (en série dans le circuit)
+• Mode ))) → continuité : bip = circuit fermé
+• Branchement : rouge = VΩmA (borne +) · noir = COM (masse)
+⚠️ Ne jamais mesurer la résistance sur un circuit sous tension.`,
+  "vacuomètre": `📏 Utiliser le vacuomètre :
+• Brancher sur la dépression du collecteur d'admission
+• Ralenti normal : -40 à -60 kPa (aiguille stable)
+• < -40 kPa = fuite admission · > -60 kPa = restriction
+• Aiguille qui fluctue = joints de soupapes ou culasse`,
+  "fumigène": `📏 Utiliser le fumigène :
+• Raccorder sur le circuit à tester (admission ou EVAP)
+• Injecter 5-10 secondes — pression max 0,5 bar
+• Observer les fuites visuellement (fumée = fuite confirmée)
+• Idéal pour : fuites admission, EVAP, circuit refroidissement`,
+  "manomètre": `📏 Utiliser le manomètre carburant :
+• Brancher sur la valve Schrader de la rampe
+• Contact mis sans démarrer : 3-4 bar essence / 1 500+ bar diesel common rail
+• Moteur au ralenti : 2,5-3,5 bar essence
+• Chute rapide après arrêt = injecteur fuyant ou clapet pompe HS`,
+  "oscilloscope": `📏 Utiliser l'oscilloscope :
+• Canal 1 = signal · Masse = châssis (référence)
+• Time/div : 1ms pour injecteur, 10ms pour capteurs arbre à cames
+• Signal capteur arbre cames correct : carré propre 0-5V
+• Signal injecteur : pic 60-80V suivi plateau bas`,
+  "pince ampèremétrique": `📏 Utiliser la pince ampèremétrique :
+• Passer UN SEUL fil dans la pince (jamais les deux)
+• Zéroter avant mesure (bouton ZERO à vide)
+• Courant de démarrage normal : 100-300 A
+• Consommation parasitaire acceptable : < 50 mA (véhicule éteint)`,
+};
+
+// Détection intention carnet d'entretien
+const INTENT_CARNET = /carnet|entretien|intervalles?|maintenance|vid[ae]nge|programme.*entretien|quand.*(changer|faire|refaire)|bougies.*quand|distribution.*quand|filtre.*quand/i;
+
 // Bloc securite valide
 const SAFETY_BLOCK = `RÔLE : tu es Dylan, un ami mécanicien expert. Tu parles franchement, tu rassures, tu expliques simplement. Jamais de jargon inutile. Ton objectif : trouver LA vraie panne, pas supposer.
 
@@ -186,6 +227,41 @@ async function getVehicleContext(make, model, year, supabase) {
 
 // #9 MEMOIRE VEHICULE — lit et met à jour user_vehicle_memory
 // ──────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// CARNET D'ENTRETIEN — formater les specs en message lisible
+// ──────────────────────────────────────────────────────────────
+function formatCarnet(specs, vehicule) {
+  const v = vehicule || {};
+  const label = [v.make, v.model, v.year].filter(Boolean).join(' ');
+  let msg = `📋 **Carnet d'entretien${label ? ' — ' + label : ''}**\n\n`;
+  if (specs && (specs.oil_spec || specs.oil_interval_km)) {
+    msg += `🛢️ **Huile moteur**\n`;
+    if (specs.oil_spec) msg += `   Spécification : ${specs.oil_spec}\n`;
+    if (specs.oil_interval_km) msg += `   Intervalle : tous les **${Number(specs.oil_interval_km).toLocaleString('fr-FR')} km**\n`;
+    msg += '\n';
+  }
+  if (specs && specs.filter_air_km) msg += `💨 **Filtre à air** : tous les ${Number(specs.filter_air_km).toLocaleString('fr-FR')} km\n`;
+  if (specs && specs.spark_plug_km && !['null','NULL','undefined'].includes(String(specs.spark_plug_km))) {
+    msg += `✨ **Bougies** : tous les ${String(specs.spark_plug_km)} km\n`;
+  }
+  if (specs && specs.timing_belt_km && !['null','NULL','undefined'].includes(String(specs.timing_belt_km))) {
+    const tb = String(specs.timing_belt_km).toLowerCase();
+    if (tb === 'chaine') msg += `⛓️ **Distribution** : chaîne (surveiller le bruit à froid)\n`;
+    else msg += `⛓️ **Courroie de distribution** : tous les ${tb} km ⚠️ priorité absolue\n`;
+  } else if (specs) {
+    msg += `⛓️ **Distribution** : chaîne (pas de remplacement périodique)\n`;
+  }
+  if (specs && specs.coolant_change_years) msg += `🌡️ **Liquide de refroidissement** : tous les ${specs.coolant_change_years} ans\n`;
+  if (specs && specs.brake_fluid_years) msg += `🛑 **Liquide de frein** : tous les ${specs.brake_fluid_years} ans\n`;
+  if (specs && specs.tire_pression_front_bar) {
+    msg += `🔵 **Pression pneus** : AV ${specs.tire_pression_front_bar} bar · AR ${specs.tire_pression_rear_bar} bar (à froid)\n`;
+  }
+  if (!specs || (!specs.oil_spec && !specs.oil_interval_km)) {
+    msg += `\n_Données non disponibles pour ce modèle exact — consultez le carnet constructeur._`;
+  }
+  return msg;
+}
+
 function vehicleKey(v) {
   return [v.make, v.model, v.year].filter(Boolean).join("_").toLowerCase().replace(/\s+/g, "_");
 }
@@ -295,11 +371,21 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
     ? `\nMÉMOIRE VÉHICULE (pannes précédentes sur ce véhicule chez cet utilisateur) :\n${(memoireContext.known_issues || []).slice(-3).map(i => `- ${i.cause} (vu ${i.sessions_count} fois)`).join("\n")}\n`
     : "";
 
+  // Fiche outil — injectée automatiquement si l'outil est mentionné dans les contrôles
+  let toolGuideBlock = "";
+  const stateStr = JSON.stringify(state.controle_en_cours || {}) + JSON.stringify(state.controles_faits || []);
+  for (const [tool, guide] of Object.entries(TOOL_GUIDES)) {
+    if (stateStr.toLowerCase().includes(tool)) {
+      toolGuideBlock = "\n" + guide + "\n";
+      break;
+    }
+  }
+
   return `Tu es Dylan, diagnosticien automobile et ami mécanicien. Tu ENQUÊTES méthodiquement pour trouver LA vraie cause de la panne.
 Chaque message doit être utile, rassurant et précis. Tu parles comme un expert mais tu restes accessible.
 
 ${blocVehicule}${SAFETY_BLOCK}
-${vehicleCtxLine}${ragLine}${dtcLine}${memoireLine}
+${vehicleCtxLine}${ragLine}${dtcLine}${memoireLine}${toolGuideBlock}
 ÉTAT D'ENQUÊTE ACTUEL (JSON) :
 ${compact}
 
@@ -400,6 +486,25 @@ export const handler = async (event) => {
       fr: "", // default — pas d'instruction nécessaire, le prompt est déjà en français
     };
     const langInstruction = LANG_INSTRUCTION[language] || "";
+
+    // —— CARNET D'ENTRETIEN — mode spécial, retour direct sans LLM ——
+    if (INTENT_CARNET.test(user_input || '')) {
+      const make = (vehicle && vehicle.make) || vehicle_marque || null;
+      const model = (vehicle && vehicle.model) || vehicle_modele || null;
+      const year = (vehicle && parseInt(vehicle.year)) || null;
+      if (make) {
+        try {
+          let q = supabase.from('vehicle_specs').select('*').ilike('make', make);
+          if (model) q = q.ilike('model', `%${model.split(' ')[0]}%`);
+          if (year) q = q.lte('year_from', year).gte('year_to', year);
+          const { data: specs } = await q.limit(1).maybeSingle();
+          const carnet = formatCarnet(specs, { make, model, year });
+          return { statusCode: 200, headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ success: true, mode: 'carnet_entretien', message: carnet,
+              session_id: session_id || null }) };
+        } catch(e) { console.error('[DYLAN] carnet:', e.message); }
+      }
+    }
 
     if (!session_id && (!user_input || String(user_input).trim().length < 3)) {
       return json(400, { error: "user_input requis" });
@@ -753,6 +858,28 @@ export const handler = async (event) => {
         recalls,      // rappels constructeurs NHTSA (peut être vide)
         parts_links,  // liens Autodoc+eBay par pièce (#11 orchestration parallèle)
       };
+      // Procédures de réparation pour les codes DTC identifiés
+      const codesConclu = state.contexte?.codes || [];
+      if (codesConclu.length > 0) {
+        try {
+          const { data: procs } = await supabase.rpc('get_dtc_procedures', {
+            p_codes: codesConclu,
+            p_make: state.vehicule?.make || null,
+            p_model: state.vehicule?.model || null,
+          });
+          const seenProc = new Set();
+          response.procedures = (procs || []).filter(p => {
+            const k = (p.system_type || '') + '|' + (p.procedure_fr || '');
+            if (seenProc.has(k)) return false;
+            seenProc.add(k);
+            return true;
+          }).slice(0, 5);
+        } catch(e) {
+          console.error('[DYLAN] procedures:', e.message);
+          response.procedures = [];
+        }
+      }
+
       // #10 Feedback loop
       response.feedback_requested = true;
     }
