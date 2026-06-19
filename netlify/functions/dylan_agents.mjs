@@ -165,7 +165,7 @@ async function enrichirDTC(codes, supabase) {
   try {
     const { data } = await supabase
       .from("dtc_codes")
-      .select("code, description, fault_category, severity")
+      .select("code, description, fault_category, severity, causes_probables_fr, controles_recommandes, systeme_associe")
       .in("code", codes.map(c => c.toUpperCase()))
       .limit(10);
     return data || [];
@@ -173,6 +173,17 @@ async function enrichirDTC(codes, supabase) {
 }
 
 // ──────────────────────────────────────────────────────────────
+// #2b CONTEXTE VÉHICULE — specs + TSBs depuis tables locales
+async function getVehicleContext(make, model, year, supabase) {
+  if (!make) return null;
+  try {
+    const { data } = await supabase.rpc("get_vehicle_context", {
+      p_make: make, p_model: model || "", p_year: year || null
+    });
+    return data || null;
+  } catch (e) { console.error("[DYLAN] vehicleCtx:", e.message); return null; }
+}
+
 // #9 MEMOIRE VEHICULE — lit et met à jour user_vehicle_memory
 // ──────────────────────────────────────────────────────────────
 function vehicleKey(v) {
@@ -214,7 +225,7 @@ async function majMemoire(userId, veh, conclusion, supabase) {
   } catch (e) { console.error("[DYLAN] majMemoire:", e.message); }
 }
 
-function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruction = "") {
+function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruction = "", vehicleCtx = null) {
   // Compact state allégé : symptome tronqué, hypotheses sans preuves
   const compact = JSON.stringify({
     etat: state.etat,
@@ -254,8 +265,30 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
 
   // #2 DTC enrichi depuis Supabase
   const dtcLine = dtcContext && dtcContext.length
-    ? `\nCODES DTC IDENTIFIÉS EN BASE (utilise ces données dans tes hypothèses) :\n${dtcContext.map(d => `- ${d.code} : ${d.description}${d.fault_category ? " ["+d.fault_category+"]" : ""}${d.severity ? " — gravité: "+d.severity : ""}`).join("\n")}\n`
+    ? `\nCODES DTC IDENTIFIÉS EN BASE :\n${dtcContext.map(d =>
+        `- ${d.code} : ${d.description || ""}${d.fault_category ? " ["+d.fault_category+"]" : ""}${d.severity ? " — gravité: "+d.severity : ""}${d.causes_probables_fr ? "\n  \u2192 Causes : "+d.causes_probables_fr.substring(0,220) : ""}${d.controles_recommandes ? "\n  \u2192 Contrôles : "+d.controles_recommandes.substring(0,220) : ""}`
+      ).join("\n")}\n`
     : "";
+
+  // #2b Contexte véhicule enrichi : specs + TSBs constructeur
+  let vehicleCtxLine = "";
+  if (vehicleCtx) {
+    const sp = vehicleCtx.specs || {};
+    const tsbs = vehicleCtx.tsbs || [];
+    const rc = vehicleCtx.recalls || [];
+    if (sp.oil_spec || sp.oil_interval_km) {
+      vehicleCtxLine += `\nSPECS VÉHICULE (atelier) : huile ${sp.oil_spec || "?"} tous les ${sp.oil_interval_km || "?"}km`;
+      if (sp.timing_belt_km && sp.timing_belt_km !== "NULL" && sp.timing_belt_km !== "null") vehicleCtxLine += ` | distribution ${sp.timing_belt_km}km`;
+      if (sp.tire_pression_front_bar) vehicleCtxLine += ` | pneus AV ${sp.tire_pression_front_bar} AR ${sp.tire_pression_rear_bar} bar`;
+      vehicleCtxLine += "\n";
+    }
+    if (tsbs.length) {
+      vehicleCtxLine += `\nBULLETINS TECHNIQUES CONSTRUCTEUR :\n${tsbs.slice(0,3).map(t => `- [${t.system}] ${t.titre}`).join("\n")}\n`;
+    }
+    if (rc.length) {
+      vehicleCtxLine += `\nRAPPELS CONSTRUCTEURS :\n${rc.map(r => `- ${r.component || ""} : ${(r.summary || "").substring(0,100)}`).join("\n")}\n`;
+    }
+  }
 
   // #9 Mémoire véhicule
   const memoireLine = memoireContext
@@ -266,7 +299,7 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
 Chaque message doit être utile, rassurant et précis. Tu parles comme un expert mais tu restes accessible.
 
 ${blocVehicule}${SAFETY_BLOCK}
-${ragLine}${dtcLine}${memoireLine}
+${vehicleCtxLine}${ragLine}${dtcLine}${memoireLine}
 ÉTAT D'ENQUÊTE ACTUEL (JSON) :
 ${compact}
 
@@ -444,7 +477,8 @@ export const handler = async (event) => {
 
     const vKey = vehicleKey(state.vehicule);
     let ragContext = "";
-    const [ragResult, memoire, dtcResult] = await Promise.all([
+    const isFirstTurn = (state.tour || 0) === 0;
+    const [ragResult, memoire, dtcResult, vehicleCtx] = await Promise.all([
       // RAG : uniquement CONTEXTE phase (tour < 3, pas encore d'hypothèses)
       (!state.hypotheses.length && (state.tour || 0) < 3)
         ? supabase.rpc("search_diagnostic_cases_text", {
@@ -464,6 +498,11 @@ export const handler = async (event) => {
         ? enrichirDTC(tousLesCodes, supabase)
             .catch(e => { console.error("[DYLAN] DTC:", e.message); return []; })
         : Promise.resolve(state.dtc_enrichi || []),
+      // Specs + TSBs constructeur (uniquement au premier tour)
+      (isFirstTurn && !state.vehicleCtx)
+        ? getVehicleContext(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year, supabase)
+            .catch(() => null)
+        : Promise.resolve(state.vehicleCtx || null),
     ]);
 
     ragContext = ragResult;
@@ -474,6 +513,8 @@ export const handler = async (event) => {
     } else if (!needsDTC) {
       dtcContext = state.dtc_enrichi || [];
     }
+    // Sauvegarder le contexte véhicule dans le state (chargé une seule fois)
+    if (vehicleCtx) state.vehicleCtx = vehicleCtx;
 
     // ---- 4) Appliquer résultat contrôle ----
     state.reexpliquer = false;
@@ -487,7 +528,7 @@ export const handler = async (event) => {
     const isConclusion = state.etat === "CONCLUSION" || peutConclure(state) !== null;
     const modelChoisi = isConclusion ? MODEL_CONCLUSION : MODEL_ENQUETE;
 
-    const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction);
+    const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction, state.vehicleCtx);
     const userMsg = control_result
       ? `Résultat du contrôle : ${control_result}`
       : `Message du client : ${user_input}`;
