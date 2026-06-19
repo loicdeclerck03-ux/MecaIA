@@ -608,6 +608,9 @@ export const handler = async (event) => {
       etat = "HYPOTHESES";
     }
 
+    // GARDE 1 — ne jamais rester en HYPOTHESES sans hypothèse (sinon blocage infini) : on continue à engager en CONTEXTE
+    if (etat === "HYPOTHESES" && (!state.hypotheses || state.hypotheses.length === 0)) etat = "CONTEXTE";
+
     let hypConclue = null;
     if (etat === "CONCLUSION") {
       hypConclue = peutConclure(state);
@@ -629,8 +632,13 @@ export const handler = async (event) => {
       etat = "CONTROLE";
     }
 
+    // GARDE 2 — best-effort : contexte suffisant mais AUCUNE hypothèse après 4 tours → conclure gracieusement (ne jamais boucler)
+    if (etat !== "CONCLUSION" && (!state.hypotheses || state.hypotheses.length === 0) && contexteSuffisant(state) && (state.tour || 0) >= 4) etat = "CONCLUSION";
+
+    // GARDE 3 — plafond terminal : au plafond de tours, on conclut quoi qu'il arrive (jamais de boucle infinie)
     let plafondAtteint = false;
-    if (state.tour >= MAX_TOURS && etat !== "CONCLUSION") plafondAtteint = true;
+    if (state.tour >= MAX_TOURS && etat !== "CONCLUSION") { etat = "CONCLUSION"; plafondAtteint = true; }
+    if (etat === "CONCLUSION" && !hypConclue) hypConclue = state.hypotheses.filter((h) => h.statut !== "eliminee")[0] || null;
 
     if (etat === "CONTROLE" && parsed.controle_propose) {
       const cp = parsed.controle_propose;
@@ -666,10 +674,10 @@ export const handler = async (event) => {
       };
     }
 
-    if (etat === "CONCLUSION" && parsed.conclusion) {
-      const c = parsed.conclusion;
-      const causeFiable = hypConclue ? hypConclue.libelle : (c.cause || "");
-      const bandeFiable = hypConclue ? (hypConclue.bande || "forte") : (c.bande || "probable");
+    if (etat === "CONCLUSION") {
+      const c = parsed.conclusion || {};
+      const causeFiable = hypConclue ? hypConclue.libelle : (c.cause || "Plusieurs causes possibles — fais vérifier par un professionnel");
+      const bandeFiable = hypConclue ? (hypConclue.bande || "forte") : (c.bande || "faible");
 
       // #7+#11 Orchestration parallèle post-conclusion : rappels NHTSA + liens pièces
       // Timeout 2s pour ne pas bloquer la réponse (plan Netlify free = 10s total)
@@ -734,7 +742,7 @@ export const handler = async (event) => {
           user_id: userId,
           vehicle_id: vehicleId,
           primary_diagnosis: cause || "Diagnostic complet",
-          symptoms: state.symptomes ? [state.symptomes] : null,
+          symptoms: state.contexte && state.contexte.symptome ? [state.contexte.symptome] : null,
           obd_codes: (state.contexte && state.contexte.codes ? state.contexte.codes : []).map(function(code) { return { code: code }; }),
           causes: [{ cause: cause, confidence: bande }],
           parts_needed: Array.isArray(parts_needed) ? parts_needed.map(function(p) { return { name: p }; }) : null,
