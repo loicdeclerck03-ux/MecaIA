@@ -806,6 +806,22 @@ textarea{resize:vertical;min-height:70px}
 .sk-line.w80{width:80%}
 .sk-line.w60{width:60%}
 .sk-line.w40{width:40%}
+.sk-line.w30{width:30%}
+/* skeleton-card : composant réutilisable (header + 2 lignes) */
+.skeleton-card{border-radius:var(--r-md);background:var(--s1);border:1px solid var(--bd);padding:14px 16px;margin-bottom:8px}
+.skeleton-card .sk-avatar{width:38px;height:38px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:10px;flex-shrink:0}
+.skeleton-card .sk-body{display:inline-block;vertical-align:middle;width:calc(100% - 58px)}
+.skeleton-card-row{display:flex;align-items:center;margin-bottom:10px}
+/* skeleton-stat : 2x2 grid dans dashboard */
+.skeleton-stat{border-radius:var(--r-md);background:var(--s1);border:1px solid var(--bd);padding:12px}
+/* skeleton-line réutilisable (alias avec classe complète) */
+.skeleton-line{height:10px;border-radius:4px;margin-bottom:8px;animation:skpulse 1.4s ease-in-out infinite;background:var(--s3)}
+.skeleton-line.w80{width:80%}
+.skeleton-line.w60{width:60%}
+.skeleton-line.w40{width:40%}
+.skeleton-line.w30{width:30%}
+.skeleton-line.tall{height:14px}
+.skeleton-line.short{height:8px;margin-bottom:5px}
 
 /* ── Error Recovery ── */
 .dylan-err-wrap{display:flex;flex-direction:column;gap:8px}
@@ -1963,7 +1979,7 @@ textarea{resize:vertical;min-height:70px}
 <div id="btp-opts" class="btp btp-opts">
   <div class="bsec">
     <div class="bsec-hd"><span class="bsec-ttl">&#x1F697; Mon Garage</span><button class="bbtn-ico" onclick="boxLoadGarage()">&#x21BB;</button></div>
-    <div id="box-garage-body" class="bgar-lst"><div class="bload">Chargement…</div></div>
+    <div id="box-garage-body" class="bgar-lst"><div class="sk sk-car"></div><div class="sk sk-car" style="opacity:.6"></div><div class="sk sk-car" style="opacity:.35"></div></div>
   </div>
   <div id="box-opts-card" class="bsec">
     <div class="bsec-hd"><span class="bsec-ttl">&#x2699; Options véhicule</span><span id="box-opts-msg" class="bsec-bdg">connexion requise</span></div>
@@ -2722,6 +2738,9 @@ window.shr=function(titre,min,max){
 
 window.doPieces = async function () {
   if (!useC()) return;
+  // Skeleton pendant la recherche
+  var zpEl = document.getElementById('zp');
+  if (zpEl) zpEl.innerHTML = skHtml('piece', 3);
   const mk = document.getElementById('p-mk').value;
   const mo = document.getElementById('p-mo').value.trim();
   const an = document.getElementById('p-an').value.trim();
@@ -3094,6 +3113,9 @@ window.loadCars = loadCars;
 
 // ══ REPRISE DE DIAGNOSTIC ══
 async function loadDiagSessions() {
+  // Skeleton pendant le chargement
+  const listEl = document.getElementById('diag-sessions-list');
+  if (listEl && !listEl.innerHTML.trim()) listEl.innerHTML = skHtml('diag', 3);
   const r = await MecaIA.authedFetch('diag_sessions_list', { method: 'POST', body: {} });
   if (!r.ok || !r.data?.success) return;
   const sessions = r.data.sessions || [];
@@ -3361,7 +3383,7 @@ window.dylanShowSessions = async function () {
   const card = document.getElementById('dylan-sessions-card');
   const list = document.getElementById('dylan-sessions-list');
   card.style.display = 'block';
-  list.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:16px">Chargement…</div>';
+  list.innerHTML = skHtml('diag', 3);
   try {
     const r = await MecaIA.authedFetch('profile_get'); // on réutilise le supabase client
     // Requête directe Supabase via RPC
@@ -3767,7 +3789,7 @@ window.loadDash = async function () {
       <button class="bsm" onclick="showSc('s-app')">← Retour app</button>
     </div>
     <div class="card" style="margin-bottom:12px"><div class="ch"><div class="ct">📊 MONITORING</div></div>
-      <div class="cb"><div id="dash-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">Chargement…</div></div>
+      <div class="cb"><div id="dash-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"><div class="skeleton-stat"><div class="sk sk-line w40" style="height:8px"></div><div class="sk sk-line w60" style="height:20px;margin-bottom:4px"></div><div class="sk sk-line w30" style="height:7px;margin-bottom:0"></div></div><div class="skeleton-stat" style="opacity:.7"><div class="sk sk-line w40" style="height:8px"></div><div class="sk sk-line w60" style="height:20px;margin-bottom:4px"></div><div class="sk sk-line w30" style="height:7px;margin-bottom:0"></div></div><div class="skeleton-stat" style="opacity:.5"><div class="sk sk-line w40" style="height:8px"></div><div class="sk sk-line w60" style="height:20px;margin-bottom:4px"></div><div class="sk sk-line w30" style="height:7px;margin-bottom:0"></div></div><div class="skeleton-stat" style="opacity:.3"><div class="sk sk-line w40" style="height:8px"></div><div class="sk sk-line w60" style="height:20px;margin-bottom:4px"></div><div class="sk sk-line w30" style="height:7px;margin-bottom:0"></div></div></div></div>
     </div>
     <div class="card" style="margin-bottom:12px"><div class="ch"><div class="ct">🎁 OFFRIR À UN TESTEUR</div></div>
       <div class="cb">
@@ -3795,7 +3817,7 @@ window.loadDash = async function () {
       </div>
     </div>
     <div class="card"><div class="ch"><div class="ct">🗂️ HISTORIQUE DES CODES</div></div>
-      <div class="cb"><div id="dash-promos">Chargement…</div></div>
+      <div class="cb"><div id="dash-promos"><div class="sk sk-line w80"></div><div class="sk sk-line w60" style="opacity:.7"></div><div class="sk sk-line w40" style="opacity:.4"></div></div></div>
     </div>
   </div>`;
   await refreshDash();
@@ -3879,6 +3901,53 @@ window.redeemPromo = async function () {
   }
 };
 
+
+
+// ── SKELETON HELPER ───────────────────────────────────────────────────────────
+// Usage: el.innerHTML = skHtml('card', 3)  → 3 skeleton cards
+// Types: card, line, stat, obd, diag, piece
+window.skHtml = function(type, count) {
+  count = count || 1;
+  var arr = [];
+  for (var i = 0; i < count; i++) {
+    var op = i===0?'':'opacity:'+(i===1?.6:.35)+';';
+    if (type === 'card') {
+      arr.push('<div class="skeleton-card" style="'+op+'">'
+        +'<div class="skeleton-card-row">'
+        +'<span class="sk sk-avatar"></span>'
+        +'<span class="sk-body">'
+        +'<div class="sk sk-line w80"></div>'
+        +'<div class="sk sk-line w60" style="margin-bottom:0"></div>'
+        +'</span></div>'
+        +'<div class="sk sk-line w40" style="height:8px;margin-bottom:0"></div>'
+        +'</div>');
+    } else if (type === 'stat') {
+      arr.push('<div class="skeleton-stat" style="'+op+'">'
+        +'<div class="sk sk-line w40" style="height:8px"></div>'
+        +'<div class="sk sk-line w60" style="height:20px;margin-bottom:4px"></div>'
+        +'<div class="sk sk-line w30" style="height:7px;margin-bottom:0"></div>'
+        +'</div>');
+    } else if (type === 'diag') {
+      arr.push('<div class="skeleton-card" style="'+op+'">'
+        +'<div class="sk sk-line w60" style="height:9px"></div>'
+        +'<div class="sk sk-line w80"></div>'
+        +'<div class="sk sk-line w40" style="height:7px;margin-bottom:0"></div>'
+        +'</div>');
+    } else if (type === 'obd') {
+      arr.push('<div class="sk sk-car" style="'+op+'"></div>');
+    } else if (type === 'piece') {
+      arr.push('<div class="skeleton-card" style="'+op+'">'
+        +'<div class="sk sk-line w80"></div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+        +'<div class="sk sk-line w80" style="margin-bottom:0"></div>'
+        +'<div class="sk sk-line w60" style="margin-bottom:0"></div>'
+        +'</div></div>');
+    } else {
+      arr.push('<div class="sk sk-line '+(i===0?'w80':i===1?'w60':'w40')+'" style="'+op+'"></div>');
+    }
+  }
+  return arr.join('');
+};
 
 // ── TOAST NOTIFICATIONS ───────────────────────────────────────────────────────
 // Types: 'ok' (success), 'er' (error), 'warn' (warning), 'info'
