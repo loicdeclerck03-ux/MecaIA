@@ -1977,7 +1977,7 @@ function boxRenderGarage(vehicles) {
   var body = document.getElementById('box-garage-body');
   if (!body) return;
   if (!vehicles || !vehicles.length) {
-    body.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Aucun véhicule — ajoutez-en dans <a href="#" onclick="navTo('garage');return false" style="color:var(--acc)">Mon Garage</a></div>';
+    body.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Aucun véhicule — ajoutez-en dans <a href="#" onclick="navTo(&apos;garage&apos;);return false" style="color:var(--acc)">Mon Garage</a></div>';
     return;
   }
   body.innerHTML = vehicles.map(function(v) {
