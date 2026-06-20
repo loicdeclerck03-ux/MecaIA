@@ -729,6 +729,14 @@ textarea{resize:vertical;min-height:70px}
 .toast{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-md);padding:9px 18px;font-size:13px;color:var(--tx);animation:fadeIn .3s ease;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .toast.ok{border-color:rgba(16,185,129,.4);color:var(--green)}
 .toast.er{border-color:rgba(239,68,68,.4);color:var(--red)}
+.toast.warn{border-color:rgba(232,160,0,.5);color:var(--acc)}
+.toast.info{border-color:rgba(99,179,237,.4);color:#63b3ed}
+.toast-action{background:transparent;border:1px solid currentColor;border-radius:5px;padding:2px 10px;margin-left:10px;cursor:pointer;font-size:12px;color:inherit;font-family:inherit;vertical-align:middle}
+.toast-action:hover{opacity:.8}
+.toast-close{background:transparent;border:none;padding:0 0 0 10px;cursor:pointer;font-size:15px;color:inherit;opacity:.6;vertical-align:middle}
+.toast-progress{position:absolute;bottom:0;left:0;height:2px;background:currentColor;opacity:.4;border-radius:0 0 var(--r-md) var(--r-md);animation:toastProgress 5s linear forwards}
+@keyframes toastProgress{from{width:100%}to{width:0%}}
+.toast{position:relative;overflow:hidden;pointer-events:auto}
 
 /* Scroll to top */
 .stbtn{position:fixed;bottom:22px;right:18px;width:36px;height:36px;background:var(--acc);color:#0a0c0e;border:none;border-radius:50%;font-size:16px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:500;box-shadow:0 4px 14px rgba(232,160,0,.28);transition:all .2s}
@@ -1551,7 +1559,13 @@ textarea{resize:vertical;min-height:70px}
         <input type="text" id="p-pc" placeholder="ex: plaquettes de frein avant, courroie de distribution, pompe à eau...">
       </div>
       <button class="btn" id="btn-p" onclick="doPieces()" style="width:100%;margin-top:4px">🔍 COMPARER LES PIÈCES (1 crédit)</button>
-      <div id="zp" style="margin-top:16px"></div>
+      <div id="zp" style="margin-top:16px">
+        <div class="empty-state" id="zp-hint" style="padding:28px 16px">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+          <div class="empty-t">Recherchez vos pieces</div>
+          <div class="empty-d">Selectionnez votre vehicule et la piece pour comparer les prix Autodoc, eBay et Amazon</div>
+        </div>
+      </div>
     </div>
   </div>
 </div></div>
@@ -1584,7 +1598,12 @@ textarea{resize:vertical;min-height:70px}
       <div class="ct">🔵 Diagnostics en cours</div>
       <span style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">7 derniers jours</span>
     </div>
-    <div class="cb" style="padding:10px 14px" id="suivi-diags-list"></div>
+    <div class="cb" style="padding:10px 14px" id="suivi-diags-list"><div class="empty-state" id="suivi-empty" style="padding:24px 16px">
+          <div class="empty-icon" style="font-size:28px">&#x1F4CA;</div>
+          <div class="empty-t">Aucun diagnostic recent</div>
+          <div class="empty-d">Vos scores de sante et historiques d entretien apparaitront ici apres votre premier diagnostic</div>
+          <button class="btn-teal" onclick="showPg('dylan')" style="margin-top:6px">Lancer Dylan IA</button>
+        </div></div>
   </div>
 
   <!-- HISTORIQUE LOCAL -->
@@ -3081,7 +3100,26 @@ async function loadDiagSessions() {
   const panel = document.getElementById('diag-sessions-panel');
   const list = document.getElementById('diag-sessions-list');
   const btnNew = document.getElementById('btn-new-diag');
-  if (!sessions.length) { if (panel) panel.style.display = 'none'; return; }
+  if (!sessions.length) {
+    if (panel) panel.style.display = 'none';
+    // Empty state dans la zone chat si aucun diagnostic
+    var chatZone = document.getElementById('diag-empty-hint');
+    if (!chatZone) {
+      var cbEl = document.querySelector('#pg-diag .cb');
+      if (cbEl) {
+        var hint = document.createElement('div');
+        hint.id = 'diag-empty-hint';
+        hint.className = 'empty-state';
+        hint.style.cssText = 'padding:32px 20px;margin-bottom:12px';
+        hint.innerHTML = '<div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>'
+          + '<div class="empty-t">Pas encore de diagnostic</div>'
+          + '<div class="empty-d">Dylan analyse vos pannes, codes DTC et symptomes avec une precision de technicien expert</div>'
+          + '<button class="btn-teal" onclick="document.getElementById(\'d-i\').focus()" style="margin-top:6px">&#x1F4AC; Demarrer un diagnostic</button>';
+        cbEl.insertBefore(hint, cbEl.firstChild);
+      }
+    }
+    return;
+  }
 
   // Stocker les données en mémoire pour éviter les problèmes de JSON dans onclick
   window._diagSessions = {};
@@ -3841,6 +3879,28 @@ window.redeemPromo = async function () {
   }
 };
 
+
+// ── TOAST NOTIFICATIONS ───────────────────────────────────────────────────────
+// Types: 'ok' (success), 'er' (error), 'warn' (warning), 'info'
+// Exemple: showToast('ok', 'Vehicule ajouté !', 'Voir', () => showPg('garage'))
+window.showToast = function(type, msg, actionLabel, actionFn) {
+  var c = document.getElementById('toast-c');
+  if (!c) { c = document.createElement('div'); c.id = 'toast-c'; c.className = 'toast-c'; document.body.appendChild(c); }
+  var t = document.createElement('div');
+  t.className = 'toast ' + (type || 'info');
+  var html = '<span>' + msg + '</span>';
+  if (actionLabel && actionFn) {
+    html += '<button class="toast-action" onclick="('+actionFn.toString()+'())">'+actionLabel+'</button>';
+  }
+  html += '<button class="toast-close" onclick="this.closest(\'.toast\').remove()">&#x2715;</button>';
+  html += '<span class="toast-progress"></span>';
+  t.innerHTML = html;
+  c.appendChild(t);
+  setTimeout(function() { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(function(){t.remove();},300); }, 5000);
+};
+
+// Remplace l ancienne fonction showT si elle existe
+window.showT = window.showToast;
 </script>
 <div id="m-newpw" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;align-items:center;justify-content:center;padding:20px">
   <div style="background:#0e141b;border:1px solid #1e2a36;border-radius:14px;max-width:380px;width:100%;padding:26px;font-family:'DM Sans',sans-serif">
