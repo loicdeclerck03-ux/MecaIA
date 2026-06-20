@@ -882,7 +882,7 @@ textarea{resize:vertical;min-height:70px}
 .bnt:hover{color:var(--tx)}.bnt.on{color:var(--acc);border-bottom-color:var(--acc)}
 .bnt-bdg{background:var(--acc);color:#000;font-size:10px;font-weight:800;border-radius:20px;padding:1px 7px;min-width:20px;text-align:center;font-family:'IBM Plex Mono',monospace}
 .bnt-bdg.grey{background:var(--s3);color:var(--muted)}
-.btp{display:none;flex:1;overflow:hidden;flex-direction:column;min-height:0}.btp.active{display:flex;min-height:0}
+.btp{display:none;flex:1;flex-direction:column;min-height:0}.btp.active{display:flex;min-height:0;overflow:hidden}
 .bvb{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0}
 .bvb-chips{flex:1;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}.bvb-chips::-webkit-scrollbar{display:none}
 .bvb-chip{display:flex;align-items:center;gap:6px;background:var(--s2);border:1.5px solid var(--bd);border-radius:20px;padding:5px 14px;white-space:nowrap;cursor:pointer;font-size:12px;font-weight:600;transition:border-color .2s,background .2s;flex-shrink:0}
@@ -1999,7 +1999,38 @@ function boxRenderDTCs(dtcs,pending,permanent){var all=(dtcs||[]).concat(pending
 window.boxAskDTC=function(code){document.getElementById('box-input').value='Explique le code '+code+' et dis-moi comment le corriger';boxSend();};
 window.boxClearDTCs=function(){if(!BOX.connected){boxMsg('sys','Boitier non connect\u00e9.');return;}if(!confirm('Effacer tous les codes d\u00e9fauts ?'))return;boxMsg('sys','Effacement\u2026');window.MecaIAElectron.obd2.clearDTCs();};
 
-function boxUpdateLive(d){if(d.value==null)return;BOX.liveData[d.key]=d.value;var m={RPM:'bp-rpm',SPEED:'bp-spd',COOLANT:'bp-tmp',ENGINE_LOAD:'bp-ld',BATTERY:'bp-bat',THROTTLE:'bp-thr'};var el=m[d.key]?document.getElementById(m[d.key]):null;if(el)el.textContent=(Number.isInteger(d.value)?d.value:d.value.toFixed(1))+' '+(d.unit||'');if(BOX.monOpen)boxRenderMonitors();}
+function boxUpdateLive(d){
+  if(d.value==null)return;
+  BOX.liveData[d.key]=d.value;
+  // IDs corrects selon le HTML des tabs redesign
+  var m={RPM:'bp-rpm2',SPEED:'bp-spd2',COOLANT:'bp-tmp2',ENGINE_LOAD:'bp-lod2',BATTERY:'bp-bat2',THROTTLE:'bp-thr2'};
+  var el=m[d.key]?document.getElementById(m[d.key]):null;
+  if(el){
+    var val=Number.isInteger(d.value)?d.value:d.value.toFixed(1);
+    el.textContent=val+' '+(d.unit||'');
+    // Couleur température moteur
+    if(d.key==='COOLANT'){
+      var card=document.getElementById('bc-TMP');
+      if(card){
+        var v=parseFloat(d.value);
+        card.style.borderColor=v>=105?'var(--red)':v>=98?'var(--warn)':'var(--green)';
+        card.style.boxShadow=v>=105?'0 0 8px var(--red)':v>=98?'0 0 6px var(--warn)':'';
+      }
+    }
+    // Couleur batterie
+    if(d.key==='BATTERY'){
+      var card2=document.getElementById('bc-BAT');
+      if(card2){
+        var bv=parseFloat(d.value);
+        card2.style.borderColor=bv<11.8?'var(--red)':bv<12.4?'var(--warn)':'';
+      }
+    }
+  }
+  // Activer badge Live dans le tab nav
+  var lb=document.getElementById('box-live-badge');
+  if(lb){lb.style.display='';lb.style.color='var(--green)';}
+  if(BOX.monOpen)boxRenderMonitors();
+}
 function boxShowVIN(v){var c=document.getElementById('box-vin-card');var t=document.getElementById('box-vin-txt');if(c&&t){t.textContent=v;c.style.display='';}}
 
 window.boxToggleMonitors=function(){BOX.monOpen=!BOX.monOpen;var body=document.getElementById('box-monitors-body');var tog=document.getElementById('box-mon-toggle');if(body)body.style.display=BOX.monOpen?'':'none';if(tog)tog.textContent=BOX.monOpen?'\u25B2 masquer':'\u25BC afficher';if(BOX.monOpen)boxRenderMonitors();};
