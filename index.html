@@ -1838,9 +1838,18 @@ if(window.MecaIAElectron){
 
 window.boxInit=function(){
   var el=window.MecaIAElectron;
-  document.getElementById('box-noapp').style.display=el?'none':'';
-  document.getElementById('box-app').style.display=el?'':'none';
-  if(!el)return;
+  // Fallback : detecter Electron via le user agent si contextBridge n a pas fonctionne
+  var isElectronUA = !!(navigator.userAgent&&navigator.userAgent.includes('Electron'));
+  var inApp = !!(el || isElectronUA);
+  document.getElementById('box-noapp').style.display=inApp?'none':'';
+  document.getElementById('box-app').style.display=inApp?'':'none';
+  if(!inApp)return;
+  // Si Electron detecte mais pas de contextBridge -> avertir sur les boutons OBD
+  if(!el && isElectronUA){
+    var scan=document.getElementById('box-btn-scan');
+    if(scan){scan.disabled=true;scan.style.opacity='.3';scan.title='Preload OBD non disponible - relancez l'app';}
+    boxMsg('sys','ℹ️ App détectée (mode limité). La connexion OBD2 nécessite de relancer via LANCER.bat');
+  }
   // Verifier si l'utilisateur est connecte
   var isLoggedIn = !!(window.MecaIA && window.MecaIA.supa && document.getElementById('s-app') &&
     document.getElementById('s-app').classList && !document.getElementById('s-app').classList.contains('hidden') &&
