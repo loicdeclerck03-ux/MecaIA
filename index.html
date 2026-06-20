@@ -959,6 +959,9 @@ textarea{resize:vertical;min-height:70px}
 #btp-opts{overflow-y:scroll!important;-webkit-overflow-scrolling:touch}
 /* Tab Codes scrollable */
 #box-dtc-body{overflow-y:scroll!important;-webkit-overflow-scrolling:touch}
+
+#btp-dylan{position:relative}
+#box-feed:focus{outline:none}
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -1855,7 +1858,8 @@ textarea{resize:vertical;min-height:70px}
     <button class="bvb-ref" onclick="boxLoadGarage()" title="Recharger">&#x21BB;</button>
     <button class="bnt-sm" onclick="boxNewConv()">+ Nouveau</button>
   </div>
-  <div id="box-feed" class="bfeed"></div>
+  <div id="box-feed" class="bfeed" tabindex="0"></div>
+  <div id="box-scroll-btn" onclick="var f=document.getElementById('box-feed');f.scrollTop=f.scrollHeight;f.focus();" style="display:none;position:absolute;bottom:90px;right:24px;width:36px;height:36px;background:var(--acc);color:#000;border:none;border-radius:50%;font-size:18px;cursor:pointer;align-items:center;justify-content:center;z-index:10;font-weight:700">v</div>
   <div class="bftr">
     <div class="bqcmds">
       <button class="bqcmd" onclick="boxSendCmd(&apos;Lance un scan complet&apos;)">&#x1F50D; Scan</button>
@@ -2015,7 +2019,7 @@ window.boxDoReset=function(key){if(!BOX.connected||!confirm('Reset '+key+' ? Ass
 function boxWelcome(){var feed=document.getElementById('box-feed');if(!feed||feed.children.length)return;var veh=window.selCar?window.selCar.marque+' '+window.selCar.modele+' '+window.selCar.annee:'votre v\u00e9hicule';boxMsg('dy','Bonjour ! Je suis Dylan, votre expert automobile IA.\n\nBranchez le boitier MecaIA Box dans le port OBD2, puis mettez le contact.\n\nJe suis pr\u00eat pour **'+veh+'**. Cliquez sur **SCAN COMPLET** ou dites-moi ce que vous voulez.');}
 window.boxNewConv=function(){BOX.convHistory=[];var f=document.getElementById('box-feed');if(f)f.innerHTML='';boxWelcome();};
 
-function boxMsg(role,text){var feed=document.getElementById('box-feed');if(!feed)return;var d=document.createElement('div');d.style.cssText='display:flex;gap:8px;align-items:flex-start';var av=document.createElement('div');av.style.cssText='width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px';var bbl=document.createElement('div');bbl.style.cssText='padding:8px 12px;border-radius:10px;max-width:calc(100% - 36px);line-height:1.65;font-size:12.5px';if(role==='dy'){av.style.background='var(--acc)';av.style.color='#0a0c0e';av.textContent='D';bbl.style.background='var(--bg)';bbl.style.border='1px solid var(--bd)';bbl.innerHTML=text.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--acc)">$1</strong>').replace(/\n/g,'<br>');}else if(role==='user'){d.style.flexDirection='row-reverse';av.style.background='#1e3a5f';av.style.color='#60a5fa';av.textContent='Vous';bbl.style.background='#1e3a5f';bbl.style.border='1px solid #2a4a7f';bbl.style.color='#e0f0ff';bbl.textContent=text;}else{av.style.background='var(--s2)';av.style.border='1px solid var(--bd)';av.style.color='var(--muted)';av.textContent='\u2139';bbl.style.background='var(--s1)';bbl.style.border='1px dashed var(--bd)';bbl.style.color='var(--muted)';bbl.style.fontSize='11.5px';bbl.textContent=text;}d.appendChild(av);d.appendChild(bbl);feed.appendChild(d);feed.scrollTop=feed.scrollHeight;}
+function boxMsg(role,text){var feed=document.getElementById('box-feed');if(!feed)return;var d=document.createElement('div');d.style.cssText='display:flex;gap:8px;align-items:flex-start';var av=document.createElement('div');av.style.cssText='width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px';var bbl=document.createElement('div');bbl.style.cssText='padding:8px 12px;border-radius:10px;max-width:calc(100% - 36px);line-height:1.65;font-size:12.5px';if(role==='dy'){av.style.background='var(--acc)';av.style.color='#0a0c0e';av.textContent='D';bbl.style.background='var(--bg)';bbl.style.border='1px solid var(--bd)';bbl.innerHTML=text.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--acc)">$1</strong>').replace(/\n/g,'<br>');}else if(role==='user'){d.style.flexDirection='row-reverse';av.style.background='#1e3a5f';av.style.color='#60a5fa';av.textContent='Vous';bbl.style.background='#1e3a5f';bbl.style.border='1px solid #2a4a7f';bbl.style.color='#e0f0ff';bbl.textContent=text;}else{av.style.background='var(--s2)';av.style.border='1px solid var(--bd)';av.style.color='var(--muted)';av.textContent='\u2139';bbl.style.background='var(--s1)';bbl.style.border='1px dashed var(--bd)';bbl.style.color='var(--muted)';bbl.style.fontSize='11.5px';bbl.textContent=text;}d.appendChild(av);d.appendChild(bbl);feed.appendChild(d);feed.scrollTop=feed.scrollHeight;try{feed.focus();}catch(e){}var sb=document.getElementById('box-scroll-btn');if(sb)sb.style.display=feed.scrollHeight>feed.clientHeight?'flex':'none';}
 
 function boxAddTyping(){var f=document.getElementById('box-feed');var d=document.createElement('div');d.id='box-typing';d.style.cssText='display:flex;gap:8px;align-items:center';d.innerHTML='<div style="width:26px;height:26px;border-radius:50%;background:var(--acc);color:#0a0c0e;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">D</div><div style="padding:8px 12px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;display:flex;gap:4px;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bounce .8s infinite;display:block"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bounce .8s .15s infinite;display:block"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bounce .8s .3s infinite;display:block"></span></div>';if(f){f.appendChild(d);f.scrollTop=f.scrollHeight;}}
 function boxRemoveTyping(){var t=document.getElementById('box-typing');if(t&&t.parentNode)t.parentNode.removeChild(t);}
@@ -2114,7 +2118,7 @@ window.boxSendCmd = function(cmd) {
 })();
 
 
-window.boxTab=function(tab){
+window.boxTab=function(tab){if(tab==='dylan'){setTimeout(function(){var f=document.getElementById('box-feed');if(f)f.focus();},100);}
   document.querySelectorAll('.btp').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.bnt').forEach(function(t){t.classList.remove('on');});
   var p=document.getElementById('btp-'+tab);var t=document.querySelector('.bnt[data-tab="'+tab+'"]');
