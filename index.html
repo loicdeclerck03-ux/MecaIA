@@ -1840,7 +1840,8 @@ window.boxInit=function(){
   var el=window.MecaIAElectron;
   // Fallback : detecter Electron via le user agent si contextBridge n a pas fonctionne
   var isElectronUA = !!(navigator.userAgent&&navigator.userAgent.includes('Electron'));
-  var inApp = !!(el || isElectronUA);
+  var isElectronFlag = !!(window._isElectron||window.MecaIAElectron);
+  var inApp = !!(el || isElectronUA || isElectronFlag);
   document.getElementById('box-noapp').style.display=inApp?'none':'';
   document.getElementById('box-app').style.display=inApp?'':'none';
   if(!inApp)return;
