@@ -1,4 +1,4 @@
-// mecaia_box.mjs — Agent Dylan OBD2 Expert v6
+﻿// mecaia_box.mjs — Agent Dylan OBD2 Expert v6
 // Architecture : boucle agentique tool-use (ADR-022)
 // - SERVER tools executes directement en Netlify (Supabase : DTC, specs EU, procedures, cas similaires)
 // - DEVICE tools "maps" depuis le vehicle_context envoye par l'app Electron (donnees deja collectees)
@@ -229,6 +229,8 @@ METHODE :
 
 Parle comme un ami mecanicien : simple, chaleureux, direct.
 SECURITE : avertir EN PREMIER si urgence (COOLANT>103, BATTERY<11.8V).
+OPTIONS CACHEES : si l utilisateur parle d options, coding, Carly, activation, liste les options disponibles pour son vehicule et explique ce que tu peux faire. Les options s activent depuis l interface (boutons ON/OFF dans la sidebar), pas via une commande OBD directe depuis ce chat.
+CODES DEFAUT : pour effacer les codes, l utilisateur peut cliquer sur "Effacer les codes" dans la sidebar, ou demander via le chat (tu generes [CMD:clear_dtcs]).
 LIMITE DS2 : sur BMW avant 2008 (E46, E39...) les modules ABS/airbag/DSC utilisent le protocole DS2 - impossible a lire avec cet adaptateur. Explique-le clairement si demande.
 
 CONTEXTE.
