@@ -1826,11 +1826,26 @@ BRAND_OPTS:{bmw:['feux_journee','lane_assist','sport_display','feux_bienvenue','
 OPT_META:{feux_journee:{label:'Feux de jour (DRL)',icon:'&#x1F4A1;',risk:'faible'},essuie_pluie:{label:'Essuie-glace auto',icon:'&#x1F327;&#xFE0F;',risk:'faible'},confort_fermeture:{label:'Fermeture vitres.',icon:'&#x1FA9F;',risk:'faible'},demarrage_sans_cle:{label:'D&#xE9;marrage sans cl&#xE9;',icon:'&#x1F511;',risk:'moyen'},lane_assist:{label:'Aide maintien de voie',icon:'&#x1F6E3;&#xFE0F;',risk:'faible'},sport_display:{label:'Affichage sportif',icon:'&#x1F3CE;&#xFE0F;',risk:'faible'},retros_rabattables:{label:'R&#xE9;tros rabattables',icon:'&#x1FA9E;',risk:'faible'},feux_bienvenue:{label:'Feux bienvenue',icon:'&#x1F3E0;',risk:'faible'},feux_virage:{label:'Phares de virage',icon:'&#x21AA;&#xFE0F;',risk:'faible'},klaxon_verrouillage:{label:'Bip klaxon fermeture',icon:'&#x1F4E2;',risk:'faible'},mode_sport_auto:{label:'Mode Sport au d&#xE9;marrage',icon:'&#x1F680;',risk:'moyen'},affichage_tete_haute:{label:'Head-Up Display',icon:'&#x1F5A5;&#xFE0F;',risk:'faible'}},
 SERVICE_RESETS:[{key:'huile',label:'Reset vidange huile',icon:'&#x1F6E2;&#xFE0F;'},{key:'dpf',label:'Reset FAP/DPF',icon:'&#x1F525;'},{key:'frein',label:'Reset usure freins',icon:'&#x1F6D1;'},{key:'batt',label:'Adaptation batterie',icon:'&#x1F50B;'},{key:'papillon',label:'Adaptation papillon',icon:'&#x2699;&#xFE0F;'}]};
 
+// Rendre l'onglet OBD IA visible des le chargement de la page dans Electron
+// (sans attendre le login - boxInit complet est appele apres login)
+if(window.MecaIAElectron){
+  (function showBoxTabEarly(){
+    var t=document.getElementById('t-box');
+    if(t){t.style.display='';}
+    else{setTimeout(showBoxTabEarly,300);}
+  })();
+}
+
 window.boxInit=function(){
   var el=window.MecaIAElectron;
   document.getElementById('box-noapp').style.display=el?'none':'';
   document.getElementById('box-app').style.display=el?'':'none';
   if(!el)return;
+  // Verifier si l'utilisateur est connecte
+  var isLoggedIn = !!(window.MecaIA && window.MecaIA.supa && document.getElementById('s-app') &&
+    document.getElementById('s-app').classList && !document.getElementById('s-app').classList.contains('hidden') &&
+    document.querySelector('#s-app') && document.querySelector('#s-app').style.display !== 'none');
+  // Fallback simple : si pas de selCar et pas de profil visible -> probablement pas connecte
   var tab=document.getElementById('t-box');if(tab)tab.style.display='';
   if(!BOX._init){BOX._init=true;
     el.obd2.on('obd2-ports',boxHandlePorts);
@@ -3242,7 +3257,12 @@ window.buyPackage = function(pkg) {
 };
 window.downloadApp=function(p){
   if(p==='ios'){toast("App iOS bientôt sur l'App Store !",'ok');return;}
-  if(window.MecaIAElectron){toast("Vous utilisez déjà MecaIA Desktop !",'ok');return;}
+  if(window.MecaIAElectron){
+    // Deja dans l'app Electron -> ouvrir l'onglet OBD IA directement
+    if(window.navTo)navTo('box');
+    else{var t=document.getElementById('t-box');if(t)t.click();}
+    return;
+  }
   if(window.Capacitor){toast("Vous utilisez l'app mobile MecaIA !",'ok');return;}
   toast("Téléchargez l'app sur mecaiaauto.com",'ok');
 };
