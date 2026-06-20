@@ -4,14 +4,16 @@
 //   $env:ANTHROPIC_API_KEY="sk-ant-..." ; node server.mjs    → vrai Dylan
 //   $env:MOCK_DYLAN="1" ; node server.mjs                    → démo sans clé
 //   $env:SERIAL_PORT="COM5" ; node server.mjs                → lectures sur le VRAI adaptateur
-//   $env:SUPABASE_URL=... ; $env:SUPABASE_SECRET=... ; node server.mjs  → vraie base 18k
+//   $env:SUPABASE_URL=... ; $env:SUPABASE_SECRET=... ; node server.mjs  → vraie base 18k + specs EU
+//
+// MAJ 20/06/2026 : pre-load vehicle_specs EU au /start via fetchVehicleContext
 
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { randomUUID } from "node:crypto";
-import { runDylanTurn, toolResultsMessage, isServerTool, UDS_WRITE_TOOLS, execServerTool } from "../box_agent.mjs";
+import { runDylanTurn, toolResultsMessage, isServerTool, UDS_WRITE_TOOLS, execServerTool, fetchVehicleContext } from "../box_agent.mjs";
 import { simExecute, getScenario, listScenarios } from "./obd_sim.mjs";
 import { ObdSerial } from "./obd_serial.mjs";
 
@@ -78,7 +80,15 @@ async function runTurns(session) {
   }
   for (let i = 0; i < MAX_TOURS; i++) {
     let r;
-    try { r = await runDylanTurn({ messages: session.messages, vehicle: session.vehicle, brand: session.brand, level: session.level }); }
+    try {
+      r = await runDylanTurn({
+        messages: session.messages,
+        vehicle: session.vehicle,
+        brand: session.brand,
+        level: session.level,
+        vehicleContext: session.vehicleContext || null   // ← specs EU pré-chargées
+      });
+    }
     catch (e) { steps.push({ role: "error", text: "Erreur Dylan : " + e.message }); return steps; }
     if (r.text) steps.push({ role: "dylan", text: r.text });
     session.messages.push({ role: "assistant", content: r.assistantContent });
@@ -108,15 +118,30 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && req.url === "/") return send(res, 200, "text/html; charset=utf-8", await readFile(join(HERE, "index.html")));
     if (req.method === "GET" && req.url === "/scenarios")
       return send(res, 200, "application/json", JSON.stringify({ scenarios: listScenarios(), mock: MOCK, serial: SERIAL_PORT, db: HAS_DB, autoPrompt: AUTO_PROMPT }));
+
     if (req.method === "POST" && req.url === "/start") {
       const { scenarioId, vehicleOverride } = await readBody(req);
       const S = getScenario(scenarioId);
       const id = randomUUID();
       const vehicle = vehicleString(S, vehicleOverride);
       const brand = (vehicleOverride && vehicleOverride.brand) || S.brand;
-      sessions.set(id, { S, level: S.level || "v1", vehicle, brand, messages: [], state: { regenIdx: 0 }, mockDone: false });
-      return send(res, 200, "application/json", JSON.stringify({ sessionId: id, vehicle, level: S.level || "v1", defaultSymptom: S.symptom }));
+      const model = (vehicleOverride && vehicleOverride.model) || S.modele || "";
+      const year = vehicleOverride?.year ? parseInt(vehicleOverride.year) : null;
+
+      // ── Pré-chargement specs EU (vehicle_specs + TSBs + recalls) ──
+      let vehicleContext = null;
+      if (HAS_DB && brand) {
+        try {
+          vehicleContext = await fetchVehicleContext({ make: brand, model, year });
+          if (vehicleContext) console.log(`[EU] Specs chargées : ${brand} ${model} ${year || ""}`.trim());
+          else console.log(`[EU] Aucun specs trouvés pour ${brand} ${model} ${year || ""}`.trim());
+        } catch (e) { console.warn("[EU] fetchVehicleContext échoué:", e.message); }
+      }
+
+      sessions.set(id, { S, level: S.level || "v1", vehicle, brand, modele: model, messages: [], state: { regenIdx: 0 }, mockDone: false, vehicleContext });
+      return send(res, 200, "application/json", JSON.stringify({ sessionId: id, vehicle, level: S.level || "v1", defaultSymptom: S.symptom, hasVehicleContext: !!vehicleContext }));
     }
+
     if (req.method === "POST" && req.url === "/message") {
       const { sessionId, text } = await readBody(req);
       const session = sessions.get(sessionId);
@@ -128,4 +153,4 @@ const server = http.createServer(async (req, res) => {
     send(res, 404, "text/plain", "Not found");
   } catch (e) { send(res, 500, "application/json", JSON.stringify({ error: e.message })); }
 });
-server.listen(PORT, () => console.log(`MecaIA Box → http://localhost:${PORT}  [Dylan: ${MOCK ? "SCRIPTÉ" : "RÉEL"} | OBD: ${SERIAL_PORT ? "ADAPTATEUR " + SERIAL_PORT : "simulé"} | base: ${HAS_DB ? "réelle" : "simulée"}]`));
+server.listen(PORT, () => console.log(`MecaIA Box → http://localhost:${PORT}  [Dylan: ${MOCK ? "SCRIPTÉ" : "RÉEL"} | OBD: ${SERIAL_PORT ? "ADAPTATEUR " + SERIAL_PORT : "simulé"} | base: ${HAS_DB ? "réelle (18k + EU)" : "simulée"}]`));
