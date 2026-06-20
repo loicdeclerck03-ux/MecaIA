@@ -226,7 +226,8 @@ function execDeviceTool(name, input, ctx) {
 
   if (name === "read_freeze_frame") {
     const code = (input.code || "").toUpperCase();
-    const ff = (ctx.freezeFrames || {})[code] || null;
+    // ctx.freezeFrames = objet par code | ctx.freezeFrame = freeze frame generique (singulier)
+    const ff = (ctx.freezeFrames || {})[code] || ctx.freezeFrame || null;
     if (!ff || !Object.keys(ff).length) {
       return `Freeze frame pour ${code} : non disponible (le code a pu etre efface ou le vehicule ne le supporte pas).`;
     }
@@ -312,8 +313,6 @@ REGLES ABSOLUES :
 
 Vehicule : ${vehicleStr}.${brand && brand !== "default" ? ` Marque : ${brand}.` : ""}${lang}`;
 }
-
-// ── BOUCLE AGENTIQUE
 
 // ── BOUCLE AGENTIQUE ───────────────────────────────────────────────────────────
 async function runAgenticLoop({ messages, system, ctx, brand, vehicleMeta, signal, maxTurns = 12 }) {
@@ -416,12 +415,17 @@ export const handler = async (event) => {
         return `${k}:${pids[k].value}${u}`;
       }).join(" ");
 
-      // Freeze frames si disponibles
+      // Freeze frames si disponibles (pluriel ou singulier depuis fullDiagScan)
       const ff = ctx.freezeFrames || {};
-      const ffStr = Object.keys(ff).slice(0,2).map(code => {
+      const ffSingle = ctx.freezeFrame || null;
+      let ffStr = Object.keys(ff).slice(0,2).map(code => {
         const data = Object.entries(ff[code] || {}).slice(0,4).map(([k,v]) => `${k}:${v}`).join(",");
         return data ? `FF(${code}): ${data}` : "";
       }).filter(Boolean).join(" | ");
+      if (!ffStr && ffSingle && typeof ffSingle === 'object') {
+        const data = Object.entries(ffSingle).slice(0,5).map(([k,v]) => `${k}:${v}`).join(",");
+        if (data) ffStr = `FF(premier code): ${data}`;
+      }
 
       const scanSummary = [
         ctx.vin ? `VIN: ${ctx.vin}` : "",
@@ -499,7 +503,7 @@ export const handler = async (event) => {
     };
 
   } catch (e) {
-    console.error("[mecaia_box v6]", e.message);
+    console.error("[mecaia_box v7]", e.message);
     return {
       statusCode: 500,
       headers,
