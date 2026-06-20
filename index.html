@@ -835,6 +835,33 @@ textarea{resize:vertical;min-height:70px}
 .bpv.hot{color:#ef4444}.bpv.warm{color:#f59e0b}.bpv.ok{color:#22c55e}
 .box-cmd{font-size:11px;padding:5px 8px;border-radius:5px;cursor:pointer;color:var(--tx);transition:background .15s;margin-bottom:2px}
 .box-cmd:hover{background:var(--s3)}
+/* ===== BOX OBD IA — UI REDESIGN ===== */
+#pg-box .wrap{max-width:1600px!important;padding:0 16px 8px!important}
+#box-status-pill{padding:8px 20px!important;font-size:13px!important;font-weight:600!important;border-radius:24px!important}
+#box-status-pill:hover{border-color:var(--acc)!important}
+#box-dot2{width:10px!important;height:10px!important}
+#box-veh-badge{font-size:12px!important;padding:5px 14px!important;border-radius:8px!important}
+#pg-box .card{border-radius:10px!important;overflow:hidden!important}
+#pg-box .ch{padding:11px 14px!important}
+#pg-box .ct{font-size:11px!important;font-weight:700!important;letter-spacing:.4px!important;text-transform:uppercase!important}
+#pg-box .cb{padding:10px 12px!important}
+#box-btn-scan{font-size:16px!important;font-weight:800!important;padding:14px 0!important;border-radius:10px!important;letter-spacing:1.5px!important;box-shadow:0 0 20px rgba(232,160,0,.2)!important}
+#box-btn-scan:not(:disabled){box-shadow:0 2px 20px rgba(232,160,0,.35)!important}
+#box-btn-scan:not(:disabled):hover{filter:brightness(1.1)!important}
+#box-garage-body>div{border-radius:8px!important;padding:8px 12px!important;margin-bottom:5px!important}
+#box-live-grid{gap:6px!important;padding:10px 12px!important}
+.box-pid-cell{padding:9px 12px!important;border-radius:8px!important}
+.bpl{font-size:10px!important;letter-spacing:.3px!important}
+.bpv{font-size:16px!important;font-weight:800!important}
+#box-dtc-body{padding:10px 12px!important}
+#box-dtc-count{font-size:11px!important}
+.box-cmd{font-size:11px!important;padding:7px 10px!important;border-radius:6px!important;margin-bottom:3px!important}
+#box-opts-body,#box-resets-body{padding:10px 12px!important}
+#box-input{font-size:13px!important;padding:10px 14px!important;border-radius:10px!important;line-height:1.5!important}
+#box-vin-card{padding:10px 14px!important;border-radius:8px!important}
+#box-vin-txt{font-size:12px!important}
+#pg-box .bsm{font-size:11px!important;padding:6px 12px!important;border-radius:8px!important}
+/* ===== END BOX OBD IA ===== */
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -1683,7 +1710,7 @@ textarea{resize:vertical;min-height:70px}
 
 <div id="box-app" style="display:none">
 
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 12px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 14px;flex-wrap:wrap;border-bottom:1px solid var(--bd);margin-bottom:4px">
   <div style="display:flex;align-items:center;gap:10px">
     <div id="box-status-pill" onclick="boxHandleConnect()" style="display:flex;align-items:center;gap:7px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:5px 12px;cursor:pointer;transition:border-color .2s;user-select:none">
       <span id="box-dot2" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s"></span>
@@ -1692,7 +1719,7 @@ textarea{resize:vertical;min-height:70px}
     <div id="box-veh-badge" style="display:none;background:var(--acc-d);border:1px solid var(--acc-b);border-radius:6px;padding:4px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--acc)"></div>
   </div>
   <div style="display:flex;gap:7px;flex-wrap:wrap">
-    <button class="bsm" onclick="boxClearDTCs()" style="margin:0">&#x1F5D1;&#xFE0F; Effacer DTC</button>
+    <button class="bsm" onclick="boxClearDTCs()" style="margin:0;background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.4);color:#ef4444">&#x1F5D1;&#xFE0F; Effacer DTC</button>
   </div>
 </div>
 
@@ -1705,7 +1732,7 @@ textarea{resize:vertical;min-height:70px}
   <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Papillon</span><span id="bp-thr" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
 </div>
 
-<div style="display:grid;grid-template-columns:300px 1fr;gap:12px;min-height:520px">
+<div style="display:grid;grid-template-columns:340px 1fr;gap:14px;height:calc(100vh - 190px)">
 
   <div style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:calc(100vh - 200px)">
 
@@ -1848,7 +1875,7 @@ window.boxInit=function(){
   // Si Electron detecte mais pas de contextBridge -> avertir sur les boutons OBD
   if(!el && isElectronUA){
     var scan=document.getElementById('box-btn-scan');
-    if(scan){scan.disabled=true;scan.style.opacity='.3';scan.title='Preload OBD non disponible - relancez l'app';}
+    if(scan){scan.disabled=true;scan.style.opacity='.3';scan.title='Preload OBD non disponible - relancez LANCER.bat';}
     boxMsg('sys','ℹ️ App détectée (mode limité). La connexion OBD2 nécessite de relancer via LANCER.bat');
   }
   // Verifier si l'utilisateur est connecte
@@ -1881,7 +1908,7 @@ window.boxHandleConnect=function(){if(BOX.connected)window.MecaIAElectron.obd2.d
 
 function boxHandlePorts(ports){if(BOX.connected)return;var SKIP=['COM3','COM4'];var obd=(ports||[]).filter(function(p){return p.isOBD2&&!SKIP.includes(p.path);});var bt=(ports||[]).filter(function(p){return !SKIP.includes(p.path);});if(obd.length){BOX.port=obd[0].path;boxMsg('sys','Boitier sur '+BOX.port+'. Connexion\u2026');window.MecaIAElectron.obd2.connect(BOX.port);}else if(bt.length){BOX.port=bt[0].path;boxMsg('sys','Bluetooth : '+bt.map(function(p){return p.path;}).join(', ')+'. Connexion\u2026');window.MecaIAElectron.obd2.connect(BOX.port);}else{boxMsg('sys','Aucun boitier. Appairez le MX+ en Bluetooth dans Windows.');}}
 
-function boxHandleStatus(s){if(s.type==='connected'){BOX.connected=true;var d=document.getElementById('box-dot2');if(d){d.style.background='var(--green)';d.style.boxShadow='0 0 6px var(--green)';}var t=document.getElementById('box-conn-txt');if(t)t.textContent='Connect\u00e9 \u00b7 '+(s.version||'OBDLink').replace(/\|.*/,'').trim();var bd=document.getElementById('box-dot');if(bd)bd.style.background='var(--green)';var bar=document.getElementById('box-live-bar');if(bar)bar.style.display='flex';boxSetScanBtn('\uD83D\uDD0D','SCAN COMPLET',false);window.MecaIAElectron.obd2.startMonitor();boxMsg('dy','Boitier OBDLink connect\u00e9 \u2705\n\nPr\u00eat pour '+(window.selCar?window.selCar.marque+' '+window.selCar.modele:'votre voiture')+'. Cliquez sur **SCAN COMPLET** ou dites-moi ce que vous voulez.');setTimeout(function(){boxRenderOptions();boxRenderResets();},1000);}else if(s.type==='disconnected'){BOX.connected=false;var d=document.getElementById('box-dot2');if(d){d.style.background='var(--muted)';d.style.boxShadow='none';}var t=document.getElementById('box-conn-txt');if(t)t.textContent='Non connect\u00e9 \u00b7 Cliquer pour connecter';var bd=document.getElementById('box-dot');if(bd)bd.style.background='var(--muted)';var bar=document.getElementById('box-live-bar');if(bar)bar.style.display='none';boxSetScanBtn('\uD83D\uDD0C','Connecter le boitier',true);}}
+function boxHandleStatus(s){if(s.type==='connected'){BOX.connected=true;var d=document.getElementById('box-dot2');if(d){d.style.background='var(--green)';d.style.boxShadow='0 0 6px var(--green)';}var t=document.getElementById('box-conn-txt');if(t)t.textContent='Connect\u00e9 \u00b7 '+(s.version||'OBDLink').replace(/\|.*/,'').trim();var bd=document.getElementById('box-dot');if(bd)bd.style.background='var(--green)';var bar=document.getElementById('box-live-bar');if(bar)bar.style.display='flex';var ls=document.getElementById('box-live-status');if(ls){ls.textContent='● en ligne';ls.style.color='var(--green)';};boxSetScanBtn('\uD83D\uDD0D','SCAN COMPLET',false);if(window.MecaIAElectron&&window.MecaIAElectron.obd2&&typeof window.MecaIAElectron.obd2.startMonitor==='function')window.MecaIAElectron.obd2.startMonitor();boxMsg('dy','Boitier OBDLink connect\u00e9 \u2705\n\nPr\u00eat pour '+(window.selCar?window.selCar.marque+' '+window.selCar.modele:'votre voiture')+'. Cliquez sur **SCAN COMPLET** ou dites-moi ce que vous voulez.');setTimeout(function(){boxRenderOptions();boxRenderResets();},1000);}else if(s.type==='disconnected'){BOX.connected=false;var d=document.getElementById('box-dot2');if(d){d.style.background='var(--muted)';d.style.boxShadow='none';}var t=document.getElementById('box-conn-txt');if(t)t.textContent='Non connect\u00e9 \u00b7 Cliquer pour connecter';var bd=document.getElementById('box-dot');if(bd)bd.style.background='var(--muted)';var bar=document.getElementById('box-live-bar');if(bar)bar.style.display='none';var ls2=document.getElementById('box-live-status');if(ls2){ls2.textContent='hors ligne';ls2.style.color='var(--muted)';};boxSetScanBtn('\uD83D\uDD0C','Connecter le boitier',true);}}
 
 window.boxStartScan=function(){if(!BOX.connected||BOX.scanning)return;BOX.scanning=true;boxSetScanBtn('\u23F3','Scan en cours\u2026',true);boxMsg('user','Lancement du scan complet\u2026');window.MecaIAElectron.obd2.fullScan();};
 function boxHandleScanComplete(data){BOX.scanning=false;BOX.scanResult=data;boxSetScanBtn('\uD83D\uDD04','Nouveau scan',false);boxRenderDTCs(data.dtcs||[],data.pendingDtcs||[],data.permanentDtcs||[]);if(data.vin)boxShowVIN(data.vin);boxCallDylan('Voici les r\u00e9sultats du scan OBD2. Analyse et dis-moi tout.',true);}
