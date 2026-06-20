@@ -904,7 +904,7 @@ textarea{resize:vertical;min-height:70px}
 .blive-hd{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--s1)}
 .blive-st{font-size:12px;font-weight:700;color:var(--muted);transition:color .3s}
 .blive-st.on{color:var(--green)}
-.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 20px;overflow-y:auto;flex:1}
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 20px;overflow-y:auto;flex:1}.bgrid-sm{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:4px 12px 8px}.bsec-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--acc);padding:10px 12px 2px;opacity:.85}
 .bpid{background:var(--s2);border:1.5px solid var(--bd);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;transition:border-color .3s}
 .bpid.on{border-color:var(--acc-b)}
 .bpl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
@@ -1885,14 +1885,45 @@ textarea{resize:vertical;min-height:70px}
     <span style="font-size:11px;color:var(--muted);margin-left:8px">Données OBD2 temps réel</span>
   </div>
   <div id="box-live-grid" class="bgrid">
-    <div class="bpid" id="bc-RPM"><span class="bpl">RPM</span><span class="bpv" id="bp-rpm2">—</span><span class="bpu">tr/min</span></div>
-    <div class="bpid" id="bc-SPD"><span class="bpl">Vitesse</span><span class="bpv" id="bp-spd2">—</span><span class="bpu">km/h</span></div>
-    <div class="bpid" id="bc-TMP"><span class="bpl">&#x1F321; Moteur</span><span class="bpv" id="bp-tmp2">—</span><span class="bpu">&#xB0;C</span></div>
-    <div class="bpid" id="bc-BAT"><span class="bpl">&#x26A1; Batterie</span><span class="bpv" id="bp-bat2">—</span><span class="bpu">V</span></div>
-    <div class="bpid" id="bc-LOD"><span class="bpl">Charge</span><span class="bpv" id="bp-lod2">—</span><span class="bpu">%</span></div>
-    <div class="bpid" id="bc-THR"><span class="bpl">Papillon</span><span class="bpv" id="bp-thr2">—</span><span class="bpu">%</span></div>
+    <!-- Section 1 : Vitaux -->
+    <div class="bpid" id="bc-RPM"><span class="bpl">Regime</span><span class="bpv" id="bp-rpm2">--</span><span class="bpu">tr/min</span></div>
+    <div class="bpid" id="bc-SPD"><span class="bpl">Vitesse</span><span class="bpv" id="bp-spd2">--</span><span class="bpu">km/h</span></div>
+    <div class="bpid" id="bc-TMP"><span class="bpl">&#x1F321; Moteur</span><span class="bpv" id="bp-tmp2">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid" id="bc-BAT"><span class="bpl">&#x26A1; Batterie</span><span class="bpv" id="bp-bat2">--</span><span class="bpu">V</span></div>
+    <div class="bpid" id="bc-LOD"><span class="bpl">Charge</span><span class="bpv" id="bp-lod2">--</span><span class="bpu">%</span></div>
+    <div class="bpid" id="bc-THR"><span class="bpl">Papillon</span><span class="bpv" id="bp-thr2">--</span><span class="bpu">%</span></div>
   </div>
-  <div class="bmon-wrap">
+  <!-- Section 2 : Moteur admission / turbo (diesel) -->
+  <div class="bsec-lbl">&#x1F4A8; Admission &amp; Turbo</div>
+  <div class="bgrid bgrid-sm">
+    <div class="bpid" id="bc-MAP"><span class="bpl">Pression adm.</span><span class="bpv" id="bp-map">--</span><span class="bpu">kPa</span></div>
+    <div class="bpid" id="bc-MAF"><span class="bpl">Debit air (MAF)</span><span class="bpv" id="bp-maf">--</span><span class="bpu">g/s</span></div>
+    <div class="bpid" id="bc-IAT"><span class="bpl">Temp. admission</span><span class="bpv" id="bp-iat">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid" id="bc-OIL"><span class="bpl">&#x1F6E2; Temp. huile</span><span class="bpv" id="bp-oil">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid" id="bc-EGR"><span class="bpl">EGR cmd.</span><span class="bpv" id="bp-egr">--</span><span class="bpu">%</span></div>
+    <div class="bpid" id="bc-BARO"><span class="bpl">Pression baro.</span><span class="bpv" id="bp-baro">--</span><span class="bpu">kPa</span></div>
+  </div>
+  <!-- Section 3 : Corrections carburant -->
+  <div class="bsec-lbl">&#x26FD; Corrections carburant</div>
+  <div class="bgrid bgrid-sm">
+    <div class="bpid" id="bc-STFT"><span class="bpl">Corr. CT</span><span class="bpv" id="bp-stft">--</span><span class="bpu">%</span></div>
+    <div class="bpid" id="bc-LTFT"><span class="bpl">Corr. LT</span><span class="bpv" id="bp-ltft">--</span><span class="bpu">%</span></div>
+    <div class="bpid" id="bc-FRP"><span class="bpl">Pression rail</span><span class="bpv" id="bp-frp">--</span><span class="bpu">bar</span></div>
+    <div class="bpid" id="bc-INJ"><span class="bpl">Timing inject.</span><span class="bpv" id="bp-inj">--</span><span class="bpu">&#xB0;</span></div>
+    <div class="bpid" id="bc-FLVL"><span class="bpl">Niveau carbu.</span><span class="bpv" id="bp-flvl">--</span><span class="bpu">%</span></div>
+    <div class="bpid" id="bc-RUNT"><span class="bpl">Tps marche</span><span class="bpv" id="bp-runt">--</span><span class="bpu">s</span></div>
+  </div>
+  <!-- Section 4 : Emissions / sondes -->
+  <div class="bsec-lbl">&#x1F50D; Emissions</div>
+  <div class="bgrid bgrid-sm">
+    <div class="bpid" id="bc-O2A"><span class="bpl">O2 Amont</span><span class="bpv" id="bp-o2a">--</span><span class="bpu">V</span></div>
+    <div class="bpid" id="bc-O2B"><span class="bpl">O2 Aval</span><span class="bpv" id="bp-o2b">--</span><span class="bpu">V</span></div>
+    <div class="bpid" id="bc-AMB"><span class="bpl">Temp. ext.</span><span class="bpv" id="bp-amb">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid" id="bc-TORQ"><span class="bpl">Couple moteur</span><span class="bpv" id="bp-torq">--</span><span class="bpu">%</span></div>
+    <div class="bpid" id="bc-CATMP"><span class="bpl">Temp. cata.</span><span class="bpv" id="bp-catmp">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid" id="bc-DIST"><span class="bpl">Dist. MIL</span><span class="bpv" id="bp-dist">--</span><span class="bpu">km</span></div>
+  </div>
+  <div class="bmon-wrap"><div class="bmon-wrap">
     <button class="bmon-tog" onclick="boxToggleMonitors()"><span id="box-mon-toggle">&#x25BC; Moniteurs OBD</span></button>
     <div id="box-monitors-body" style="display:none"><div id="box-monitors-list" class="bmon-list"></div></div>
   </div>
