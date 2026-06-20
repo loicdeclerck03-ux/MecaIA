@@ -829,6 +829,12 @@ textarea{resize:vertical;min-height:70px}
 .d-msg.dylan .d-ts{text-align:left;padding-left:37px}
 @keyframes scanDash{0%{stroke-dashoffset:200}100%{stroke-dashoffset:0}}
 @keyframes scanLine{0%,100%{transform:translateY(-24px);opacity:.3}50%{transform:translateY(24px);opacity:1}}
+.box-pid-cell{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:2px}
+.bpl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.bpv{font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)}
+.bpv.hot{color:#ef4444}.bpv.warm{color:#f59e0b}.bpv.ok{color:#22c55e}
+.box-cmd{font-size:11px;padding:5px 8px;border-radius:5px;cursor:pointer;color:var(--tx);transition:background .15s;margin-bottom:2px}
+.box-cmd:hover{background:var(--s3)}
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -1180,7 +1186,7 @@ textarea{resize:vertical;min-height:70px}
   </button>
   <button class="tab" id="t-box" onclick="showPg('box')" style="position:relative">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2M3 17v2a2 2 0 0 0 2 2h2M17 3h2a2 2 0 0 1 2 2v2M17 21h2a2 2 0 0 0 2-2v-2"/></svg>
-    Box OBD2
+    OBD IA
     <span id="box-dot" style="position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--muted)"></span>
   </button>
 </nav>
@@ -1686,8 +1692,7 @@ textarea{resize:vertical;min-height:70px}
     <div id="box-veh-badge" style="display:none;background:var(--acc-d);border:1px solid var(--acc-b);border-radius:6px;padding:4px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--acc)"></div>
   </div>
   <div style="display:flex;gap:7px;flex-wrap:wrap">
-    <button id="box-btn-scan" class="btn" style="margin:0;padding:8px 18px;font-size:12px" onclick="boxStartScan()" disabled>&#x1F50D; SCAN COMPLET</button>
-    <button class="bsm" onclick="boxClearDTCs()" style="margin:0">&#x1F5D1;&#xFE0F; Effacer</button>
+    <button class="bsm" onclick="boxClearDTCs()" style="margin:0">&#x1F5D1;&#xFE0F; Effacer DTC</button>
   </div>
 </div>
 
@@ -1702,30 +1707,99 @@ textarea{resize:vertical;min-height:70px}
 
 <div style="display:grid;grid-template-columns:300px 1fr;gap:12px;min-height:520px">
 
-  <div style="display:flex;flex-direction:column;gap:10px">
+  <div style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:calc(100vh - 200px)">
+
+    <!-- == VEHICULE GARAGE == -->
+    <div class="card" style="margin:0">
+      <div class="ch" style="padding:8px 12px">
+        <div class="ct">&#x1F697; V&#xE9;hicule</div>
+        <button onclick="boxLoadGarage()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:2px 6px;border-radius:4px" title="Recharger">&#x21BB;</button>
+      </div>
+      <div id="box-garage-body" style="padding:6px 8px">
+        <div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Chargement garage&#x2026;</div>
+      </div>
+    </div>
+
+    <!-- == SCAN COMPLET == -->
+    <button id="box-btn-scan" onclick="boxStartScan()" disabled
+      style="width:100%;padding:12px 0;background:var(--acc);color:#000;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;border:none;border-radius:var(--r-md);cursor:pointer;letter-spacing:1px;opacity:.45;transition:opacity .2s">
+      &#x1F50D; SCAN COMPLET
+    </button>
+
+    <!-- == TEMPERATURES LIVE == -->
+    <div class="card" style="margin:0">
+      <div class="ch" style="padding:8px 12px">
+        <div class="ct">&#x1F321;&#xFE0F; Donn&#xE9;es live</div>
+        <span id="box-live-status" style="font-size:10px;color:var(--muted)">hors ligne</span>
+      </div>
+      <div style="padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px" id="box-live-grid">
+        <div class="box-pid-cell" id="bc-RPM"><span class="bpl">RPM</span><span class="bpv" id="bp-rpm2">&#x2014;</span></div>
+        <div class="box-pid-cell" id="bc-SPD"><span class="bpl">km/h</span><span class="bpv" id="bp-spd2">&#x2014;</span></div>
+        <div class="box-pid-cell" id="bc-TMP"><span class="bpl">&#x1F321; Moteur</span><span class="bpv" id="bp-tmp2">&#x2014;</span></div>
+        <div class="box-pid-cell" id="bc-BAT"><span class="bpl">&#x26A1; Batt.</span><span class="bpv" id="bp-bat2">&#x2014;</span></div>
+        <div class="box-pid-cell" id="bc-LOD"><span class="bpl">Charge %</span><span class="bpv" id="bp-lod2">&#x2014;</span></div>
+        <div class="box-pid-cell" id="bc-THR"><span class="bpl">Papillon %</span><span class="bpv" id="bp-thr2">&#x2014;</span></div>
+      </div>
+    </div>
+
+    <!-- == VIN == -->
     <div id="box-vin-card" style="display:none;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:9px 12px">
       <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px">VIN</div>
       <div id="box-vin-txt" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--acc);word-break:break-all"></div>
     </div>
+
+    <!-- == CODES DEFAUTS == -->
     <div id="box-dtc-card" class="card" style="margin:0">
-      <div class="ch"><div class="ct">Codes d&#xE9;fauts</div><span id="box-dtc-count" style="font-size:10px;color:var(--muted)">&#x2014;</span></div>
-      <div class="cb" id="box-dtc-body" style="padding:8px"><div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">Lancez un scan pour lire les codes</div></div>
+      <div class="ch"><div class="ct">&#x26A0;&#xFE0F; Codes d&#xE9;fauts</div><span id="box-dtc-count" style="font-size:10px;color:var(--muted)">&#x2014;</span></div>
+      <div class="cb" id="box-dtc-body" style="padding:8px"><div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">Lancez un scan</div></div>
     </div>
+
+    <!-- == COMMANDES == -->
+    <div class="card" style="margin:0">
+      <div class="ch" style="cursor:pointer;padding:8px 12px" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
+        <div class="ct">&#x1F4AC; Commandes</div>
+        <span style="font-size:10px;color:var(--muted)">&#x25BC; voir</span>
+      </div>
+      <div style="display:none;padding:6px 10px 8px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Dites ou tapez&#x202F;:</div>
+        <div id="box-cmds-list">
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Lance un scan complet">&#x1F50D; Lance un scan complet</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Explique les codes défauts">&#x26A0;&#xFE0F; Explique les codes défauts</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Quelle est la température moteur ?">&#x1F321;&#xFE0F; Température moteur</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Efface les codes défauts">&#x1F5D1;&#xFE0F; Efface les codes</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Remise à zéro vidange">&#x1F6E2;&#xFE0F; Reset vidange</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Mode entretien frein parking">&#x1F6D1; Mode freins parking</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Active les feux de jour">&#x1F4A1; Activer feux de jour</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Désactive les feux de jour">&#x1F4A1; Désactiver feux de jour</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Active l&apos;essuie-glace automatique">&#x1F327;&#xFE0F; Essuie-glace auto</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Quel est mon VIN ?">&#x1F194; Lire mon VIN</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="C&apos;est grave ?">&#x1F4AC; C&apos;est grave ?</div>
+          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Que dois-je faire maintenant ?">&#x1F527; Que faire maintenant ?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- == OPTIONS VEHICULE == -->
+    <div id="box-opts-card" class="card" style="margin:0">
+      <div class="ch"><div class="ct">&#x2699;&#xFE0F; Options v&#xE9;hicule</div><span id="box-opts-msg" style="font-size:9px;color:var(--muted)">connexion requise</span></div>
+      <div class="cb" id="box-opts-body" style="padding:8px"></div>
+    </div>
+
+    <!-- == RESETS SERVICE == -->
+    <div id="box-resets-card" class="card" style="margin:0">
+      <div class="ch"><div class="ct">&#x1F504; Resets service</div><span id="box-resets-msg" style="font-size:9px;color:var(--muted)">connexion requise</span></div>
+      <div class="cb" id="box-resets-body" style="padding:8px"></div>
+    </div>
+
+    <!-- == MONITEURS (conserve) == -->
     <div class="card" style="margin:0">
       <div class="ch" style="cursor:pointer" onclick="boxToggleMonitors()">
-        <div class="ct">&#x1F4CA; Donn&#xE9;es temps r&#xE9;el</div>
+        <div class="ct">&#x1F4CA; Moniteurs OBD</div>
         <span id="box-mon-toggle" style="font-size:10px;color:var(--muted)">&#x25BC; afficher</span>
       </div>
       <div id="box-monitors-body" style="display:none;padding:8px"><div id="box-monitors-list"></div></div>
     </div>
-    <div id="box-opts-card" class="card" style="margin:0;display:none">
-      <div class="ch"><div class="ct">&#x2699;&#xFE0F; Options v&#xE9;hicule</div></div>
-      <div class="cb" id="box-opts-body" style="padding:8px"></div>
-    </div>
-    <div id="box-resets-card" class="card" style="margin:0;display:none">
-      <div class="ch"><div class="ct">&#x1F504; Resets service</div></div>
-      <div class="cb" id="box-resets-body" style="padding:8px"></div>
-    </div>
+
   </div>
 
   <div style="display:flex;flex-direction:column;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);overflow:hidden">
@@ -1771,7 +1845,9 @@ window.boxInit=function(){
     el.obd2.on('obd2-reset-done',function(r){boxMsg('sys',r.success?'\u2705 '+r.label+' effectu\u00e9 !':'\u274C Reset \u00e9chou\u00e9 \u2014 '+(r.error||'incompatibilit\u00e9'));});
     el.obd2.on('obd2-option-done',function(r){if(r&&r.key){var b=document.getElementById('bopt-'+r.key);if(b){b.disabled=false;if(r.success){b.textContent=r.enabled?'ON':'OFF';b.style.color=r.enabled?'var(--acc)':'var(--muted)';b.style.borderColor=r.enabled?'var(--acc)':'var(--bd)';b.style.background=r.enabled?'var(--acc-d)':'var(--s3)';}}boxMsg('sys',r.success?'\u2705 Option '+(r.enabled?'activ\u00e9e':'d\u00e9sactiv\u00e9e')+'.':'\u274C Coding \u00e9chou\u00e9 pour cette marque.');}});
     el.obd2.on('obd2-option-read',function(r){if(r&&r.key){var b=document.getElementById('bopt-'+r.key);if(b){if(!r.supported){b.textContent='N/D';b.disabled=true;}else{b.textContent=r.enabled?'ON':'OFF';b.style.color=r.enabled?'var(--acc)':'var(--muted)';b.style.borderColor=r.enabled?'var(--acc)':'var(--bd)';b.style.background=r.enabled?'var(--acc-d)':'var(--s3)';}}}});
+    el.obd2.on('garage-vehicles', window.boxHandleGarageVehicles);
     boxWelcome();el.obd2.listPorts();el.obd2.startMonitor();
+    setTimeout(window.boxLoadGarage, 800);
   }
   boxUpdateVehBadge();boxRenderOptions();boxRenderResets();
 };
@@ -1795,11 +1871,15 @@ function boxShowVIN(v){var c=document.getElementById('box-vin-card');var t=docum
 window.boxToggleMonitors=function(){BOX.monOpen=!BOX.monOpen;var body=document.getElementById('box-monitors-body');var tog=document.getElementById('box-mon-toggle');if(body)body.style.display=BOX.monOpen?'':'none';if(tog)tog.textContent=BOX.monOpen?'\u25B2 masquer':'\u25BC afficher';if(BOX.monOpen)boxRenderMonitors();};
 function boxRenderMonitors(){var PIDS=[{k:'RPM',l:'R\u00e9gime',u:'tr/min',warn:6000,err:7000},{k:'SPEED',l:'Vitesse',u:'km/h'},{k:'COOLANT',l:'Temp. liquide',u:'\u00b0C',warn:100,err:105},{k:'ENGINE_LOAD',l:'Charge moteur',u:'%'},{k:'BATTERY',l:'Batterie',u:'V',warnLow:11.8,errLow:11.0},{k:'THROTTLE',l:'Papillon',u:'%'},{k:'MAF',l:'MAF',u:'g/s'},{k:'INTAKE_MAP',l:'Pression adm.',u:'kPa'},{k:'FUEL_TRIM_ST',l:'Corr. carbu CT',u:'%',warn:15},{k:'OIL_TEMP',l:'Temp. huile',u:'\u00b0C',warn:130,err:145}];var el=document.getElementById('box-monitors-list');if(!el)return;el.innerHTML=PIDS.map(function(p){var v=BOX.liveData[p.k];if(v==null)return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)"><span style="font-size:11px;color:var(--muted)">'+p.l+'</span><span style="font-size:11px;color:var(--muted)">\u2014</span></div>';var disp=(Number.isInteger(v)?v:v.toFixed(1))+' '+p.u;var col=((p.err&&v>=p.err)||(p.errLow&&v<=p.errLow))?'var(--red)':((p.warn&&v>=p.warn)||(p.warnLow&&v<=p.warnLow))?'var(--warn)':'var(--green)';return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)"><span style="font-size:11px;color:var(--muted)">'+p.l+'</span><span style="font-size:11px;font-weight:700;font-family:\'IBM Plex Mono\',monospace;color:'+col+'">'+disp+'</span></div>';}).join('');}
 
-function boxRenderOptions(){var car=window.selCar;var brand=car?(car.marque||'').toLowerCase():'';var opts=BOX.BRAND_OPTS[brand]||[];var card=document.getElementById('box-opts-card');var body=document.getElementById('box-opts-body');if(!card||!body)return;if(!opts.length||!BOX.connected){card.style.display='none';return;}card.style.display='';body.innerHTML=opts.map(function(key){var m=BOX.OPT_META[key];if(!m)return '';return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="font-size:14px">'+m.icon+'</span><div style="flex:1"><div style="font-size:11px">'+m.label+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Risque '+m.risk+'</div></div><button id="bopt-'+key+'" onclick="boxToggleOpt(\''+key+'\',this)" style="background:var(--s3);border:1px solid var(--bd);border-radius:20px;padding:2px 9px;font-size:10px;cursor:pointer;color:var(--muted)">...</button></div>';}).join('');opts.forEach(function(key){window.MecaIAElectron.obd2.readOption(key,brand);});}
+function boxRenderOptions(){var car=window.selCar;var brand=car?(car.marque||'').toLowerCase():'';var opts=BOX.BRAND_OPTS[brand]||[];var card=document.getElementById('box-opts-card');var body=document.getElementById('box-opts-body');if(!card||!body)return;if(!opts.length){card.style.display='none';return;}
+  var msg=document.getElementById('box-opts-msg');
+  if(!BOX.connected){if(msg)msg.textContent='connexion requise';}else{if(msg)msg.textContent='';}card.style.display='';body.innerHTML=opts.map(function(key){var m=BOX.OPT_META[key];if(!m)return '';return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="font-size:14px">'+m.icon+'</span><div style="flex:1"><div style="font-size:11px">'+m.label+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Risque '+m.risk+'</div></div><button id="bopt-'+key+'" onclick="boxToggleOpt(\''+key+'\',this)" style="background:var(--s3);border:1px solid var(--bd);border-radius:20px;padding:2px 9px;font-size:10px;cursor:pointer;color:var(--muted)">...</button></div>';}).join('');opts.forEach(function(key){window.MecaIAElectron.obd2.readOption(key,brand);});}
 window.boxRenderOptions=boxRenderOptions;
 window.boxToggleOpt=function(key,btn){if(!BOX.connected)return;var isOn=btn.textContent==='ON';btn.textContent='\u2026';btn.disabled=true;window.MecaIAElectron.obd2.writeOption(key,!isOn,(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase());};
 
-function boxRenderResets(){var card=document.getElementById('box-resets-card');var body=document.getElementById('box-resets-body');if(!card||!body)return;if(!BOX.connected){card.style.display='none';return;}card.style.display='';body.innerHTML=BOX.SERVICE_RESETS.map(function(r){return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)"><span>'+r.icon+'</span><span style="flex:1;font-size:11px">'+r.label+'</span><button onclick="boxDoReset(\''+r.key+'\')" style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:3px 9px;font-size:10px;cursor:pointer;color:var(--muted)">Faire</button></div>';}).join('');}
+function boxRenderResets(){var card=document.getElementById('box-resets-card');var body=document.getElementById('box-resets-body');if(!card||!body)return;var rmsg=document.getElementById('box-resets-msg');
+  card.style.display='';
+  if(!BOX.connected){if(rmsg)rmsg.textContent='connexion requise';}else{if(rmsg)rmsg.textContent='';}card.style.display='';body.innerHTML=BOX.SERVICE_RESETS.map(function(r){return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)"><span>'+r.icon+'</span><span style="flex:1;font-size:11px">'+r.label+'</span><button onclick="boxDoReset(\''+r.key+'\')" style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:3px 9px;font-size:10px;cursor:pointer;color:var(--muted)">Faire</button></div>';}).join('');}
 window.boxDoReset=function(key){if(!BOX.connected||!confirm('Reset '+key+' ? Assurez-vous d\'avoir fait la r\u00e9paration avant.'))return;boxMsg('sys','Reset '+key+'\u2026');window.MecaIAElectron.obd2.serviceReset(key,(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase());};
 
 function boxWelcome(){var feed=document.getElementById('box-feed');if(!feed||feed.children.length)return;var veh=window.selCar?window.selCar.marque+' '+window.selCar.modele+' '+window.selCar.annee:'votre v\u00e9hicule';boxMsg('dy','Bonjour ! Je suis Dylan, votre expert automobile IA.\n\nBranchez le boitier MecaIA Box dans le port OBD2, puis mettez le contact.\n\nJe suis pr\u00eat pour **'+veh+'**. Cliquez sur **SCAN COMPLET** ou dites-moi ce que vous voulez.');}
@@ -1823,8 +1903,88 @@ async function boxCallDylan(userMsg,isScan){
   }catch(e){boxRemoveTyping();boxMsg('dy','\u26A0\uFE0F Erreur : '+e.message);}
 }
 
-function boxSetScanBtn(icon,lbl,dis){var btn=document.getElementById('box-btn-scan');if(btn){btn.textContent=icon+' '+lbl;btn.disabled=dis;}}
+function boxSetScanBtn(icon,lbl,dis){var btn=document.getElementById('box-btn-scan');if(btn){btn.textContent=icon+' '+lbl;btn.disabled=dis;btn.style.opacity=dis?'.45':'1';btn.style.background=dis?'var(--s3)':'var(--acc)';btn.style.color=dis?'var(--muted)':'#000';}}
+
+// ── Garage vehicles ──────────────────────────────────────────────────────────
+window.boxLoadGarage = function() {
+  var el = window.MecaIAElectron;
+  if (!el) return;
+  var body = document.getElementById('box-garage-body');
+  if (body) body.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Chargement&#x2026;</div>';
+  if (el.getGarageVehicles) { el.getGarageVehicles(); return; }
+  // Fallback: utiliser window.selCar si pas d'IPC garage
+  boxRenderGarage(window._garageVehicles || []);
+};
+
+window.boxHandleGarageVehicles = function(vehicles) {
+  window._garageVehicles = vehicles || [];
+  boxRenderGarage(window._garageVehicles);
+};
+
+function boxRenderGarage(vehicles) {
+  var body = document.getElementById('box-garage-body');
+  if (!body) return;
+  if (!vehicles || !vehicles.length) {
+    body.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Aucun véhicule — ajoutez-en dans <a href="#" onclick="navTo('garage');return false" style="color:var(--acc)">Mon Garage</a></div>';
+    return;
+  }
+  body.innerHTML = vehicles.map(function(v) {
+    var isSel = window.selCar && window.selCar.id === v.id;
+    var label = (v.marque||'') + ' ' + (v.modele||'') + (v.annee ? ' ' + v.annee : '');
+    return '<div onclick="boxPickVehicle(' + JSON.stringify(v).replace(/"/g,'&quot;') + ')" style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;background:' + (isSel ? 'var(--acc-d)' : 'var(--bg)') + ';border:1px solid ' + (isSel ? 'var(--acc)' : 'var(--bd)') + ';margin-bottom:4px;transition:background .15s">'
+      + '<span style="font-size:14px">' + (v.carburant === 'diesel' ? '&#x26FD;' : '&#x26A1;') + '</span>'
+      + '<div style="flex:1"><div style="font-size:11px;font-weight:700;color:' + (isSel ? 'var(--acc)' : 'var(--tx)') + '">' + label + '</div>'
+      + (v.km_current ? '<div style="font-size:10px;color:var(--muted)">' + Number(v.km_current).toLocaleString('fr') + ' km</div>' : '')
+      + '</div>'
+      + (isSel ? '<span style="color:var(--acc);font-size:11px">&#x2714;</span>' : '')
+      + '</div>';
+  }).join('');
+}
+
+window.boxPickVehicle = function(v) {
+  // Selectionner ce vehicule comme voiture active dans toute l'app
+  window.selCar = v;
+  boxRenderGarage(window._garageVehicles || []);
+  boxUpdateVehBadge();
+  boxRenderOptions();
+  boxRenderResets();
+  boxMsg('sys', '&#x1F697; Véhicule sélectionné : ' + (v.marque||'') + ' ' + (v.modele||'') + (v.annee ? ' ' + v.annee : ''));
+};
+
+// ── Envoyer commande depuis la liste ─────────────────────────────────────────
+window.boxSendCmd = function(cmd) {
+  var inp = document.getElementById('box-input');
+  if (!inp) return;
+  inp.value = cmd;
+  if (typeof boxSend === 'function') boxSend();
+};
+
+// ── Live grid mise a jour couleurs ───────────────────────────────────────────
+(function() {
+  var _origUpdateLive = window.boxUpdateLive;
+  window.boxUpdateLive = function(d) {
+    if (_origUpdateLive) _origUpdateLive(d);
+    if (!d || d.value == null) return;
+    var map = {RPM:'bp-rpm2',SPEED:'bp-spd2',COOLANT:'bp-tmp2',BATTERY:'bp-bat2',ENGINE_LOAD:'bp-lod2',THROTTLE:'bp-thr2'};
+    var el = document.getElementById(map[d.key]);
+    if (!el) return;
+    var v = d.value, unit = d.unit||'', txt = v + (unit ? ' ' + unit : '');
+    el.textContent = txt;
+    // Coloration temperature moteur
+    if (d.key === 'COOLANT') {
+      el.className = 'bpv ' + (v >= 100 ? 'hot' : v >= 85 ? 'warm' : 'ok');
+    } else if (d.key === 'BATTERY') {
+      el.className = 'bpv ' + (v < 11.5 ? 'hot' : v < 12.4 ? 'warm' : 'ok');
+    } else {
+      el.className = 'bpv';
+    }
+    var st = document.getElementById('box-live-status');
+    if (st) { st.textContent = 'en ligne'; st.style.color = 'var(--green)'; }
+  };
+})();
+
 window.boxUpdateVehBadge=function(){var b=document.getElementById('box-veh-badge');if(!b)return;if(window.selCar){b.textContent=(window.selCar.marque||'')+' '+(window.selCar.modele||'')+' '+(window.selCar.annee||'');b.style.display='';}else b.style.display='none';};
+
 })();
 </script>
 
