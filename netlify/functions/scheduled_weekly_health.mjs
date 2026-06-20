@@ -24,7 +24,7 @@ async function sendHealthEmail(user, score, vehicle, alerts) {
     <h1 style="font-size:18px;font-weight:700;letter-spacing:2px;margin:0;color:#eef4fa">MECAIA</h1>
     <p style="font-size:12px;color:#6b7a89;margin:4px 0 0">Rapport santé hebdomadaire</p>
   </div>
-  
+
   <div style="background:#0d1f35;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px">
     <p style="font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,.4);margin:0 0 8px">INDICE DE SANTÉ — ${vehicle}</p>
     <div style="font-size:64px;font-weight:700;color:${scoreColor};line-height:1;margin:8px 0">${score}</div>

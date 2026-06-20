@@ -122,11 +122,11 @@ export default async (req, context) => {
 function getNextExecution() {
   const now = new Date();
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  
+
   // Find next Monday or Thursday
   let daysUntilNext = 0;
   const currentDay = now.getDay();
-  
+
   if (currentDay < 1) {
     daysUntilNext = 1 - currentDay; // Lundi
   } else if (currentDay < 4) {
@@ -136,10 +136,10 @@ function getNextExecution() {
   } else {
     daysUntilNext = 8 - currentDay + 1; // Lundi de la semaine suivante
   }
-  
+
   const nextExecution = new Date(now);
   nextExecution.setDate(nextExecution.getDate() + daysUntilNext);
   nextExecution.setHours(3, 0, 0, 0);
-  
+
   return nextExecution.toISOString();
 }

@@ -51,3 +51,7 @@ gen_dtc_sql.py
 make_mega.py  
 graphify-out/  
 diff_dylan.txt  
+
+# Data import CSVs - trop volumineux pour git
+data_import/*.csv
+data_import/*.sql

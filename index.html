@@ -143,7 +143,7 @@ body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-
 .glow::after{content:'';position:fixed;inset:0;background:linear-gradient(rgba(232,160,0,.008) 1px,transparent 1px),linear-gradient(90deg,rgba(232,160,0,.008) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
 
 /* ── Typography helpers ── */
-.mono{font-family:'IBM Plex Mono',monospace}
+
 .raj{font-family:'Rajdhani',sans-serif;font-weight:700}
 
 /* ══════════════════════════════
@@ -246,7 +246,7 @@ textarea{resize:vertical;min-height:70px}
 .fbadge{font-family:'IBM Plex Mono',monospace;font-size:9px;background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);padding:3px 7px;border-radius:3px;letter-spacing:1px}
 
 .tag{background:var(--acc-d);border:1px solid var(--acc-b);color:var(--acc);padding:4px 10px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:10px}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+
 
 /* ══════════════════════════════
    BANNERS & INFO BOXES
@@ -273,14 +273,14 @@ textarea{resize:vertical;min-height:70px}
 /* ══════════════════════════════
    SECTION LABELS
 ══════════════════════════════ */
-.slbl{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin:13px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+
 
 /* ══════════════════════════════
    LISTS
 ══════════════════════════════ */
-.slist{display:flex;flex-direction:column;gap:7px}
+
 .si{display:flex;gap:10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:9px 12px}
-.sn{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--acc);min-width:18px;flex-shrink:0}
+
 .st{font-size:13px;line-height:1.6}
 
 /* ══════════════════════════════
@@ -566,10 +566,7 @@ textarea{resize:vertical;min-height:70px}
 }
 .car-c:hover{border-color:var(--acc-b)}
 .car-c.sel{border-color:var(--acc);background:rgba(232,160,0,.04)}
-.car-icon{
-  width:40px;height:40px;background:var(--s3);border-radius:8px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0
-}
+
 .car-info{flex:1;min-width:0}
 .car-n{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--white);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .car-d{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -600,10 +597,10 @@ textarea{resize:vertical;min-height:70px}
 /* ══════════════════════════════
    PARTS LIST
 ══════════════════════════════ */
-.plist{display:flex;flex-direction:column;gap:8px;padding:14px 16px}
+
 .pi{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:11px 13px;flex-wrap:wrap;transition:border-color .2s}
 .pi:hover{border-color:var(--acc-b)}
-.pm{flex:1;min-width:130px}
+
 .pn{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:var(--white);margin-bottom:2px}
 .pr{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)}
 .pc{font-size:11px;color:#7a9ab5;margin-top:2px}
@@ -665,25 +662,25 @@ textarea{resize:vertical;min-height:70px}
 /* ══════════════════════════════
    SCORE + HEALTH
 ══════════════════════════════ */
-.sc-box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:16px;text-align:center;margin-top:12px}
-.sc-n{font-family:'Rajdhani',sans-serif;font-size:52px;font-weight:700;line-height:1}
-.sc-bar{height:6px;background:var(--bd);border-radius:3px;margin:12px 0 7px;overflow:hidden}
-.sc-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
-.dv-box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:13px;margin-top:10px}
-.dv-t{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:9px}
+
+
+
+
+
+
 .dv-r{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px}
 .dv-r:last-of-type{border-bottom:none;font-weight:700;color:var(--white);font-size:13px;padding-top:9px}
-.dv-tot{color:var(--acc)}
-.rating{display:flex;gap:5px;align-items:center;margin-top:10px}
+
+
 .star{font-size:19px;cursor:pointer;opacity:.22;transition:opacity .15s}
 .star.on{opacity:1}
-.diff-row{display:flex;gap:8px;align-items:center;margin-top:9px}
+
 .di{font-size:15px;opacity:.22}.di.on{opacity:1}
 
 /* ══════════════════════════════
    MISC
 ══════════════════════════════ */
-.tool-i{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:9px 13px;margin-bottom:7px}
+
 .tool-a{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--acc);text-decoration:none;padding:3px 8px;border:1px solid var(--acc-b);border-radius:3px}
 .tool-a:hover{background:var(--acc-d)}
 
@@ -1349,7 +1346,7 @@ textarea{resize:vertical;min-height:70px}
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     Tarifs
   </button>
-  <button class="tab" id="t-box" onclick="showPg('box')" style="position:relative">
+  <button class="tab" id="t-box-alt" onclick="showPg('box')" style="position:relative">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2M3 17v2a2 2 0 0 0 2 2h2M17 3h2a2 2 0 0 1 2 2v2M17 21h2a2 2 0 0 0 2-2v-2"/></svg>
     OBD IA
     <span id="box-dot" style="position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--muted)"></span>
@@ -2179,10 +2176,7 @@ window.boxLoadGarage = function() {
   boxRenderGarage(window._garageVehicles || []);
 };
 
-window.boxHandleGarageVehicles = function(vehicles) {
-  window._garageVehicles = vehicles || [];
-  boxRenderGarage(window._garageVehicles);
-};
+
 
 function boxRenderGarage(vehicles) {
   var body = document.getElementById('box-garage-body');
@@ -2204,15 +2198,7 @@ function boxRenderGarage(vehicles) {
   }).join('');
 }
 
-window.boxPickVehicle = function(v) {
-  // Selectionner ce vehicule comme voiture active dans toute l'app
-  window.selCar = v;
-  boxRenderGarage(window._garageVehicles || []);
-  boxUpdateVehBadge();
-  boxRenderOptions();
-  boxRenderResets();
-  boxMsg('sys', '&#x1F697; Véhicule sélectionné : ' + (v.marque||'') + ' ' + (v.modele||'') + (v.annee ? ' ' + v.annee : ''));
-};
+
 
 // ── Envoyer commande depuis la liste ─────────────────────────────────────────
 window.boxSendCmd = function(cmd) {
@@ -3749,7 +3735,6 @@ window.dylanRetry = function () {
   if (window._lastDylanPayload) dylanTurn(window._lastDylanPayload);
 };
 
-window.chkD = function() {};
 
 window.doPhoto = async function (event) {
   const file = event.target.files[0]; if (!file) return;
