@@ -1178,6 +1178,11 @@ textarea{resize:vertical;min-height:70px}
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     Tarifs
   </button>
+  <button class="tab" id="t-box" onclick="showPg('box')" style="display:none;position:relative">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2M3 17v2a2 2 0 0 0 2 2h2M17 3h2a2 2 0 0 1 2 2v2M17 21h2a2 2 0 0 0 2-2v-2"/></svg>
+    Box OBD2
+    <span id="box-dot" style="position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--muted)"></span>
+  </button>
 </nav>
 
 <!-- ══ PAGE: DIAGNOSTIC ══ -->
@@ -1656,55 +1661,175 @@ textarea{resize:vertical;min-height:70px}
 </div></div>
 
 
-<!-- == PAGE: MECAIA BOX == -->
+<!-- == PAGE: DYLAN IA BOX == -->
 <div class="pg" id="pg-box"><div class="wrap">
-<style>
-.bxhero{text-align:center;padding:28px 0 18px}
-.bxhero h1{font-size:26px;font-weight:900;margin-bottom:8px}
-.bxhero h1 span{color:var(--acc)}
-.bxhero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.6}
-.bxbadge{display:inline-block;background:rgba(232,160,0,.12);border:1px solid rgba(232,160,0,.3);color:var(--acc);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:14px;letter-spacing:.5px}
-.bxfeat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:14px 0}
-.bxf{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:12px;text-align:center;transition:border-color .2s}
-.bxf:hover{border-color:var(--acc)}
-.bxf .bfi{font-size:22px;margin-bottom:4px}
-.bxf .bft{font-weight:700;font-size:11px;margin-bottom:2px}
-.bxf .bfd{color:var(--muted);font-size:10px;line-height:1.5}
-.bxactions{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:14px;margin:10px 0}
-.bxactions h3{font-size:12px;font-weight:800;margin-bottom:10px;color:var(--acc)}
-.bxcmd{display:flex;flex-direction:column;gap:7px}
-.bxc{display:flex;align-items:flex-start;gap:9px;padding:7px;background:var(--bg);border-radius:7px;border:1px solid var(--bd)}
-.bxci{font-size:16px;flex-shrink:0;margin-top:1px}
-.bxcq{font-size:11px;color:var(--acc);font-weight:700;margin-bottom:2px}
-.bxcr{font-size:10px;color:var(--muted);line-height:1.4}
-.bxdl{background:var(--s2);border:1px solid rgba(232,160,0,.25);border-radius:var(--r-md);padding:18px;margin:10px 0;text-align:center}
-.bxdl h2{font-size:15px;font-weight:800;margin-bottom:4px}
-.bxdl .bxsub{color:var(--muted);font-size:12px;margin-bottom:14px}
-.dlbtns{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
-.dlbtn{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--bd);border-radius:9px;padding:10px 14px;cursor:pointer;transition:all .2s;min-width:130px;text-decoration:none;color:var(--tx)}
-.dlbtn:hover{border-color:var(--acc);transform:translateY(-1px)}
-.dlbtn .dli{font-size:20px}
-.dlbtn .dlp{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.dlbtn .dln{font-size:12px;font-weight:700}
-.dlsoon{background:var(--acc);color:#0a0a0a;font-size:8px;font-weight:800;padding:1px 4px;border-radius:3px;margin-left:3px;vertical-align:middle}
-.bxcompat{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:12px;margin:8px 0;font-size:10px;color:var(--muted);text-align:center;line-height:1.8}
-.bxcompat strong{color:var(--tx)}
-.bxsteps{display:flex;flex-direction:column}
-.bxst{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--bd)}
-.bxst:last-child{border-bottom:none}
-.bxsn{width:24px;height:24px;border-radius:50%;background:var(--acc);color:#0a0a0a;font-weight:900;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.bxstt{font-weight:700;font-size:12px;margin-bottom:2px}
-.bxstd{color:var(--muted);font-size:11px;line-height:1.5}
-</style>
 
-<div class="bxhero">
-<div class="bxbadge">NOUVEAU &#x2014; AGENT OBD2 IA</div>
-<h1>MECA<span>IA</span> BOX</h1>
-<p>Votre m&#xe9;canicien IA personnel. Branchez le boitier, parlez &#xe0; Dylan en langage naturel &#x2014; il s&#x2019;occupe de tout.</p>
+<div id="box-noapp">
+  <div style="text-align:center;padding:32px 0 20px">
+    <div style="display:inline-block;background:rgba(232,160,0,.12);border:1px solid rgba(232,160,0,.3);color:var(--acc);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:14px;letter-spacing:.5px">BOITIER OBD2 IA</div>
+    <h1 style="font-size:24px;font-weight:900;margin-bottom:8px">MECA<span style="color:var(--acc)">IA</span> BOX</h1>
+    <p style="color:var(--muted);font-size:14px;max-width:480px;margin:0 auto 20px;line-height:1.6">Téléchargez l'application pour brancher le boitier OBD2 et parler à Dylan de votre voiture en temps réel.</p>
+    <a onclick="downloadApp('windows');return false" href="#" style="display:inline-flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--acc-b);border-radius:10px;padding:11px 18px;text-decoration:none;color:var(--tx)">
+      <span style="font-size:22px">&#x1F5A5;&#xFE0F;</span><div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Windows 10/11</div><div style="font-size:13px;font-weight:700">MecaIA Desktop</div></div>
+    </a>
+  </div>
 </div>
 
-<div class="bxfeat">
-<div class="bxf"><div class="bfi">&#x1F50D;</div><div class="bft">Scan complet auto</div><div class="bfd">VIN, codes d&#xe9;fauts, param&#xe8;tres moteur, moniteurs, Freeze Frame</div></div>
+<div id="box-app" style="display:none">
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 12px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div id="box-status-pill" onclick="boxHandleConnect()" style="display:flex;align-items:center;gap:7px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:5px 12px;cursor:pointer;transition:border-color .2s;user-select:none">
+      <span id="box-dot2" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s"></span>
+      <span id="box-conn-txt" style="font-size:12px;font-weight:600">Non connect&#xE9; &#xB7; Cliquer pour connecter</span>
+    </div>
+    <div id="box-veh-badge" style="display:none;background:var(--acc-d);border:1px solid var(--acc-b);border-radius:6px;padding:4px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--acc)"></div>
+  </div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap">
+    <button id="box-btn-scan" class="btn" style="margin:0;padding:8px 18px;font-size:12px" onclick="boxStartScan()" disabled>&#x1F50D; SCAN COMPLET</button>
+    <button class="bsm" onclick="boxClearDTCs()" style="margin:0">&#x1F5D1;&#xFE0F; Effacer</button>
+  </div>
+</div>
+
+<div id="box-live-bar" style="display:none;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:8px 14px;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">RPM</span><span id="bp-rpm" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
+  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">km/h</span><span id="bp-spd" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
+  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Temp</span><span id="bp-tmp" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
+  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Charge</span><span id="bp-ld" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
+  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Batt.</span><span id="bp-bat" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
+  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Papillon</span><span id="bp-thr" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
+</div>
+
+<div style="display:grid;grid-template-columns:300px 1fr;gap:12px;min-height:520px">
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div id="box-vin-card" style="display:none;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:9px 12px">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px">VIN</div>
+      <div id="box-vin-txt" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--acc);word-break:break-all"></div>
+    </div>
+    <div id="box-dtc-card" class="card" style="margin:0">
+      <div class="ch"><div class="ct">Codes d&#xE9;fauts</div><span id="box-dtc-count" style="font-size:10px;color:var(--muted)">&#x2014;</span></div>
+      <div class="cb" id="box-dtc-body" style="padding:8px"><div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">Lancez un scan pour lire les codes</div></div>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="ch" style="cursor:pointer" onclick="boxToggleMonitors()">
+        <div class="ct">&#x1F4CA; Donn&#xE9;es temps r&#xE9;el</div>
+        <span id="box-mon-toggle" style="font-size:10px;color:var(--muted)">&#x25BC; afficher</span>
+      </div>
+      <div id="box-monitors-body" style="display:none;padding:8px"><div id="box-monitors-list"></div></div>
+    </div>
+    <div id="box-opts-card" class="card" style="margin:0;display:none">
+      <div class="ch"><div class="ct">&#x2699;&#xFE0F; Options v&#xE9;hicule</div></div>
+      <div class="cb" id="box-opts-body" style="padding:8px"></div>
+    </div>
+    <div id="box-resets-card" class="card" style="margin:0;display:none">
+      <div class="ch"><div class="ct">&#x1F504; Resets service</div></div>
+      <div class="cb" id="box-resets-body" style="padding:8px"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);overflow:hidden">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--acc);color:#0a0c0e;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center">D</div>
+        <div><div style="font-size:12px;font-weight:700">Dylan OBD2</div><div style="font-size:10px;color:var(--muted)">Expert automobile IA</div></div>
+      </div>
+      <button class="bsm" onclick="boxNewConv()" style="margin:0;font-size:10px">+ Nouveau</button>
+    </div>
+    <div id="box-feed" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:340px;max-height:500px"></div>
+    <div style="padding:8px 12px;border-top:1px solid var(--bd);display:flex;gap:8px;align-items:flex-end">
+      <textarea id="box-input" rows="1" placeholder="Posez une question &#xE0; Dylan&#x2026;" style="flex:1;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-sm);padding:8px 11px;color:var(--tx);font-size:13px;font-family:inherit;resize:none;outline:none;max-height:80px;min-height:36px;transition:border-color .2s" onfocus="this.style.borderColor='var(--acc)'" onblur="this.style.borderColor='var(--bd)'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();boxSend()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
+      <button onclick="boxSend()" style="background:var(--acc-d);border:1px solid var(--acc);color:var(--acc);border-radius:var(--r-sm);padding:8px 14px;cursor:pointer;font-size:13px;font-weight:700;height:36px;transition:all .2s" onmouseover="this.style.background='var(--acc)';this.style.color='#0a0c0e'" onmouseout="this.style.background='var(--acc-d)';this.style.color='var(--acc)'">&#x25B6;</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+var BOX={connected:false,scanning:false,port:null,scanResult:null,convHistory:[],liveData:{},monOpen:false,
+BRAND_OPTS:{bmw:['feux_journee','lane_assist','sport_display','feux_bienvenue','affichage_tete_haute','mode_sport_auto'],vw:['feux_journee','essuie_pluie','confort_fermeture','demarrage_sans_cle','lane_assist','retros_rabattables','feux_bienvenue','feux_virage','klaxon_verrouillage','mode_sport_auto'],audi:['feux_journee','essuie_pluie','lane_assist','retros_rabattables','feux_bienvenue'],peugeot:['feux_journee','lane_assist','retros_rabattables'],seat:['feux_journee'],skoda:['feux_journee'],citroen:['feux_journee'],opel:['feux_journee'],renault:['feux_journee','essuie_pluie'],ford:['feux_journee'],toyota:['feux_journee'],hyundai:['feux_journee'],kia:['feux_journee'],mercedes:['feux_journee'],mini:['feux_journee']},
+OPT_META:{feux_journee:{label:'Feux de jour (DRL)',icon:'&#x1F4A1;',risk:'faible'},essuie_pluie:{label:'Essuie-glace auto',icon:'&#x1F327;&#xFE0F;',risk:'faible'},confort_fermeture:{label:'Fermeture vitres.',icon:'&#x1FA9F;',risk:'faible'},demarrage_sans_cle:{label:'D&#xE9;marrage sans cl&#xE9;',icon:'&#x1F511;',risk:'moyen'},lane_assist:{label:'Aide maintien de voie',icon:'&#x1F6E3;&#xFE0F;',risk:'faible'},sport_display:{label:'Affichage sportif',icon:'&#x1F3CE;&#xFE0F;',risk:'faible'},retros_rabattables:{label:'R&#xE9;tros rabattables',icon:'&#x1FA9E;',risk:'faible'},feux_bienvenue:{label:'Feux bienvenue',icon:'&#x1F3E0;',risk:'faible'},feux_virage:{label:'Phares de virage',icon:'&#x21AA;&#xFE0F;',risk:'faible'},klaxon_verrouillage:{label:'Bip klaxon fermeture',icon:'&#x1F4E2;',risk:'faible'},mode_sport_auto:{label:'Mode Sport au d&#xE9;marrage',icon:'&#x1F680;',risk:'moyen'},affichage_tete_haute:{label:'Head-Up Display',icon:'&#x1F5A5;&#xFE0F;',risk:'faible'}},
+SERVICE_RESETS:[{key:'huile',label:'Reset vidange huile',icon:'&#x1F6E2;&#xFE0F;'},{key:'dpf',label:'Reset FAP/DPF',icon:'&#x1F525;'},{key:'frein',label:'Reset usure freins',icon:'&#x1F6D1;'},{key:'batt',label:'Adaptation batterie',icon:'&#x1F50B;'},{key:'papillon',label:'Adaptation papillon',icon:'&#x2699;&#xFE0F;'}]};
+
+window.boxInit=function(){
+  var el=window.MecaIAElectron;
+  document.getElementById('box-noapp').style.display=el?'none':'';
+  document.getElementById('box-app').style.display=el?'':'none';
+  if(!el)return;
+  var tab=document.getElementById('t-box');if(tab)tab.style.display='';
+  if(!BOX._init){BOX._init=true;
+    el.obd2.on('obd2-ports',boxHandlePorts);
+    el.obd2.on('obd2-status',boxHandleStatus);
+    el.obd2.on('obd2-data',boxUpdateLive);
+    el.obd2.on('obd2-scan-status',function(d){boxSetScanBtn('\u23F3',d.msg||'Scan...',true);});
+    el.obd2.on('obd2-scan-complete',boxHandleScanComplete);
+    el.obd2.on('obd2-error',function(m){boxMsg('sys','\u26A0\uFE0F '+m);boxSetScanBtn('\uD83D\uDD0D','SCAN COMPLET',!BOX.connected);BOX.scanning=false;});
+    el.obd2.on('obd2-cleared',function(ok){boxMsg('dy',ok?'\u2705 Codes effac\u00e9s. Faites quelques km pour confirmer.':'\u26A0\uFE0F Effacement incomplet.');});
+    el.obd2.on('obd2-vin',function(v){if(v)boxShowVIN(v);});
+    el.obd2.on('obd2-dtcs',function(d){boxRenderDTCs(d||[],[],[]);});
+    el.obd2.on('obd2-reset-done',function(r){boxMsg('sys',r.success?'\u2705 '+r.label+' effectu\u00e9 !':'\u274C Reset \u00e9chou\u00e9 \u2014 '+(r.error||'incompatibilit\u00e9'));});
+    el.obd2.on('obd2-option-done',function(r){if(r&&r.key){var b=document.getElementById('bopt-'+r.key);if(b){b.disabled=false;if(r.success){b.textContent=r.enabled?'ON':'OFF';b.style.color=r.enabled?'var(--acc)':'var(--muted)';b.style.borderColor=r.enabled?'var(--acc)':'var(--bd)';b.style.background=r.enabled?'var(--acc-d)':'var(--s3)';}}boxMsg('sys',r.success?'\u2705 Option '+(r.enabled?'activ\u00e9e':'d\u00e9sactiv\u00e9e')+'.':'\u274C Coding \u00e9chou\u00e9 pour cette marque.');}});
+    el.obd2.on('obd2-option-read',function(r){if(r&&r.key){var b=document.getElementById('bopt-'+r.key);if(b){if(!r.supported){b.textContent='N/D';b.disabled=true;}else{b.textContent=r.enabled?'ON':'OFF';b.style.color=r.enabled?'var(--acc)':'var(--muted)';b.style.borderColor=r.enabled?'var(--acc)':'var(--bd)';b.style.background=r.enabled?'var(--acc-d)':'var(--s3)';}}}});
+    boxWelcome();el.obd2.listPorts();el.obd2.startMonitor();
+  }
+  boxUpdateVehBadge();boxRenderOptions();boxRenderResets();
+};
+
+window.boxHandleConnect=function(){if(BOX.connected)window.MecaIAElectron.obd2.disconnect();else{boxMsg('sys','Recherche du boitier OBD2\u2026');window.MecaIAElectron.obd2.listPorts();}};
+
+function boxHandlePorts(ports){if(BOX.connected)return;var SKIP=['COM3','COM4'];var obd=(ports||[]).filter(function(p){return p.isOBD2&&!SKIP.includes(p.path);});var bt=(ports||[]).filter(function(p){return !SKIP.includes(p.path);});if(obd.length){BOX.port=obd[0].path;boxMsg('sys','Boitier sur '+BOX.port+'. Connexion\u2026');window.MecaIAElectron.obd2.connect(BOX.port);}else if(bt.length){BOX.port=bt[0].path;boxMsg('sys','Bluetooth : '+bt.map(function(p){return p.path;}).join(', ')+'. Connexion\u2026');window.MecaIAElectron.obd2.connect(BOX.port);}else{boxMsg('sys','Aucun boitier. Appairez le MX+ en Bluetooth dans Windows.');}}
+
+function boxHandleStatus(s){if(s.type==='connected'){BOX.connected=true;var d=document.getElementById('box-dot2');if(d){d.style.background='var(--green)';d.style.boxShadow='0 0 6px var(--green)';}var t=document.getElementById('box-conn-txt');if(t)t.textContent='Connect\u00e9 \u00b7 '+(s.version||'OBDLink').replace(/\|.*/,'').trim();var bd=document.getElementById('box-dot');if(bd)bd.style.background='var(--green)';var bar=document.getElementById('box-live-bar');if(bar)bar.style.display='flex';boxSetScanBtn('\uD83D\uDD0D','SCAN COMPLET',false);window.MecaIAElectron.obd2.startMonitor();boxMsg('dy','Boitier OBDLink connect\u00e9 \u2705\n\nPr\u00eat pour '+(window.selCar?window.selCar.marque+' '+window.selCar.modele:'votre voiture')+'. Cliquez sur **SCAN COMPLET** ou dites-moi ce que vous voulez.');setTimeout(function(){boxRenderOptions();boxRenderResets();},1000);}else if(s.type==='disconnected'){BOX.connected=false;var d=document.getElementById('box-dot2');if(d){d.style.background='var(--muted)';d.style.boxShadow='none';}var t=document.getElementById('box-conn-txt');if(t)t.textContent='Non connect\u00e9 \u00b7 Cliquer pour connecter';var bd=document.getElementById('box-dot');if(bd)bd.style.background='var(--muted)';var bar=document.getElementById('box-live-bar');if(bar)bar.style.display='none';boxSetScanBtn('\uD83D\uDD0C','Connecter le boitier',true);}}
+
+window.boxStartScan=function(){if(!BOX.connected||BOX.scanning)return;BOX.scanning=true;boxSetScanBtn('\u23F3','Scan en cours\u2026',true);boxMsg('user','Lancement du scan complet\u2026');window.MecaIAElectron.obd2.fullScan();};
+function boxHandleScanComplete(data){BOX.scanning=false;BOX.scanResult=data;boxSetScanBtn('\uD83D\uDD04','Nouveau scan',false);boxRenderDTCs(data.dtcs||[],data.pendingDtcs||[],data.permanentDtcs||[]);if(data.vin)boxShowVIN(data.vin);boxCallDylan('Voici les r\u00e9sultats du scan OBD2. Analyse et dis-moi tout.',true);}
+
+function boxRenderDTCs(dtcs,pending,permanent){var all=(dtcs||[]).concat(pending||[]).filter(function(d){return d.code&&/^[A-Z][0-9A-F]{4}$/i.test(d.code);});var body=document.getElementById('box-dtc-body');var cnt=document.getElementById('box-dtc-count');if(!body)return;if(cnt)cnt.textContent=all.length?all.length+' code(s)':'\u2705 Aucun';if(!all.length){body.innerHTML='<div style="text-align:center;padding:12px 0"><span style="color:var(--green);font-size:20px">\u2705</span><div style="font-size:12px;color:var(--muted);margin-top:4px">Aucun code d\u00e9faut<br>Voyant moteur \u00e9teint</div></div>';return;}body.innerHTML=all.map(function(d){var isPend=(pending||[]).some(function(p){return p.code===d.code;});var col=d.code[0]==='P'?'var(--red)':isPend?'var(--warn)':'var(--acc)';return '<div onclick="boxAskDTC(\''+d.code+'\')" style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);cursor:pointer"><span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;font-weight:700;color:'+col+';min-width:52px">'+d.code+'</span><span style="font-size:10px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(d.description||'Cliquer pour analyse')+'</span></div>';}).join('');}
+window.boxAskDTC=function(code){document.getElementById('box-input').value='Explique le code '+code+' et dis-moi comment le corriger';boxSend();};
+window.boxClearDTCs=function(){if(!BOX.connected){boxMsg('sys','Boitier non connect\u00e9.');return;}if(!confirm('Effacer tous les codes d\u00e9fauts ?'))return;boxMsg('sys','Effacement\u2026');window.MecaIAElectron.obd2.clearDTCs();};
+
+function boxUpdateLive(d){if(d.value==null)return;BOX.liveData[d.key]=d.value;var m={RPM:'bp-rpm',SPEED:'bp-spd',COOLANT:'bp-tmp',ENGINE_LOAD:'bp-ld',BATTERY:'bp-bat',THROTTLE:'bp-thr'};var el=m[d.key]?document.getElementById(m[d.key]):null;if(el)el.textContent=(Number.isInteger(d.value)?d.value:d.value.toFixed(1))+' '+(d.unit||'');if(BOX.monOpen)boxRenderMonitors();}
+function boxShowVIN(v){var c=document.getElementById('box-vin-card');var t=document.getElementById('box-vin-txt');if(c&&t){t.textContent=v;c.style.display='';}}
+
+window.boxToggleMonitors=function(){BOX.monOpen=!BOX.monOpen;var body=document.getElementById('box-monitors-body');var tog=document.getElementById('box-mon-toggle');if(body)body.style.display=BOX.monOpen?'':'none';if(tog)tog.textContent=BOX.monOpen?'\u25B2 masquer':'\u25BC afficher';if(BOX.monOpen)boxRenderMonitors();};
+function boxRenderMonitors(){var PIDS=[{k:'RPM',l:'R\u00e9gime',u:'tr/min',warn:6000,err:7000},{k:'SPEED',l:'Vitesse',u:'km/h'},{k:'COOLANT',l:'Temp. liquide',u:'\u00b0C',warn:100,err:105},{k:'ENGINE_LOAD',l:'Charge moteur',u:'%'},{k:'BATTERY',l:'Batterie',u:'V',warnLow:11.8,errLow:11.0},{k:'THROTTLE',l:'Papillon',u:'%'},{k:'MAF',l:'MAF',u:'g/s'},{k:'INTAKE_MAP',l:'Pression adm.',u:'kPa'},{k:'FUEL_TRIM_ST',l:'Corr. carbu CT',u:'%',warn:15},{k:'OIL_TEMP',l:'Temp. huile',u:'\u00b0C',warn:130,err:145}];var el=document.getElementById('box-monitors-list');if(!el)return;el.innerHTML=PIDS.map(function(p){var v=BOX.liveData[p.k];if(v==null)return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)"><span style="font-size:11px;color:var(--muted)">'+p.l+'</span><span style="font-size:11px;color:var(--muted)">\u2014</span></div>';var disp=(Number.isInteger(v)?v:v.toFixed(1))+' '+p.u;var col=((p.err&&v>=p.err)||(p.errLow&&v<=p.errLow))?'var(--red)':((p.warn&&v>=p.warn)||(p.warnLow&&v<=p.warnLow))?'var(--warn)':'var(--green)';return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)"><span style="font-size:11px;color:var(--muted)">'+p.l+'</span><span style="font-size:11px;font-weight:700;font-family:\'IBM Plex Mono\',monospace;color:'+col+'">'+disp+'</span></div>';}).join('');}
+
+function boxRenderOptions(){var car=window.selCar;var brand=car?(car.marque||'').toLowerCase():'';var opts=BOX.BRAND_OPTS[brand]||[];var card=document.getElementById('box-opts-card');var body=document.getElementById('box-opts-body');if(!card||!body)return;if(!opts.length||!BOX.connected){card.style.display='none';return;}card.style.display='';body.innerHTML=opts.map(function(key){var m=BOX.OPT_META[key];if(!m)return '';return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="font-size:14px">'+m.icon+'</span><div style="flex:1"><div style="font-size:11px">'+m.label+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Risque '+m.risk+'</div></div><button id="bopt-'+key+'" onclick="boxToggleOpt(\''+key+'\',this)" style="background:var(--s3);border:1px solid var(--bd);border-radius:20px;padding:2px 9px;font-size:10px;cursor:pointer;color:var(--muted)">...</button></div>';}).join('');opts.forEach(function(key){window.MecaIAElectron.obd2.readOption(key,brand);});}
+window.boxRenderOptions=boxRenderOptions;
+window.boxToggleOpt=function(key,btn){if(!BOX.connected)return;var isOn=btn.textContent==='ON';btn.textContent='\u2026';btn.disabled=true;window.MecaIAElectron.obd2.writeOption(key,!isOn,(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase());};
+
+function boxRenderResets(){var card=document.getElementById('box-resets-card');var body=document.getElementById('box-resets-body');if(!card||!body)return;if(!BOX.connected){card.style.display='none';return;}card.style.display='';body.innerHTML=BOX.SERVICE_RESETS.map(function(r){return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)"><span>'+r.icon+'</span><span style="flex:1;font-size:11px">'+r.label+'</span><button onclick="boxDoReset(\''+r.key+'\')" style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:3px 9px;font-size:10px;cursor:pointer;color:var(--muted)">Faire</button></div>';}).join('');}
+window.boxDoReset=function(key){if(!BOX.connected||!confirm('Reset '+key+' ? Assurez-vous d\'avoir fait la r\u00e9paration avant.'))return;boxMsg('sys','Reset '+key+'\u2026');window.MecaIAElectron.obd2.serviceReset(key,(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase());};
+
+function boxWelcome(){var feed=document.getElementById('box-feed');if(!feed||feed.children.length)return;var veh=window.selCar?window.selCar.marque+' '+window.selCar.modele+' '+window.selCar.annee:'votre v\u00e9hicule';boxMsg('dy','Bonjour ! Je suis Dylan, votre expert automobile IA.\n\nBranchez le boitier MecaIA Box dans le port OBD2, puis mettez le contact.\n\nJe suis pr\u00eat pour **'+veh+'**. Cliquez sur **SCAN COMPLET** ou dites-moi ce que vous voulez.');}
+window.boxNewConv=function(){BOX.convHistory=[];var f=document.getElementById('box-feed');if(f)f.innerHTML='';boxWelcome();};
+
+function boxMsg(role,text){var feed=document.getElementById('box-feed');if(!feed)return;var d=document.createElement('div');d.style.cssText='display:flex;gap:8px;align-items:flex-start';var av=document.createElement('div');av.style.cssText='width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px';var bbl=document.createElement('div');bbl.style.cssText='padding:8px 12px;border-radius:10px;max-width:calc(100% - 36px);line-height:1.65;font-size:12.5px';if(role==='dy'){av.style.background='var(--acc)';av.style.color='#0a0c0e';av.textContent='D';bbl.style.background='var(--bg)';bbl.style.border='1px solid var(--bd)';bbl.innerHTML=text.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--acc)">$1</strong>').replace(/\n/g,'<br>');}else if(role==='user'){d.style.flexDirection='row-reverse';av.style.background='#1e3a5f';av.style.color='#60a5fa';av.textContent='Vous';bbl.style.background='#1e3a5f';bbl.style.border='1px solid #2a4a7f';bbl.style.color='#e0f0ff';bbl.textContent=text;}else{av.style.background='var(--s2)';av.style.border='1px solid var(--bd)';av.style.color='var(--muted)';av.textContent='\u2139';bbl.style.background='var(--s1)';bbl.style.border='1px dashed var(--bd)';bbl.style.color='var(--muted)';bbl.style.fontSize='11.5px';bbl.textContent=text;}d.appendChild(av);d.appendChild(bbl);feed.appendChild(d);feed.scrollTop=feed.scrollHeight;}
+
+function boxAddTyping(){var f=document.getElementById('box-feed');var d=document.createElement('div');d.id='box-typing';d.style.cssText='display:flex;gap:8px;align-items:center';d.innerHTML='<div style="width:26px;height:26px;border-radius:50%;background:var(--acc);color:#0a0c0e;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">D</div><div style="padding:8px 12px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;display:flex;gap:4px;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bounce .8s infinite;display:block"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bounce .8s .15s infinite;display:block"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:bounce .8s .3s infinite;display:block"></span></div>';if(f){f.appendChild(d);f.scrollTop=f.scrollHeight;}}
+function boxRemoveTyping(){var t=document.getElementById('box-typing');if(t&&t.parentNode)t.parentNode.removeChild(t);}
+
+window.boxSend=async function(){var inp=document.getElementById('box-input');var msg=inp?inp.value.trim():'';if(!msg)return;inp.value='';inp.style.height='auto';boxMsg('user',msg);await boxCallDylan(msg,false);};
+
+async function boxCallDylan(userMsg,isScan){
+  boxAddTyping();
+  BOX.convHistory.push({role:'user',content:isScan?'Scan OBD2 complet.':userMsg});
+  try{
+    var r=await MecaIA.authedFetch('mecaia_box',{method:'POST',body:{messages:BOX.convHistory,is_obd2_scan:!!isScan,vehicle_context:BOX.scanResult||{},selected_vehicle:window.selCar||null,brand:(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase()||'default',language:'fr'}});
+    boxRemoveTyping();
+    if(r.ok&&r.data&&r.data.message){boxMsg('dy',r.data.message);BOX.convHistory.push({role:'assistant',content:r.data.message});}
+    else boxMsg('dy','\u26A0\uFE0F Dylan est momentan\u00e9ment indisponible. V\u00e9rifiez votre connexion internet.');
+  }catch(e){boxRemoveTyping();boxMsg('dy','\u26A0\uFE0F Erreur : '+e.message);}
+}
+
+function boxSetScanBtn(icon,lbl,dis){var btn=document.getElementById('box-btn-scan');if(btn){btn.textContent=icon+' '+lbl;btn.disabled=dis;}}
+window.boxUpdateVehBadge=function(){var b=document.getElementById('box-veh-badge');if(!b)return;if(window.selCar){b.textContent=(window.selCar.marque||'')+' '+(window.selCar.modele||'')+' '+(window.selCar.annee||'');b.style.display='';}else b.style.display='none';};
+})();
+</script>
+
+</div></div>
+
 <div class="bxf"><div class="bfi">&#x1F4A1;</div><div class="bft">Options &amp; Coding</div><div class="bfd">R&#xe9;tros rabattables, feux DRL, Keyless, Coming Home &#x2014; 14 options</div></div>
 <div class="bxf"><div class="bfi">&#x1F527;</div><div class="bft">Tests actionneurs</div><div class="bfd">Ventilateur, EGR, EVAP, EPB freins &#x2014; Dylan active et v&#xe9;rifie</div></div>
 <div class="bxf"><div class="bfi">&#x1F504;</div><div class="bft">Resets service</div><div class="bfd">Vidange, FAP, freins, batterie, papillon &#x2014; 7 remises &#xe0; z&#xe9;ro</div></div>
@@ -2089,10 +2214,11 @@ window.appPromo=async function(){
 };
 
 window.showPg=function(id){
-  ['diag','garage','vin','pieces','suivi','faq','tarifs'].forEach(p=>{
+  ['diag','garage','vin','pieces','suivi','faq','tarifs','box'].forEach(p=>{
     const pg=document.getElementById('pg-'+p);const tb=document.getElementById('t-'+p);
     if(pg)pg.className='pg'+(p===id?' on':'');if(tb)tb.className='tab'+(p===id?' on':'');
   });
+  if(id==='box'){if(window.boxInit)boxInit();}
   if(id==='suivi'){renderS();loadSuiviDiags();updateHealthScore();}
   if(id==='garage'){renderCars(cars);loadGS();}
   if(id==='diag'&&window.dylanWelcome)dylanWelcome();
@@ -2674,6 +2800,8 @@ window.selC = function (id) {
   sv('d-mk', selCar.marque); sv('d-mo', selCar.modele); sv('d-an', selCar.annee);
   sv('d-cb', selCar.carbu); sv('d-kw', selCar.kw); sv('d-cm', selCar.cm); sv('d-km', selCar.km);
   chkD(); renderCars(cars); toast('✅ ' + (selCar.nom || selCar.marque) + ' sélectionné', 'ok');
+  if(window.boxUpdateVehBadge)boxUpdateVehBadge();
+  if(window.boxRenderOptions)boxRenderOptions();
 };
 
 window.updKm = async function (id) {
