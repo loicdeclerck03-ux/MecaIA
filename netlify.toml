@@ -2,5 +2,9 @@
 [functions.scheduled_weekly_health]
   schedule = "0 8 * * 1"
 
-[functions.scheduled_weekly_health]
-  schedule = "0 8 * * 1"
+# SEO Pages DTC
+[[redirects]]
+  from = "/codes/:code"
+  to = "/codes/:code.html"
+  status = 200
+  force = false
