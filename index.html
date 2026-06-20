@@ -838,6 +838,15 @@ textarea{resize:vertical;min-height:70px}
   display:flex;flex-direction:column;align-items:center;
   padding:20px 0 8px
 }
+/* Health Score Hero v2 */
+.hs-hero-top{background:linear-gradient(135deg,#0a1628 0%,#0d1f35 50%,#0f2840 100%);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:20px 16px 16px;text-align:center}
+.hs-hero-label{font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:0}
+.hs-hero-state{font-size:15px;font-weight:600;color:#fff;margin-top:4px;letter-spacing:.3px}
+.hs-sparkline-wrap{margin-top:10px;opacity:.8}
+.hs-metric{padding:12px 8px;text-align:center}
+.hs-metric-val{font-size:22px;font-family:'Rajdhani',sans-serif;font-weight:700;line-height:1.1}
+.hs-metric-lbl{font-size:9px;color:var(--muted);letter-spacing:.8px;margin-top:2px}
+
 .hs-label{
   font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;
   margin-top:8px
@@ -1066,6 +1075,11 @@ textarea{resize:vertical;min-height:70px}
     <div class="mh" style="margin-bottom:0">Acheter des crédits</div>
   </div>
   <div class="ms">Paiement 100% sécurisé Stripe. Crédits activés immédiatement.</div>
+  <!-- Toggle Mensuel/Annuel -->
+  <div id="pay-toggle-wrap" style="display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0 14px;background:var(--s1);border-radius:40px;padding:4px;border:1px solid var(--bd)">
+    <button id="pay-btn-m" onclick="payToggle('m')" style="flex:1;padding:6px 14px;border-radius:30px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .2s;background:var(--acc);color:#000;letter-spacing:.5px">MENSUEL</button>
+    <button id="pay-btn-a" onclick="payToggle('a')" style="flex:1;padding:6px 14px;border-radius:30px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .2s;background:transparent;color:var(--muted);letter-spacing:.5px">ANNUEL <span style="color:#e74c3c;font-size:10px">-20%</span></button>
+  </div>
   <div class="pack on" id="pk1" onclick="buyPack('starter')"><div><div class="pkn">Starter — 8 cr</div><div class="pks">4,99€ · 0,62€/diag</div></div><div class="pkp">4,99€</div></div>
   <div class="pack" id="pk2" onclick="buyPack('standard')"><div><div class="pkn">Standard — 30 cr ⭐</div><div class="pks">9,99€ · 0,33€/diag</div></div><div class="pkp">9,99€</div></div>
   <div class="pack" id="pk3" onclick="buyPack('expert')"><div><div class="pkn">Expert — 80 cr</div><div class="pks">19,99€ · 0,25€/diag</div></div><div class="pkp">19,99€</div></div>
@@ -1589,22 +1603,40 @@ textarea{resize:vertical;min-height:70px}
 <!-- ══ PAGE: SUIVI ══ -->
 <div class="pg" id="pg-suivi"><div class="wrap">
 
-  <!-- HEALTH SCORE HERO -->
-  <div class="card" style="margin-bottom:12px">
-    <div class="ch"><div class="ct">📊 Santé Véhicule</div><span style="font-size:10px;color:var(--muted)">calculé par IA</span></div>
-    <div class="hs-gauge-wrap">
-      <svg width="140" height="80" viewBox="0 0 140 80">
-        <path d="M10,75 A60,60 0 0,1 130,75" fill="none" stroke="var(--bd2)" stroke-width="12" stroke-linecap="round"/>
-        <path id="hs-arc" d="M10,75 A60,60 0 0,1 130,75" fill="none" stroke="var(--green)" stroke-width="12" stroke-linecap="round"
-          stroke-dasharray="188" stroke-dashoffset="47" style="transition:stroke-dashoffset 1s ease,stroke 1s ease"/>
-        <text x="70" y="68" text-anchor="middle" font-family="Rajdhani,sans-serif" font-size="22" font-weight="700" fill="var(--white)" id="hs-num">75</text>
-      </svg>
-      <div class="hs-sub" id="hs-lbl">🟢 Bonne condition</div>
+  <!-- HEALTH SCORE HERO v2 -->
+  <div class="card hs-hero" style="margin-bottom:12px;padding:0">
+    <!-- Gradient header -->
+    <div class="hs-hero-top" id="hs-hero-top">
+      <div class="hs-hero-label">INDICE DE SANTÉ</div>
+      <!-- Donut SVG grand format -->
+      <div style="position:relative;width:180px;height:180px;margin:12px auto 4px">
+        <svg width="180" height="180" viewBox="0 0 180 180" style="transform:rotate(-90deg)">
+          <circle cx="90" cy="90" r="74" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="18"/>
+          <circle id="hs-arc" cx="90" cy="90" r="74" fill="none" stroke="var(--green)" stroke-width="18"
+            stroke-linecap="round"
+            stroke-dasharray="465" stroke-dashoffset="116"
+            style="transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1),stroke 1s ease"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:52px;font-weight:700;line-height:1;color:#fff" id="hs-num">75</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);letter-spacing:1px;margin-top:2px">/ 100</div>
+        </div>
+      </div>
+      <!-- Label adaptatif -->
+      <div class="hs-hero-state" id="hs-lbl">🟢 Excellente condition</div>
+      <!-- Sparkline 30 jours -->
+      <div class="hs-sparkline-wrap">
+        <span style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.8px">30 JOURS</span>
+        <svg id="hs-spark" width="160" height="28" style="display:block;margin:4px auto 0">
+          <polyline id="hs-spark-line" points="" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 14px;text-align:center">
-      <div><div style="font-size:18px;font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--acc)" id="hs-diags">0</div><div style="font-size:9px;color:var(--muted)">DIAGNOSTICS</div></div>
-      <div><div style="font-size:18px;font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--teal)" id="hs-veh">0</div><div style="font-size:9px;color:var(--muted)">VÉHICULES</div></div>
-      <div><div style="font-size:18px;font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--green)" id="hs-ok">0</div><div style="font-size:9px;color:var(--muted)">RÉSOLUS</div></div>
+    <!-- Métriques sous le hero -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--bd)">
+      <div class="hs-metric"><div class="hs-metric-val" id="hs-diags" style="color:var(--acc)">0</div><div class="hs-metric-lbl">DIAGNOSTICS</div></div>
+      <div class="hs-metric" style="border-left:1px solid var(--bd);border-right:1px solid var(--bd)"><div class="hs-metric-val" id="hs-veh" style="color:#63b3ed">0</div><div class="hs-metric-lbl">VÉHICULES</div></div>
+      <div class="hs-metric"><div class="hs-metric-val" id="hs-ok" style="color:var(--green)">0</div><div class="hs-metric-lbl">RÉSOLUS</div></div>
     </div>
   </div>
 
@@ -2912,11 +2944,33 @@ window.updateHealthScore = function () {
   const lbl = document.getElementById('hs-lbl');
   if (!arc || !num || !lbl) return;
   // dasharray 188 = longueur totale de l'arc (demi-cercle)
-  const offset = Math.round(188 * (1 - score / 100));
+  // Donut : dasharray 465 = 2*PI*74 (rayon 74)
+  const offset = Math.round(465 * (1 - score / 100));
   arc.style.strokeDashoffset = offset;
-  arc.style.stroke = score >= 80 ? 'var(--green)' : score >= 60 ? 'var(--acc)' : score >= 40 ? 'var(--orange)' : 'var(--red)';
+  arc.style.stroke = score >= 80 ? '#22c55e' : score >= 60 ? '#e8a000' : score >= 40 ? '#f97316' : '#ef4444';
+  // Background hero gradient selon score
+  var heroTop = document.getElementById('hs-hero-top');
+  if(heroTop) {
+    var g = score >= 80 ? 'linear-gradient(135deg,#0a1f12 0%,#0d2a18 50%,#0f3020 100%)'
+            : score >= 60 ? 'linear-gradient(135deg,#1a1200 0%,#241800 50%,#2a1e00 100%)'
+            : 'linear-gradient(135deg,#1a0806 0%,#240a08 50%,#2a0e0a 100%)';
+    heroTop.style.background = g;
+  }
+  // Sparkline : simuler un historique de 30 points autour du score actuel
+  var spark = document.getElementById('hs-spark-line');
+  if(spark) {
+    var pts = [];
+    for(var i=0;i<30;i++){
+      var s2 = Math.max(0, Math.min(100, score + (Math.random()-0.5)*20));
+      var x = 4 + (i/29)*152;
+      var y = 24 - (s2/100)*20;
+      pts.push(x.toFixed(1)+','+y.toFixed(1));
+    }
+    pts.push((4+(29/29)*152).toFixed(1)+','+(24-(score/100)*20).toFixed(1));
+    spark.setAttribute('points', pts.join(' '));
+  }
   num.textContent = score;
-  lbl.textContent = score >= 80 ? '🟢 Excellente condition' : score >= 60 ? '🟡 Bonne condition' : score >= 40 ? '🟠 Condition correcte' : '🔴 Attention requise';
+  lbl.textContent = score >= 90 ? '🟢 Véhicule en parfaite santé' : score >= 75 ? '🟢 Très bonne condition' : score >= 60 ? '🟡 Entretien conseillé' : score >= 40 ? '🟠 Attention requise' : '🔴 Intervention urgente';
   const hsDiags = document.getElementById('hs-diags');
   const hsVeh = document.getElementById('hs-veh');
   if (hsDiags) hsDiags.textContent = diagCount;
@@ -3626,11 +3680,14 @@ window.downloadApp=function(p){
   toast("Téléchargez l'app sur mecaiaauto.com",'ok');
 };
 window.dylanSend = async function () {
+  if(window.dprgStart) window.dprgStart();
   const inp = document.getElementById('dylan-in'); if (!inp) return;
   const msg = inp.value.trim(); if (!msg) { toast('Écrivez votre message à Dylan', 'er'); return; }
   inp.value = '';
   dylanBubble('user', msg.replace(/</g, '&lt;'));
   await dylanTurn({ user_input: msg });
+
+  if(window.dprgDone)window.dprgDone();
 };
 
 window.dylanControl = async function (resultat) {
@@ -3902,6 +3959,86 @@ window.redeemPromo = async function () {
 };
 
 
+
+
+
+// ── PROGRESS BAR DIAGNOSTIC ───────────────────────────────────────────────────
+// Gere l'affichage des etapes 1/4 → 2/4 → 3/4 → 4/4 pendant un diagnostic
+window._dprgActive = false;
+window.dprgStart = function() {
+  var bar = document.getElementById('dylan-progress');
+  if(!bar) return;
+  bar.style.display = 'flex';
+  window._dprgActive = true;
+  dprgSet('ctx');
+};
+window.dprgSet = function(stepId) {
+  var steps = ['ctx','ana','syn','rep'];
+  var labels = {ctx:'1/4 COLLECTE',ana:'2/4 ANALYSE',syn:'3/4 SYNTHESE',rep:'4/4 REPONSE'};
+  steps.forEach(function(s) {
+    var el = document.getElementById('dprg-'+s);
+    if(!el) return;
+    var idx = steps.indexOf(s);
+    var cur = steps.indexOf(stepId);
+    if(idx < cur) { el.className = 'dprg-step done'; el.textContent = '✓ '+labels[s].split(' ')[1]; }
+    else if(idx === cur) { el.className = 'dprg-step active'; el.textContent = labels[s]; }
+    else { el.className = 'dprg-step'; el.textContent = labels[s].split(' ')[1]; }
+  });
+};
+window.dprgDone = function() {
+  window._dprgActive = false;
+  var bar = document.getElementById('dylan-progress');
+  setTimeout(function(){
+    if(bar) bar.style.display = 'none';
+    // Reset steps
+    ['ctx','ana','syn','rep'].forEach(function(s){
+      var el = document.getElementById('dprg-'+s);
+      if(el) el.className = 'dprg-step';
+    });
+  }, 1200);
+};
+
+// ── PRICING TOGGLE MENSUEL/ANNUEL ─────────────────────────────────────────────
+window.payToggle = function(mode) {
+  var btnM = document.getElementById('pay-btn-m');
+  var btnA = document.getElementById('pay-btn-a');
+  if(!btnM || !btnA) return;
+  var isAnn = mode === 'a';
+  btnM.style.background = isAnn ? 'transparent' : 'var(--acc)';
+  btnM.style.color = isAnn ? 'var(--muted)' : '#000';
+  btnA.style.background = isAnn ? 'var(--acc)' : 'transparent';
+  btnA.style.color = isAnn ? '#000' : 'var(--muted)';
+  // Montrer/cacher les packs selon le mode
+  var monthly = ['pk4','pk5'];   // solo_monthly, pro_monthly
+  var annual  = ['pk6','pk7'];   // solo_annual, pro_annual
+  monthly.forEach(id => {
+    var el = document.getElementById(id);
+    if(el) el.style.display = isAnn ? 'none' : '';
+  });
+  annual.forEach(id => {
+    var el = document.getElementById(id);
+    if(el) el.style.display = isAnn ? '' : 'none';
+  });
+  // Afficher économie si annuel
+  var ecoEl = document.getElementById('pay-eco-msg');
+  if(!ecoEl && isAnn) {
+    var ecoDiv = document.createElement('div');
+    ecoDiv.id = 'pay-eco-msg';
+    ecoDiv.style.cssText = 'text-align:center;font-size:11px;color:#22c55e;margin:-8px 0 8px;font-weight:600';
+    ecoDiv.textContent = "✅ Économie de 20% en annuel";
+    var pk6 = document.getElementById('pk6');
+    if(pk6) pk6.parentNode.insertBefore(ecoDiv, pk6);
+  } else if(ecoEl && !isAnn) {
+    ecoEl.remove();
+  }
+};
+// Init : masquer les packs annuels par defaut
+(function(){
+  ['pk6','pk7'].forEach(id => {
+    var el = document.getElementById(id);
+    if(el) el.style.display = 'none';
+  });
+})();
 
 // ── SKELETON HELPER ───────────────────────────────────────────────────────────
 // Usage: el.innerHTML = skHtml('card', 3)  → 3 skeleton cards
