@@ -862,6 +862,92 @@ textarea{resize:vertical;min-height:70px}
 #box-vin-txt{font-size:12px!important}
 #pg-box .bsm{font-size:11px!important;padding:6px 12px!important;border-radius:8px!important}
 /* ===== END BOX OBD IA ===== */
+/* ===== MecaIA Box OBD IA v2 ===== */
+#pg-box .wrap{max-width:1600px;padding:0;height:calc(100vh - 108px);display:flex;flex-direction:column;overflow:hidden}
+.btb{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--s1);border-bottom:2px solid var(--bd);flex-shrink:0;flex-wrap:wrap}
+.btb-pill{display:flex;align-items:center;gap:8px;background:var(--s2);border:1.5px solid var(--bd);border-radius:24px;padding:8px 18px;cursor:pointer;font-size:13px;font-weight:600;transition:border-color .2s;user-select:none}
+.btb-pill:hover{border-color:var(--acc)}
+.btb-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s,box-shadow .3s}
+.btb-veh{background:var(--acc-d);border:1.5px solid var(--acc);border-radius:10px;padding:5px 14px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--acc);font-weight:700}
+.btb-vin{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:4px 12px}
+.btb-vin-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+#box-vin-txt{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--acc)}
+.btb-scan{display:flex;align-items:center;gap:8px;background:var(--acc);border:none;border-radius:10px;color:#000;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;padding:9px 22px;cursor:pointer;opacity:.38;transition:opacity .2s,box-shadow .2s}
+.btb-scan:not(:disabled){opacity:1;box-shadow:0 0 20px rgba(232,160,0,.4)}
+.btb-scan:not(:disabled):hover{filter:brightness(1.08)}
+.btb-clr{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.35);border-radius:8px;color:#ef4444;font-size:12px;font-weight:600;padding:8px 14px;cursor:pointer;transition:background .15s}
+.btb-clr:hover{background:rgba(239,68,68,.2)}
+.bnav{display:flex;background:var(--s1);border-bottom:2px solid var(--bd);padding:0 20px;flex-shrink:0}
+.bnt{display:flex;align-items:center;gap:7px;padding:12px 20px;background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-2px;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:color .2s,border-color .2s;white-space:nowrap}
+.bnt:hover{color:var(--tx)}.bnt.on{color:var(--acc);border-bottom-color:var(--acc)}
+.bnt-bdg{background:var(--acc);color:#000;font-size:10px;font-weight:800;border-radius:20px;padding:1px 7px;min-width:20px;text-align:center;font-family:'IBM Plex Mono',monospace}
+.bnt-bdg.grey{background:var(--s3);color:var(--muted)}
+.btp{display:none;flex:1;overflow:hidden;flex-direction:column}.btp.active{display:flex}
+.bvb{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0}
+.bvb-chips{flex:1;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}.bvb-chips::-webkit-scrollbar{display:none}
+.bvb-chip{display:flex;align-items:center;gap:6px;background:var(--s2);border:1.5px solid var(--bd);border-radius:20px;padding:5px 14px;white-space:nowrap;cursor:pointer;font-size:12px;font-weight:600;transition:border-color .2s,background .2s;flex-shrink:0}
+.bvb-chip:hover{border-color:var(--acc)}.bvb-chip.sel{background:var(--acc-d);border-color:var(--acc);color:var(--acc)}
+.bvb-ref{background:none;border:1.5px solid var(--bd);border-radius:8px;color:var(--muted);padding:5px 10px;cursor:pointer;font-size:14px;transition:color .15s;flex-shrink:0}
+.bvb-ref:hover{color:var(--acc);border-color:var(--acc)}
+.bnt-sm{background:var(--s2);border:1.5px solid var(--bd);border-radius:8px;color:var(--muted);font-size:11px;padding:5px 12px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.bnt-sm:hover{color:var(--tx)}
+.bfeed{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.bftr{flex-shrink:0;background:var(--s1);border-top:1px solid var(--bd);padding:12px 20px}
+.bqcmds{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.bqcmd{background:var(--s3);border:1.5px solid var(--bd);border-radius:20px;color:var(--muted);font-size:11px;font-weight:600;padding:4px 13px;cursor:pointer;transition:border-color .15s,color .15s,background .15s;white-space:nowrap}
+.bqcmd:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-d)}
+.binput-row{display:flex;gap:10px;align-items:flex-end}
+.binput{flex:1;background:var(--s2);border:1.5px solid var(--bd);border-radius:14px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:14px;padding:12px 18px;resize:none;max-height:120px;overflow-y:auto;line-height:1.5;transition:border-color .2s}
+.binput:focus{outline:none;border-color:var(--acc)}
+.bsend{width:46px;height:46px;background:var(--acc);border:none;border-radius:12px;color:#000;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:filter .15s}
+.bsend:hover{filter:brightness(1.1)}
+.blive-hd{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--s1)}
+.blive-st{font-size:12px;font-weight:700;color:var(--muted);transition:color .3s}
+.blive-st.on{color:var(--green)}
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 20px;overflow-y:auto;flex:1}
+.bpid{background:var(--s2);border:1.5px solid var(--bd);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;transition:border-color .3s}
+.bpid.on{border-color:var(--acc-b)}
+.bpl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.bpv{font-size:30px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:var(--acc);line-height:1;transition:color .3s}
+.bpu{font-size:11px;color:var(--muted)}
+.bpv.hot{color:#ef4444}.bpv.warm{color:#f59e0b}.bpv.ok{color:#22c55e}.bpv.low{color:#ef4444}
+.bmon-wrap{flex-shrink:0;padding:0 20px 14px}
+.bmon-tog{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;color:var(--muted);font-size:12px;font-weight:600;padding:10px 16px;cursor:pointer;text-align:left;transition:background .15s}
+.bmon-tog:hover{background:var(--s3);color:var(--tx)}
+.bmon-list{padding:10px 2px;display:flex;flex-direction:column;gap:6px}
+.bcodes-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--s1)}
+#box-dtc-body{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.bdtc{background:var(--s2);border:1.5px solid var(--bd);border-radius:14px;padding:16px;display:flex;align-items:flex-start;gap:14px;transition:border-color .2s}
+.bdtc:hover{border-color:var(--acc-b)}
+.bdtc.act{border-left:4px solid #ef4444}.bdtc.pend{border-left:4px solid #f59e0b}.bdtc.perm{border-left:4px solid var(--muted)}
+.bdtc-code{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:800;color:var(--acc);flex-shrink:0;min-width:72px}
+.bdtc-info{flex:1}
+.bdtc-desc{font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.4}
+.bdtc-meta{font-size:11px;color:var(--muted);margin-bottom:8px}
+.bdtc-acts{display:flex;gap:8px;flex-wrap:wrap}
+.bdtc-bdg{padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px}
+.bdtc-bdg.act{background:rgba(239,68,68,.15);color:#ef4444}
+.bdtc-bdg.pend{background:rgba(245,158,11,.15);color:#f59e0b}
+.bdtc-bdg.perm{background:var(--s3);color:var(--muted)}
+.bempty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:60px 20px;color:var(--muted);font-size:14px;text-align:center}
+.bempty-ico{font-size:52px}
+.bbtn{border:none;border-radius:10px;font-size:12px;font-weight:700;padding:8px 18px;cursor:pointer;transition:filter .15s}
+.bprimary{background:var(--acc);color:#000}.bprimary:hover{filter:brightness(1.1)}
+.bdanger{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3);color:#ef4444}.bdanger:hover{background:rgba(239,68,68,.2)}
+.btp-opts{overflow-y:auto;padding:16px 20px;gap:14px;flex-direction:column}
+.bsec{background:var(--s2);border:1.5px solid var(--bd);border-radius:14px;overflow:hidden}
+.bsec-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd);background:var(--s1)}
+.bsec-ttl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.bsec-bdg{font-size:10px;color:var(--muted)}.bsec-body{padding:12px 16px}
+.bgar-lst{padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+.bgar-item{display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:10px 14px;cursor:pointer;transition:border-color .2s}
+.bgar-item:hover{border-color:var(--acc-b)}.bgar-item.sel{background:var(--acc-d);border-color:var(--acc)}
+.bgar-ico{font-size:18px;flex-shrink:0}.bgar-name{font-size:12px;font-weight:700;flex:1}.bgar-km{font-size:11px;color:var(--muted)}
+.bgar-chk{color:var(--acc);font-size:14px}
+.bbtn-ico{background:none;border:1.5px solid var(--bd);border-radius:8px;color:var(--muted);padding:5px 10px;cursor:pointer;font-size:14px;transition:color .15s}
+.bbtn-ico:hover{color:var(--acc);border-color:var(--acc)}
+.bload{font-size:12px;color:var(--muted);padding:10px 0;text-align:center}
+/* ===== END Box v2 ===== */
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -1710,141 +1796,122 @@ textarea{resize:vertical;min-height:70px}
 
 <div id="box-app" style="display:none">
 
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 14px;flex-wrap:wrap;border-bottom:1px solid var(--bd);margin-bottom:4px">
-  <div style="display:flex;align-items:center;gap:10px">
-    <div id="box-status-pill" onclick="boxHandleConnect()" style="display:flex;align-items:center;gap:7px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:5px 12px;cursor:pointer;transition:border-color .2s;user-select:none">
-      <span id="box-dot2" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s"></span>
-      <span id="box-conn-txt" style="font-size:12px;font-weight:600">Non connect&#xE9; &#xB7; Cliquer pour connecter</span>
-    </div>
-    <div id="box-veh-badge" style="display:none;background:var(--acc-d);border:1px solid var(--acc-b);border-radius:6px;padding:4px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--acc)"></div>
+<!-- TOPBAR : connexion + vehicule + scan, toujours visible -->
+<div class="btb">
+  <div id="box-status-pill" onclick="boxHandleConnect()" class="btb-pill" role="button">
+    <span id="box-dot2" class="btb-dot"></span>
+    <span id="box-conn-txt">Non connect&#xE9; &#xB7; Cliquer pour connecter</span>
   </div>
-  <div style="display:flex;gap:7px;flex-wrap:wrap">
-    <button class="bsm" onclick="boxClearDTCs()" style="margin:0;background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.4);color:#ef4444">&#x1F5D1;&#xFE0F; Effacer DTC</button>
+  <div id="box-veh-badge" style="display:none" class="btb-veh"></div>
+  <div id="box-vin-card" style="display:none" class="btb-vin">
+    <span class="btb-vin-lbl">VIN</span>
+    <span id="box-vin-txt"></span>
   </div>
+  <div style="flex:1"></div>
+  <button id="box-btn-scan" onclick="boxStartScan()" disabled class="btb-scan">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    SCAN COMPLET
+  </button>
+  <button onclick="boxClearDTCs()" class="btb-clr">&#x1F5D1; Effacer DTC</button>
 </div>
 
-<div id="box-live-bar" style="display:none;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:8px 14px;margin-bottom:10px;flex-wrap:wrap;gap:6px">
-  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">RPM</span><span id="bp-rpm" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
-  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">km/h</span><span id="bp-spd" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
-  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Temp</span><span id="bp-tmp" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
-  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Charge</span><span id="bp-ld" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
-  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Batt.</span><span id="bp-bat" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
-  <div style="display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:4px 10px"><span style="font-size:10px;color:var(--muted)">Papillon</span><span id="bp-thr" style="font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--acc)">&#x2014;</span></div>
+<!-- TABS NAVIGATION -->
+<div class="bnav" role="tablist">
+  <button class="bnt on" data-tab="dylan" onclick="boxTab(&apos;dylan&apos;)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Dylan OBD2
+  </button>
+  <button class="bnt" data-tab="live" onclick="boxTab(&apos;live&apos;)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Live
+    <span id="box-live-badge" class="bnt-bdg grey" style="display:none">&#x25CF;</span>
+  </button>
+  <button class="bnt" data-tab="codes" onclick="boxTab(&apos;codes&apos;)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Codes
+    <span id="box-dtc-count" class="bnt-bdg grey">—</span>
+  </button>
+  <button class="bnt" data-tab="opts" onclick="boxTab(&apos;opts&apos;)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Options &amp; Garage
+  </button>
 </div>
 
-<div style="display:grid;grid-template-columns:340px 1fr;gap:14px;height:calc(100vh - 190px)">
-
-  <div style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:calc(100vh - 200px)">
-
-    <!-- == VEHICULE GARAGE == -->
-    <div class="card" style="margin:0">
-      <div class="ch" style="padding:8px 12px">
-        <div class="ct">&#x1F697; V&#xE9;hicule</div>
-        <button onclick="boxLoadGarage()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:2px 6px;border-radius:4px" title="Recharger">&#x21BB;</button>
-      </div>
-      <div id="box-garage-body" style="padding:6px 8px">
-        <div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Chargement garage&#x2026;</div>
-      </div>
-    </div>
-
-    <!-- == SCAN COMPLET == -->
-    <button id="box-btn-scan" onclick="boxStartScan()" disabled
-      style="width:100%;padding:12px 0;background:var(--acc);color:#000;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:800;border:none;border-radius:var(--r-md);cursor:pointer;letter-spacing:1px;opacity:.45;transition:opacity .2s">
-      &#x1F50D; SCAN COMPLET
-    </button>
-
-    <!-- == TEMPERATURES LIVE == -->
-    <div class="card" style="margin:0">
-      <div class="ch" style="padding:8px 12px">
-        <div class="ct">&#x1F321;&#xFE0F; Donn&#xE9;es live</div>
-        <span id="box-live-status" style="font-size:10px;color:var(--muted)">hors ligne</span>
-      </div>
-      <div style="padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px" id="box-live-grid">
-        <div class="box-pid-cell" id="bc-RPM"><span class="bpl">RPM</span><span class="bpv" id="bp-rpm2">&#x2014;</span></div>
-        <div class="box-pid-cell" id="bc-SPD"><span class="bpl">km/h</span><span class="bpv" id="bp-spd2">&#x2014;</span></div>
-        <div class="box-pid-cell" id="bc-TMP"><span class="bpl">&#x1F321; Moteur</span><span class="bpv" id="bp-tmp2">&#x2014;</span></div>
-        <div class="box-pid-cell" id="bc-BAT"><span class="bpl">&#x26A1; Batt.</span><span class="bpv" id="bp-bat2">&#x2014;</span></div>
-        <div class="box-pid-cell" id="bc-LOD"><span class="bpl">Charge %</span><span class="bpv" id="bp-lod2">&#x2014;</span></div>
-        <div class="box-pid-cell" id="bc-THR"><span class="bpl">Papillon %</span><span class="bpv" id="bp-thr2">&#x2014;</span></div>
-      </div>
-    </div>
-
-    <!-- == VIN == -->
-    <div id="box-vin-card" style="display:none;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);padding:9px 12px">
-      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px">VIN</div>
-      <div id="box-vin-txt" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--acc);word-break:break-all"></div>
-    </div>
-
-    <!-- == CODES DEFAUTS == -->
-    <div id="box-dtc-card" class="card" style="margin:0">
-      <div class="ch"><div class="ct">&#x26A0;&#xFE0F; Codes d&#xE9;fauts</div><span id="box-dtc-count" style="font-size:10px;color:var(--muted)">&#x2014;</span></div>
-      <div class="cb" id="box-dtc-body" style="padding:8px"><div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">Lancez un scan</div></div>
-    </div>
-
-    <!-- == COMMANDES == -->
-    <div class="card" style="margin:0">
-      <div class="ch" style="cursor:pointer;padding:8px 12px" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
-        <div class="ct">&#x1F4AC; Commandes</div>
-        <span style="font-size:10px;color:var(--muted)">&#x25BC; voir</span>
-      </div>
-      <div style="display:none;padding:6px 10px 8px">
-        <div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Dites ou tapez&#x202F;:</div>
-        <div id="box-cmds-list">
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Lance un scan complet">&#x1F50D; Lance un scan complet</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Explique les codes défauts">&#x26A0;&#xFE0F; Explique les codes défauts</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Quelle est la température moteur ?">&#x1F321;&#xFE0F; Température moteur</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Efface les codes défauts">&#x1F5D1;&#xFE0F; Efface les codes</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Remise à zéro vidange">&#x1F6E2;&#xFE0F; Reset vidange</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Mode entretien frein parking">&#x1F6D1; Mode freins parking</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Active les feux de jour">&#x1F4A1; Activer feux de jour</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Désactive les feux de jour">&#x1F4A1; Désactiver feux de jour</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Active l&apos;essuie-glace automatique">&#x1F327;&#xFE0F; Essuie-glace auto</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Quel est mon VIN ?">&#x1F194; Lire mon VIN</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="C&apos;est grave ?">&#x1F4AC; C&apos;est grave ?</div>
-          <div class="box-cmd" onclick="boxSendCmd(this.dataset.cmd)" data-cmd="Que dois-je faire maintenant ?">&#x1F527; Que faire maintenant ?</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- == OPTIONS VEHICULE == -->
-    <div id="box-opts-card" class="card" style="margin:0">
-      <div class="ch"><div class="ct">&#x2699;&#xFE0F; Options v&#xE9;hicule</div><span id="box-opts-msg" style="font-size:9px;color:var(--muted)">connexion requise</span></div>
-      <div class="cb" id="box-opts-body" style="padding:8px"></div>
-    </div>
-
-    <!-- == RESETS SERVICE == -->
-    <div id="box-resets-card" class="card" style="margin:0">
-      <div class="ch"><div class="ct">&#x1F504; Resets service</div><span id="box-resets-msg" style="font-size:9px;color:var(--muted)">connexion requise</span></div>
-      <div class="cb" id="box-resets-body" style="padding:8px"></div>
-    </div>
-
-    <!-- == MONITEURS (conserve) == -->
-    <div class="card" style="margin:0">
-      <div class="ch" style="cursor:pointer" onclick="boxToggleMonitors()">
-        <div class="ct">&#x1F4CA; Moniteurs OBD</div>
-        <span id="box-mon-toggle" style="font-size:10px;color:var(--muted)">&#x25BC; afficher</span>
-      </div>
-      <div id="box-monitors-body" style="display:none;padding:8px"><div id="box-monitors-list"></div></div>
-    </div>
-
+<!-- TAB 1 : DYLAN OBD2 -->
+<div id="btp-dylan" class="btp active">
+  <div class="bvb">
+    <div id="box-garage-compact" class="bvb-chips"></div>
+    <button class="bvb-ref" onclick="boxLoadGarage()" title="Recharger">&#x21BB;</button>
+    <button class="bnt-sm" onclick="boxNewConv()">+ Nouveau</button>
   </div>
-
-  <div style="display:flex;flex-direction:column;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-md);overflow:hidden">
-    <div style="padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--acc);color:#0a0c0e;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center">D</div>
-        <div><div style="font-size:12px;font-weight:700">Dylan OBD2</div><div style="font-size:10px;color:var(--muted)">Expert automobile IA</div></div>
-      </div>
-      <button class="bsm" onclick="boxNewConv()" style="margin:0;font-size:10px">+ Nouveau</button>
+  <div id="box-feed" class="bfeed"></div>
+  <div class="bftr">
+    <div class="bqcmds">
+      <button class="bqcmd" onclick="boxSendCmd(&apos;Lance un scan complet&apos;)">&#x1F50D; Scan</button>
+      <button class="bqcmd" onclick="boxSendCmd(&apos;Explique les codes défauts&apos;)">&#x26A0; Codes</button>
+      <button class="bqcmd" onclick="boxSendCmd(&apos;Température moteur ?&apos;)">&#x1F321; Temp</button>
+      <button class="bqcmd" onclick="boxSendCmd(&apos;Remise à zéro vidange&apos;)">&#x1F6E2; Reset</button>
+      <button class="bqcmd" onclick="boxSendCmd(&apos;C'est grave ?&apos;)">&#x1F4AC; Grave ?</button>
+      <button class="bqcmd" onclick="boxSendCmd(&apos;Que faire maintenant ?&apos;)">&#x1F527; Suite</button>
     </div>
-    <div id="box-feed" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:340px;max-height:500px"></div>
-    <div style="padding:8px 12px;border-top:1px solid var(--bd);display:flex;gap:8px;align-items:flex-end">
-      <textarea id="box-input" rows="1" placeholder="Posez une question &#xE0; Dylan&#x2026;" style="flex:1;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-sm);padding:8px 11px;color:var(--tx);font-size:13px;font-family:inherit;resize:none;outline:none;max-height:80px;min-height:36px;transition:border-color .2s" onfocus="this.style.borderColor='var(--acc)'" onblur="this.style.borderColor='var(--bd)'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();boxSend()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
-      <button onclick="boxSend()" style="background:var(--acc-d);border:1px solid var(--acc);color:var(--acc);border-radius:var(--r-sm);padding:8px 14px;cursor:pointer;font-size:13px;font-weight:700;height:36px;transition:all .2s" onmouseover="this.style.background='var(--acc)';this.style.color='#0a0c0e'" onmouseout="this.style.background='var(--acc-d)';this.style.color='var(--acc)'">&#x25B6;</button>
+    <div class="binput-row">
+      <textarea id="box-input" rows="1" placeholder="Posez votre question ou décrivez le problème…" class="binput"></textarea>
+      <button class="bsend" onclick="boxSend()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
     </div>
   </div>
 </div>
+
+<!-- TAB 2 : LIVE DATA -->
+<div id="btp-live" class="btp">
+  <div class="blive-hd">
+    <span id="box-live-status" class="blive-st">&#x25CF; hors ligne</span>
+    <span style="font-size:11px;color:var(--muted);margin-left:8px">Données OBD2 temps réel</span>
+  </div>
+  <div id="box-live-grid" class="bgrid">
+    <div class="bpid" id="bc-RPM"><span class="bpl">RPM</span><span class="bpv" id="bp-rpm2">—</span><span class="bpu">tr/min</span></div>
+    <div class="bpid" id="bc-SPD"><span class="bpl">Vitesse</span><span class="bpv" id="bp-spd2">—</span><span class="bpu">km/h</span></div>
+    <div class="bpid" id="bc-TMP"><span class="bpl">&#x1F321; Moteur</span><span class="bpv" id="bp-tmp2">—</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid" id="bc-BAT"><span class="bpl">&#x26A1; Batterie</span><span class="bpv" id="bp-bat2">—</span><span class="bpu">V</span></div>
+    <div class="bpid" id="bc-LOD"><span class="bpl">Charge</span><span class="bpv" id="bp-lod2">—</span><span class="bpu">%</span></div>
+    <div class="bpid" id="bc-THR"><span class="bpl">Papillon</span><span class="bpv" id="bp-thr2">—</span><span class="bpu">%</span></div>
+  </div>
+  <div class="bmon-wrap">
+    <button class="bmon-tog" onclick="boxToggleMonitors()"><span id="box-mon-toggle">&#x25BC; Moniteurs OBD</span></button>
+    <div id="box-monitors-body" style="display:none"><div id="box-monitors-list" class="bmon-list"></div></div>
+  </div>
 </div>
+
+<!-- TAB 3 : CODES DTC -->
+<div id="btp-codes" class="btp">
+  <div class="bcodes-hd">
+    <span style="font-weight:700;font-size:14px">Codes défauts</span>
+    <button class="bbtn bdanger" onclick="boxClearDTCs()">&#x1F5D1; Effacer tous</button>
+  </div>
+  <div id="box-dtc-body" class="bdtc-list">
+    <div class="bempty"><div class="bempty-ico">&#x2705;</div><div>Aucun code — lancez un scan</div><button class="bbtn bprimary" onclick="boxStartScan()">&#x1F50D; Lancer le scan</button></div>
+  </div>
+</div>
+
+<!-- TAB 4 : OPTIONS & GARAGE -->
+<div id="btp-opts" class="btp btp-opts">
+  <div class="bsec">
+    <div class="bsec-hd"><span class="bsec-ttl">&#x1F697; Mon Garage</span><button class="bbtn-ico" onclick="boxLoadGarage()">&#x21BB;</button></div>
+    <div id="box-garage-body" class="bgar-lst"><div class="bload">Chargement…</div></div>
+  </div>
+  <div id="box-opts-card" class="bsec">
+    <div class="bsec-hd"><span class="bsec-ttl">&#x2699; Options véhicule</span><span id="box-opts-msg" class="bsec-bdg">connexion requise</span></div>
+    <div id="box-opts-body" class="bsec-body"></div>
+  </div>
+  <div id="box-resets-card" class="bsec">
+    <div class="bsec-hd"><span class="bsec-ttl">&#x1F504; Resets service</span><span id="box-resets-msg" class="bsec-bdg">connexion requise</span></div>
+    <div id="box-resets-body" class="bsec-body"></div>
+  </div>
+</div>
+
+</div><!-- /box-app -->
+</div></div><!-- /wrap /pg-box -->
 
 <script>
 (function(){
@@ -2034,6 +2101,124 @@ window.boxSendCmd = function(cmd) {
     if (st) { st.textContent = 'en ligne'; st.style.color = 'var(--green)'; }
   };
 })();
+
+
+window.boxTab=function(tab){
+  document.querySelectorAll('.btp').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.bnt').forEach(function(t){t.classList.remove('on');});
+  var p=document.getElementById('btp-'+tab);var t=document.querySelector('.bnt[data-tab="'+tab+'"]');
+  if(p)p.classList.add('active');if(t)t.classList.add('on');
+};
+
+function _boxGarageChips(vehicles){
+  var el=document.getElementById('box-garage-compact');if(!el)return;
+  if(!vehicles||!vehicles.length){el.innerHTML='<span style="font-size:11px;color:var(--muted);padding:4px 8px">Ajoutez un v\u00e9hicule dans Options</span>';return;}
+  el.innerHTML=vehicles.map(function(v){
+    var s=window.selCar&&window.selCar.id===v.id;
+    var ico=v.carburant==='diesel'?'&#x26FD;':'&#x26A1;';
+    var lbl=(v.marque||'')+(v.modele?' '+v.modele.split(' ')[0]:'')+(v.annee?' '+v.annee:'');
+    return '<button class="bvb-chip'+(s?' sel':'')+'" onclick="boxPickVehicle('+JSON.stringify(v).replace(/"/g,'&quot;')+')" title="'+(v.marque||'')+' '+(v.modele||'')+' '+(v.annee||'')+'">'+'<span style="font-size:13px">'+ico+'</span>'+lbl+'</button>';
+  }).join('');
+}
+
+window.boxRenderGarage=function(vehicles){
+  var body=document.getElementById('box-garage-body');if(!body)return;
+  if(!vehicles||!vehicles.length){body.innerHTML='<div class="bload">Aucun v\u00e9hicule. <a href="#" onclick="navTo(&apos;garage&apos;);return false" style="color:var(--acc)">Ajoutez-en</a></div>';return;}
+  body.innerHTML=vehicles.map(function(v){
+    var s=window.selCar&&window.selCar.id===v.id;
+    var ico=v.carburant==='diesel'?'&#x26FD;':'&#x26A1;';
+    return '<div class="bgar-item'+(s?' sel':'')+'" onclick="boxPickVehicle('+JSON.stringify(v).replace(/"/g,'&quot;')+')">'
+      +'<span class="bgar-ico">'+ico+'</span>'
+      +'<div style="flex:1"><div class="bgar-name">'+(v.marque||'')+' '+(v.modele||'')+' '+(v.annee||'')+'</div>'
+      +(v.km_current?'<div class="bgar-km">'+Number(v.km_current).toLocaleString('fr')+' km</div>':'')
+      +'</div>'+(s?'<span class="bgar-chk">&#x2714;</span>':'')+
+      '</div>';
+  }).join('');
+};
+
+window.boxHandleGarageVehicles=function(vehicles){
+  window._gv=vehicles||[];
+  window.boxRenderGarage(window._gv);
+  _boxGarageChips(window._gv);
+};
+
+window.boxPickVehicle=function(v){
+  window.selCar=v;
+  window.boxRenderGarage(window._gv||[]);
+  _boxGarageChips(window._gv||[]);
+  boxUpdateVehBadge();boxRenderOptions();boxRenderResets();
+  boxMsg('sys','\uD83D\uDE97 V\u00e9hicule\u00a0: '+(v.marque||'')+' '+(v.modele||'')+(v.annee?' '+v.annee:''));
+};
+
+window.boxRenderDTCs=function(dtcs,pending,permanent){
+  var all=(dtcs||[]).concat(pending||[]).filter(function(d,i,a){return d.code&&a.findIndex(function(x){return x.code===d.code;})==i;});
+  var body=document.getElementById('box-dtc-body');
+  var cnt=document.getElementById('box-dtc-count');
+  if(!body)return;
+  if(cnt){if(all.length){cnt.textContent=String(all.length);cnt.classList.remove('grey');}else{cnt.textContent='\u2014';cnt.classList.add('grey');}}
+  if(!all.length){body.innerHTML='<div class="bempty"><div class="bempty-ico">&#x2705;</div><div>Aucun code d\u00e9tect\u00e9 \u2014 moteur sain</div></div>';return;}
+  window.boxTab('codes');
+  var isPend=function(d){return(pending||[]).some(function(p){return p.code===d.code;});};
+  var isPerm=function(d){return(permanent||[]).some(function(p){return p.code===d.code;});};
+  body.innerHTML=all.map(function(d){
+    var cls=isPerm(d)?'perm':isPend(d)?'pend':'act';
+    var lbl=isPerm(d)?'PERMANENT':isPend(d)?'EN ATTENTE':'ACTIF';
+    return '<div class="bdtc '+cls+'">'
+      +'<div class="bdtc-code">'+d.code+'</div>'
+      +'<div class="bdtc-info">'
+      +'<div class="bdtc-desc">'+(d.description||d.code)+'</div>'
+      +(d.system?'<div class="bdtc-meta">Syst\u00e8me\u00a0: '+d.system+'</div>':'')
+      +'<div class="bdtc-acts">'
+      +'<button class="bbtn bprimary" onclick="boxAskDTC(&apos;'+d.code+'&apos;)">&#x1F4AC; Analyser</button>'
+      +'<button class="bbtn" style="background:var(--s3);border:1.5px solid var(--bd);color:var(--tx)" onclick="boxSendCmd(&apos;Proc\u00e9dure de r\u00e9paration pour '+d.code+'&apos;)">&#x1F4CB; Proc\u00e9dure</button>'
+      +'</div></div>'
+      +'<span class="bdtc-bdg '+cls+'">'+lbl+'</span>'
+      +'</div>';
+  }).join('');
+};
+
+window.boxSetScanBtn=function(icon,lbl,dis){
+  var btn=document.getElementById('box-btn-scan');if(!btn)return;
+  btn.disabled=!!dis;
+  var tn=btn.querySelector('svg')&&btn.querySelector('svg').nextSibling;
+  if(tn&&tn.nodeType===3)tn.nodeValue=' '+(lbl||'SCAN COMPLET');
+  else{var tx=document.createTextNode(' '+(lbl||'SCAN COMPLET'));var svg=btn.querySelector('svg');if(svg)btn.insertBefore(tx,svg.nextSibling);else btn.appendChild(tx);}
+};
+
+window.boxHandleStatus=function(s){
+  var dot=document.getElementById('box-dot2'),txt=document.getElementById('box-conn-txt'),lst=document.getElementById('box-live-status'),lb=document.getElementById('box-live-badge');
+  if(s.type==='connected'){
+    BOX.connected=true;
+    if(dot){dot.style.background='var(--green)';dot.style.boxShadow='0 0 8px var(--green)';}
+    if(txt)txt.textContent='Connect\u00e9\u00a0\u00b7 '+(s.version||'OBDLink').replace(/\|.*/,'').trim();
+    if(lst){lst.textContent='\u25cf en ligne';lst.classList.add('on');}
+    if(lb)lb.style.display='';
+    boxSetScanBtn('','SCAN COMPLET',false);
+    if(window.MecaIAElectron&&window.MecaIAElectron.obd2&&typeof window.MecaIAElectron.obd2.startMonitor==='function')window.MecaIAElectron.obd2.startMonitor();
+    boxMsg('dy','Boi\u00eetier OBDLink connect\u00e9 \u2705\n\nPr\u00eat pour '+(window.selCar?window.selCar.marque+' '+window.selCar.modele:'votre voiture')+'. Cliquez **SCAN COMPLET** ou dites-moi ce que vous voulez.');
+    setTimeout(function(){boxRenderOptions();boxRenderResets();},1000);
+  }else if(s.type==='disconnected'){
+    BOX.connected=false;
+    if(dot){dot.style.background='var(--muted)';dot.style.boxShadow='none';}
+    if(txt)txt.textContent='Non connect\u00e9\u00a0\u00b7 Cliquer pour connecter';
+    if(lst){lst.textContent='\u25cf hors ligne';lst.classList.remove('on');}
+    if(lb)lb.style.display='none';
+    boxSetScanBtn('','Connecter le bo\u00eetier',true);
+  }
+};
+
+window.boxUpdateLive=function(d){
+  if(!d||d.value==null)return;
+  var m={RPM:'bp-rpm2',SPEED:'bp-spd2',COOLANT:'bp-tmp2',BATTERY:'bp-bat2',ENGINE_LOAD:'bp-lod2',THROTTLE:'bp-thr2'};
+  var el=document.getElementById(m[d.key]);if(!el)return;
+  var v=parseFloat(d.value)||0;el.textContent=d.value;
+  el.className='bpv'+(d.key==='COOLANT'?(v>=100?' hot':v>=88?' warm':' ok'):(d.key==='BATTERY'?(v<11.5?' low':v<12.4?' warm':' ok'):''));
+  el.parentElement&&el.parentElement.classList.add('on');
+  var lst=document.getElementById('box-live-status'),lb=document.getElementById('box-live-badge');
+  if(lst&&!lst.classList.contains('on')){lst.textContent='\u25cf en ligne';lst.classList.add('on');}
+  if(lb)lb.style.display='';
+};
+
 
 window.boxUpdateVehBadge=function(){var b=document.getElementById('box-veh-badge');if(!b)return;if(window.selCar){b.textContent=(window.selCar.marque||'')+' '+(window.selCar.modele||'')+' '+(window.selCar.annee||'');b.style.display='';}else b.style.display='none';};
 
