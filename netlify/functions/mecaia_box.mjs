@@ -1,4 +1,4 @@
-﻿// mecaia_box.mjs — Agent Dylan OBD2 Expert v7 — Protocole 6 Etapes + Freeze Frame + Drive Cycle
+﻿// mecaia_box.mjs — Agent Dylan OBD2 Expert v8 — +Mode$06 +FuelTrimHistory +Misfire +BatteryDeep
 // Architecture : boucle agentique tool-use (ADR-022)
 // - SERVER tools executes directement en Netlify (Supabase : DTC, specs EU, procedures, cas similaires)
 // - DEVICE tools "maps" depuis le vehicle_context envoye par l'app Electron (donnees deja collectees)
@@ -86,9 +86,31 @@ const TOOLS = [
     description: "Lit le VIN du vehicule.",
     input_schema: { type: "object", properties: {}, required: [] }
   },
+  {
+    name: "read_mode06",
+    description: "Resultats des tests embarques OBD Mode $06. Detecte les composants qui derivent AVANT qu ils declenchent un code. Appeler si suspicion de degradation sonde O2, catalyseur, EGR.",
+    input_schema: { type: "object", properties: {}, required: [] }
+  },
+  {
+    name: "read_misfire_counts",
+    description: "Compteurs de rates d allumage et statut moniteur de rates. Appeler si P0300 ou symptome de rotation irreguliere.",
+    input_schema: { type: "object", properties: {}, required: [] }
+  },
+  {
+    name: "read_battery_health",
+    description: "Diagnostic batterie et alternateur : tension actuelle, statut, interpretation. Appeler si symptome electrique ou batterie faible.",
+    input_schema: { type: "object", properties: {}, required: [] }
+  },
+  {
+    name: "get_fuel_trim_history",
+    description: "Historique des corrections carburant (STFT/LTFT) des sessions precedentes. Permet de detecter une tendance : si LTFT monte chaque semaine, il y a une fuite d admission qui grossit.",
+    input_schema: { type: "object", properties: {
+      vin: { type: "string", description: "VIN du vehicule pour filtrer l historique" }
+    }, required: [] }
+  },
 ];
 
-const SERVER_TOOLS = new Set(["get_vehicle_context","lookup_dtc","search_similar_cases","get_dtc_procedures"]);
+const SERVER_TOOLS = new Set(["get_vehicle_context","lookup_dtc","search_similar_cases","get_dtc_procedures","get_fuel_trim_history"]);
 
 // ── FORMATAGE SPECS EU ─────────────────────────────────────────────────────────
 // Champs reels : oil_spec, oil_interval_km, filter_air_km, timing_belt_km,
@@ -177,6 +199,32 @@ async function execServerTool(name, input, { brand, vehicleMeta }) {
   } catch (e) {
     return `Erreur base: ${e.message}`;
   }
+  if (name === "get_fuel_trim_history") {
+    if (!vehicleMeta?.userId) return "Historique non disponible (utilisateur non identifié).";
+    try {
+      const body = { p_user_id: vehicleMeta.userId, p_vin: input.vin || vehicleMeta.vin || null, p_limit: 10 };
+      const r = await fetch(`${url}/rest/v1/rpc/get_fuel_trim_history`, { method: "POST", headers: h, body: JSON.stringify(body) });
+      const rows = await r.json();
+      if (!Array.isArray(rows) || !rows.length) return "Aucune session precedente trouvee pour ce vehicule.";
+      const lines = rows.map(row => {
+        const d = new Date(row.scanned_at).toLocaleDateString("fr-BE");
+        const stft = row.fuel_trim_short != null ? `STFT:${(+row.fuel_trim_short).toFixed(1)}%` : "";
+        const ltft = row.fuel_trim_long  != null ? `LTFT:${(+row.fuel_trim_long).toFixed(1)}%`  : "";
+        const batt = row.battery_voltage != null ? `Batt:${(+row.battery_voltage).toFixed(1)}V`  : "";
+        const dtc  = row.dtc_count       != null ? `DTC:${row.dtc_count}` : "";
+        return `${d} — ${[stft,ltft,batt,dtc].filter(Boolean).join(" | ")}`;
+      });
+      // Calcul tendance LTFT
+      const ltfts = rows.filter(r => r.fuel_trim_long != null).map(r => +r.fuel_trim_long);
+      let trend = "";
+      if (ltfts.length >= 2) {
+        const delta = ltfts[0] - ltfts[ltfts.length-1];
+        if (Math.abs(delta) > 2) trend = `\nTENDANCE LTFT: ${delta > 0 ? "+" : ""}${delta.toFixed(1)}% sur ${ltfts.length} sessions — ${delta > 3 ? "DEGRADATION DETECTEE (fuite admission ou sonde O2)" : delta < -3 ? "Enrichissement progressif (injecteurs ou sonde)" : "stable"}`;
+      }
+      return `Historique ${rows.length} sessions :\n${lines.join("\n")}${trend}`;
+    } catch(e) { return `Erreur historique: ${e.message}`; }
+  }
+
   return "Outil serveur inconnu.";
 }
 
@@ -253,6 +301,34 @@ ${lines.join("
     return cycles[m] || `Drive cycle pour moniteur ${input.monitor || "inconnu"} : effectuez une conduite normale de 20-30 min incluant demarrages a froid, conduite en ville et vitesse constante autoroute. Reconnectez le boitier pour verifier les moniteurs.`;
   }
 
+  if (name === "read_mode06") {
+    const m06 = ctx.mode06 || {};
+    if (!Object.keys(m06).length) return "Mode $06 non disponible sur ce vehicule (non supporte ou pas de donnees).";
+    const lines = Object.entries(m06).map(([k,v]) => {
+      return `${k}: valeur=${v.value} min=${v.min} max=${v.max} (${v.pct!=null?v.pct+'%':'-'}) → ${v.status}`;
+    });
+    const echecs = Object.values(m06).filter(v => v.status==='ECHEC').length;
+    const limites = Object.values(m06).filter(v => v.status==='LIMITE').length;
+    return `Mode $06 — ${Object.keys(m06).length} tests :\n${lines.join("\n")}\n\nResume: ${echecs} echec(s), ${limites} proche(s) limite`;
+  }
+
+  if (name === "read_misfire_counts") {
+    const mc = ctx.misfireCounts || {};
+    if (!Object.keys(mc).length) return "Compteurs de rates non disponibles sur ce vehicule.";
+    const lines = Object.entries(mc).map(([k,v]) => `${k}: ${v}`);
+    return `Moniteur rates d allumage :\n${lines.join("\n")}`;
+  }
+
+  if (name === "read_battery_health") {
+    const bh = ctx.batteryHealth || {};
+    if (!Object.keys(bh).length) {
+      const batt = (ctx.pids||{}).BATTERY;
+      if (batt?.value != null) return `Tension batterie: ${batt.value}V (test approfondi non disponible)`;
+      return "Test batterie non disponible.";
+    }
+    return `Test batterie:\nTension: ${bh.voltage||'?'}V — ${bh.status||''}\nDiagnostic: ${bh.diagnostic||''}${bh.ecu_voltage?'\nTension ECU: '+bh.ecu_voltage:''}${bh.voltage_delta?'\nEcart ATRV/ECU: '+bh.voltage_delta:''}`;
+  }
+
   return `Outil ${name}: donnees non disponibles dans ce scan.`;
 }
 
@@ -301,6 +377,12 @@ ETAPE 6 - PLAN D ACTION
 - Inclus : pieces a commander + fourchette de prix + difficulte DIY (1-5)
 - Si moniteurs non prets -> get_drive_cycle pour le guide post-reparation
 - Recommande une date de reconnexion ("Reconnectez dans 200 km pour verifier")
+
+OUTILS SUPPLEMENTAIRES :
+- read_mode06 : si suspicion degradation sonde O2/catalyseur/EGR SANS code encore. Les resultats "LIMITE" indiquent une degradation pre-code.
+- read_misfire_counts : si P0300 ou vibrations au ralenti. Confirme si le moniteur rates est actif.
+- read_battery_health : si symptome electrique, demarrage difficile, ou batterie faible.
+- get_fuel_trim_history : si LTFT > +5% OU suspicion fuite admission/sonde. Montre la tendance sur les sessions precedentes. Une progression = fuite qui grossit.
 
 REGLES ABSOLUES :
 - SECURITE EN PREMIER : si COOLANT > 103C ou BATTERY < 11.2V -> ARRETER le moteur
@@ -392,6 +474,8 @@ export const handler = async (event) => {
       marque: veh?.marque || ctx.make || "",
       modele: veh?.modele || ctx.model || "",
       year:   veh?.annee  || ctx.year  || null,
+      userId: uid || null,
+      vin:    ctx.vin || veh?.vin || null,
     };
     const vehicleStr = veh
       ? `${veh.annee || ""} ${veh.marque || ""} ${veh.modele || ""} ${veh.carburant || ""} ${veh.engine_code || ""}`.trim()
@@ -494,6 +578,40 @@ export const handler = async (event) => {
       }
     }
 
+    // Sauvegarder session OBD si scan avec données PIDs
+    if (uid && isOBD2 && ctx && Object.keys(ctx.pids || {}).length) {
+      const pids = ctx.pids || {};
+      const saveSess = async () => {
+        try {
+          const stft = pids.FUEL_TRIM_ST?.value ?? pids.FUEL_TRIM_SHORT?.value ?? null;
+          const ltft = pids.FUEL_TRIM_LT?.value ?? pids.FUEL_TRIM_LONG?.value ?? null;
+          const batt = pids.BATTERY?.value ?? null;
+          const temp = pids.COOLANT?.value ?? null;
+          const rpm  = pids.RPM?.value ?? null;
+          const allCodes = [...(ctx.dtcs||[]).map(d=>d.code), ...(ctx.pendingDtcs||[]).map(d=>d.code)];
+          await getSupabase().from("obd_sessions").insert({
+            user_id: uid,
+            vehicle_id: veh?.id || null,
+            vin: ctx.vin || veh?.vin || null,
+            fuel_trim_short: stft !== null ? parseFloat(stft) : null,
+            fuel_trim_long:  ltft !== null ? parseFloat(ltft) : null,
+            battery_voltage: batt !== null ? parseFloat(batt) : null,
+            coolant_temp:    temp !== null ? parseInt(temp)   : null,
+            rpm_idle:        rpm  !== null ? parseInt(rpm)    : null,
+            dtc_count: allCodes.length,
+            dtcs: allCodes,
+            monitors: ctx.monitors || {},
+            mode06: ctx.mode06 || {},
+            battery_health: ctx.batteryHealth || {},
+            pids_snapshot: Object.fromEntries(
+              Object.entries(pids).map(([k,v]) => [k, v?.value ?? v])
+            ),
+          });
+        } catch(e) { /* non bloquant */ }
+      };
+      saveSess();
+    }
+
     if (!text) text = "Dylan est disponible. Que se passe-t-il avec votre vehicule ?";
 
     return {
@@ -503,7 +621,7 @@ export const handler = async (event) => {
     };
 
   } catch (e) {
-    console.error("[mecaia_box v7]", e.message);
+    console.error("[mecaia_box v8]", e.message);
     return {
       statusCode: 500,
       headers,
