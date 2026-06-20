@@ -1,4 +1,4 @@
-﻿// mecaia_box.mjs — Agent Dylan OBD2 Expert v6
+﻿// mecaia_box.mjs — Agent Dylan OBD2 Expert v7 — Protocole 6 Etapes + Freeze Frame + Drive Cycle
 // Architecture : boucle agentique tool-use (ADR-022)
 // - SERVER tools executes directement en Netlify (Supabase : DTC, specs EU, procedures, cas similaires)
 // - DEVICE tools "maps" depuis le vehicle_context envoye par l'app Electron (donnees deja collectees)
@@ -48,6 +48,20 @@ const TOOLS = [
     input_schema: { type: "object", properties: {
       codes: { type: "array", items: { type: "string" } }, make: { type: "string" }, model: { type: "string" }
     }, required: ["codes"] }
+  },
+  {
+    name: "read_freeze_frame",
+    description: "Snapshot capteurs au moment du declenchement d un code DTC. Donne le contexte exact : chaud/froid, charge, regime. Appeler apres read_dtcs si codes actifs.",
+    input_schema: { type: "object", properties: {
+      code: { type: "string", description: "Code DTC dont on veut le freeze frame (ex: P0300)" }
+    }, required: ["code"] }
+  },
+  {
+    name: "get_drive_cycle",
+    description: "Procedure drive cycle post-reparation pour repasser un moniteur OBD au vert (controle technique). Appeler a la fin si des moniteurs ne sont pas prets.",
+    input_schema: { type: "object", properties: {
+      monitor: { type: "string", description: "Nom du moniteur : catalyst, o2_sensor, egr, evap, misfire, fuel_system" }
+    }, required: ["monitor"] }
   },
   // DEVICE : lecture depuis vehicle_context (donnees pre-collectees par l'app)
   {
@@ -210,32 +224,96 @@ function execDeviceTool(name, input, ctx) {
     return ctx.vin ? `VIN: ${ctx.vin}` : "VIN non disponible (non supporte en OBD generique sur certaines BMW).";
   }
 
+  if (name === "read_freeze_frame") {
+    const code = (input.code || "").toUpperCase();
+    const ff = (ctx.freezeFrames || {})[code] || null;
+    if (!ff || !Object.keys(ff).length) {
+      return `Freeze frame pour ${code} : non disponible (le code a pu etre efface ou le vehicule ne le supporte pas).`;
+    }
+    const lines = Object.entries(ff).map(([k, v]) => {
+      const units = { RPM:"tr/min",COOLANT:"°C",SPEED:"km/h",ENGINE_LOAD:"%",MAF:"g/s",THROTTLE:"%",FUEL_TRIM_SHORT:"%",FUEL_TRIM_LONG:"%" };
+      return `  ${k}: ${v}${units[k] ? " " + units[k] : ""}`;
+    });
+    return `Freeze frame ${code} (contexte au declenchement) :
+${lines.join("
+")}`;
+  }
+
+  if (name === "get_drive_cycle") {
+    const cycles = {
+      catalyst: "CATALYSEUR : 1) Demarrage a froid (< 35°C). 2) Accelération douce jusqu'a 90 km/h. 3) Vitesse constante 80-100 km/h pendant 5 min (4e vitesse). 4) Decelerer sans freiner jusqu'a 40 km/h. 5) 3 accelerations progressives 40->80 km/h. 6) Couper le moteur, attendre 10 min. Repetez si moniteur non pret.",
+      o2_sensor: "SONDE O2 : 1) Demarrer a froid. 2) Conduire en ville 10 min (stop & go, < 50 km/h). 3) Accelération 50->80 km/h x3. 4) 5 min a vitesse constante 80 km/h. 5) Ralentissement moteur frein. Le moniteur se complete generalement en 15-20 min de conduite variee.",
+      egr: "EGR : 1) Demarrer a froid. 2) Accelération modéree jusqu'a 90 km/h. 3) Maintenir 60-80 km/h en 4e vitesse pendant 8 min (charge partielle). 4) Decelerer moteur frein. La recirculation des gaz est active en charge partielle uniquement.",
+      evap: "SYSTEME EVAP : 1) Reservoir entre 15% et 85% (pas plein, pas vide). 2) Demarrer a froid (temp < 35°C). 3) Conduite normale 10-15 min. 4) Le test s effectue automatiquement au ralenti apres echauffement. Ne pas couper le moteur brutalement.",
+      misfire: "DETECTION RATES : 1) Chaud (>80°C). 2) Conduite a charge moderee 1500-3000 RPM. 3) Eviter ralenti prolonge. 4) Le moniteur se complete en quelques minutes de conduite normale si la reparation est effective.",
+      fuel_system: "SYSTEME CARBURANT : 1) Demarrage normal (froid ou chaud). 2) Conduite variee 10 min. 3) Inclure des accelerations et decelerations. 4) Moniteur generalement le plus rapide a completer (2-5 min).",
+    };
+    const m = (input.monitor || "").toLowerCase();
+    return cycles[m] || `Drive cycle pour moniteur ${input.monitor || "inconnu"} : effectuez une conduite normale de 20-30 min incluant demarrages a froid, conduite en ville et vitesse constante autoroute. Reconnectez le boitier pour verifier les moniteurs.`;
+  }
+
   return `Outil ${name}: donnees non disponibles dans ce scan.`;
 }
 
 // ── SYSTEM PROMPT ──────────────────────────────────────────────────────────────
 function buildSystem(brand, vehicleStr, language) {
   const lang = { nl: " Reponds en neerlandais.", en: " Respond in English.", de: " Antworte auf Deutsch." }[language] || "";
-  return `Tu es Dylan, mecanicien automobile expert qui pilote une valise OBD MecaIA.
+  return `Tu es Dylan, mecanicien automobile expert connecte a une vraie voiture via boitier OBD MecaIA.
 
-METHODE :
-1. Si vehicule identifie -> get_vehicle_context (specs + rappels). Affiche les infos cles en tete.
-2. read_dtcs (photographier l etat).
-3. lookup_dtc sur les codes (libelle + causes).
-4. (si utile) search_similar_cases par symptome.
-5. read_live_data sur les PIDs pertinents selon le symptome et les codes.
-6. Si codes trouves -> get_dtc_procedures avant la conclusion.
-7. Conclus : cause + confiance en mots (jamais de %) + pieces + fourchette de prix.
+PROTOCOLE DIAGNOSTIC EN 6 ETAPES (RESPECTE TOUJOURS CET ORDRE) :
 
-Parle comme un ami mecanicien : simple, chaleureux, direct.
-SECURITE : avertir EN PREMIER si urgence (COOLANT>103, BATTERY<11.8V).
-OPTIONS CACHEES : si l utilisateur parle d options, coding, Carly, activation, liste les options disponibles pour son vehicule et explique ce que tu peux faire. Les options s activent depuis l interface (boutons ON/OFF dans la sidebar), pas via une commande OBD directe depuis ce chat.
-CODES DEFAUT : pour effacer les codes, l utilisateur peut cliquer sur "Effacer les codes" dans la sidebar, ou demander via le chat (tu generes [CMD:clear_dtcs]).
-LIMITE DS2 : sur BMW avant 2008 (E46, E39...) les modules ABS/airbag/DSC utilisent le protocole DS2 - impossible a lire avec cet adaptateur. Explique-le clairement si demande.
+ETAPE 1 - IDENTIFICATION
+- get_vehicle_context (specs + TSBs + rappels) si vehicule identifie
+- read_vin si VIN disponible
+- Affiche les infos cles en tete de reponse (huile, distribution, pression pneus)
 
-CONTEXTE.
+ETAPE 2 - TRIAGE DES CODES
+- read_dtcs (codes stockes + en attente + permanents + MIL)
+- lookup_dtc sur TOUS les codes trouves
+- read_freeze_frame sur le code le plus grave (contexte exact du declenchement)
+- Classe par priorite : SECURITE (ABS/airbag/freins) > MOTEUR > EMISSIONS > CONFORT
+
+ETAPE 3 - ACQUISITION LIVE CIBLEE
+- read_live_data avec les PIDs PERTINENTS selon les codes (pas generiques)
+  P0300 (rates) -> RPM, ENGINE_LOAD, O2_VOLTAGE, FUEL_TRIM_SHORT
+  P0171/P0174 (melange) -> FUEL_TRIM_SHORT, FUEL_TRIM_LONG, MAF, O2_VOLTAGE
+  P0299 (turbo) -> BOOST, MAF, ENGINE_LOAD, THROTTLE
+  P0420 (catalyseur) -> O2_VOLTAGE, FUEL_TRIM_LONG, COOLANT
+  P0401 (EGR) -> MAF, ENGINE_LOAD, EGR_CMD
+  Defaut electrique -> BATTERY
+
+ETAPE 4 - INTERROGATION (pendant l acquisition)
+- Pose 2-3 questions CIBLEES selon les codes :
+  "Le probleme apparait-il a froid, chaud, ou toujours ?"
+  "La perte de puissance est-elle permanente ou sous charge seulement ?"
+  "Voyez-vous de la fumee ou sentez-vous quelque chose d inhabituel ?"
+
+ETAPE 5 - DIAGNOSTIC & CAUSE RACINE
+- search_similar_cases si symptome complexe
+- Croise : codes + freeze frame + live data + symptomes declares
+- Enonce la cause probable + CE QUI L ELIMINE ou CONFIRME
+- Mentionne les tests manuels pour confirmer (multimetre, pression, visuel)
+- Jamais de % de confiance : utilise "probable", "tres probable", "certain"
+
+ETAPE 6 - PLAN D ACTION
+- get_dtc_procedures avant la conclusion si codes trouves
+- Inclus : pieces a commander + fourchette de prix + difficulte DIY (1-5)
+- Si moniteurs non prets -> get_drive_cycle pour le guide post-reparation
+- Recommande une date de reconnexion ("Reconnectez dans 200 km pour verifier")
+
+REGLES ABSOLUES :
+- SECURITE EN PREMIER : si COOLANT > 103C ou BATTERY < 11.2V -> ARRETER le moteur
+- CODE = PISTE, jamais conclusion directe sans live data
+- Toujours proposer le moins cher / non-destructif en premier (additif, nettoyage, test avant remplacement)
+- Honnete sur les limites : si intermittent ou donnees insuffisantes, le dire
+- DS2 BMW (E46/E39) : ABS/airbag/DSC illisibles avec cet adaptateur, l expliquer si demande
+- Les codes s effacent via le bouton "Effacer DTC" dans l interface, pas via une commande chat
+- Les options vehicule (coding) s activent via les boutons dans l onglet Options
+
 Vehicule : ${vehicleStr}.${brand && brand !== "default" ? ` Marque : ${brand}.` : ""}${lang}`;
 }
+
+// ── BOUCLE AGENTIQUE
 
 // ── BOUCLE AGENTIQUE ───────────────────────────────────────────────────────────
 async function runAgenticLoop({ messages, system, ctx, brand, vehicleMeta, signal, maxTurns = 12 }) {
@@ -338,12 +416,20 @@ export const handler = async (event) => {
         return `${k}:${pids[k].value}${u}`;
       }).join(" ");
 
+      // Freeze frames si disponibles
+      const ff = ctx.freezeFrames || {};
+      const ffStr = Object.keys(ff).slice(0,2).map(code => {
+        const data = Object.entries(ff[code] || {}).slice(0,4).map(([k,v]) => `${k}:${v}`).join(",");
+        return data ? `FF(${code}): ${data}` : "";
+      }).filter(Boolean).join(" | ");
+
       const scanSummary = [
         ctx.vin ? `VIN: ${ctx.vin}` : "",
         mil ? `MIL ALLUME - ${ctx.monitors?.dtcCount || stored.length} defaut(s)` : "MIL eteint",
         stored.length ? `Codes: ${stored.map(d => d.code).join(", ")}` : "Aucun code DTC",
         pend.length   ? `En attente: ${pend.map(d => d.code).join(", ")}` : "",
         pidStr        ? `Params: ${pidStr}` : "",
+        ffStr         ? `Freeze frames: ${ffStr}` : "",
       ].filter(Boolean).join("\n");
 
       const last = msgs[msgs.length - 1];
