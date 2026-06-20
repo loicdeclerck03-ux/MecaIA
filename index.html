@@ -1969,7 +1969,7 @@ window.boxInit=function(){
   if(!BOX._init){BOX._init=true;
     el.obd2.on('obd2-ports',boxHandlePorts);
     el.obd2.on('obd2-status',boxHandleStatus);
-    el.obd2.on('obd2-data',boxUpdateLive);
+    el.obd2.on('obd2-data',function(d){if(typeof window.boxUpdateLive==='function')window.boxUpdateLive(d);else boxUpdateLive(d);});
     el.obd2.on('obd2-scan-status',function(d){boxSetScanBtn('\u23F3',d.msg||'Scan...',true);});
     el.obd2.on('obd2-scan-complete',boxHandleScanComplete);
     el.obd2.on('obd2-error',function(m){boxMsg('sys','\u26A0\uFE0F '+m);boxSetScanBtn('\uD83D\uDD0D','SCAN COMPLET',!BOX.connected);BOX.scanning=false;});
