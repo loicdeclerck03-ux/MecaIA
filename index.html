@@ -948,6 +948,17 @@ textarea{resize:vertical;min-height:70px}
 .bbtn-ico:hover{color:var(--acc);border-color:var(--acc)}
 .bload{font-size:12px;color:var(--muted);padding:10px 0;text-align:center}
 /* ===== END Box v2 ===== */
+/* Scroll fix: trackpad + clavier sans souris */
+#box-feed{overflow-y:scroll!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-behavior:smooth}
+#box-feed:focus{outline:none}
+.bfeed{overflow-y:scroll!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.bfeed:focus{outline:none}
+/* Tab Live scrollable */
+#btp-live{overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+/* Tab Options scrollable */
+#btp-opts{overflow-y:scroll!important;-webkit-overflow-scrolling:touch}
+/* Tab Codes scrollable */
+#box-dtc-body{overflow-y:scroll!important;-webkit-overflow-scrolling:touch}
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
