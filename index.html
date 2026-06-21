@@ -1008,11 +1008,11 @@ textarea{resize:vertical;min-height:70px}
 
 /* ═══ MECAIA 3D DESIGN SYSTEM ══════════════════════════════════════════ */
 /* 3D Card tilt */
-.card-3d{transform-style:preserve-3d;transition:transform .15s ease,box-shadow .15s ease;will-change:transform}
+.card-3d{transition:transform .15s ease,box-shadow .15s ease}
 .card-3d:hover{box-shadow:0 20px 60px rgba(232,160,0,.12),0 0 0 1px rgba(232,160,0,.2)}
 
 /* Glassmorphism */
-.glass-panel{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(6,10,13,.75);border:1px solid rgba(232,160,0,.12)}
+
 
 /* Bouton 3D press */
 .btn-3d-press{position:relative;box-shadow:0 4px 0 #6a4800,0 8px 24px rgba(232,160,0,.25);transition:transform .1s,box-shadow .1s}
@@ -1020,19 +1020,16 @@ textarea{resize:vertical;min-height:70px}
 .btn-3d-press:active{transform:translateY(2px)!important;box-shadow:0 2px 0 #6a4800,0 4px 12px rgba(232,160,0,.15)!important}
 
 /* Gradient border cards */
-.grad-border{position:relative}
-.grad-border::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(232,160,0,.3),transparent 60%,rgba(232,160,0,.1));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;transition:opacity .2s}
-.grad-border:hover::before{opacity:1.5}
+.grad-border{position:relative;border:1px solid rgba(232,160,0,.1)!important;transition:border-color .2s}
+.grad-border:hover{border-color:rgba(232,160,0,.3)!important}
 
 /* Spotlight hover */
 .spotlight{position:relative;overflow:hidden}
-.spotlight::after{content:'';position:absolute;width:200px;height:200px;background:radial-gradient(circle,rgba(232,160,0,.08),transparent 70%);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);opacity:0;transition:opacity .3s}
-.spotlight:hover::after{opacity:1}
 
 /* Scanning line */
-@keyframes scan-line{0%{top:-2px}100%{top:100%}}
+@keyframes scan-line{0%{top:-2px;opacity:1}80%{opacity:.5}100%{top:100%;opacity:0}}
 .scan-active{position:relative;overflow:hidden}
-.scan-active::before{content:'';position:absolute;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(232,160,0,.5),transparent);top:-2px;animation:scan-line 3s linear infinite}
+.scan-active::before{content:'';position:absolute;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(232,160,0,.5),transparent);top:-2px;animation:scan-line 6s linear 1 forwards}
 
 /* Arc animation */
 @keyframes arc-grow{from{stroke-dasharray:0 314}to{stroke-dasharray:226 314}}
@@ -1066,7 +1063,7 @@ textarea{resize:vertical;min-height:70px}
 .l-hero > *{position:relative;z-index:1}
 
 /* Nav backdrop */
-.nav{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(6,8,9,.85)!important;border-bottom-color:rgba(255,255,255,.04)!important}
+.nav{background:rgba(6,8,9,.98)!important;border-bottom-color:rgba(255,255,255,.04)!important}
 
 /* Trust badge */
 .l-trust .l-trust-item{background:rgba(10,20,30,.6);border:1px solid rgba(232,160,0,.12);border-radius:20px;padding:4px 14px;font-size:12px;display:inline-flex;align-items:center;gap:6px;transition:border-color .2s}
@@ -1077,6 +1074,11 @@ textarea{resize:vertical;min-height:70px}
 .l-stats-row{display:flex;align-items:center;justify-content:center;gap:28px;margin-top:24px}
 .l-stat-divider{width:1px;height:32px;background:rgba(255,255,255,.06)}
 /* ═════════════════════════════════════════════════════════════════════ */
+
+/* DTC Cards V2 */
+.dtc-card-v2 button:hover{opacity:.8;transition:opacity .15s}
+.dtc-card-v2{transition:box-shadow .2s}
+.dtc-card-v2:hover{box-shadow:0 4px 20px rgba(0,0,0,.3)}
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -1133,6 +1135,20 @@ textarea{resize:vertical;min-height:70px}
   window.addEventListener('mecaia-network',function(e){
     if(e.detail&&e.detail.connected&&window.refreshCredits)window.refreshCredits();
   });
+})();
+
+
+// ── FALLBACK LOADING TIMEOUT ─────────────────────────────────────────
+(function(){
+  // Si le spinner est toujours visible apres 5s, on le cache de force
+  setTimeout(function(){
+    var el=document.getElementById('s-loading');
+    if(el && el.style.display !== 'none'){
+      el.style.opacity='0';
+      setTimeout(function(){ el.style.display='none'; }, 500);
+      console.warn('[MecaIA] Loading timeout — auth trop lente, spinner force-cache');
+    }
+  }, 5000);
 })();
 </script></head>
 <body>
@@ -1217,7 +1233,7 @@ textarea{resize:vertical;min-height:70px}
       Diagnostic Automobile Intelligent
     </div>
 
-    <h1 class="l-h1" id="l-h1" style="background:linear-gradient(135deg,#eef4fa 40%,#e8a000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">L'expert automobile IA<br>dans votre <em>poche</em></h1>
+    <h1 class="l-h1" id="l-h1" style="color:#eef4fa">L'expert automobile IA<br>dans votre <em>poche</em></h1>
     <p class="l-sub" id="l-sub">Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien. Disponible 24h/24.</p>
 
     <div class="l-trust" id="l-trust">
@@ -2051,6 +2067,11 @@ textarea{resize:vertical;min-height:70px}
       <button class="bqcmd" onclick="boxSendCmd(&apos;Remise à zéro vidange&apos;)">&#x1F6E2; Reset</button>
       <button class="bqcmd" onclick="boxSendCmd(&apos;C'est grave ?&apos;)">&#x1F4AC; Grave ?</button>
       <button class="bqcmd" onclick="boxSendCmd(&apos;Que faire maintenant ?&apos;)">&#x1F527; Suite</button>
+      <button class="bqcmd" onclick="boxSendCmd('Analyse la batterie et l alternateur en profondeur')" title="Battery Deep Test">&#x1F50B; Batterie</button>
+      <button class="bqcmd" onclick="boxSendCmd('Lit et interprete les resultats Mode 06 (tests embarques) pour detecter les composants qui se degradent')" title="Mode $06">&#x1F52C; Mode 06</button>
+      <button class="bqcmd" onclick="boxSendCmd('Guide-moi pour le drive cycle adapte a mon vehicule apres reparation')" title="Drive Cycle">&#x1F697; Drive Cycle</button>
+      <button class="bqcmd" onclick="boxSendCmd('Analyse les fuel trims STFT et LTFT pour detecter une derive sur plusieurs sessions')" title="Fuel Trim">&#x26FD; LTFT Analyse</button>
+      <button class="bqcmd" onclick="boxSendCmd('Lis les compteurs de rates par cylindre et dis-moi lequel est problematique')" title="Misfire">&#x1F525; Misfire</button>
     </div>
     <div class="binput-row">
       <textarea id="box-input" rows="1" placeholder="Posez votre question ou décrivez le problème…" class="binput"></textarea>
@@ -2209,7 +2230,50 @@ function boxHandleStatus(s){if(s.type==='connected'){BOX.connected=true;var d=do
 window.boxStartScan=function(){if(!BOX.connected||BOX.scanning)return;BOX.scanning=true;boxSetScanBtn('\u23F3','Scan en cours\u2026',true);boxMsg('user','Lancement du scan complet\u2026');window.MecaIAElectron.obd2.fullScan();};
 function boxHandleScanComplete(data){BOX.scanning=false;BOX.scanResult=data;boxSetScanBtn('\uD83D\uDD04','Nouveau scan',false);boxRenderDTCs(data.dtcs||[],data.pendingDtcs||[],data.permanentDtcs||[]);if(data.vin)boxShowVIN(data.vin);boxCallDylan('Voici les r\u00e9sultats du scan OBD2. Analyse et dis-moi tout.',true);}
 
-function boxRenderDTCs(dtcs,pending,permanent){var all=(dtcs||[]).concat(pending||[]).filter(function(d){return d.code&&/^[A-Z][0-9A-F]{4}$/i.test(d.code);});var body=document.getElementById('box-dtc-body');var cnt=document.getElementById('box-dtc-count');if(!body)return;if(cnt)cnt.textContent=all.length?all.length+' code(s)':'\u2705 Aucun';if(!all.length){body.innerHTML='<div style="text-align:center;padding:12px 0"><span style="color:var(--green);font-size:20px">\u2705</span><div style="font-size:12px;color:var(--muted);margin-top:4px">Aucun code d\u00e9faut<br>Voyant moteur \u00e9teint</div></div>';return;}body.innerHTML=all.map(function(d){var isPend=(pending||[]).some(function(p){return p.code===d.code;});var col=d.code[0]==='P'?'var(--red)':isPend?'var(--warn)':'var(--acc)';return '<div onclick="boxAskDTC(\''+d.code+'\')" style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);cursor:pointer"><span style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;font-weight:700;color:'+col+';min-width:52px">'+d.code+'</span><span style="font-size:10px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(d.description||'Cliquer pour analyse')+'</span></div>';}).join('');}
+function boxRenderDTCs(dtcs,pending,permanent){
+  var all=(dtcs||[]).concat(pending||[]).filter(function(d){return d.code&&/^[A-Z][0-9A-F]{4}$/i.test(d.code);});
+  var body=document.getElementById('box-dtc-body');
+  var cnt=document.getElementById('box-dtc-count');
+  if(!body)return;
+  if(cnt)cnt.textContent=all.length?all.length+' code(s)':'\u2705 Aucun';
+  if(!all.length){
+    body.innerHTML='<div style="text-align:center;padding:24px 0"><span style="font-size:32px">\u2705</span><div style="font-size:13px;color:var(--muted);margin-top:8px">Aucun code d\u00e9faut<br>Voyant moteur \u00e9teint</div></div>';
+    return;
+  }
+  var CAT={'P':'Groupe moteur','C':'Groupe chassis','B':'Groupe carrosserie','U':'Groupe reseau'};
+  body.innerHTML=all.map(function(d){
+    var isPend=(pending||[]).some(function(p){return p.code===d.code;});
+    var isSev=d.code[0]==='P';
+    var col=isSev?'var(--red)':isPend?'var(--warn)':'var(--acc)';
+    var badgeBg=isSev?'rgba(239,68,68,.1)':isPend?'rgba(249,115,22,.1)':'rgba(232,160,0,.1)';
+    var status=isPend?'EN ATTENTE':'ACTIF';
+    var cat=CAT[d.code[0]]||'Inconnu';
+    return '<div class="dtc-card-v2" style="background:var(--s1);border:1px solid var(--bd);border-left:3px solid '+col+';border-radius:10px;padding:12px 14px;margin-bottom:8px">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'+
+        '<span style="background:'+badgeBg+';border:1px solid '+col+';border-radius:5px;padding:3px 8px;font-family:monospace;font-size:13px;font-weight:700;color:'+col+'">'+d.code+'</span>'+
+        '<span style="font-size:10px;font-weight:700;color:'+col+';letter-spacing:.5px">'+status+'</span>'+
+        '<span style="font-size:10px;color:var(--muted);margin-left:auto">'+cat+'</span>'+
+      '</div>'+
+      '<div style="font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5">'+(d.description||'Code inconnu \u2014 cliquer pour analyse')+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
+        '<button onclick="boxAskDTC(''+d.code+'')" style="background:var(--acc);color:#000;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">\u25B6 Analyser avec Dylan</button>'+
+        '<button onclick="window.open('https://mecaiaauto.com/codes/'+d.code+'','_blank')" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx2);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit">\uD83D\uDCCB Proc\u00e9dure</button>'+
+        '<button onclick="boxReadFreezeFrame(''+d.code+'')" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx2);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit">\uD83D\uDCF8 Freeze Frame</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── FREEZE FRAME V2 ──────────────────────────────────────────────────────────
+window.boxReadFreezeFrame = async function(code) {
+  if(!code) return;
+  boxTab('dylan');
+  var msg = 'Lis le freeze frame du code ' + code + ' et analyse le contexte au moment du declenchement (RPM, temp, charge, vitesse).';
+  var inp = document.getElementById('box-input');
+  if(inp){ inp.value = msg; }
+  boxSendCmd(msg);
+};
+
 window.boxAskDTC=function(code){document.getElementById('box-input').value='Explique le code '+code+' et dis-moi comment le corriger';boxSend();};
 window.boxClearDTCs=function(){if(!BOX.connected){boxMsg('sys','Boitier non connect\u00e9.');return;}if(!confirm('Effacer tous les codes d\u00e9fauts ?'))return;boxMsg('sys','Effacement\u2026');window.MecaIAElectron.obd2.clearDTCs();};
 
