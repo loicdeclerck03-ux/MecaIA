@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Programme Bêta MecaIA — Testez l'IA diagnostic auto gratuitement</title>
+<meta name="description" content="Rejoignez les 10 premiers bêta testeurs MecaIA. Accès gratuit 30 jours au diagnostic IA automobile. Compatible tous boitiers OBD2.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',Arial,sans-serif;background:#060809;color:#eef4fa;min-height:100vh}
+.hero{background:linear-gradient(135deg,#060809 0%,#0d1f35 100%);padding:60px 24px 48px;text-align:center}
+.logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;letter-spacing:3px;margin-bottom:32px;display:block}
+.logo span{color:#e8a000}
+.badge{background:rgba(232,160,0,.15);border:1px solid rgba(232,160,0,.3);color:#e8a000;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;display:inline-block;margin-bottom:18px}
+h1{font-size:30px;font-weight:700;line-height:1.3;margin-bottom:14px;max-width:600px;margin-left:auto;margin-right:auto}
+.sub{font-size:16px;color:#b0bec5;max-width:500px;margin:0 auto 32px}
+.slots{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:#4a5568;margin-bottom:0}
+.slot-bar{background:#1a2430;border-radius:20px;height:6px;width:120px;overflow:hidden}
+.slot-fill{background:#e8a000;height:100%;border-radius:20px;width:0%}
+.wrap{max-width:560px;margin:0 auto;padding:40px 24px}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:40px}
+.feat{background:#0d1f35;border:1px solid #1a2430;border-radius:10px;padding:14px 16px}
+.feat-icon{font-size:20px;margin-bottom:6px}
+.feat-t{font-size:13px;font-weight:600;margin-bottom:4px}
+.feat-s{font-size:12px;color:#6b7a89;line-height:1.5}
+.form-card{background:#0a1018;border:1px solid #1a2430;border-radius:14px;padding:24px}
+.form-card h2{font-size:16px;font-weight:600;margin-bottom:20px}
+.field{margin-bottom:16px}
+label{display:block;font-size:12px;font-weight:500;color:#6b7a89;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+input,textarea,select{width:100%;background:#060809;border:1px solid #1a2430;color:#eef4fa;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none}
+input:focus,textarea:focus,select:focus{border-color:#e8a000}
+.btn{width:100%;background:#e8a000;color:#000;border:none;padding:14px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;letter-spacing:.3px}
+.btn:hover{background:#f5c842}.btn:disabled{opacity:.5;cursor:not-allowed}
+.msg{font-size:13px;text-align:center;padding:10px;border-radius:8px;margin-top:12px}
+.msg.ok{background:rgba(34,197,94,.1);color:#22c55e}
+.msg.er{background:rgba(239,68,68,.1);color:#ef4444}
+</style>
+</head>
+<body>
+<div class="hero">
+  <a href="/" class="logo">MECA<span>IA</span></a>
+  <div class="badge">Programme Bêta · 10 places</div>
+  <h1>Testez MecaIA gratuitement pendant 30 jours</h1>
+  <p class="sub">L'IA automobile qui diagnostique, prédit les pannes et mémorise l'historique de votre véhicule.</p>
+  <div class="slots">
+    <div class="slot-bar"><div class="slot-fill" id="slot-fill"></div></div>
+    <span id="slot-text">0/10 places prises</span>
+  </div>
+</div>
+<div class="wrap">
+  <div class="features">
+    <div class="feat"><div class="feat-icon">🔬</div><div class="feat-t">Diagnostic IA complet</div><div class="feat-s">Dylan analyse vos pannes en 6 étapes comme un mécanicien expert</div></div>
+    <div class="feat"><div class="feat-icon">📊</div><div class="feat-t">Prédiction de panne</div><div class="feat-s">Détecte les dérives avant qu'elles deviennent des pannes</div></div>
+    <div class="feat"><div class="feat-icon">🎙️</div><div class="feat-t">Analyse sonore</div><div class="feat-s">Enregistrez un bruit moteur, l'IA l'analyse avec les données OBD</div></div>
+    <div class="feat"><div class="feat-icon">🏥</div><div class="feat-t">Score de santé</div><div class="feat-s">Rapport hebdomadaire automatique par email chaque lundi</div></div>
+  </div>
+
+  <div class="form-card">
+    <h2>Candidater au programme bêta</h2>
+    <div class="field"><label>Votre nom *</label><input id="f-name" type="text" placeholder="Jean Dupont"></div>
+    <div class="field"><label>Email *</label><input id="f-email" type="email" placeholder="jean@example.com"></div>
+    <div class="field"><label>Votre véhicule</label><input id="f-veh" type="text" placeholder="BMW 320d 2003, Peugeot 308 2018..."></div>
+    <div class="field">
+      <label>Vous êtes</label>
+      <select id="f-role">
+        <option value="driver">Conducteur / propriétaire</option>
+        <option value="mechanic">Mécanicien</option>
+        <option value="enthusiast">Passionné auto</option>
+      </select>
+    </div>
+    <div class="field"><label>Pourquoi rejoindre le bêta ? (optionnel)</label><textarea id="f-msg" rows="3" placeholder="Je veux tester..."></textarea></div>
+    <button class="btn" id="f-btn" onclick="submitBeta()">Rejoindre le bêta →</button>
+    <div id="f-msg-out"></div>
+  </div>
+</div>
+
+<script>
+async function submitBeta() {
+  var btn = document.getElementById('f-btn');
+  var name = document.getElementById('f-name').value.trim();
+  var email = document.getElementById('f-email').value.trim();
+  if(!name || !email) { showMsg('Nom et email requis','er'); return; }
+  btn.disabled = true; btn.textContent = 'Envoi...';
+  try {
+    var r = await fetch('/.netlify/functions/beta_register', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name, email, vehicle:document.getElementById('f-veh').value, role:document.getElementById('f-role').value, message:document.getElementById('f-msg').value })
+    });
+    var d = await r.json();
+    if(d.success) { showMsg('Candidature envoyée ! Check vos emails.', 'ok'); btn.textContent = 'Inscrit !'; }
+    else { showMsg(d.message || 'Erreur', 'er'); btn.disabled=false; btn.textContent='Rejoindre le beta \u2192'; }
+  } catch(e) { showMsg('Erreur réseau', 'er'); btn.disabled=false; btn.textContent='Rejoindre le beta \u2192'; }
+}
+function showMsg(txt, type) {
+  var el = document.getElementById('f-msg-out');
+  el.className = 'msg '+type; el.textContent = txt;
+}
+</script>
+</body>
+</html>

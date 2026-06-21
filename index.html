@@ -2945,11 +2945,24 @@ window.suiviReprendre = function(sessionId) {
 };
 
 // Health score dynamique basé sur l'activité du compte
-window.updateHealthScore = function () {
+window.updateHealthScore = async function () {
   const diagCount = parseInt(document.getElementById('gs-d')?.textContent) || 0;
   const vehCount = parseInt(document.getElementById('gs-v')?.textContent) || 0;
+  // Score base si pas de données OBD temps réel
+  let _baseScore = Math.min(100, 50 + vehCount * 10 + diagCount * 5);
+  try {
+    const _vid = window.selCar && window.selCar.id || null;
+    const _tr = await MecaIA.authedFetch('analyse_trends', { method:'POST', body:{ vehicle_id: _vid } });
+    if(_tr && typeof _tr.health_score === 'number') {
+      _baseScore = _tr.health_score;
+      if(_tr.alerts && _tr.alerts.length > 0) {
+        window._obdAlerts = _tr.alerts;
+        if(window.renderOBDAlerts) renderOBDAlerts(_tr.alerts);
+      }
+    }
+  } catch(_e) {}
   // Score calculé : 50 de base + véhicules*10 + diagnostics*5 (max 100)
-  const score = Math.min(100, 50 + vehCount * 10 + diagCount * 5);
+  const score = _baseScore;
   const arc = document.getElementById('hs-arc');
   const num = document.getElementById('hs-num');
   const lbl = document.getElementById('hs-lbl');
@@ -4133,6 +4146,102 @@ window.boxRecordSound = async function() {
     btn.style.borderColor = 'var(--bd)';
   }
 };
+
+
+
+// ── ALERTES OBD TEMPS REEL ───────────────────────────────────────────────────
+window.renderOBDAlerts = function(alerts) {
+  // Trouver ou afficher les alertes (dans pg-suivi sous le health score)
+  var container = document.getElementById('obd-alerts-wrap');
+  if(!container) {
+    var suivi = document.getElementById('pg-suivi');
+    if(!suivi) return;
+    // Creer le container si absent
+    var heroCard = suivi.querySelector('.hs-hero');
+    if(!heroCard) return;
+    container = document.createElement('div');
+    container.id = 'obd-alerts-wrap';
+    container.style.cssText = 'margin-bottom:12px';
+    heroCard.parentNode.insertBefore(container, heroCard.nextSibling);
+  }
+  if(!alerts || alerts.length === 0) { container.innerHTML = ''; return; }
+  var html = '<div class="card" style="padding:0;overflow:hidden">';
+  html += '<div class="ch" style="padding:12px 16px 0"><div class="ct">&#x26A0;&#xFE0F; Alertes OBD</div><span style="font-size:10px;color:var(--muted)">données temps réel</span></div>';
+  html += '<div style="padding:8px 14px 14px">';
+  alerts.forEach(function(a) {
+    var color = a.type === 'CRITICAL' ? 'var(--red)' : a.type === 'WARNING' ? 'var(--orange,#f97316)' : 'var(--acc)';
+    var icon = a.type === 'CRITICAL' ? '&#x1F534;' : a.type === 'WARNING' ? '&#x1F7E1;' : '&#x1F4C8;';
+    html += '<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd)">';
+    html += '<span>' + icon + '</span>';
+    html += '<div style="flex:1"><div style="font-size:12px;font-weight:500;color:' + color + '">' + (a.label||a.pid) + '</div>';
+    html += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + (a.message||'') + '</div></div>';
+    if(a.days_ahead) html += '<span style="font-size:10px;color:var(--muted);white-space:nowrap">dans ' + a.days_ahead + 'j</span>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+  container.innerHTML = html;
+  // Mettre a jour le badge alerte dans la nav
+  if(window.updateAlertBadge) updateAlertBadge(alerts.length);
+};
+
+// AGENT 12: Badge alerte dans la navigation
+window.updateAlertBadge = function(count) {
+  var navTab = document.getElementById('t-suivi');
+  if(!navTab) return;
+  var badge = navTab.querySelector('.alert-badge');
+  if(count > 0) {
+    if(!badge) {
+      badge = document.createElement('span');
+      badge.className = 'alert-badge';
+      badge.style.cssText = 'background:var(--red);color:#fff;border-radius:50%;width:14px;height:14px;font-size:8px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;margin-left:4px;vertical-align:middle';
+      navTab.appendChild(badge);
+    }
+    badge.textContent = count > 9 ? '9+' : count;
+  } else if(badge) {
+    badge.remove();
+  }
+};
+
+// ── CT CHECK STRIPE ──────────────────────────────────────────────────────────
+window.startCTCheck = async function() {
+  if(!window.MecaIA || !window.MecaIA.supa) { showToast('er','Connexion requise'); return; }
+  const sess = await window.MecaIA.supa.auth.getSession();
+  const tok = sess?.data?.session?.access_token;
+  if(!tok) { showToast('er','Connectez-vous pour accéder au CT Check'); return; }
+  showToast('info','Préparation du paiement CT Check...');
+  try {
+    const veh = window.selCar;
+    const r = await MecaIA.authedFetch('stripe_ct_checkout', {
+      method: 'POST',
+      body: {
+        vehicle_name: veh ? veh.marque+' '+veh.modele+' '+veh.annee : null,
+        vehicle_id: veh?.id || null,
+        success_url: window.location.href,
+        cancel_url: window.location.href
+      }
+    });
+    if(r.url) { window.open(r.url, '_blank'); }
+    else { showToast('er', r.error || 'Erreur paiement'); }
+  } catch(e) { showToast('er', 'Erreur: '+e.message); }
+};
+
+// ── SUGGESTION CHIPS ─────────────────────────────────────────────────────────
+window.dylanSuggest = function(text) {
+  var inp = document.getElementById('dylan-in');
+  if(inp) { inp.value = text; inp.focus(); }
+};
+
+// Traiter le retour CT Check (success_url?ct_success=1)
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('ct_success') === '1') {
+    setTimeout(function() {
+      showToast('ok', 'Paiement CT Check reçu ! Lancez votre scan OBD pour générer le rapport.', null, null);
+      // Nettoyer l URL
+      history.replaceState({}, '', window.location.pathname);
+    }, 1500);
+  }
+})();
 
 // ── Stubs de sécurité — évitent les ReferenceError Sentry si BOX IIFE non chargé ──────
 if(typeof window.boxSendCmd !== 'function') window.boxSendCmd = function(){};

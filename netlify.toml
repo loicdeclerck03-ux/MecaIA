@@ -8,3 +8,16 @@
   to = "/codes/:code.html"
   status = 200
   force = false
+
+# Alternative Carly
+[[redirects]]
+  from = "/alternative-carly"
+  to = "/alternative-carly.html"
+  status = 200
+  force = false
+# Page Beta
+[[redirects]]
+  from = "/beta"
+  to = "/beta.html"
+  status = 200
+  force = false

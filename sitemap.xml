@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://mecaiaauto.com/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <lastmod>2026-06-14</lastmod>
-  </url>
+  <!-- Pages principales -->
+  <url><loc>https://mecaiaauto.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://mecaiaauto.com/alternative-carly</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+
+  <!-- Codes DTC -->
+  <url><loc>https://mecaiaauto.com/codes/P0300</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P0171</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P0420</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P0401</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P0299</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P0301</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P0302</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P0100</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
