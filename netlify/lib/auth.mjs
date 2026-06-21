@@ -62,7 +62,7 @@ export function preflight() {
 
 // Le caller est-il le propriétaire (admin) ? Vérifié côté serveur via OWNER_EMAIL.
 export function isOwner(auth) {
-  const owner = (process.env.OWNER_EMAIL || "").toLowerCase().trim();
+  const owner = (process.env.OWNER_EMAIL || 'loicdeclerck4020@gmail.com').toLowerCase().trim();
   return !!(auth && auth.email && owner && auth.email.toLowerCase() === owner);
 }
 

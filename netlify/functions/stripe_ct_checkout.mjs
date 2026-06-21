@@ -1,13 +1,14 @@
 // stripe_ct_checkout.mjs — MecaIA
 // Crée une session Stripe Checkout pour le Certificat CT (9,99€ one-shot)
-// POST { user_id, vehicle_id, success_url, cancel_url }
+// POST { vehicle_id, vehicle_name, success_url, cancel_url }
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const SUPA_URL = process.env.SUPABASE_URL;
 const SUPA_KEY = process.env.SUPABASE_SERVICE_KEY;
-const PRICE_CT = process.env.STRIPE_PRICE_CT || null; // Price ID Stripe à créer
+// Price ID CT Check 9,99€ — produit créé le 21/06/2026 dans Stripe Live
+const PRICE_CT = process.env.STRIPE_PRICE_CT || 'price_1TkiXpQ1QuRc9MT3TmKpKy35';
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
@@ -26,33 +27,22 @@ export const handler = async (event) => {
   if (!user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
 
   try {
-    // Créer la session Checkout
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
       customer_email: user.email,
-      line_items: [{
-        price_data: {
-          currency: 'eur',
-          unit_amount: 999, // 9,99€ en centimes
-          product_data: {
-            name: 'Certificat Prêt pour le CT — MecaIA',
-            description: `Analyse OBD2 complète + rapport IA${vehicle_name ? ' pour ' + vehicle_name : ''}`,
-            images: ['https://mecaiaauto.com/og-image.png'],
-          },
-        },
-        quantity: 1,
-      }],
+      line_items: [{ price: PRICE_CT, quantity: 1 }],
       success_url: (success_url || 'https://mecaiaauto.com') + '?ct_success=1&session_id={CHECKOUT_SESSION_ID}',
       cancel_url: cancel_url || 'https://mecaiaauto.com',
       metadata: {
         user_id: user.id,
         vehicle_id: vehicle_id || '',
+        vehicle_name: vehicle_name || '',
         product: 'ct_check',
       },
     });
 
-    // Sauvegarder la session en attente
+    // Sauvegarder en attente
     await supa.from('stripe_payments').insert({
       user_id: user.id,
       stripe_session_id: session.id,
@@ -61,7 +51,7 @@ export const handler = async (event) => {
       product: 'ct_check',
       vehicle_id: vehicle_id || null,
       created_at: new Date().toISOString(),
-    }).select();
+    });
 
     return {
       statusCode: 200,
