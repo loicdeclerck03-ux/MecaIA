@@ -1,4 +1,4 @@
-﻿// mecaia_box.mjs — Agent Dylan OBD2 Expert v8 — +Mode$06 +FuelTrimHistory +Misfire +BatteryDeep
+// mecaia_box.mjs — Agent Dylan OBD2 Expert v8 — +Mode$06 +FuelTrimHistory +Misfire +BatteryDeep
 // Architecture : boucle agentique tool-use (ADR-022)
 // - SERVER tools executes directement en Netlify (Supabase : DTC, specs EU, procedures, cas similaires)
 // - DEVICE tools "maps" depuis le vehicle_context envoye par l'app Electron (donnees deja collectees)
@@ -283,9 +283,7 @@ function execDeviceTool(name, input, ctx) {
       const units = { RPM:"tr/min",COOLANT:"°C",SPEED:"km/h",ENGINE_LOAD:"%",MAF:"g/s",THROTTLE:"%",FUEL_TRIM_SHORT:"%",FUEL_TRIM_LONG:"%" };
       return `  ${k}: ${v}${units[k] ? " " + units[k] : ""}`;
     });
-    return `Freeze frame ${code} (contexte au declenchement) :
-${lines.join("
-")}`;
+    return `Freeze frame ${code} (contexte au declenchement) :\n${lines.join("\n")}`;
   }
 
   if (name === "get_drive_cycle") {
