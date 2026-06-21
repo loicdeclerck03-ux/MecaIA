@@ -4527,7 +4527,7 @@ window.showCTResult = function(data) {
   }).join('');
   modal.innerHTML = '<div class="modal" style="max-width:500px"><div class="mh" style="justify-content:space-between">'
     +'<div class="mhc" style="font-size:16px">\ud83d\udd0c Certificat CT</div>'
-    +'<button class="mclose" onclick="document.getElementById('m-ct-result').style.display='none'">\u2715</button></div>'
+    +'<button class="mclose" onclick="document.getElementById(&apos;m-ct-result&apos;).style.display=&apos;none&apos;">\u2715</button></div>'
     +'<div class="mbody"><div style="text-align:center;padding:20px 0">'
     +'<div style="font-size:48px;margin-bottom:8px">'+icon+'</div>'
     +'<div style="font-size:24px;font-weight:700;color:'+color+'">'+data.verdict+'</div>'
@@ -4577,7 +4577,7 @@ window.showBilanAnnuel = async function() {
     modal.id='m-bilan'; modal.className='mbg';
     modal.onclick=function(e){if(e.target===modal)modal.style.display='none';};
     var s=data.stats||{};
-    modal.innerHTML='<div class="modal"><div class="mh"><div class="mhc">Bilan '+(data.year||'')+'</div><button class="mclose" onclick="document.getElementById('m-bilan').style.display='none'">x</button></div><div class="mbody"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px"><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.total_km||0)+'</div><div style="font-size:11px;color:var(--muted)">km</div></div><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.total_diagnostics||0)+'</div><div style="font-size:11px;color:var(--muted)">diags</div></div><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.critical_alerts||0)+'</div><div style="font-size:11px;color:var(--muted)">alertes</div></div></div><div style="background:var(--s1);border-radius:10px;padding:14px;font-size:13px;line-height:1.7">'+(data.narrative||'Conduisez plus !')+'</div></div></div>';
+    modal.innerHTML='<div class="modal"><div class="mh"><div class="mhc">Bilan '+(data.year||'')+'</div><button class="mclose" onclick="document.getElementById(&apos;m-bilan&apos;).style.display=&apos;none&apos;">x</button></div><div class="mbody"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px"><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.total_km||0)+'</div><div style="font-size:11px;color:var(--muted)">km</div></div><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.total_diagnostics||0)+'</div><div style="font-size:11px;color:var(--muted)">diags</div></div><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.critical_alerts||0)+'</div><div style="font-size:11px;color:var(--muted)">alertes</div></div></div><div style="background:var(--s1);border-radius:10px;padding:14px;font-size:13px;line-height:1.7">'+(data.narrative||'Conduisez plus !')+'</div></div></div>';
     document.body.appendChild(modal); modal.style.display='flex';
   } catch(e) { if(window.showToast) showToast('er','Bilan: '+e.message); }
 };
