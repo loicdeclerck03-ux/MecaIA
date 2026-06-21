@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "MecaIA",
+    "slug": "mecaia-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#060809"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.mecaia.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "MecaIA utilise le Bluetooth pour se connecter à votre boitier OBD2.",
+        "NSBluetoothPeripheralUsageDescription": "MecaIA utilise le Bluetooth pour lire les données de votre véhicule.",
+        "NSMicrophoneUsageDescription": "MecaIA enregistre les bruits de votre moteur pour les analyser avec l'IA."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#060809"
+      },
+      "package": "com.mecaia.app",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-notifications",
+      [
+        "expo-font",
+        { "fonts": [] }
+      ]
+    ],
+    "scheme": "mecaia",
+    "extra": {
+      "supabaseUrl": "https://vexxjbpbfrvgszvzpmgu.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZleHhqYnBiZnJ2Z3N6dnpwbWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NzU4NzksImV4cCI6MjA5NTU1MTg3OX0.T2owu6atANKHH7PfEUL-BG8F6MAizhsqZb3RQWJOR1U",
+      "apiBaseUrl": "https://mecaiaauto.com/.netlify/functions",
+      "eas": { "projectId": "mecaia-2026" }
+    }
+  }
+}

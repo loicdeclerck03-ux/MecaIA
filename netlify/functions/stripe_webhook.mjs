@@ -53,6 +53,25 @@ export const handler = async (event) => {
         return { statusCode: 200, body: "ignored: not paid" };
       }
 
+      // ── CAS CT CHECK (9,99€ one-shot) ────────────────────────────────
+      if (session.metadata?.product === 'ct_check') {
+        const ctUserId = session.metadata?.user_id;
+        const ctVehicleId = session.metadata?.vehicle_id || null;
+        if (ctUserId) {
+          await supabase.from('stripe_payments').update({
+            status: 'succeeded',
+            updated_at: new Date().toISOString()
+          }).eq('stripe_session_id', session.id);
+          // Marquer le CT check comme payé pour cet utilisateur
+          await supabase.from('user_credits').upsert({
+            user_id: ctUserId,
+            ct_checks_available: supabase.rpc('increment', { x: 1, row_id: ctUserId })
+          }, { onConflict: 'user_id' }).select();
+          console.log('[STRIPE_WEBHOOK] CT Check payé user=' + ctUserId);
+        }
+        return { statusCode: 200, body: JSON.stringify({ received: true, product: 'ct_check' }) };
+      }
+
       const userId       = session.metadata?.user_id;
       const credits      = parseFloat(session.metadata?.credits      || "0");
       const unlimitedDays = parseInt(session.metadata?.unlimited_days || "0", 10);

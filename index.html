@@ -3712,6 +3712,26 @@ window.dylanSend = async function () {
   await dylanTurn({ user_input: msg });
 
   if(window.dprgDone)window.dprgDone();
+  // Email récap post-diagnostic (async, non-bloquant)
+  (async function(){
+    try {
+      var sess = await window.MecaIA.supa.auth.getSession();
+      var tok = sess&&sess.data&&sess.data.session&&sess.data.session.access_token;
+      if(!tok) return;
+      var lastDiag = window._lastDylanDiag || {};
+      fetch('/.netlify/functions/diagnostic_complete', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},
+        body: JSON.stringify({
+          vehicle_id: window.selCar&&window.selCar.id || null,
+          summary: lastDiag.summary || '',
+          hypotheses: lastDiag.hypotheses || [],
+          action_plan: lastDiag.action_plan || [],
+          dtcs: lastDiag.dtcs || []
+        })
+      }).catch(function(){});
+    } catch(e){}
+  })();
 };
 
 window.dylanControl = async function (resultat) {
@@ -3758,6 +3778,15 @@ window.dylanTurn = async function (payload) {
     if (thinking) thinking.remove();
     if (data.session_id) window.currentDiagSession = data.session_id;
     if (data.etat) updateDylanProgress(data.etat);
+    // Sauvegarder les donnees pour l email post-diag
+    if(data) {
+      window._lastDylanDiag = {
+        summary: data.resume_diagnostic || data.conclusion_generale || '',
+        hypotheses: data.hypotheses || [],
+        action_plan: Array.isArray(data.plan_action) ? data.plan_action : (data.plan_action ? [data.plan_action] : []),
+        dtcs: data.codes_defaut || []
+      };
+    }
     dylanRender(data);
     const vehLabel = selCar ? selCar.marque + ' ' + selCar.modele + ' — ' : '';
     save('Conversation Dylan', vehLabel + (data.conclusion ? data.conclusion.cause : 'enquête en cours'), 'dylan');
