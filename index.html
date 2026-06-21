@@ -2405,7 +2405,9 @@ if(!window._obdCloudTs||Date.now()-window._obdCloudTs>29000){
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},
         body:JSON.stringify({vehicle_id:vid,readings:readings,device_id:'mecaia-box'})
-      }).catch(function(){});
+      }).catch(function(){})
+      // Trip tracker MecaIA ONE
+      if(window.selCar&&window.selCar.id){fetch('/.netlify/functions/trip_tracker',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({vehicle_id:vid,session_key:window._sessionKey||'default',pids:window._liveCache||{}})}).catch(function(){});};
     }catch(e){}
   })();
 }
@@ -3749,6 +3751,8 @@ window.downloadApp=function(p){
   toast("Téléchargez l'app sur mecaiaauto.com",'ok');
 };
 window.dylanSend = async function () {
+  // Refresh contexte vehicule si cache expiré
+  if(window.selCar&&window.selCar.id&&!window._vehCtxCache){await window._refreshVehicleContext();}
   if(window.dprgStart) window.dprgStart();
   const inp = document.getElementById('dylan-in'); if (!inp) return;
   const msg = inp.value.trim(); if (!msg) { toast('Écrivez votre message à Dylan', 'er'); return; }
@@ -3757,6 +3761,10 @@ window.dylanSend = async function () {
   await dylanTurn({ user_input: msg });
 
   if(window.dprgDone)window.dprgDone();
+  // Mettre à jour la mémoire du véhicule avec le résumé du diagnostic
+  if(window._lastDylanDiag&&window._lastDylanDiag.summary){
+    window.updateVehicleMemory('Diagnostic: '+window._lastDylanDiag.summary.slice(0,200));
+  }
   // Email récap post-diagnostic (async, non-bloquant)
   (async function(){
     try {
@@ -4379,6 +4387,33 @@ window.showCTResult = function(data) {
 })();
 
 // ── Stubs de sécurité — évitent les ReferenceError Sentry si BOX IIFE non chargé ──────
+window.showBilanAnnuel = async function() {
+  if(window.showToast) showToast('info','Generation bilan...');
+  try {
+    var r = await MecaIA.authedFetch('rapport_annuel',{method:'POST',body:{vehicle_id:window.selCar&&window.selCar.id||null}});
+    var data = await r.json();
+    var modal = document.getElementById('m-bilan') || document.createElement('div');
+    modal.id='m-bilan'; modal.className='mbg';
+    modal.onclick=function(e){if(e.target===modal)modal.style.display='none';};
+    var s=data.stats||{};
+    modal.innerHTML='<div class="modal"><div class="mh"><div class="mhc">Bilan '+(data.year||'')+'</div><button class="mclose" onclick="document.getElementById('m-bilan').style.display='none'">x</button></div><div class="mbody"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px"><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.total_km||0)+'</div><div style="font-size:11px;color:var(--muted)">km</div></div><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.total_diagnostics||0)+'</div><div style="font-size:11px;color:var(--muted)">diags</div></div><div style="background:var(--s1);border-radius:8px;padding:12px;text-align:center"><div style="font-size:24px;color:var(--acc)">'+(s.critical_alerts||0)+'</div><div style="font-size:11px;color:var(--muted)">alertes</div></div></div><div style="background:var(--s1);border-radius:10px;padding:14px;font-size:13px;line-height:1.7">'+(data.narrative||'Conduisez plus !')+'</div></div></div>';
+    document.body.appendChild(modal); modal.style.display='flex';
+  } catch(e) { if(window.showToast) showToast('er','Bilan: '+e.message); }
+};
+window.updateVehicleMemory = async function(info) {
+  if(!window.selCar||!window.selCar.id||!info) return;
+  try { await MecaIA.authedFetch('vehicle_memory',{method:'POST',body:{vehicle_id:window.selCar.id,action:'update',new_info:info}}); window._vehCtxCache=null; } catch(e) {}
+};
+window.runSwarmDiagnosis = async function(symptoms) {
+  if(!window.selCar) return null;
+  try { var veh=window.selCar; var r=await MecaIA.authedFetch('swarm_diagnosis',{method:'POST',body:{vehicle_id:veh.id,marque:veh.marque||'',modele:veh.modele||'',annee:veh.annee||0,symptoms:symptoms||[]}}); return await r.json(); } catch(e) { return null; }
+};
+window.learnBaseline = async function() {
+  if(!window.selCar||!window.selCar.id) return;
+  try { var r=await MecaIA.authedFetch('baseline_learn',{method:'POST',body:{vehicle_id:window.selCar.id}}); var d=await r.json(); if(d.pids_computed&&window.showToast) showToast('ok','Baseline: '+d.pids_computed+' PIDs'); return d; } catch(e) { return null; }
+};
+
+
 if(typeof window.boxSendCmd !== 'function') window.boxSendCmd = function(){};
 if(typeof window.boxToggleMonitors !== 'function') window.boxToggleMonitors = function(){};
 if(typeof window.navTo !== 'function') window.navTo = function(p){ console.log('navTo stub:', p); };
