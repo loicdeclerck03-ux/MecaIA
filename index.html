@@ -1005,6 +1005,78 @@ textarea{resize:vertical;min-height:70px}
 .l-b2b-s{font-size:12px;color:var(--muted);margin-bottom:16px}
 .btn-outline-acc{background:transparent;border:1.5px solid var(--acc);color:var(--acc);border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
 .btn-outline-acc:hover{background:var(--acc);color:#000}
+
+/* ═══ MECAIA 3D DESIGN SYSTEM ══════════════════════════════════════════ */
+/* 3D Card tilt */
+.card-3d{transform-style:preserve-3d;transition:transform .15s ease,box-shadow .15s ease;will-change:transform}
+.card-3d:hover{box-shadow:0 20px 60px rgba(232,160,0,.12),0 0 0 1px rgba(232,160,0,.2)}
+
+/* Glassmorphism */
+.glass-panel{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(6,10,13,.75);border:1px solid rgba(232,160,0,.12)}
+
+/* Bouton 3D press */
+.btn-3d-press{position:relative;box-shadow:0 4px 0 #6a4800,0 8px 24px rgba(232,160,0,.25);transition:transform .1s,box-shadow .1s}
+.btn-3d-press:hover{transform:translateY(-2px)!important;box-shadow:0 6px 0 #6a4800,0 14px 32px rgba(232,160,0,.35)!important}
+.btn-3d-press:active{transform:translateY(2px)!important;box-shadow:0 2px 0 #6a4800,0 4px 12px rgba(232,160,0,.15)!important}
+
+/* Gradient border cards */
+.grad-border{position:relative}
+.grad-border::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(232,160,0,.3),transparent 60%,rgba(232,160,0,.1));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;transition:opacity .2s}
+.grad-border:hover::before{opacity:1.5}
+
+/* Spotlight hover */
+.spotlight{position:relative;overflow:hidden}
+.spotlight::after{content:'';position:absolute;width:200px;height:200px;background:radial-gradient(circle,rgba(232,160,0,.08),transparent 70%);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);opacity:0;transition:opacity .3s}
+.spotlight:hover::after{opacity:1}
+
+/* Scanning line */
+@keyframes scan-line{0%{top:-2px}100%{top:100%}}
+.scan-active{position:relative;overflow:hidden}
+.scan-active::before{content:'';position:absolute;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(232,160,0,.5),transparent);top:-2px;animation:scan-line 3s linear infinite}
+
+/* Arc animation */
+@keyframes arc-grow{from{stroke-dasharray:0 314}to{stroke-dasharray:226 314}}
+.arc-anim{animation:arc-grow 1.4s cubic-bezier(.4,0,.2,1) forwards}
+
+/* Counter flicker */
+@keyframes count-flick{0%,100%{opacity:1}50%{opacity:.7}}
+.count-anim{animation:count-flick .08s ease infinite}
+
+/* Feature card glow */
+.feat-card-v2{background:linear-gradient(160deg,#0a1828,#050e18);border:1px solid #0d1c2c;border-radius:14px;padding:20px;transition:all .2s;position:relative;overflow:hidden}
+.feat-card-v2::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,160,0,.35),transparent);opacity:0;transition:opacity .25s}
+.feat-card-v2:hover{border-color:rgba(232,160,0,.2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.feat-card-v2:hover::after{opacity:1}
+
+/* DTC card */
+.dtc-card{background:linear-gradient(145deg,#0d1f35,#071422);border:1px solid #1a3050;border-radius:14px;padding:18px;transition:all .2s}
+.dtc-card.active{border-color:rgba(239,68,68,.3);box-shadow:0 0 30px rgba(239,68,68,.06)}
+.dtc-badge{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:6px;padding:5px 10px;font-family:monospace;font-size:15px;font-weight:700;color:#ef4444}
+.dtc-badge.warn{background:rgba(232,160,0,.08);border-color:rgba(232,160,0,.25);color:#e8a000}
+.dtc-badge.ok{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:#22c55e}
+
+/* PID card v2 */
+.pid-v2{background:#08111a;border:1px solid #0d1c2c;border-radius:12px;padding:14px;text-align:center;transition:all .2s;cursor:default}
+.pid-v2:hover{border-color:rgba(232,160,0,.35);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.pid-val-v2{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:400;color:#e8a000;letter-spacing:.5px;line-height:1}
+
+/* Hero background glow */
+.l-hero{position:relative}
+.l-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(232,160,0,.05),transparent);pointer-events:none;z-index:0}
+.l-hero > *{position:relative;z-index:1}
+
+/* Nav backdrop */
+.nav{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(6,8,9,.85)!important;border-bottom-color:rgba(255,255,255,.04)!important}
+
+/* Trust badge */
+.l-trust .l-trust-item{background:rgba(10,20,30,.6);border:1px solid rgba(232,160,0,.12);border-radius:20px;padding:4px 14px;font-size:12px;display:inline-flex;align-items:center;gap:6px;transition:border-color .2s}
+.l-trust .l-trust-item:hover{border-color:rgba(232,160,0,.3)}
+
+/* Stats counter in hero */
+.l-stat-num{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#e8a000;letter-spacing:.5px}
+.l-stats-row{display:flex;align-items:center;justify-content:center;gap:28px;margin-top:24px}
+.l-stat-divider{width:1px;height:32px;background:rgba(255,255,255,.06)}
+/* ═════════════════════════════════════════════════════════════════════ */
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -1145,7 +1217,7 @@ textarea{resize:vertical;min-height:70px}
       Diagnostic Automobile Intelligent
     </div>
 
-    <h1 class="l-h1" id="l-h1">L'expert automobile IA<br>dans votre <em>poche</em></h1>
+    <h1 class="l-h1" id="l-h1" style="background:linear-gradient(135deg,#eef4fa 40%,#e8a000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">L'expert automobile IA<br>dans votre <em>poche</em></h1>
     <p class="l-sub" id="l-sub">Diagnostics OBD ultra précis, garage virtuel, recherche de pièces et alertes entretien. Disponible 24h/24.</p>
 
     <div class="l-trust" id="l-trust">
@@ -1197,32 +1269,32 @@ textarea{resize:vertical;min-height:70px}
 
   <!-- Features -->
   <div class="l-feats">
-    <div class="feat">
+    <div class="feat feat-card-v2 spotlight grad-border">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
       <div class="feat-t">Diagnostic IA Expert</div>
       <div class="feat-s">Code OBD ou symptômes — rapport complet avec procédure, outils et coût estimé.</div>
     </div>
-    <div class="feat">
+    <div class="feat feat-card-v2 spotlight grad-border">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
       <div class="feat-t">Garage Virtuel</div>
       <div class="feat-s">Sauvegardez vos véhicules. Score santé et suivi kilométrage automatique.</div>
     </div>
-    <div class="feat">
+    <div class="feat feat-card-v2 spotlight grad-border">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
       <div class="feat-t">Analyse Photo</div>
       <div class="feat-s">Photographiez le problème. L'IA identifie l'état et les défauts visibles.</div>
     </div>
-    <div class="feat">
+    <div class="feat feat-card-v2 spotlight grad-border">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
       <div class="feat-t">Suivi & Historique</div>
       <div class="feat-s">Retrouvez tous vos diagnostics. Reprenez une session en cours en un clic.</div>
     </div>
-    <div class="feat">
+    <div class="feat feat-card-v2 spotlight grad-border">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/></svg></div>
       <div class="feat-t">Recherche Pièces</div>
       <div class="feat-s">Pièces compatibles avec références, urgence et lien de commande direct.</div>
     </div>
-    <div class="feat">
+    <div class="feat feat-card-v2 spotlight grad-border">
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
       <div class="feat-t">Devis PDF Pro</div>
       <div class="feat-s">Générez un devis professionnel en 1 clic. Envoyez à votre client.</div>
@@ -1997,42 +2069,42 @@ textarea{resize:vertical;min-height:70px}
   </div>
   <div id="box-live-grid" class="bgrid">
     <!-- Section 1 : Vitaux -->
-    <div class="bpid" id="bc-RPM"><span class="bpl">Regime</span><span class="bpv" id="bp-rpm2">--</span><span class="bpu">tr/min</span></div>
-    <div class="bpid" id="bc-SPD"><span class="bpl">Vitesse</span><span class="bpv" id="bp-spd2">--</span><span class="bpu">km/h</span></div>
-    <div class="bpid" id="bc-TMP"><span class="bpl">&#x1F321; Moteur</span><span class="bpv" id="bp-tmp2">--</span><span class="bpu">&#xB0;C</span></div>
-    <div class="bpid" id="bc-BAT"><span class="bpl">&#x26A1; Batterie</span><span class="bpv" id="bp-bat2">--</span><span class="bpu">V</span></div>
-    <div class="bpid" id="bc-LOD"><span class="bpl">Charge</span><span class="bpv" id="bp-lod2">--</span><span class="bpu">%</span></div>
-    <div class="bpid" id="bc-THR"><span class="bpl">Papillon</span><span class="bpv" id="bp-thr2">--</span><span class="bpu">%</span></div>
+    <div class="bpid pid-v2" id="bc-RPM"><span class="bpl">Regime</span><span class="bpv" id="bp-rpm2">--</span><span class="bpu">tr/min</span></div>
+    <div class="bpid pid-v2" id="bc-SPD"><span class="bpl">Vitesse</span><span class="bpv" id="bp-spd2">--</span><span class="bpu">km/h</span></div>
+    <div class="bpid pid-v2" id="bc-TMP"><span class="bpl">&#x1F321; Moteur</span><span class="bpv" id="bp-tmp2">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid pid-v2" id="bc-BAT"><span class="bpl">&#x26A1; Batterie</span><span class="bpv" id="bp-bat2">--</span><span class="bpu">V</span></div>
+    <div class="bpid pid-v2" id="bc-LOD"><span class="bpl">Charge</span><span class="bpv" id="bp-lod2">--</span><span class="bpu">%</span></div>
+    <div class="bpid pid-v2" id="bc-THR"><span class="bpl">Papillon</span><span class="bpv" id="bp-thr2">--</span><span class="bpu">%</span></div>
   </div>
   <!-- Section 2 : Moteur admission / turbo (diesel) -->
   <div class="bsec-lbl">&#x1F4A8; Admission &amp; Turbo</div>
   <div class="bgrid bgrid-sm">
-    <div class="bpid" id="bc-MAP"><span class="bpl">Pression adm.</span><span class="bpv" id="bp-map">--</span><span class="bpu">kPa</span></div>
-    <div class="bpid" id="bc-MAF"><span class="bpl">Debit air (MAF)</span><span class="bpv" id="bp-maf">--</span><span class="bpu">g/s</span></div>
-    <div class="bpid" id="bc-IAT"><span class="bpl">Temp. admission</span><span class="bpv" id="bp-iat">--</span><span class="bpu">&#xB0;C</span></div>
-    <div class="bpid" id="bc-OIL"><span class="bpl">&#x1F6E2; Temp. huile</span><span class="bpv" id="bp-oil">--</span><span class="bpu">&#xB0;C</span></div>
-    <div class="bpid" id="bc-EGR"><span class="bpl">EGR cmd.</span><span class="bpv" id="bp-egr">--</span><span class="bpu">%</span></div>
-    <div class="bpid" id="bc-BARO"><span class="bpl">Pression baro.</span><span class="bpv" id="bp-baro">--</span><span class="bpu">kPa</span></div>
+    <div class="bpid pid-v2" id="bc-MAP"><span class="bpl">Pression adm.</span><span class="bpv" id="bp-map">--</span><span class="bpu">kPa</span></div>
+    <div class="bpid pid-v2" id="bc-MAF"><span class="bpl">Debit air (MAF)</span><span class="bpv" id="bp-maf">--</span><span class="bpu">g/s</span></div>
+    <div class="bpid pid-v2" id="bc-IAT"><span class="bpl">Temp. admission</span><span class="bpv" id="bp-iat">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid pid-v2" id="bc-OIL"><span class="bpl">&#x1F6E2; Temp. huile</span><span class="bpv" id="bp-oil">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid pid-v2" id="bc-EGR"><span class="bpl">EGR cmd.</span><span class="bpv" id="bp-egr">--</span><span class="bpu">%</span></div>
+    <div class="bpid pid-v2" id="bc-BARO"><span class="bpl">Pression baro.</span><span class="bpv" id="bp-baro">--</span><span class="bpu">kPa</span></div>
   </div>
   <!-- Section 3 : Corrections carburant -->
   <div class="bsec-lbl">&#x26FD; Corrections carburant</div>
   <div class="bgrid bgrid-sm">
-    <div class="bpid" id="bc-STFT"><span class="bpl">Corr. CT</span><span class="bpv" id="bp-stft">--</span><span class="bpu">%</span></div>
-    <div class="bpid" id="bc-LTFT"><span class="bpl">Corr. LT</span><span class="bpv" id="bp-ltft">--</span><span class="bpu">%</span></div>
-    <div class="bpid" id="bc-FRP"><span class="bpl">Pression rail</span><span class="bpv" id="bp-frp">--</span><span class="bpu">bar</span></div>
-    <div class="bpid" id="bc-INJ"><span class="bpl">Timing inject.</span><span class="bpv" id="bp-inj">--</span><span class="bpu">&#xB0;</span></div>
-    <div class="bpid" id="bc-FLVL"><span class="bpl">Niveau carbu.</span><span class="bpv" id="bp-flvl">--</span><span class="bpu">%</span></div>
-    <div class="bpid" id="bc-RUNT"><span class="bpl">Tps marche</span><span class="bpv" id="bp-runt">--</span><span class="bpu">s</span></div>
+    <div class="bpid pid-v2" id="bc-STFT"><span class="bpl">Corr. CT</span><span class="bpv" id="bp-stft">--</span><span class="bpu">%</span></div>
+    <div class="bpid pid-v2" id="bc-LTFT"><span class="bpl">Corr. LT</span><span class="bpv" id="bp-ltft">--</span><span class="bpu">%</span></div>
+    <div class="bpid pid-v2" id="bc-FRP"><span class="bpl">Pression rail</span><span class="bpv" id="bp-frp">--</span><span class="bpu">bar</span></div>
+    <div class="bpid pid-v2" id="bc-INJ"><span class="bpl">Timing inject.</span><span class="bpv" id="bp-inj">--</span><span class="bpu">&#xB0;</span></div>
+    <div class="bpid pid-v2" id="bc-FLVL"><span class="bpl">Niveau carbu.</span><span class="bpv" id="bp-flvl">--</span><span class="bpu">%</span></div>
+    <div class="bpid pid-v2" id="bc-RUNT"><span class="bpl">Tps marche</span><span class="bpv" id="bp-runt">--</span><span class="bpu">s</span></div>
   </div>
   <!-- Section 4 : Emissions / sondes -->
   <div class="bsec-lbl">&#x1F50D; Emissions</div>
   <div class="bgrid bgrid-sm">
-    <div class="bpid" id="bc-O2A"><span class="bpl">O2 Amont</span><span class="bpv" id="bp-o2a">--</span><span class="bpu">V</span></div>
-    <div class="bpid" id="bc-O2B"><span class="bpl">O2 Aval</span><span class="bpv" id="bp-o2b">--</span><span class="bpu">V</span></div>
-    <div class="bpid" id="bc-AMB"><span class="bpl">Temp. ext.</span><span class="bpv" id="bp-amb">--</span><span class="bpu">&#xB0;C</span></div>
-    <div class="bpid" id="bc-TORQ"><span class="bpl">Couple moteur</span><span class="bpv" id="bp-torq">--</span><span class="bpu">%</span></div>
-    <div class="bpid" id="bc-CATMP"><span class="bpl">Temp. cata.</span><span class="bpv" id="bp-catmp">--</span><span class="bpu">&#xB0;C</span></div>
-    <div class="bpid" id="bc-DIST"><span class="bpl">Dist. MIL</span><span class="bpv" id="bp-dist">--</span><span class="bpu">km</span></div>
+    <div class="bpid pid-v2" id="bc-O2A"><span class="bpl">O2 Amont</span><span class="bpv" id="bp-o2a">--</span><span class="bpu">V</span></div>
+    <div class="bpid pid-v2" id="bc-O2B"><span class="bpl">O2 Aval</span><span class="bpv" id="bp-o2b">--</span><span class="bpu">V</span></div>
+    <div class="bpid pid-v2" id="bc-AMB"><span class="bpl">Temp. ext.</span><span class="bpv" id="bp-amb">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid pid-v2" id="bc-TORQ"><span class="bpl">Couple moteur</span><span class="bpv" id="bp-torq">--</span><span class="bpu">%</span></div>
+    <div class="bpid pid-v2" id="bc-CATMP"><span class="bpl">Temp. cata.</span><span class="bpv" id="bp-catmp">--</span><span class="bpu">&#xB0;C</span></div>
+    <div class="bpid pid-v2" id="bc-DIST"><span class="bpl">Dist. MIL</span><span class="bpv" id="bp-dist">--</span><span class="bpu">km</span></div>
   </div>
   <div class="bmon-wrap"><div class="bmon-wrap">
     <button class="bmon-tog" onclick="boxToggleMonitors()"><span id="box-mon-toggle">&#x25BC; Moniteurs OBD</span></button>
@@ -3761,6 +3833,51 @@ window.dylanSend = async function () {
   await dylanTurn({ user_input: msg });
 
   if(window.dprgDone)window.dprgDone();
+// ── MECAIA 3D TILT EFFECTS ──────────────────────────────────────────
+(function(){
+  // 3D tilt sur les feat cards
+  document.querySelectorAll('.feat-card-v2,.card-3d,.dtc-card').forEach(function(card){
+    card.addEventListener('mousemove',function(e){
+      var r=card.getBoundingClientRect();
+      var x=(e.clientX-r.left-r.width/2)/(r.width/2);
+      var y=(e.clientY-r.top-r.height/2)/(r.height/2);
+      card.style.transform='rotateY('+(x*8)+'deg) rotateX('+(-y*5)+'deg) translateY(-3px)';
+      card.classList.add('card-3d');
+    });
+    card.addEventListener('mouseleave',function(){
+      card.style.transform='';
+    });
+  });
+
+  // Spotlight cursor
+  document.querySelectorAll('.spotlight').forEach(function(el){
+    el.addEventListener('mousemove',function(e){
+      var r=el.getBoundingClientRect();
+      var x=e.clientX-r.left, y=e.clientY-r.top;
+      var pseudo=el.style;
+      el.style.setProperty('--sx',x+'px');
+      el.style.setProperty('--sy',y+'px');
+      var after=el.querySelector('::after');
+    });
+  });
+
+  // Arc animation pour le health score
+  var arcs=document.querySelectorAll('.hs-arc');
+  if(arcs.length && window.IntersectionObserver){
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('arc-anim');}});
+    },{threshold:.3});
+    arcs.forEach(function(a){obs.observe(a);});
+  } else if(arcs.length){
+    arcs.forEach(function(a){a.classList.add('arc-anim');});
+  }
+
+  // Bouton 3D press
+  document.querySelectorAll('.btn,.btn-pri').forEach(function(btn){
+    btn.classList.add('btn-3d-press');
+  });
+})();
+
   // Mettre à jour la mémoire du véhicule avec le résumé du diagnostic
   if(window._lastDylanDiag&&window._lastDylanDiag.summary){
     window.updateVehicleMemory('Diagnostic: '+window._lastDylanDiag.summary.slice(0,200));
