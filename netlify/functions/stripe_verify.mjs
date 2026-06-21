@@ -12,7 +12,8 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET);
+let _supa = null;
+const getSupabase = () => _supa || (_supa = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET));
 
 export const handler = async (event) => {
   try {
@@ -38,7 +39,7 @@ export const handler = async (event) => {
 
     // 2) On ne crédite QUE si Stripe confirme le paiement
     if (paid && userId && (credits > 0 || unlimitedDays > 0)) {
-      const { data, error } = await supabase.rpc("apply_stripe_purchase", {
+      const { data, error } = await getSupabase().rpc("apply_stripe_purchase", {
         p_event_id: session.id,        // clé = n° de commande (même que le webhook)
         p_session_id: session.id,
         p_user_id: userId,
@@ -57,7 +58,7 @@ export const handler = async (event) => {
     // 3) On renvoie le solde à jour pour l'affichage
     let balance = null;
     if (paid && userId) {
-      const { data } = await supabase.rpc("get_user_credits", { p_user_id: userId });
+      const { data } = await getSupabase().rpc("get_user_credits", { p_user_id: userId });
       if (data && data[0]) balance = data[0].credits_balance;
     }
 

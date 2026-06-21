@@ -1,112 +1,150 @@
-// app/(tabs)/obd.tsx — OBD Connection Screen
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+// app/(tabs)/obd.tsx — OBD2 Screen avec useOBDBLE hook
+import { useState, useCallback } from 'react';
+import {
+  View, Text, TouchableOpacity, FlatList, StyleSheet,
+  ScrollView, ActivityIndicator,
+} from 'react-native';
+import { useFocusEffect } from 'expo-router';
+import { useOBDBLE } from '../../hooks/useOBDBLE';
+import { authedFetch, supabase } from '../../lib/supabase';
 import { COLORS } from '../_layout';
 
-type LivePid = { key: string; label: string; unit: string; value: string | null };
-
-const PIDS: LivePid[] = [
-  { key: 'RPM', label: 'Régime', unit: 'tr/min', value: null },
-  { key: 'SPEED', label: 'Vitesse', unit: 'km/h', value: null },
-  { key: 'COOLANT', label: 'Refroid.', unit: '°C', value: null },
-  { key: 'BATTERY', label: 'Batterie', unit: 'V', value: null },
-  { key: 'ENGINE_LOAD', label: 'Charge', unit: '%', value: null },
-  { key: 'LTFT', label: 'LTFT B1', unit: '%', value: null },
-  { key: 'MAF', label: 'MAF', unit: 'g/s', value: null },
-  { key: 'INTAKE_MAP', label: 'Boost', unit: 'kPa', value: null },
-];
-
 export default function OBDScreen() {
-  const [connected, setConnected] = useState(false);
-  const [pids, setPids] = useState<LivePid[]>(PIDS);
-  const [dtcs, setDtcs] = useState<string[]>([]);
+  const { state, devices, connectedDevice, liveData, dtcs, error, scanDevices, connect, disconnect, readDTCs } = useOBDBLE();
+  const [activeTab, setActiveTab] = useState<'live'|'dtc'>('live');
+
+  useFocusEffect(useCallback(() => {
+    if(connectedDevice) readDTCs();
+  }, [connectedDevice]));
+
+  const LIVE_PIDS = [
+    { key: 'RPM', emoji: '⚡' }, { key: 'SPEED', emoji: '🏎' },
+    { key: 'COOLANT', emoji: '🌡' }, { key: 'BATTERY', emoji: '🔋' },
+    { key: 'LTFT', emoji: '⛽' }, { key: 'MAF', emoji: '💨' },
+  ];
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>OBD2 Live</Text>
-        <View style={[styles.statusDot, { backgroundColor: connected ? '#22c55e' : '#4a5568' }]} />
-      </View>
-
-      {/* Connection card */}
-      <View style={styles.connCard}>
-        <Text style={styles.connIcon}>{connected ? '🔌' : '📡'}</Text>
-        <Text style={styles.connTitle}>{connected ? 'Connecté' : 'Non connecté'}</Text>
-        <Text style={styles.connSub}>
-          {connected
-            ? 'OBD2 actif — données en temps réel'
-            : 'Branchez le boitier MecaIA dans le port OBD2\n(sous le tableau de bord, côté conducteur)'}
-        </Text>
-        <TouchableOpacity
-          style={[styles.connBtn, connected && styles.connBtnActive]}
-          onPress={() => setConnected(!connected)}
-        >
-          <Text style={[styles.connBtnText, connected && { color: '#000' }]}>
-            {connected ? '⏹ Déconnecter' : '▶ Connecter via Bluetooth'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Live PIDs grid */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Données live</Text>
-        <View style={styles.pidsGrid}>
-          {pids.map(p => (
-            <View key={p.key} style={[styles.pidCard, !connected && { opacity: 0.4 }]}>
-              <Text style={styles.pidVal}>{p.value ?? '—'}</Text>
-              <Text style={styles.pidUnit}>{p.unit}</Text>
-              <Text style={styles.pidLabel}>{p.label}</Text>
-            </View>
-          ))}
+        <View>
+          <Text style={styles.headerTitle}>OBD2</Text>
+          <Text style={styles.headerSub}>{connectedDevice ? connectedDevice.name : 'Non connecté'}</Text>
         </View>
+        <View style={[styles.dot, { backgroundColor: state==='connected' ? '#22c55e' : state==='scanning'||state==='connecting' ? COLORS.accent : '#3d4f5f' }]} />
       </View>
 
-      {/* DTC codes */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Codes défaut (DTC)</Text>
-        {!connected ? (
-          <Text style={styles.noConn}>Connectez l'OBD2 pour lire les codes</Text>
-        ) : dtcs.length === 0 ? (
-          <View style={styles.noDtc}>
-            <Text style={{ fontSize: 28 }}>✅</Text>
-            <Text style={styles.noDtcText}>Aucun code défaut actif</Text>
+      <ScrollView>
+        {/* Connection panel */}
+        {state !== 'connected' ? (
+          <View style={styles.connPanel}>
+            <Text style={{ fontSize: 40, textAlign:'center', marginBottom:8 }}>{state==='scanning'?'📡':'🔌'}</Text>
+            <Text style={styles.connTitle}>{state==='scanning'?'Scan en cours...':state==='connecting'?'Connexion...':'Branchez le boitier OBD2'}</Text>
+            {error ? <Text style={styles.err}>{error}</Text> : null}
+
+            {state === 'idle' && (
+              <TouchableOpacity style={styles.scanBtn} onPress={scanDevices}>
+                <Text style={styles.scanBtnText}>🔍 Chercher un boitier</Text>
+              </TouchableOpacity>
+            )}
+            {state === 'scanning' && <ActivityIndicator color={COLORS.accent} style={{marginTop:12}} />}
+            {devices.length > 0 && state === 'idle' && (
+              <View style={styles.deviceList}>
+                {devices.map(d => (
+                  <TouchableOpacity key={d.id} style={styles.deviceRow} onPress={() => connect(d)}>
+                    <View>
+                      <Text style={styles.deviceName}>{d.name}</Text>
+                      <Text style={styles.deviceId}>{d.id} · {d.rssi} dBm</Text>
+                    </View>
+                    <Text style={{ color: COLORS.accent, fontSize:13 }}>Connecter →</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
         ) : (
-          dtcs.map(d => (
-            <View key={d} style={styles.dtcCard}>
-              <Text style={styles.dtcCode}>{d}</Text>
+          <>
+            {/* Tabs */}
+            <View style={styles.tabs}>
+              {(['live','dtc'] as const).map(tab => (
+                <TouchableOpacity key={tab} style={[styles.tab, activeTab===tab&&styles.tabActive]} onPress={() => setActiveTab(tab)}>
+                  <Text style={[styles.tabText, activeTab===tab&&{color:COLORS.accent}]}>
+                    {tab==='live' ? '📊 Live' : `🔍 DTC${dtcs.length>0?` (${dtcs.length})`:''}`}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity style={styles.disconnBtn} onPress={disconnect}>
+                <Text style={{ color:'#ef4444', fontSize:12 }}>⏹ Déconnecter</Text>
+              </TouchableOpacity>
             </View>
-          ))
-        )}
-      </View>
 
-      <View style={{ height: 32 }} />
-    </ScrollView>
+            {activeTab === 'live' ? (
+              <View style={styles.pidsGrid}>
+                {LIVE_PIDS.map(({key, emoji}) => {
+                  const d = liveData[key];
+                  return (
+                    <View key={key} style={styles.pidCard}>
+                      <Text style={styles.pidEmoji}>{emoji}</Text>
+                      <Text style={styles.pidVal}>{d?.value ?? '—'}</Text>
+                      <Text style={styles.pidUnit}>{d?.unit ?? ''}</Text>
+                      <Text style={styles.pidLabel}>{d?.label ?? key}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            ) : (
+              <View style={{padding:16}}>
+                {dtcs.length === 0 ? (
+                  <View style={{alignItems:'center', padding:32}}>
+                    <Text style={{fontSize:36,marginBottom:8}}>✅</Text>
+                    <Text style={{color:COLORS.text,fontWeight:'600',fontSize:15}}>Aucun code défaut</Text>
+                    <Text style={{color:COLORS.muted,fontSize:12,marginTop:4}}>Votre véhicule ne présente pas d'erreur OBD active</Text>
+                  </View>
+                ) : dtcs.map(code => (
+                  <View key={code} style={styles.dtcCard}>
+                    <Text style={styles.dtcCode}>{code}</Text>
+                    <TouchableOpacity style={styles.dtcAnalyze}>
+                      <Text style={{color:COLORS.accent,fontSize:11,fontWeight:'600'}}>Analyser avec Dylan →</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            )}
+          </>
+        )}
+        <View style={{height:32}} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bg },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 56, paddingHorizontal: 20, paddingBottom: 14, borderBottomWidth: 0.5, borderBottomColor: COLORS.border },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.text },
-  statusDot: { width: 10, height: 10, borderRadius: 5 },
-  connCard: { margin: 16, backgroundColor: COLORS.card, borderRadius: 16, padding: 24, alignItems: 'center', borderWidth: 0.5, borderColor: COLORS.border },
-  connIcon: { fontSize: 36, marginBottom: 8 },
-  connTitle: { fontSize: 17, fontWeight: '600', color: COLORS.text, marginBottom: 6 },
-  connSub: { fontSize: 13, color: COLORS.muted, textAlign: 'center', lineHeight: 19, marginBottom: 20 },
-  connBtn: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: COLORS.accent, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 12 },
-  connBtnActive: { backgroundColor: COLORS.accent },
-  connBtnText: { color: COLORS.accent, fontWeight: '700', fontSize: 14 },
-  section: { paddingHorizontal: 16, marginBottom: 16 },
-  sectionTitle: { fontSize: 13, fontWeight: '600', color: COLORS.muted, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 },
-  pidsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  pidCard: { width: '47%', backgroundColor: COLORS.card, borderRadius: 12, padding: 14, borderWidth: 0.5, borderColor: COLORS.border },
-  pidVal: { fontSize: 22, fontWeight: '300', color: COLORS.accent, lineHeight: 28 },
-  pidUnit: { fontSize: 10, color: COLORS.muted, marginBottom: 4 },
-  pidLabel: { fontSize: 12, color: COLORS.muted },
-  noConn: { fontSize: 13, color: COLORS.muted, textAlign: 'center', padding: 20 },
-  noDtc: { alignItems: 'center', padding: 20, gap: 8 },
-  noDtcText: { fontSize: 14, color: COLORS.muted },
-  dtcCard: { backgroundColor: '#1a0a0a', borderWidth: 0.5, borderColor: '#e8a000', borderRadius: 8, padding: 12, marginBottom: 8 },
-  dtcCode: { fontSize: 16, fontWeight: '700', color: COLORS.accent, fontFamily: 'monospace' },
+  container: { flex:1, backgroundColor: COLORS.bg },
+  header: { flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingTop:56, paddingHorizontal:20, paddingBottom:14, borderBottomWidth:0.5, borderBottomColor:COLORS.border },
+  headerTitle: { fontSize:20, fontWeight:'700', color:COLORS.text },
+  headerSub: { fontSize:12, color:COLORS.muted, marginTop:1 },
+  dot: { width:12, height:12, borderRadius:6 },
+  connPanel: { margin:16, backgroundColor:COLORS.card, borderRadius:16, padding:24, borderWidth:0.5, borderColor:COLORS.border },
+  connTitle: { fontSize:15, fontWeight:'600', color:COLORS.text, textAlign:'center', marginBottom:16 },
+  err: { color:'#ef4444', fontSize:12, textAlign:'center', marginBottom:10 },
+  scanBtn: { backgroundColor:COLORS.accent, borderRadius:10, padding:13, alignItems:'center' },
+  scanBtnText: { color:'#000', fontWeight:'700', fontSize:14 },
+  deviceList: { marginTop:16, gap:8 },
+  deviceRow: { flexDirection:'row', justifyContent:'space-between', alignItems:'center', backgroundColor:'rgba(255,255,255,.04)', borderRadius:10, padding:12 },
+  deviceName: { fontSize:13, fontWeight:'600', color:COLORS.text },
+  deviceId: { fontSize:10, color:COLORS.muted, marginTop:2 },
+  tabs: { flexDirection:'row', alignItems:'center', borderBottomWidth:0.5, borderBottomColor:COLORS.border, paddingHorizontal:12 },
+  tab: { paddingVertical:12, paddingHorizontal:16 },
+  tabActive: { borderBottomWidth:2, borderBottomColor:COLORS.accent },
+  tabText: { fontSize:13, color:COLORS.muted, fontWeight:'500' },
+  disconnBtn: { marginLeft:'auto', padding:10 },
+  pidsGrid: { flexDirection:'row', flexWrap:'wrap', padding:12, gap:8 },
+  pidCard: { width:'30%', backgroundColor:COLORS.card, borderRadius:12, padding:12, borderWidth:0.5, borderColor:COLORS.border, alignItems:'center' },
+  pidEmoji: { fontSize:20, marginBottom:4 },
+  pidVal: { fontSize:20, fontWeight:'300', color:COLORS.accent },
+  pidUnit: { fontSize:9, color:COLORS.muted },
+  pidLabel: { fontSize:10, color:COLORS.muted, marginTop:2 },
+  dtcCard: { backgroundColor:'#0d0a04', borderWidth:0.5, borderColor:'rgba(232,160,0,.4)', borderRadius:10, padding:14, marginBottom:8 },
+  dtcCode: { fontSize:18, fontWeight:'700', color:COLORS.accent, fontFamily:'monospace', marginBottom:6 },
+  dtcAnalyze: { alignSelf:'flex-start' },
 });

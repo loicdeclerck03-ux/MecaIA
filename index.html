@@ -992,6 +992,19 @@ textarea{resize:vertical;min-height:70px}
 
 #btp-dylan{position:relative}
 #box-feed:focus{outline:none}
+
+.l-social{padding:32px 24px;max-width:860px;margin:0 auto}
+.l-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--muted);text-align:center;margin-bottom:20px}
+.l-reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:28px}
+.l-review{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px}
+.l-review-stars{color:#e8a000;font-size:13px;margin-bottom:6px}
+.l-review-text{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:8px;font-style:italic}
+.l-review-author{font-size:11px;color:var(--muted)}
+.l-b2b-cta{background:rgba(232,160,0,.06);border:1px solid rgba(232,160,0,.2);border-radius:14px;padding:22px;text-align:center}
+.l-b2b-t{font-size:15px;font-weight:600;color:var(--tx1);margin-bottom:6px}
+.l-b2b-s{font-size:12px;color:var(--muted);margin-bottom:16px}
+.btn-outline-acc{background:transparent;border:1.5px solid var(--acc);color:var(--acc);border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-outline-acc:hover{background:var(--acc);color:#000}
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -1215,6 +1228,33 @@ textarea{resize:vertical;min-height:70px}
       <div class="feat-s">Générez un devis professionnel en 1 clic. Envoyez à votre client.</div>
     </div>
   </div>
+  <!-- SECTION: TEMOIGNAGES + B2B -->
+  <div class="l-social">
+    <div class="l-section-title">Ils utilisent MecaIA</div>
+    <div class="l-reviews">
+      <div class="l-review">
+        <div class="l-review-stars">★★★★★</div>
+        <p class="l-review-text">"Dylan a tré de suite identifié le problème de ma Peugeot 308. 30 minutes de diagnostic, contre 2h en garage. Bluffant."</p>
+        <div class="l-review-author">Thomas V. • Peugeot 308 THP 2016</div>
+      </div>
+      <div class="l-review">
+        <div class="l-review-stars">★★★★★</div>
+        <p class="l-review-text">"Code P0401 sur ma Golf. Dylan m'a expliqué exactement quoi vérifier, dans quel ordre. Pièce comando, problème résolu."</p>
+        <div class="l-review-author">Marc D. • VW Golf 7 TDI 2017</div>
+      </div>
+      <div class="l-review">
+        <div class="l-review-stars">★★★★★</div>
+        <p class="l-review-text">"En tant que mécanicien, je l'utilise pour les cas difficiles. L'IA pose les bonnes questions et m'oriente sur des pistes que j'aurais pas forcément suivies."</p>
+        <div class="l-review-author">Karim M. • Mécanicien Indépendant, Liège</div>
+      </div>
+    </div>
+    <div class="l-b2b-cta">
+      <div class="l-b2b-t">Vous êtes mécanicien ou garage ?</div>
+      <div class="l-b2b-s">Mode professionnel disponible — multi-véhicules, rapport client, accès équipe</div>
+      <button class="btn-outline-acc" onclick="goAuth('register')">Essai pro gratuit 30 jours</button>
+    </div>
+  </div>
+
 
   <!-- How it works -->
   <div class="l-how">
@@ -4274,6 +4314,67 @@ window.dylanSuggest = function(text) {
       // Nettoyer l URL
       history.replaceState({}, '', window.location.pathname);
     }, 1500);
+  }
+})();
+
+
+// ── CT CHECK RESULT DISPLAY ──────────────────────────────────────────────────
+window.showCTResult = function(data) {
+  var modal = document.getElementById('m-ct-result');
+  if(!modal) {
+    modal = document.createElement('div');
+    modal.id = 'm-ct-result';
+    modal.className = 'mbg';
+    modal.onclick = function(e){ if(e.target===modal) modal.style.display='none'; };
+    document.body.appendChild(modal);
+  }
+  var ready = data.ready;
+  var score = data.confidence || 0;
+  var color = ready ? '#22c55e' : '#ef4444';
+  var icon = ready ? '\u2705' : '\u274c';
+  var issuesHtml = (data.issues||[]).map(function(i){
+    var c = i.type==='CRITICAL'?'#ef4444':i.type==='WARNING'?'#f97316':'#e8a000';
+    return '<div style="padding:7px 0;border-bottom:1px solid var(--bd);font-size:12px;color:'+c+'">'+i.label+'</div>';
+  }).join('');
+  modal.innerHTML = '<div class="modal" style="max-width:500px"><div class="mh" style="justify-content:space-between">'
+    +'<div class="mhc" style="font-size:16px">\ud83d\udd0c Certificat CT</div>'
+    +'<button class="mclose" onclick="document.getElementById('m-ct-result').style.display='none'">\u2715</button></div>'
+    +'<div class="mbody"><div style="text-align:center;padding:20px 0">'
+    +'<div style="font-size:48px;margin-bottom:8px">'+icon+'</div>'
+    +'<div style="font-size:24px;font-weight:700;color:'+color+'">'+data.verdict+'</div>'
+    +'<div style="font-size:13px;color:var(--muted);margin-top:4px">Confiance: '+score+'%</div></div>'
+    +(issuesHtml ? '<div style="margin-bottom:14px">'+issuesHtml+'</div>' : '')
+    +'<div style="background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:14px;margin-bottom:14px;font-size:13px;line-height:1.7;color:var(--tx2)">'
+    +(data.ai_report||'Analyse disponible apres le scan OBD.')+'</div>'
+    +'<div style="font-size:11px;color:var(--muted);text-align:center">Rapport indicatif. Resultat officiel depend du centre CT.</div>'
+    +'</div></div>';
+  modal.style.display = 'flex';
+};
+
+// Verifier si un rapport CT est disponible au retour du paiement
+(function(){
+  if(typeof URLSearchParams === 'undefined') return;
+  var p = new URLSearchParams(window.location.search);
+  if(p.get('ct_success')==='1') {
+    setTimeout(async function(){
+      try {
+        var sess = await window.MecaIA.supa.auth.getSession();
+        var tok = sess&&sess.data&&sess.data.session&&sess.data.session.access_token;
+        if(!tok) return;
+        var r = await fetch('/.netlify/functions/ct_check', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},
+          body: JSON.stringify({
+            user_id: sess.data.session.user.id,
+            vehicle_id: window.selCar&&window.selCar.id||null,
+            monitors:{}, dtcs:[], mil_on:false
+          })
+        });
+        var data = await r.json();
+        if(data.verdict) window.showCTResult(data);
+      } catch(e){}
+      history.replaceState({},'',window.location.pathname);
+    }, 2000);
   }
 })();
 

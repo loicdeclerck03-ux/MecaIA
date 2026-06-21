@@ -10,7 +10,8 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET);
+let _supa = null;
+const getSupabase = () => _supa || (_supa = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET));
 
 export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -58,14 +59,14 @@ export const handler = async (event) => {
         const ctUserId = session.metadata?.user_id;
         const ctVehicleId = session.metadata?.vehicle_id || null;
         if (ctUserId) {
-          await supabase.from('stripe_payments').update({
+          await getSupabase().from('stripe_payments').update({
             status: 'succeeded',
             updated_at: new Date().toISOString()
           }).eq('stripe_session_id', session.id);
           // Marquer le CT check comme payé pour cet utilisateur
-          await supabase.from('user_credits').upsert({
+          await getSupabase().from('user_credits').upsert({
             user_id: ctUserId,
-            ct_checks_available: supabase.rpc('increment', { x: 1, row_id: ctUserId })
+            ct_checks_available: getSupabase().rpc('increment', { x: 1, row_id: ctUserId })
           }, { onConflict: 'user_id' }).select();
           console.log('[STRIPE_WEBHOOK] CT Check payé user=' + ctUserId);
         }
@@ -81,7 +82,7 @@ export const handler = async (event) => {
         return { statusCode: 200, body: "ignored: bad metadata" };
       }
 
-      const { data, error } = await supabase.rpc("apply_stripe_purchase", {
+      const { data, error } = await getSupabase().rpc("apply_stripe_purchase", {
         p_event_id    : session.id,
         p_session_id  : session.id,
         p_user_id     : userId,
@@ -121,7 +122,7 @@ export const handler = async (event) => {
       }
 
       // Clé d'idempotence = invoice.id (unique par facture Stripe)
-      const { data, error } = await supabase.rpc("apply_stripe_purchase", {
+      const { data, error } = await getSupabase().rpc("apply_stripe_purchase", {
         p_event_id    : invoice.id,
         p_session_id  : invoice.id,
         p_user_id     : userId,
