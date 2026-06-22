@@ -1,4 +1,4 @@
-// send_cto_report.mjs — Rapport CTO autonome via Resend
+﻿// send_cto_report.mjs — Rapport CTO autonome via Resend
 export default async function handler(req) {
     if (req.method !== "POST") return new Response("POST only", { status: 405 });
 
@@ -36,7 +36,7 @@ a{color:#e8a000}pre{background:#1c2b3a;padding:10px;border-radius:6px;font-size:
         method: "POST",
         headers: { "Authorization": `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-            from: "CTO MecaIA <cto@mecaiaauto.com>",
+            from: process.env.EMAIL_FROM || "MecaIA <noreply@mecaiaauto.com>",
             to: ["loicdeclerck4020@gmail.com"],
             subject,
             html,
