@@ -2,6 +2,7 @@
 import { getUser, json, preflight, serviceClient } from "../lib/auth.mjs";
 
 export const handler = async (event) => {
+  try {
   if (event.httpMethod === "OPTIONS") return preflight();
   if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
 
@@ -78,4 +79,8 @@ export const handler = async (event) => {
   });
 
   return json(200, { success: true, sessions });
+  } catch(e) {
+    console.error('diag_sessions_list error:', e);
+    return json(500, { error: e.message });
+  }
 };
