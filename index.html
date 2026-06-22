@@ -418,6 +418,29 @@ textarea{resize:vertical;min-height:70px}
 }
 .urg-box:hover{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.09)}
 
+/* T006 Voyants */
+.l-voyants{max-width:860px;margin:44px auto 0;padding:0 16px}
+.l-voyants-t{text-align:center;font-size:20px;font-weight:700;color:#eef4fa;margin-bottom:6px}
+.l-voyants-s{text-align:center;font-size:14px;color:#7a9ab5;margin-bottom:24px}
+.l-voyants-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px}
+.voy-card{background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.voy-card:hover,.voy-card.active{border-color:#e8a000;background:#0d1f35}
+.voy-icon{font-size:24px;margin-bottom:6px}
+.voy-name{font-size:11px;color:#7a9ab5;margin-bottom:6px;line-height:1.3}
+.voy-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline-block;letter-spacing:.5px}
+.voy-red{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+.voy-orange{background:rgba(249,115,22,.15);color:#f97316;border:1px solid rgba(249,115,22,.3)}
+.voy-yellow{background:rgba(234,179,8,.15);color:#eab308;border:1px solid rgba(234,179,8,.3)}
+.voy-blue{background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.3)}
+.l-voyants-detail{margin-top:16px;border-radius:12px;padding:20px;animation:fadeIn .2s ease}
+.voy-detail-top{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.voy-detail-icon{font-size:36px}
+.voy-detail-title{font-size:17px;font-weight:700;color:#eef4fa}
+.voy-detail-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;margin-top:4px;display:inline-block}
+.voy-detail-msg{font-size:15px;font-weight:600;color:#eef4fa;margin-bottom:8px;line-height:1.5}
+.voy-detail-info{font-size:13px;color:#7a9ab5;margin-bottom:10px;line-height:1.6}
+.voy-detail-action{font-size:13px;color:#e8a000;font-weight:600}
+.voy-detail-cta{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
 .l-foot{
   text-align:center;padding:22px;font-size:11px;color:var(--muted);
   position:relative;z-index:1;border-top:1px solid var(--bd);
@@ -1344,7 +1367,86 @@ textarea{resize:vertical;min-height:70px}
   </div>
 
 
-  <!-- How it works -->
+  
+<!-- T006 — TRADUCTEUR EMOTIONNEL VOYANTS -->
+<div class="l-voyants">
+  <div class="l-voyants-t">&#x1F6A8; Votre voyant vient de s&apos;allumer ?</div>
+  <div class="l-voyants-s">Cliquez sur le symbole — on vous dit en clair si c&apos;est grave</div>
+  <div class="l-voyants-grid" id="voyants-grid">
+    <div class="voy-card" onclick="showVoyant('huile')">
+      <div class="voy-icon">&#x1F6E2;&#xFE0F;</div>
+      <div class="voy-name">Huile</div>
+      <div class="voy-badge voy-red">STOP</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('temp')">
+      <div class="voy-icon">&#x1F321;&#xFE0F;</div>
+      <div class="voy-name">Temp. moteur</div>
+      <div class="voy-badge voy-red">STOP</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('frein')">
+      <div class="voy-icon">&#x1F7E5;</div>
+      <div class="voy-name">Freins</div>
+      <div class="voy-badge voy-red">STOP</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('batterie')">
+      <div class="voy-icon">&#x1F50B;</div>
+      <div class="voy-name">Batterie</div>
+      <div class="voy-badge voy-orange">URGENT</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('abs')">
+      <div class="voy-icon">&#x26A0;&#xFE0F;</div>
+      <div class="voy-name">ABS</div>
+      <div class="voy-badge voy-orange">URGENT</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('esp')">
+      <div class="voy-icon">&#x1F300;</div>
+      <div class="voy-name">ESP / ESC</div>
+      <div class="voy-badge voy-orange">URGENT</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('airbag')">
+      <div class="voy-icon">&#x1F464;</div>
+      <div class="voy-name">Airbag SRS</div>
+      <div class="voy-badge voy-orange">URGENT</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('eps')">
+      <div class="voy-icon">&#x1F6DE;</div>
+      <div class="voy-name">Direction assist.</div>
+      <div class="voy-badge voy-orange">URGENT</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('moteur')">
+      <div class="voy-icon">&#x1F527;</div>
+      <div class="voy-name">Check Engine</div>
+      <div class="voy-badge voy-yellow">SURVEILLER</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('tpms')">
+      <div class="voy-icon">&#x1F6DE;</div>
+      <div class="voy-name">Pression pneus</div>
+      <div class="voy-badge voy-yellow">SURVEILLER</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('prechauffage')">
+      <div class="voy-icon">&#x2600;&#xFE0F;</div>
+      <div class="voy-name">Prechauffage</div>
+      <div class="voy-badge voy-yellow">SURVEILLER</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('carburant')">
+      <div class="voy-icon">&#x26FD;</div>
+      <div class="voy-name">Carburant bas</div>
+      <div class="voy-badge voy-blue">INFO</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('service')">
+      <div class="voy-icon">&#x1F527;</div>
+      <div class="voy-name">Service requis</div>
+      <div class="voy-badge voy-blue">INFO</div>
+    </div>
+    <div class="voy-card" onclick="showVoyant('laveglace')">
+      <div class="voy-icon">&#x1F4A7;</div>
+      <div class="voy-name">Lave-glace bas</div>
+      <div class="voy-badge voy-blue">INFO</div>
+    </div>
+  </div>
+  <div class="l-voyants-detail" id="voyants-detail" style="display:none"></div>
+</div>
+<!-- How it works -->
   <div class="l-how">
     <div class="l-how-t">Comment ça marche</div>
     <div class="how-g">
@@ -3987,6 +4089,138 @@ window.dylanControl = async function (resultat) {
   const labels = { oui: '✅ Oui', non: '❌ Non', ne_sais_pas: '🤔 Je ne sais pas', pas_pu: "🚫 Pas pu faire" };
   dylanBubble('user', labels[resultat] || resultat);
   await dylanTurn({ control_result: resultat });
+};
+
+// T006 — Traducteur emotionnel voyants
+var VOYANTS_DATA = {
+  huile: {
+    icon:'&#x1F6E2;&#xFE0F;', nom:'Huile moteur',
+    urgence:'&#x26D4; STOP IMMEDIAT', couleur:'#ef4444', bgColor:'rgba(239,68,68,.06)', bdColor:'rgba(239,68,68,.2)',
+    message:'Coupez le moteur. Maintenant. Un moteur sans huile est detruit en moins de 30 secondes.',
+    info:'Ne redemarrez pas. Si vous avez roule plus de 2 minutes avec ce voyant, il y a peut-etre deja des degats internes. Verifiez le niveau a froid.',
+    action:'&#x1F527; Verifier le niveau. Si vide ou tres bas : ne pas redemarrer — appeler une assistance.'
+  },
+  temp: {
+    icon:'&#x1F321;&#xFE0F;', nom:'Temperature moteur',
+    urgence:'&#x26D4; STOP IMMEDIAT', couleur:'#ef4444', bgColor:'rgba(239,68,68,.06)', bdColor:'rgba(239,68,68,.2)',
+    message:'Moteur en surchauffe. Arretez-vous des que possible en securite.',
+    info:'La culasse peut se deformer en continuant. Reparation : 2000-5000 EUR. Arretez le moteur, capot ouvert, attendez 20 min sans ouvrir le bouchon de radiateur.',
+    action:'&#x1F527; Gazer vers un arret securise, moteur coupe, capot ouvert. Attendre que ca refroidisse.'
+  },
+  frein: {
+    icon:'&#x1F7E5;', nom:'Freins',
+    urgence:'&#x26D4; STOP IMMEDIAT', couleur:'#ef4444', bgColor:'rgba(239,68,68,.06)', bdColor:'rgba(239,68,68,.2)',
+    message:'Soit le frein a main est serre, soit le liquide de frein est bas. Dans le 2eme cas : danger de perte de freinage.',
+    info:'Verifiez d&apos;abord que le frein a main est bien desserre. Si le voyant reste : arretez-vous et verifiez le niveau de liquide de frein. Un niveau bas peut signaler une fuite ou des plaquettes usees.',
+    action:'&#x1F527; Frein a main desserre ? Si oui et voyant reste : ne pas rouler. Appeler.'
+  },
+  batterie: {
+    icon:'&#x1F50B;', nom:'Batterie / Alternateur',
+    urgence:'&#x26A0;&#xFE0F; URGENT (30-60 min)', couleur:'#f97316', bgColor:'rgba(249,115,22,.06)', bdColor:'rgba(249,115,22,.2)',
+    message:'L&apos;alternateur ne charge plus. Vous avez entre 30 et 60 minutes avant que tout s&apos;eteigne.',
+    info:'Eteignez les consommateurs inutiles : clim, musique, sieges chauffants. Rendez-vous directement au garage le plus proche. Ne coupez pas le moteur — il ne redemarrera peut-etre pas.',
+    action:'&#x1F527; Foncer au garage le plus proche sans couper le moteur. Eteindre max de conso electrique.'
+  },
+  abs: {
+    icon:'&#x26A0;&#xFE0F;', nom:'ABS',
+    urgence:'&#x1F7E0; URGENT (48h)', couleur:'#f97316', bgColor:'rgba(249,115,22,.06)', bdColor:'rgba(249,115,22,.2)',
+    message:'Vos freins fonctionnent encore, mais l&apos;ABS est hors service. En freinage d&apos;urgence, les roues peuvent se bloquer.',
+    info:'Vous pouvez rouler prudemment jusqu&apos;a un garage. Evitez les situations necessitant un freinage brusque. Sur route mouilee ou glissante : prudence maximale.',
+    action:'&#x1F527; Rouler prudemment. Prise en charge dans les 48h. Eviter routes glissantes.'
+  },
+  esp: {
+    icon:'&#x1F300;', nom:'ESP / ESC',
+    urgence:'&#x1F7E0; URGENT (48h)', couleur:'#f97316', bgColor:'rgba(249,115,22,.06)', bdColor:'rgba(249,115,22,.2)',
+    message:'La stabilite electronique est desactivee. En virage ou sur sol glissant, risque de derapage.',
+    info:'Si le voyant clignote pendant la conduite, c&apos;est normal (l&apos;ESP intervient). Si il reste fixe : le systeme est en panne. Conduire avec prudence, eviter les vitesses elevees.',
+    action:'&#x1F527; Prudence sur chaussee glissante. Diagnostic urgent dans les 48h.'
+  },
+  airbag: {
+    icon:'&#x1F464;', nom:'Airbag SRS',
+    urgence:'&#x1F7E0; URGENT (48h)', couleur:'#f97316', bgColor:'rgba(249,115,22,.06)', bdColor:'rgba(249,115,22,.2)',
+    message:'En cas de choc, les airbags risquent de ne pas se deployer. Ou, pire, de se deployer sans choc.',
+    info:'Ne pas ignorer. Le systeme de retenue passif (ceintures pretensionneurs + airbags) est en defaut. Un code defaut precise quel element est concerne.',
+    action:'&#x1F527; Diagnostic urgent. Dylan peut lire le code exact si vous avez un boitier OBD.'
+  },
+  eps: {
+    icon:'&#x1F6DE;', nom:'Direction assistee',
+    urgence:'&#x1F7E0; URGENT (48h)', couleur:'#f97316', bgColor:'rgba(249,115,22,.06)', bdColor:'rgba(249,115,22,.2)',
+    message:'La direction va devenir beaucoup plus lourde. Vous pouvez encore conduire mais c&apos;est fatiguant et moins precis.',
+    info:'Surtout problematique a basse vitesse (parking, manoeuvres). Sur route, moins critique. Souvent lie a un capteur angle volant ou un fusible.',
+    action:'&#x1F527; Rouler lentement. Garage dans les 48h. Attention aux manoeuvres serrees.'
+  },
+  moteur: {
+    icon:'&#x1F527;', nom:'Check Engine (MIL)',
+    urgence:'&#x1F7E1; SURVEILLER', couleur:'#eab308', bgColor:'rgba(234,179,8,.06)', bdColor:'rgba(234,179,8,.2)',
+    message:'Un capteur ou systeme ne fonctionne pas correctement. Pas d&apos;urgence immediate, mais a diagnostiquer.',
+    info:'Ce voyant peut cacher 1000 causes differentes : sonde lambda, bobine, vanne EGR, bouchon de reservoir mal ferme... Dylan lit le code exact et vous dit si c&apos;est grave.',
+    action:'&#x1F527; Pas d&apos;urgence si le moteur tourne normalement. Dylan peut identifier la cause avec votre boitier OBD.'
+  },
+  tpms: {
+    icon:'&#x1F6DE;', nom:'Pression pneus (TPMS)',
+    urgence:'&#x1F7E1; SURVEILLER', couleur:'#eab308', bgColor:'rgba(234,179,8,.06)', bdColor:'rgba(234,179,8,.2)',
+    message:'Un ou plusieurs pneus sont sous-gonfles. Risque de comportement routier degrade et sur-consommation.',
+    info:'Verifiez la pression a froid dans les 24h. Ecart de 0.3 bar suffit a declencher l&apos;alerte. Si un pneu est vraiment bas : verifiez si vous avez un clou avant de rouler.',
+    action:'&#x1F527; Pression a froid. Norme constructeur (dans le montant de porte). Sous 1.5 bar = danger.'
+  },
+  prechauffage: {
+    icon:'&#x2600;&#xFE0F;', nom:'Prechauffage diesel',
+    urgence:'&#x1F7E1; SURVEILLER', couleur:'#eab308', bgColor:'rgba(234,179,8,.06)', bdColor:'rgba(234,179,8,.2)',
+    message:'Normal au demarrage a froid : attendez que le voyant s&apos;eteigne avant de demarrer. S&apos;il reste allume apres : bougies de prechauffage a changer.',
+    info:'Les bougies de prechauffage sont des consommables. Duree de vie : 60 000 - 100 000 km. Sans elles, demarrage difficile par temps froid.',
+    action:'&#x1F527; Voyant fixe apres demarrage : bougies a changer. Prix : 50-150 EUR selon modele.'
+  },
+  carburant: {
+    icon:'&#x26FD;', nom:'Carburant bas',
+    urgence:'&#x1F535; INFO', couleur:'#3b82f6', bgColor:'rgba(59,130,246,.06)', bdColor:'rgba(59,130,246,.2)',
+    message:'Il vous reste en general 5-10 litres (50-80 km) selon votre modele.',
+    info:'Sur les diesels : rouler a sec peut endommager la pompe injection. Sur les voitures modernes : le capteur peut etre imprecis. Ne pas tester la limite.',
+    action:'&#x26FD; Station-service dans les 50 km.'
+  },
+  service: {
+    icon:'&#x1F527;', nom:'Service requis',
+    urgence:'&#x1F535; INFO', couleur:'#3b82f6', bgColor:'rgba(59,130,246,.06)', bdColor:'rgba(59,130,246,.2)',
+    message:'Vidange ou entretien programme a effectuer. Aucune urgence pour rouler.',
+    info:'L&apos;intervalle de vidange est depasse en km ou en temps. L&apos;huile degradee use le moteur a long terme. A programmer dans les 2 semaines.',
+    action:'&#x1F527; Prendre RDV dans les 2 semaines. MecaIA connait votre intervalle de vidange.'
+  },
+  laveglace: {
+    icon:'&#x1F4A7;', nom:'Lave-glace bas',
+    urgence:'&#x1F535; INFO', couleur:'#3b82f6', bgColor:'rgba(59,130,246,.06)', bdColor:'rgba(59,130,246,.2)',
+    message:'Reservoir de lave-glace vide. Aucun impact sur la mecanique.',
+    info:'Remplir avec du liquide lave-glace dilue (ne pas mettre de l&apos;eau pure en hiver : gel garanti).',
+    action:'&#x1F4A7; Station-service : liquide lave-glace. 2-3 EUR.'
+  }
+};
+
+window.showVoyant = function(id) {
+  var v = VOYANTS_DATA[id];
+  if (!v) return;
+  // Desactiver tous les cards
+  document.querySelectorAll('.voy-card').forEach(function(c){ c.classList.remove('active'); });
+  // Activer le card clique
+  var cards = document.querySelectorAll('.voy-card');
+  cards.forEach(function(c){ if(c.getAttribute('onclick') === 'showVoyant(&apos;'+id+'&apos;)') c.classList.add('active'); });
+
+  var detail = document.getElementById('voyants-detail');
+  if (!detail) return;
+  detail.style.display = '';
+  detail.style.background = v.bgColor;
+  detail.style.border = '1px solid ' + v.bdColor;
+  detail.innerHTML = '<div class="voy-detail-top">'
+    + '<div class="voy-detail-icon">' + v.icon + '</div>'
+    + '<div><div class="voy-detail-title">' + v.nom + '</div>'
+    + '<div class="voy-detail-badge" style="background:' + v.bgColor + ';color:' + v.couleur + ';border:1px solid ' + v.bdColor + '">' + v.urgence + '</div>'
+    + '</div></div>'
+    + '<div class="voy-detail-msg">' + v.message + '</div>'
+    + '<div class="voy-detail-info">' + v.info + '</div>'
+    + '<div class="voy-detail-action">' + v.action + '</div>'
+    + '<div class="voy-detail-cta">'
+    + '<button class="btn-primary" style="flex:1;min-width:140px" onclick="openM(&apos;m-urg&apos;)">&#x1F50D; Diagnostiquer avec Dylan</button>'
+    + '<button class="btn-ghost" style="flex:1;min-width:120px" onclick="goAuth(&apos;register&apos;)">Essai gratuit</button>'
+    + '</div>';
+
+  setTimeout(function(){ detail.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
 };
 
 // #10 Feedback post-conclusion
