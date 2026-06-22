@@ -1,1 +1,1 @@
-feat: T010+T060+T061 - RPC upsert_diag_outcome + Autodoc liens affilies + CT reminder cron + date_ct vehicle form
+fix: T037 boxRenderOptions BMW DS2 detection annee<=2005 - message clair E46 au lieu d options incorrectes

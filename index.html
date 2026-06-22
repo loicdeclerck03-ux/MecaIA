@@ -960,6 +960,8 @@ textarea{resize:vertical;min-height:70px}
 .blive-st{font-size:12px;font-weight:700;color:var(--muted);transition:color .3s}
 .blive-st.on{color:var(--green)}
 .bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 20px;overflow-y:auto;flex:1}.bgrid-sm{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:4px 12px 8px}.bsec-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--acc);padding:10px 12px 2px;opacity:.85}
+.bp-val{font-size:18px;font-weight:700;color:var(--white);line-height:1}
+.bp-unit{font-size:9px;color:var(--muted);margin-left:2px}
 .bpid{background:var(--s2);border:1.5px solid var(--bd);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;transition:border-color .3s}
 .bpid.on{border-color:var(--acc-b)}
 .bpl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
@@ -1656,6 +1658,7 @@ textarea{resize:vertical;min-height:70px}
         </div>
       </div>
       <input type="file" id="photo-in" accept="image/*" aria-label="Envoyer une photo à Dylan" style="display:none" onchange="doPhoto(event)">
+<div id="zd" style="margin-top:8px"></div>
     </div>
   </div>
 
@@ -1888,7 +1891,7 @@ textarea{resize:vertical;min-height:70px}
           <div class="empty-icon" style="font-size:28px">&#x1F4CA;</div>
           <div class="empty-t">Aucun diagnostic recent</div>
           <div class="empty-d">Vos scores de sante et historiques d entretien apparaitront ici apres votre premier diagnostic</div>
-          <button class="btn-teal" onclick="showPg('dylan')" style="margin-top:6px">Lancer Dylan IA</button>
+          <button class="btn-teal" onclick="showPg('diag')" style="margin-top:6px">Lancer Dylan IA</button>
         </div></div>
   </div>
 
@@ -3027,6 +3030,7 @@ window.showPg=function(id){
 };
 
 window.chkD=function(){
+  if(!document.getElementById('d-mk'))return;
   const mk=document.getElementById('d-mk').value;const mo=document.getElementById('d-mo').value.trim();
   const an=document.getElementById('d-an').value;const cb=document.getElementById('d-cb').value;
   document.getElementById('btn-d').disabled=!(mk&&mo&&an&&cb);
@@ -3321,6 +3325,7 @@ function majVis(){
 window.addEventListener('scroll',()=>{const b=document.getElementById('stbtn');if(b)b.className='stbtn'+(window.scrollY>280?' show':'');});
 
 window.togPT=function(){
+if(!document.getElementById('pr-ty'))return;
   const ty=document.getElementById('pr-ty').value;
   document.getElementById('pr-vb').innerHTML=ty==='reduction'?'<label>RÉDUCTION %</label><select id="pr-val"><option value="5">-5%</option><option value="10">-10%</option><option value="15">-15%</option><option value="20" selected>-20%</option><option value="25">-25%</option><option value="30">-30%</option><option value="40">-40%</option><option value="50">-50%</option><option value="60">-60%</option><option value="70">-70%</option><option value="75">-75%</option><option value="80">-80%</option><option value="90">-90%</option><option value="100">-100% (GRATUIT)</option></select>':'<label>CRÉDITS À OFFRIR</label><select id="pr-val"><option value="3">3 crédits</option><option value="5">5 crédits</option><option value="10">10 crédits</option><option value="25">25 crédits</option><option value="50">50 crédits</option><option value="100">100 crédits</option></select>';
 };
@@ -4293,7 +4298,7 @@ window.dylanRetry = function () {
 window.doPhoto = async function (event) {
   const file = event.target.files[0]; if (!file) return;
   if (!useC()) return;
-  document.getElementById('zd').innerHTML='<div style="text-align:center;padding:28px 16px"><div style="position:relative;display:inline-block;margin-bottom:16px"><svg width="64" height="64" viewBox="0 0 64 64" style="display:block"><rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="var(--bd2)" stroke-width="2"/><rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="var(--acc)" stroke-width="2" stroke-dasharray="200" stroke-dashoffset="200" style="animation:scanDash 1.5s linear infinite"/><line x1="4" y1="32" x2="60" y2="32" stroke="var(--acc)" stroke-width="1.5" opacity=".6" style="animation:scanLine 1.5s ease-in-out infinite"/></svg></div><div style="font-family:Rajdhani,sans-serif;font-size:13px;font-weight:700;color:var(--acc);letter-spacing:1px;margin-bottom:4px">SCAN IA EN COURS</div><div style="font-size:11px;color:var(--muted)">Analyse visuelle par Claude Sonnet...</div></div>';
+  var _zd=document.getElementById('zd');if(!_zd){_zd=document.createElement('div');_zd.id='zd';document.body.appendChild(_zd);}document.getElementById('zd').innerHTML='<div style="text-align:center;padding:28px 16px"><div style="position:relative;display:inline-block;margin-bottom:16px"><svg width="64" height="64" viewBox="0 0 64 64" style="display:block"><rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="var(--bd2)" stroke-width="2"/><rect x="4" y="4" width="56" height="56" rx="8" fill="none" stroke="var(--acc)" stroke-width="2" stroke-dasharray="200" stroke-dashoffset="200" style="animation:scanDash 1.5s linear infinite"/><line x1="4" y1="32" x2="60" y2="32" stroke="var(--acc)" stroke-width="1.5" opacity=".6" style="animation:scanLine 1.5s ease-in-out infinite"/></svg></div><div style="font-family:Rajdhani,sans-serif;font-size:13px;font-weight:700;color:var(--acc);letter-spacing:1px;margin-bottom:4px">SCAN IA EN COURS</div><div style="font-size:11px;color:var(--muted)">Analyse visuelle par Claude Sonnet...</div></div>';
   const reader = new FileReader();
   reader.onload = async e => {
     try {
