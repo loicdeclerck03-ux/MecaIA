@@ -1,1 +1,1 @@
-fix: T037 boxRenderOptions BMW DS2 detection annee<=2005 - message clair E46 au lieu d options incorrectes
+feat: T007 3 niveaux lecture Dylan (niveau_0 simple + lire la suite) + T023 pre-check CT simulator dans dashboard

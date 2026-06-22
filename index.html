@@ -867,6 +867,9 @@ textarea{resize:vertical;min-height:70px}
 .skeleton-line.short{height:8px;margin-bottom:5px}
 
 /* ── Error Recovery ── */
+.dylan-n0{font-size:15px;font-weight:500;color:var(--white);line-height:1.5}
+.dylan-n1{font-size:14px;color:var(--tx);line-height:1.6}
+.dylan-expand-wrap{margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)}
 .dylan-err-wrap{display:flex;flex-direction:column;gap:8px}
 .dylan-retry-btn{
   align-self:flex-start;padding:5px 12px;border-radius:6px;
@@ -1987,7 +1990,24 @@ textarea{resize:vertical;min-height:70px}
         </div></div>
   </div>
 
-  <!-- HISTORIQUE LOCAL -->
+  
+<!-- T023 PRE-CHECK CT -->
+<div class="card" style="margin-bottom:12px">
+  <div class="ch">
+    <div class="ct">&#x1F6E1;&#xFE0F; Pr&eacute;parer mon Contr&ocirc;le Technique</div>
+    <span class="fbadge" style="background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.2)">BETA</span>
+  </div>
+  <div class="cb">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">V&eacute;rifiez si votre voiture est pr&ecirc;te pour le CT : 8 moniteurs readiness + codes d&eacute;fauts + verdict IA.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-teal" style="flex:1;min-width:140px" onclick="startCTCheck()">&#x1F50D; Lancer le Pre-Check CT</button>
+      <button class="bsm" style="flex:1;min-width:120px" onclick="openCTSimulator()">Tester manuellement</button>
+    </div>
+    <div id="ct-check-result" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- HISTORIQUE LOCAL -->
   <div class="card">
     <div class="ch">
       <div class="ct">Historique</div>
@@ -4080,11 +4100,84 @@ window.dylanRender = function (data) {
     }
   }
 
-  // Bulle Dylan avec pseudo-streaming sur le message (#3)
-  const bubble = dylanBubble('dylan', (msgDiv + html) || '…');
-  if (bubble && data.message) {
-    const msgEl = bubble.querySelector('.dylan-msg-text');
-    if (msgEl) dylanTypeIn(msgEl, data.message, 22);
+  // Bulle Dylan avec niveau_0 (T007 - 3 niveaux de lecture)
+  var msgContent = '';
+  if (data.niveau_0 && data.message && data.niveau_0 !== data.message) {
+    var uid = 'dyl-expand-' + Date.now();
+    msgContent = '<div class="dylan-msg-text dylan-n0"></div>'
+      + '<div class="dylan-expand-wrap" id="' + uid + '" style="display:none"><div class="dylan-msg-text dylan-n1"></div></div>'
+      + '<button class="dylan-expand-btn" onclick="(function(b,id){b.style.display=\'none\';document.getElementById(id).style.display=\'\';var t=document.getElementById(id).querySelector(\'.dylan-n1\');if(t&&t.dataset.full)dylanTypeIn(t,t.dataset.full,18);})(this,\''+uid+'\')" style="margin-top:6px;background:none;border:none;color:var(--acc);font-size:11px;cursor:pointer;padding:0;text-align:left">Lire la suite &#x203A;</button>';
+  } else {
+    msgContent = '<div class="dylan-msg-text"></div>';
+  }
+  const bubble = dylanBubble('dylan', (msgDiv + msgContent + html) || '…');
+  if (bubble) {
+    if (data.niveau_0 && data.message && data.niveau_0 !== data.message) {
+      var n0el = bubble.querySelector('.dylan-n0');
+      var n1el = bubble.querySelector('.dylan-n1');
+      if (n0el) dylanTypeIn(n0el, data.niveau_0, 22);
+      if (n1el) n1el.dataset.full = data.message;
+    } else {
+      const msgEl = bubble.querySelector('.dylan-msg-text');
+      if (msgEl && data.message) dylanTypeIn(msgEl, data.message, 22);
+    }
+  }
+};
+
+window.openCTSimulator = function() {
+  var m = document.getElementById('m-ct-sim');
+  if (!m) {
+    m = document.createElement('div');
+    m.className = 'mbg'; m.id = 'm-ct-sim';
+    m.onclick = function(e){ if(e.target===m) m.style.display='none'; };
+    m.innerHTML = '<div class="modal"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><button onclick="document.getElementById(\'m-ct-sim\').style.display=\'none\'" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0">&#x2190;</button><div class="mh" style="margin-bottom:0">&#x1F6E1;&#xFE0F; Simulateur Pre-Check CT</div></div>'
+      + '<div class="ms" style="margin-bottom:16px">R&eacute;pondez aux questions — Dylan &eacute;value vos chances de r&eacute;ussite.</div>'
+      + '<div class="f"><label>Voyant moteur allum&eacute; ?</label><select id="ct-mil"><option value="0">Non &#x2705;</option><option value="1">Oui &#x274C;</option></select></div>'
+      + '<div class="f"><label>Codes d&eacute;fauts connus ?</label><input type="text" id="ct-dtcs" placeholder="Ex: P0420 P0171 (ou laisser vide)"></div>'
+      + '<div class="f"><label>Kilom&eacute;trage</label><input type="number" id="ct-km" placeholder="Ex: 145000"></div>'
+      + '<div class="f"><label>Derni&egrave;re r&eacute;initialisation des codes ?</label><select id="ct-reset"><option value="no">Non</option><option value="yes">Oui, r&eacute;cemment</option></select></div>'
+      + '<button class="btn" onclick="runCTSimulator()">Analyser &#x1F50D;</button>'
+      + '<div id="ct-sim-result" style="margin-top:12px"></div>'
+      + '</div></div>';
+    document.body.appendChild(m);
+  }
+  m.style.display = 'flex';
+};
+
+window.runCTSimulator = async function() {
+  var mil = document.getElementById('ct-mil').value === '1';
+  var dtcsRaw = document.getElementById('ct-dtcs').value.trim();
+  var km = document.getElementById('ct-km').value;
+  var reset = document.getElementById('ct-reset').value === 'yes';
+  var dtcs = dtcsRaw ? dtcsRaw.split(/[\s,;]+/).filter(Boolean) : [];
+  var res = document.getElementById('ct-sim-result');
+  res.innerHTML = '<div style="text-align:center;padding:16px;font-size:13px;color:var(--muted)">Dylan analyse...</div>';
+
+  var monitors = {};
+  if (reset) {
+    ['catalyst','evap_system','oxygen_sens','egr_vvt','heated_cat','sec_air','ac_refrig','oxygen_heat'].forEach(function(m){ monitors[m] = 'INCOMPLETE'; });
+  } else {
+    ['catalyst','evap_system','oxygen_sens','egr_vvt'].forEach(function(m){ monitors[m] = 'COMPLETE'; });
+    ['heated_cat','sec_air','ac_refrig','oxygen_heat'].forEach(function(m){ monitors[m] = 'N/A'; });
+  }
+
+  try {
+    var r = await MecaIA.authedFetch('ct_check', { method: 'POST', body: {
+      user_id: MecaIA.userId || 'anonymous',
+      monitors: monitors, dtcs: dtcs, mil_on: mil,
+      mileage: km ? parseInt(km) : null
+    }});
+    if (!r.ok || !r.data) { res.innerHTML = '<div style="color:var(--red)">Erreur — connexion requise.</div>'; return; }
+    var d = r.data;
+    var col = d.ready ? 'var(--green)' : 'var(--red)';
+    var icon = d.ready ? '&#x2705;' : '&#x274C;';
+    res.innerHTML = '<div style="background:var(--s2);border-radius:8px;padding:14px;margin-top:4px">'
+      + '<div style="font-size:16px;font-weight:700;color:'+col+';margin-bottom:8px">'+icon+' '+d.verdict+'</div>'
+      + '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Score de confiance : '+d.confidence+'%</div>'
+      + '<div style="font-size:13px;color:var(--tx);line-height:1.6;white-space:pre-line">'+d.ai_report+'</div>'
+      + '</div>';
+  } catch(e) {
+    res.innerHTML = '<div style="color:var(--red)">Erreur : '+e.message+'</div>';
   }
 };
 

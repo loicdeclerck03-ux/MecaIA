@@ -407,6 +407,11 @@ ${vehicleCtxLine}${ragLine}${dtcLine}${memoireLine}${toolGuideBlock}
 ÉTAT D'ENQUÊTE ACTUEL (JSON) :
 ${compact}
 
+NIVEAUX DE LECTURE OBLIGATOIRES :
+Chaque message doit contenir DEUX versions :
+- "niveau_0" : 1 phrase MAX, simple, pour quelqu un qui ne connait rien aux voitures. Pas de jargon. Ex: "Ton moteur consomme trop de carburant depuis quelques semaines."
+- "message" : le message complet habituel (pour bricoleur/mécanicien)
+
 MÉTHODE (un seul tour à la fois) :
 - CONTEXTE : si le contexte est incomplet, pose EXACTEMENT UNE seule question dans "message".
   Jamais deux phrases interrogatives dans le même message. Une question = une seule phrase.
@@ -448,6 +453,7 @@ Réponds STRICTEMENT en JSON valide, sans texte autour :
   "etat": "CONTEXTE" | "HYPOTHESES" | "CONTROLE" | "CONCLUSION",
   "registre": "detaille" | "concis",
   "resume_enquete": string,
+  "niveau_0": string,
   "message": string,
   "contexte": {"symptome": string|null, "chaud_froid": string|null, "permanent_intermittent": string|null, "codes": [string]},
   "hypotheses": [{"id": number, "libelle": string, "bande": string, "statut": "active"|"confirmee"|"eliminee", "pouvoir": "fort"|"faible", "controle": string}],
