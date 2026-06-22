@@ -2065,7 +2065,7 @@ textarea{resize:vertical;min-height:70px}
       <button class="bqcmd" onclick="boxSendCmd(&apos;Explique les codes défauts&apos;)">&#x26A0; Codes</button>
       <button class="bqcmd" onclick="boxSendCmd(&apos;Température moteur ?&apos;)">&#x1F321; Temp</button>
       <button class="bqcmd" onclick="boxSendCmd(&apos;Remise à zéro vidange&apos;)">&#x1F6E2; Reset</button>
-      <button class="bqcmd" onclick="boxSendCmd(&apos;C'est grave ?&apos;)">&#x1F4AC; Grave ?</button>
+      <button class="bqcmd" onclick="boxSendCmd(&apos;C&apos;est grave ?&apos;)">&#x1F4AC; Grave ?</button>
       <button class="bqcmd" onclick="boxSendCmd(&apos;Que faire maintenant ?&apos;)">&#x1F527; Suite</button>
       <button class="bqcmd" onclick="boxSendCmd('Analyse la batterie et l alternateur en profondeur')" title="Battery Deep Test">&#x1F50B; Batterie</button>
       <button class="bqcmd" onclick="boxSendCmd('Lit et interprete les resultats Mode 06 (tests embarques) pour detecter les composants qui se degradent')" title="Mode $06">&#x1F52C; Mode 06</button>
@@ -2202,6 +2202,7 @@ window.boxInit=function(){
   // Fallback simple : si pas de selCar et pas de profil visible -> probablement pas connecte
   var tab=document.getElementById('t-box');if(tab)tab.style.display='';
   if(!BOX._init){BOX._init=true;
+    if(!el||!el.obd2){boxMsg('sys','OBD2 non disponible - relancez via LANCER.bat');return;}
     el.obd2.on('obd2-ports',boxHandlePorts);
     el.obd2.on('obd2-status',boxHandleStatus);
     el.obd2.on('obd2-data',function(d){if(typeof window.boxUpdateLive==='function')window.boxUpdateLive(d);else boxUpdateLive(d);});
