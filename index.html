@@ -418,6 +418,27 @@ textarea{resize:vertical;min-height:70px}
 }
 .urg-box:hover{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.09)}
 
+
+/* T005 Comparatif */
+.l-compare{max-width:860px;margin:44px auto 0;padding:0 16px}
+.l-compare-t{text-align:center;font-size:20px;font-weight:700;color:#eef4fa;margin-bottom:6px}
+.l-compare-s{text-align:center;font-size:14px;color:#7a9ab5;margin-bottom:24px}
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px}
+.cmp-table thead th{padding:12px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#7a9ab5;background:#080e15;border-bottom:2px solid #1a2430}
+.cmp-table thead th:nth-child(2){color:#e8a000;background:#0d1a10}
+.cmp-table thead th:nth-child(3){color:#ef4444}
+.cmp-table thead th:nth-child(4){color:#ef4444}
+.cmp-table td{padding:11px 14px;border-bottom:1px solid #111f2e;vertical-align:top;line-height:1.4}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table tr:hover td{background:rgba(255,255,255,.012)}
+.cmp-table td:first-child{color:#7a9ab5;font-size:12px}
+.cmp-ok{color:#22c55e;font-weight:600}
+.cmp-ko{color:#ef4444}
+.cmp-nu{color:#4a5568}
+.cmp-hl td{background:rgba(232,160,0,.04)!important}
+.cmp-src{font-size:10px;color:#2a3a4e;margin-top:2px}
+.cmp-winner{display:inline-block;background:rgba(232,160,0,.15);color:#e8a000;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;letter-spacing:.5px;margin-left:6px;text-transform:uppercase}
+
 /* T006 Voyants */
 .l-anticarly{display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#ef4444;font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;text-decoration:none;margin-bottom:14px;letter-spacing:.2px;transition:background .2s}
 .l-anticarly:hover{background:rgba(239,68,68,.18)}
@@ -1374,6 +1395,77 @@ textarea{resize:vertical;min-height:70px}
 
 
   
+
+<!-- T005 TABLEAU COMPARATIF MecaIA vs Carly vs FIXD -->
+<div class="l-compare">
+  <div class="l-compare-t">&#x1F3C6; Pourquoi MecaIA est diff&eacute;rent</div>
+  <div class="l-compare-s">Comparatif honest&amp;nbsp;&amp;mdash; donn&eacute;es publiques v&eacute;rifiables</div>
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th>Crit&egrave;re</th>
+        <th>MecaIA <span class="cmp-winner">votre choix</span></th>
+        <th>Carly</th>
+        <th>FIXD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="cmp-hl">
+        <td><strong>Hardware requis</strong></td>
+        <td class="cmp-ok">&#x2705; Votre boitier existant suffit<div class="cmp-src">ELM327, Vgate, OBDLink...</div></td>
+        <td class="cmp-ko">&#x274C; Boitier propri&eacute;taire 85-95&euro;<div class="cmp-src">carly.com, 2025</div></td>
+        <td class="cmp-ko">&#x274C; Capteur FIXD 59&euro; obligatoire<div class="cmp-src">fixdapp.com, 2026</div></td>
+      </tr>
+      <tr>
+        <td><strong>Abonnement</strong></td>
+        <td class="cmp-ok">&#x2705; 9&euro;/mois transparent, r&eacute;siliable</td>
+        <td class="cmp-ko">&#x274C; 80-114&euro;/an auto-renouvel&eacute;<div class="cmp-src">Trustpilot &amp; forums, 2025-2026</div></td>
+        <td class="cmp-ko">&#x274C; 12,99$/mois ou 99,99$/an<div class="cmp-src">App Store FIXD, 2026</div></td>
+      </tr>
+      <tr class="cmp-hl">
+        <td><strong>IA conversationnelle</strong></td>
+        <td class="cmp-ok">&#x2705; Dylan pose des questions, enquete, conclut</td>
+        <td class="cmp-ko">&#x274C; Description g&eacute;n&eacute;rique du code</td>
+        <td class="cmp-ko">&#x274C; &quot;AI Mechanic&quot; = r&eacute;ponses pr&eacute;-&eacute;crites<div class="cmp-src">App Store reviews, 2025</div></td>
+      </tr>
+      <tr>
+        <td><strong>M&eacute;moire historique</strong></td>
+        <td class="cmp-ok">&#x2705; Historique persistant par v&eacute;hicule</td>
+        <td class="cmp-nu">&#x2014; Chaque session repart de z&eacute;ro</td>
+        <td class="cmp-nu">&#x2014; Scans enregistr&eacute;s mais pas d&apos;IA dessus</td>
+      </tr>
+      <tr class="cmp-hl">
+        <td><strong>Modules v&eacute;hicule</strong></td>
+        <td class="cmp-ok">&#x2705; ABS, airbag, bo&icirc;te, direction</td>
+        <td class="cmp-ok">&#x2705; BMW/VAG (boitier propri&eacute;taire)</td>
+        <td class="cmp-ko">&#x274C; Moteur uniquement<div class="cmp-src">OBDeleven vs FIXD, 2026</div></td>
+      </tr>
+      <tr>
+        <td><strong>March&eacute; Europe</strong></td>
+        <td class="cmp-ok">&#x2705; Con&ccedil;u pour EU (Belgique)</td>
+        <td class="cmp-ok">&#x2705; Europ&eacute;en (Allemagne)</td>
+        <td class="cmp-ko">&#x274C; Principalement US<div class="cmp-src">fixdapp.com</div></td>
+      </tr>
+      <tr class="cmp-hl">
+        <td><strong>Rappel CT automatique</strong></td>
+        <td class="cmp-ok">&#x2705; Email J-45 et J-15 avant CT</td>
+        <td class="cmp-nu">&#x2014; Non</td>
+        <td class="cmp-nu">&#x2014; Non</td>
+      </tr>
+      <tr>
+        <td><strong>Co&ucirc;t 3 ans (total)</strong></td>
+        <td class="cmp-ok">&#x2705; ~324&euro; (boitier existant + abo)</td>
+        <td class="cmp-ko">&#x274C; 393-437&euro; (hardware + abo annuel)</td>
+        <td class="cmp-ko">&#x274C; 59&euro; + 264-300&euro; abo = 323-359&euro;</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="text-align:center;margin-top:20px">
+    <button class="btn-primary" onclick="goAuth('register')">Commencer gratuitement avec MecaIA &rarr;</button>
+    <div style="font-size:11px;color:#2a3a4e;margin-top:10px">Donn&eacute;es publiques · Prix Carly carly.com 2025 · Prix FIXD fixdapp.com 2026 · Avis Trustpilot + ConsumerAffairs</div>
+  </div>
+</div>
+
 <!-- T006 — TRADUCTEUR EMOTIONNEL VOYANTS -->
 <div class="l-voyants">
   <div class="l-voyants-t">&#x1F6A8; Votre voyant vient de s&apos;allumer ?</div>
