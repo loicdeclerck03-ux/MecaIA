@@ -52,6 +52,8 @@ export const handler = async (event) => {
     };
     // engine_code : seulement si fourni (la colonne peut ne pas exister sur d'anciennes bases)
     if (b.engine_code) row.engine_code = b.engine_code;
+    // date_ct : date du prochain contrôle technique
+    if (b.date_ct) row.date_ct = b.date_ct;
 
     let { data, error } = await supabase
       .from("user_vehicles")

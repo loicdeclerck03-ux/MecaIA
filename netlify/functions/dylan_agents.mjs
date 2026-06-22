@@ -465,7 +465,7 @@ async function searchPartsForConclusion(partsNeeded, vehicule) {
 
   const prompt = `Pour un ${vStr}, génère des liens de recherche pour ces pièces: ${piecesStr}.
 Réponds UNIQUEMENT en JSON valide sans texte autour:
-{"pieces":[{"nom":"nom pièce","autodoc_url":"https://www.autodoc.be/search?query=TERMES","ebay_url":"https://www.ebay.be/sch/i.html?_nkw=TERMES"}]}
+{"pieces":[{"nom":"nom pièce","autodoc_url":"https://www.autodoc.be/search?query=TERMES&utm_source=mecaia&utm_medium=affiliate","ebay_url":"https://www.ebay.be/sch/i.html?_nkw=TERMES"}]}
 Remplace TERMES par des termes de recherche précis (pièce + marque + modèle). Max 4 pièces.`;
 
   try {

@@ -1,6 +1,9 @@
-
+﻿
 [functions.scheduled_weekly_health]
   schedule = "0 8 * * 1"
+
+[functions.scheduled_ct_reminder]
+  schedule = "0 8 * * *"
 
 # SEO Pages DTC
 [[redirects]]

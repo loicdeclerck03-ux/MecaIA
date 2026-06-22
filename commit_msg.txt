@@ -1,1 +1,1 @@
-feat: CLAUDE.md v3 - 50 regles Loic integrees (auto-eval 8.5+, rollback auto, jamais rien faire, solution propre, agents verdicts, brainstorm complet)
+feat: T010+T060+T061 - RPC upsert_diag_outcome + Autodoc liens affilies + CT reminder cron + date_ct vehicle form

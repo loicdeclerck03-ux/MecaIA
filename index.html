@@ -1635,6 +1635,7 @@ textarea{resize:vertical;min-height:70px}
         <div class="f"><label>VIN (optionnel)</label><input type="text" id="nc-vn" placeholder="VF3..." style="text-transform:uppercase"></div>
       </div>
       <div class="f"><label>Surnom du véhicule</label><input type="text" id="nc-nm" placeholder="Ma Golf, Bonne mère..."></div>
+<div class="f"><label>Date prochain CT <span style="color:var(--muted);font-size:11px">(optionnel)</span></label><input type="date" id="nc-ct" style="color-scheme:dark"></div>
       <button class="btn" onclick="addCar()">Ajouter au garage</button>
     </div>
   </div>
@@ -3504,13 +3505,14 @@ window.addCar = async function () {
     vin: document.getElementById('nc-vn').value.trim().toUpperCase(),
     km_current: parseInt(document.getElementById('nc-km').value) || null,
     nickname: document.getElementById('nc-nm').value.trim(),
+    date_ct: document.getElementById('nc-ct') ? document.getElementById('nc-ct').value || null : null,
   };
   const r = await MecaIA.authedFetch('garage_add_vehicle', { method: 'POST', body });
   if (!r.ok || !r.data || !r.data.success) { toast('Erreur: ' + ((r.data && r.data.error) || 'ajout'), 'er'); return; }
   await loadCars();
   hideAddCar();
   toast('✅ Véhicule ajouté !', 'ok');
-  ['nc-mk', 'nc-mo', 'nc-an', 'nc-cb', 'nc-kw', 'nc-cm', 'nc-vn', 'nc-km', 'nc-nm']
+  ['nc-mk', 'nc-mo', 'nc-an', 'nc-cb', 'nc-kw', 'nc-cm', 'nc-vn', 'nc-km', 'nc-nm', 'nc-ct']
     .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
 };
 
@@ -3827,6 +3829,18 @@ window.dylanRender = function (data) {
     html += '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + dylanBandeLabel(cc.bande) + ' · ' + urg + ' ' + cc.urgency + ' · ' + (cc.can_drive ? '✓ peut rouler' : '✗ ne pas rouler') + '</div>';
     if (cc.cost_min || cc.cost_max) html += '<div style="font-size:12px;color:var(--acc);margin-top:4px;font-weight:700">💶 ' + cc.cost_min + '€ – ' + cc.cost_max + '€</div>';
     if (Array.isArray(cc.parts_needed) && cc.parts_needed.length) html += '<div style="margin-top:7px">' + cc.parts_needed.map(p => '<span class="tag">' + p + '</span>').join(' ') + '</div>';
+    // T060 - Liens Autodoc affilies
+    if (Array.isArray(cc.parts_links) && cc.parts_links.length) {
+      html += '<div style="margin-top:9px;padding:9px 12px;background:rgba(232,160,0,0.04);border:1px solid rgba(232,160,0,0.15);border-radius:8px">';
+      html += '<div style="font-size:11px;font-weight:700;color:var(--acc);margin-bottom:6px">🛒 Commander les pièces</div>';
+      cc.parts_links.forEach(function(p) {
+        html += '<div style="font-size:11px;margin-bottom:5px;display:flex;align-items:center;gap:6px">';
+        html += '<span style="color:var(--tx);flex:1">' + (p.nom || '') + '</span>';
+        if (p.autodoc_url) html += '<a href="' + p.autodoc_url + '" target="_blank" rel="noopener" style="color:var(--acc);text-decoration:none;border:1px solid var(--acc-b);border-radius:4px;padding:2px 8px;font-size:10px;white-space:nowrap">Autodoc →</a>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
 
     // #7 Rappels constructeurs
     if (Array.isArray(cc.recalls) && cc.recalls.length) {
