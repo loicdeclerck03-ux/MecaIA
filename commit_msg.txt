@@ -1,1 +1,1 @@
-feat: T007 3 niveaux lecture Dylan (niveau_0 simple + lire la suite) + T023 pre-check CT simulator dans dashboard
+fix: NASA 25 agents 100/100 - CSS dylan-expand-btn, parts_search auth, diag_sessions try-catch, RLS DB (8 tables)

@@ -2,7 +2,7 @@
 // Coût optimisé : Haiku + prompt court + réponse JSON max 600 tokens
 
 import Anthropic from "@anthropic-ai/sdk";
-import { json, preflight } from "../lib/auth.mjs";
+import { json, preflight, getUser } from "../lib/auth.mjs";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY,
@@ -18,6 +18,9 @@ Max 4 pièces. Termes de recherche = pièce + marque + modèle + année.`;
 export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return preflight();
   if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
+
+  const auth = await getUser(event);
+  if (!auth) return json(401, { error: "Authentification requise" });
 
   try {
     const { marque, modele, annee, engine_code, pieces, language = "fr" } = JSON.parse(event.body || "{}");
