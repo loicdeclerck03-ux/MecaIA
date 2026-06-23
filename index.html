@@ -2595,28 +2595,7 @@ window.boxSendCmd = function(cmd) {
 };
 
 // ── Live grid mise a jour couleurs ───────────────────────────────────────────
-(function() {
-  var _origUpdateLive = window.boxUpdateLive;
-  window.boxUpdateLive = function(d) {
-    if (_origUpdateLive) _origUpdateLive(d);
-    if (!d || d.value == null) return;
-    var map = {RPM:'bp-rpm2',SPEED:'bp-spd2',COOLANT:'bp-tmp2',BATTERY:'bp-bat2',ENGINE_LOAD:'bp-lod2',THROTTLE:'bp-thr2'};
-    var el = document.getElementById(map[d.key]);
-    if (!el) return;
-    var v = d.value, unit = d.unit||'', txt = v + (unit ? ' ' + unit : '');
-    el.textContent = txt;
-    // Coloration temperature moteur
-    if (d.key === 'COOLANT') {
-      el.className = 'bpv ' + (v >= 100 ? 'hot' : v >= 85 ? 'warm' : 'ok');
-    } else if (d.key === 'BATTERY') {
-      el.className = 'bpv ' + (v < 11.5 ? 'hot' : v < 12.4 ? 'warm' : 'ok');
-    } else {
-      el.className = 'bpv';
-    }
-    var st = document.getElementById('box-live-status');
-    if (st) { st.textContent = 'en ligne'; st.style.color = 'var(--green)'; }
-  };
-})();
+
 
 
 window.boxTab=function(tab){if(tab==='dylan'){setTimeout(function(){var f=document.getElementById('box-feed');if(f)f.focus();},100);}
@@ -3033,24 +3012,7 @@ window.swTab=function(m){
 };
 function setAM(t,tp){const e=document.getElementById('a-msg');e.textContent=t;e.className='amsg'+(tp?' '+tp:'');}
 
-window.doLogin = async function () {
-  if (tries >= 5) { setAM('Trop de tentatives. Attends 5 minutes.', 'err'); return; }
-  const em = document.getElementById('l-em').value.trim();
-  const pw = document.getElementById('l-pw').value;
-  if (!em || !pw) { setAM('Remplir tous les champs.', 'err'); return; }
-  try {
-    const { data, error } = await MecaIA.supa.auth.signInWithPassword({ email: em, password: pw });
-    if (error) {
-      tries++;
-      const msg = error.message?.includes('Invalid login') || error.message?.includes('invalid')
-        ? 'Email ou mot de passe incorrect.'
-        : 'Erreur : ' + error.message;
-      setAM(msg, 'err');
-    } else {
-      tries = 0;
-    }
-  } catch (e) { tries++; setAM('Erreur : ' + e.message, 'err'); }
-};
+// [supprime doublon doLogin — version active L3449]
 
 window.doGoogleLogin = async function () {
   try {
@@ -3521,8 +3483,8 @@ MecaIA.onAuth((user) => {
     if (user.email === OWNER) showSc('s-dash'); else { showSc('s-app'); setTimeout(dylanWelcome, 150); if(window.MecaIAElectron&&window.boxInit)setTimeout(boxInit,500); }
     hideLoading();
     setTimeout(async () => {
-      try { await loadProfile(user); } catch (e) { console.log('profil:', e); }
-      if (user.email === OWNER) { try { await window.loadDash(); } catch (e) { console.log('dash:', e); } }
+      try { await loadProfile(user); } catch (e) { /* silent */ }
+      if (user.email === OWNER) { try { await window.loadDash(); } catch (e) { /* silent */ } }
     }, 0);
   } else {
     showSc('s-land');
@@ -4411,7 +4373,7 @@ window.dylanFeedback = async function (sessionId, resolved) {
                : '🔶 Compris. Si besoin, reprends cette conversation pour affiner.';
     dylanBubble('dylan', msg);
     toast('Merci pour ton retour !', 'ok');
-  } catch(e) { console.log('feedback:', e.message); }
+  } catch(e) { /* silent */ }
 };
 
 window.dylanTurn = async function (payload) {
@@ -5025,7 +4987,7 @@ window.learnBaseline = async function() {
 
 if(typeof window.boxSendCmd !== 'function') window.boxSendCmd = function(){};
 if(typeof window.boxToggleMonitors !== 'function') window.boxToggleMonitors = function(){};
-if(typeof window.navTo !== 'function') window.navTo = function(p){ console.log('navTo stub:', p); };
+if(typeof window.navTo !== 'function') window.navTo = function(p){ if(typeof showPg==='function')showPg(p); };
 
 
 // ── SKELETON HELPER ───────────────────────────────────────────────────────────

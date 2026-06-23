@@ -1,4 +1,4 @@
-
+﻿
 [functions.scheduled_weekly_health]
   schedule = "0 8 * * 1"
 
@@ -24,3 +24,5 @@
   to = "/beta.html"
   status = 200
   force = false
+[functions.scheduled_relance]
+  schedule = "0 9 * * *"
