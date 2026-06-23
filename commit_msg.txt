@@ -1,1 +1,1 @@
-﻿feat: autoConnect probe-all-ATZ - plus de SKIP list, plus de choix de port, fonctionne sur tout Windows
+﻿feat: filtre negatif universel autoConnect - probe tout sauf ports systeme connus
