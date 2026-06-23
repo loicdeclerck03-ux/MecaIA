@@ -1,6 +1,7 @@
-// vehicle_context.mjs — MecaIA ONE — Contexte complet véhicule pour Dylan
+﻿// vehicle_context.mjs — MecaIA ONE — Contexte complet véhicule pour Dylan
 import { createClient } from '@supabase/supabase-js';
 const SUPA_URL=process.env.SUPABASE_URL,SUPA_KEY=process.env.SUPABASE_SERVICE_KEY;
+const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 let _s=null;const getSupa=()=>_s||(_s=createClient(SUPA_URL,SUPA_KEY));
 export const handler=async(event)=>{
   if(event.httpMethod!=='POST')return{statusCode:405,body:'nope'};
@@ -10,8 +11,9 @@ export const handler=async(event)=>{
   const{vehicle_id}=b;
   if(!vehicle_id)return{statusCode:400,body:JSON.stringify({error:'vehicle_id requis'})};
   const supa=getSupa();
-  const{data:{user}}=await supa.auth.getUser(tok);
-  if(!user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const{data:_ad,error:_ae}=await supa.auth.getUser(tok);
+  if(_ae||!_ad?.user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const user=_ad.user;
   const safe=async fn=>{try{return(await fn())||null;}catch{return null;}};
   const[memR,alertsR,tripsR,readR,baseR,vehR]=await Promise.all([
     safe(()=>supa.from('user_vehicle_memory').select('memory_json').eq('vehicle_id',vehicle_id).eq('user_id',user.id).single()),

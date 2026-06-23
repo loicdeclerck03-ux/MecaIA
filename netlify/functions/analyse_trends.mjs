@@ -1,4 +1,4 @@
-// analyse_trends.mjs — MecaIA
+﻿// analyse_trends.mjs — MecaIA
 // Analyse les tendances OBD et génère des prédictions de pannes
 // POST /api/analyse_trends  { user_id, vehicle_id }
 // Retourne: { alerts: [], trends: [], health_score: 0-100 }
@@ -7,6 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const SUPA_URL = process.env.SUPABASE_URL;
 const SUPA_KEY = process.env.SUPABASE_SERVICE_KEY;
+const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 
 // Seuils de dérive par PID
 const THRESHOLDS = {

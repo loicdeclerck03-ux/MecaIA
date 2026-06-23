@@ -1,4 +1,4 @@
-// stripe_ct_checkout.mjs — MecaIA
+﻿// stripe_ct_checkout.mjs — MecaIA
 // Crée une session Stripe Checkout pour le Certificat CT (9,99€ one-shot)
 // POST { vehicle_id, vehicle_name, success_url, cancel_url }
 import Stripe from 'stripe';
@@ -9,6 +9,7 @@ const SUPA_URL = process.env.SUPABASE_URL;
 const SUPA_KEY = process.env.SUPABASE_SERVICE_KEY;
 // Price ID CT Check 9,99€ — produit créé le 21/06/2026 dans Stripe Live
 const PRICE_CT = process.env.STRIPE_PRICE_CT || 'price_1TkiXpQ1QuRc9MT3TmKpKy35';
+const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };

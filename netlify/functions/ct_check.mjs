@@ -1,4 +1,4 @@
-// ct_check.mjs — MecaIA Certificat Contrôle Technique
+﻿// ct_check.mjs — MecaIA Certificat Contrôle Technique
 // Analyse les 8 moniteurs OBD readiness + DTC → verdict PRÊT/NON PRÊT
 // Tarif : 9,99€ one-shot (ou inclus abonnement Pro)
 import { createClient } from '@supabase/supabase-js';
@@ -7,6 +7,7 @@ import Anthropic from '@anthropic-ai/sdk';
 const SUPA_URL  = process.env.SUPABASE_URL;
 const SUPA_KEY  = process.env.SUPABASE_SERVICE_KEY;
 const ANT_KEY   = process.env.ANTHROPIC_KEY;
+const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 
 // Les 8 moniteurs readiness EOBD
 const MONITORS = [

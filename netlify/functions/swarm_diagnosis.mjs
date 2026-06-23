@@ -1,7 +1,8 @@
-// swarm_diagnosis.mjs — MecaIA ONE — Intelligence collective flotte
+﻿// swarm_diagnosis.mjs — MecaIA ONE — Intelligence collective flotte
 import { createClient } from '@supabase/supabase-js';
 import Anthropic from '@anthropic-ai/sdk';
 const SUPA_URL=process.env.SUPABASE_URL,SUPA_KEY=process.env.SUPABASE_SERVICE_KEY,ANT_KEY=process.env.ANTHROPIC_KEY;
+const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 let _s=null;const getSupa=()=>_s||(_s=createClient(SUPA_URL,SUPA_KEY));
 export const handler=async(event)=>{
   if(event.httpMethod!=='POST')return{statusCode:405,body:'nope'};
@@ -10,8 +11,9 @@ export const handler=async(event)=>{
   let b;try{b=JSON.parse(event.body||'{}')}catch{b={}}
   const{vehicle_id,marque='',modele='',annee=0,symptoms=[]}=b;
   const supa=getSupa();
-  const{data:{user}}=await supa.auth.getUser(tok);
-  if(!user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const{data:_ad,error:_ae}=await supa.auth.getUser(tok);
+  if(_ae||!_ad?.user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const user=_ad.user;
   const{data:reads}=await supa.from('obd_readings').select('pid,value').eq('user_id',user.id).eq('vehicle_id',vehicle_id).gte('ts',new Date(Date.now()-7*86400000).toISOString()).limit(300).catch(()=>({data:[]}));
   const byPid={};(reads||[]).forEach(r=>{if(!byPid[r.pid])byPid[r.pid]=[];byPid[r.pid].push(parseFloat(r.value));});
   const pattern={};Object.entries(byPid).forEach(([k,v])=>{pattern[k]=+(v.reduce((a,c)=>a+c,0)/v.length).toFixed(2);});

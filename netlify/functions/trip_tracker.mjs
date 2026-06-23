@@ -1,6 +1,7 @@
-// trip_tracker.mjs — MecaIA ONE — Detection automatique des trajets
+﻿// trip_tracker.mjs — MecaIA ONE — Detection automatique des trajets
 import { createClient } from '@supabase/supabase-js';
 const SUPA_URL=process.env.SUPABASE_URL,SUPA_KEY=process.env.SUPABASE_SERVICE_KEY;
+const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 let _s=null;const getSupa=()=>_s||(_s=createClient(SUPA_URL,SUPA_KEY));
 export const handler=async(event)=>{
   if(event.httpMethod!=='POST')return{statusCode:405,body:'nope'};
@@ -10,8 +11,9 @@ export const handler=async(event)=>{
   const{vehicle_id,session_key,pids={}}=b;
   if(!vehicle_id||!session_key)return{statusCode:400,body:JSON.stringify({error:'missing'})};
   const supa=getSupa();
-  const{data:{user}}=await supa.auth.getUser(tok);
-  if(!user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const{data:_ad,error:_ae}=await supa.auth.getUser(tok);
+  if(_ae||!_ad?.user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const user=_ad.user;
   const now=new Date();
   const rpm=parseFloat(pids.RPM||0),speed=parseFloat(pids.SPEED||0);
   const coolant=parseFloat(pids.COOLANT||0),ltft=parseFloat(pids.LTFT||0);

@@ -1,7 +1,8 @@
-// vehicle_memory.mjs — MecaIA ONE — Mémoire long-terme du véhicule
+﻿// vehicle_memory.mjs — MecaIA ONE — Mémoire long-terme du véhicule
 import { createClient } from '@supabase/supabase-js';
 import Anthropic from '@anthropic-ai/sdk';
 const SUPA_URL=process.env.SUPABASE_URL,SUPA_KEY=process.env.SUPABASE_SERVICE_KEY,ANT_KEY=process.env.ANTHROPIC_KEY;
+const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 let _s=null;const getSupa=()=>_s||(_s=createClient(SUPA_URL,SUPA_KEY));
 const EMPTY={known_issues:[],maintenance_done:[],driving_habits:{},special_notes:[],last_diagnostic:null};
 export const handler=async(event)=>{
@@ -11,8 +12,9 @@ export const handler=async(event)=>{
   const{vehicle_id,action='get',new_info=''}=b;
   if(!vehicle_id)return{statusCode:400,body:JSON.stringify({error:'vehicle_id requis'})};
   const supa=getSupa();
-  const{data:{user}}=await supa.auth.getUser(tok);
-  if(!user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const{data:_ad,error:_ae}=await supa.auth.getUser(tok);
+  if(_ae||!_ad?.user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const user=_ad.user;
   let mem=EMPTY;
   try{const r=await supa.from('user_vehicle_memory').select('memory_json').eq('vehicle_id',vehicle_id).eq('user_id',user.id).single();if(r.data?.memory_json)mem=r.data.memory_json;}catch{}
   if(action==='get')return{statusCode:200,body:JSON.stringify({memory:mem})};

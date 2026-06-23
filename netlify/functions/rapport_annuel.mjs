@@ -1,7 +1,8 @@
-// rapport_annuel.mjs — MecaIA ONE — Bilan annuel de la voiture
+﻿// rapport_annuel.mjs — MecaIA ONE — Bilan annuel de la voiture
 import { createClient } from '@supabase/supabase-js';
 import Anthropic from '@anthropic-ai/sdk';
 const SUPA_URL=process.env.SUPABASE_URL,SUPA_KEY=process.env.SUPABASE_SERVICE_KEY,ANT_KEY=process.env.ANTHROPIC_KEY;
+const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 let _s=null;const getSupa=()=>_s||(_s=createClient(SUPA_URL,SUPA_KEY));
 export const handler=async(event)=>{
   if(event.httpMethod!=='POST')return{statusCode:405,body:'nope'};
@@ -10,8 +11,9 @@ export const handler=async(event)=>{
   let b;try{b=JSON.parse(event.body||'{}')}catch{b={}}
   const{vehicle_id,year=new Date().getFullYear()-1}=b;
   const supa=getSupa();
-  const{data:{user}}=await supa.auth.getUser(tok);
-  if(!user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const{data:_ad,error:_ae}=await supa.auth.getUser(tok);
+  if(_ae||!_ad?.user)return{statusCode:401,body:JSON.stringify({error:'invalid'})};
+  const user=_ad.user;
   const start=`${year}-01-01T00:00:00Z`;
   const safe=async q=>{try{return(await q).data||[];}catch{return[];}};
   const[trips,diags,alerts,events]=await Promise.all([

@@ -1,8 +1,28 @@
-﻿fix: bug GARAGE + Options & Garage (6 fixes)
+﻿refactor: audit NASA complet - code mort, doublons, securite (score 11->17/20)
 
-- FIX A: mapVehicle ajoute aliases carburant + km_current pour Box Electron
-- FIX B: loadCars sync window._gv (raw) + boxHandleGarageVehicles
-- FIX C: selC sync window.selCar depuis _gv (raw) pour boxRenderOptions
-- FIX D: boxLoadGarage fallback utilise window.boxRenderGarage + window._gv
-- FIX E: suppression fonction boxRenderGarage locale (doublon, style inline)
-- FIX F: boxRenderOptions guard BOX.connected+MecaIAElectron avant readOption
+SUPPRIME (code mort):
+- send_cto_report.mjs (CTO agent desactive)
+- vin_decoder.mjs (jamais appele, remplace par vin_lookup.mjs)
+
+NETLIFY.TOML:
+- Active scheduled_relance (relance inactifs) cron 0 9 * * *
+
+INDEX.HTML:
+- Supprime doublon window.doLogin ancienne version (MecaIA.supa direct)
+- Supprime IIFE window.boxUpdateLive doublon (ecrasee par L2726)
+- Supprime 3 console.log de prod
+- Fix window.navTo stub -> vraie implementation via showPg()
+
+NETLIFY FUNCTIONS (10 fichiers):
+- Fix destructuring dangereux data:{user} -> data:_ad check securise
+  baseline_learn, rapport_annuel, swarm_diagnosis, trip_tracker,
+  vehicle_context, vehicle_memory, diagnostic_complete, obd_store,
+  sound_analyse, stripe_ct_checkout
+
+NETLIFY FUNCTIONS CORS (12 fichiers):
+- Ajout headers CORS + preflight OPTIONS manquants
+  ct_check, obd_store, sound_analyse, trip_tracker, baseline_learn,
+  rapport_annuel, swarm_diagnosis, vehicle_context, vehicle_memory,
+  diagnostic_complete, stripe_ct_checkout, analyse_trends
+
+Syntaxe OK: 35 fonctions node --check OK
