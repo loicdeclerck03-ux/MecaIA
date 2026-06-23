@@ -1,1 +1,8 @@
-﻿feat: filtre negatif universel autoConnect - probe tout sauf ports systeme connus
+﻿fix: bug GARAGE + Options & Garage (6 fixes)
+
+- FIX A: mapVehicle ajoute aliases carburant + km_current pour Box Electron
+- FIX B: loadCars sync window._gv (raw) + boxHandleGarageVehicles
+- FIX C: selC sync window.selCar depuis _gv (raw) pour boxRenderOptions
+- FIX D: boxLoadGarage fallback utilise window.boxRenderGarage + window._gv
+- FIX E: suppression fonction boxRenderGarage locale (doublon, style inline)
+- FIX F: boxRenderOptions guard BOX.connected+MecaIAElectron avant readOption
