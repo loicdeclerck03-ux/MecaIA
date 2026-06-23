@@ -1,4 +1,4 @@
-﻿
+
 [functions.scheduled_weekly_health]
   schedule = "0 8 * * 1"
 

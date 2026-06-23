@@ -1,1 +1,1 @@
-fix: NASA 25 agents 100/100 - CSS dylan-expand-btn, parts_search auth, diag_sessions try-catch, RLS DB (8 tables)
+﻿feat: autoConnect probe-all-ATZ - plus de SKIP list, plus de choix de port, fonctionne sur tout Windows
