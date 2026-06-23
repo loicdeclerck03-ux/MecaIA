@@ -2541,7 +2541,7 @@ function boxRenderMonitors(){var PIDS=[{k:'RPM',l:'R\u00e9gime',u:'tr/min',warn:
 
 function boxRenderOptions(){var car=window.selCar;var brand=car?(car.marque||'').toLowerCase():'';var annee=car?parseInt(car.annee||0):0;var card=document.getElementById('box-opts-card');var body=document.getElementById('box-opts-body');if(!card||!body)return;if(brand==='bmw'&&annee>0&&annee<=2005){card.style.display='';body.innerHTML='<div style="font-size:11px;color:var(--muted);padding:10px 0;text-align:center">&#x26A0;&#xFE0F; Votre BMW '+annee+' utilise le protocole DS2 (K-line).<br>Le coding n&apos;est pas disponible avec ce boitier.<br><span style="color:var(--acc)">MecaIA ONE (bient&ocirc;t) supportera ces fonctions.</span></div>';return;}var opts=BOX.BRAND_OPTS[brand]||[];if(!opts.length){card.style.display='none';return;}
   var msg=document.getElementById('box-opts-msg');
-  if(!BOX.connected){if(msg)msg.textContent='connexion requise';}else{if(msg)msg.textContent='';}card.style.display='';body.innerHTML=opts.map(function(key){var m=BOX.OPT_META[key];if(!m)return '';return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="font-size:14px">'+m.icon+'</span><div style="flex:1"><div style="font-size:11px">'+m.label+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Risque '+m.risk+'</div></div><button id="bopt-'+key+'" onclick="boxToggleOpt(\''+key+'\',this)" style="background:var(--s3);border:1px solid var(--bd);border-radius:20px;padding:2px 9px;font-size:10px;cursor:pointer;color:var(--muted)">...</button></div>';}).join('');opts.forEach(function(key){window.MecaIAElectron.obd2.readOption(key,brand);});}
+  if(!BOX.connected){if(msg)msg.textContent='connexion requise';}else{if(msg)msg.textContent='';}card.style.display='';body.innerHTML=opts.map(function(key){var m=BOX.OPT_META[key];if(!m)return '';return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="font-size:14px">'+m.icon+'</span><div style="flex:1"><div style="font-size:11px">'+m.label+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Risque '+m.risk+'</div></div><button id="bopt-'+key+'" onclick="boxToggleOpt(\''+key+'\',this)" style="background:var(--s3);border:1px solid var(--bd);border-radius:20px;padding:2px 9px;font-size:10px;cursor:pointer;color:var(--muted)">...</button></div>';}).join('');if(BOX.connected&&window.MecaIAElectron&&window.MecaIAElectron.obd2&&typeof window.MecaIAElectron.obd2.readOption==='function'){opts.forEach(function(key){window.MecaIAElectron.obd2.readOption(key,brand);});}
 window.boxRenderOptions=boxRenderOptions;
 window.boxToggleOpt=function(key,btn){if(!BOX.connected)return;var isOn=btn.textContent==='ON';btn.textContent='\u2026';btn.disabled=true;window.MecaIAElectron.obd2.writeOption(key,!isOn,(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase());};
 
@@ -2580,31 +2580,9 @@ window.boxLoadGarage = function() {
   var body = document.getElementById('box-garage-body');
   if (body) body.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Chargement&#x2026;</div>';
   if (el.getGarageVehicles) { el.getGarageVehicles(); return; }
-  // Fallback: utiliser window.selCar si pas d'IPC garage
-  boxRenderGarage(window._garageVehicles || []);
+  // Fallback : utiliser _gv (sync Supabase) ou _garageVehicles (IPC)
+  if (window.boxRenderGarage) window.boxRenderGarage(window._gv || window._garageVehicles || []);
 };
-
-
-
-function boxRenderGarage(vehicles) {
-  var body = document.getElementById('box-garage-body');
-  if (!body) return;
-  if (!vehicles || !vehicles.length) {
-    body.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Aucun véhicule — ajoutez-en dans <a href="#" onclick="navTo(&apos;garage&apos;);return false" style="color:var(--acc)">Mon Garage</a></div>';
-    return;
-  }
-  body.innerHTML = vehicles.map(function(v) {
-    var isSel = window.selCar && window.selCar.id === v.id;
-    var label = (v.marque||'') + ' ' + (v.modele||'') + (v.annee ? ' ' + v.annee : '');
-    return '<div onclick="boxPickVehicle(' + JSON.stringify(v).replace(/"/g,'&quot;') + ')" style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;background:' + (isSel ? 'var(--acc-d)' : 'var(--bg)') + ';border:1px solid ' + (isSel ? 'var(--acc)' : 'var(--bd)') + ';margin-bottom:4px;transition:background .15s">'
-      + '<span style="font-size:14px">' + (v.carburant === 'diesel' ? '&#x26FD;' : '&#x26A1;') + '</span>'
-      + '<div style="flex:1"><div style="font-size:11px;font-weight:700;color:' + (isSel ? 'var(--acc)' : 'var(--tx)') + '">' + label + '</div>'
-      + (v.km_current ? '<div style="font-size:10px;color:var(--muted)">' + Number(v.km_current).toLocaleString('fr') + ' km</div>' : '')
-      + '</div>'
-      + (isSel ? '<span style="color:var(--acc);font-size:11px">&#x2714;</span>' : '')
-      + '</div>';
-  }).join('');
-}
 
 
 
@@ -3560,8 +3538,10 @@ MecaIA.onAuth((user) => {
 function mapVehicle(v) {
   return {
     id: v.id, nom: v.nickname, marque: v.marque, modele: v.modele, annee: v.annee,
-    carbu: v.carburant, kw: v.puissance_ch, cm: v.engine_code, vin: v.vin,
-    km: v.km_current, score: 85,
+    carbu: v.carburant, carburant: v.carburant,
+    kw: v.puissance_ch, cm: v.engine_code, vin: v.vin,
+    km: v.km_current, km_current: v.km_current,
+    score: 85,
   };
 }
 
@@ -3593,6 +3573,8 @@ async function loadCars() {
   if (g.ok && g.data && g.data.success) {
     cars = (g.data.vehicles || []).map(mapVehicle);
     window.cars = cars;
+    window._gv = g.data.vehicles || [];
+    if (window.boxHandleGarageVehicles) window.boxHandleGarageVehicles(window._gv);
     renderCars(cars);
     ss('gs-v', cars.length);
   }
@@ -3776,6 +3758,7 @@ function renderCars(cs) {
 window.selC = function (id) {
   selCar = cars.find(c => c.id === id);
   if (!selCar) return;
+  window.selCar = (window._gv||[]).find(function(v){return v.id===id;}) || selCar;
   const sv = (el, v) => { const e = document.getElementById(el); if (e && v) e.value = v; };
   sv('d-mk', selCar.marque); sv('d-mo', selCar.modele); sv('d-an', selCar.annee);
   sv('d-cb', selCar.carbu); sv('d-kw', selCar.kw); sv('d-cm', selCar.cm); sv('d-km', selCar.km);
