@@ -42,3 +42,15 @@
 
 [functions.scheduled_onboarding]
   schedule = "0 9 * * *"
+# Diagnostic OBD2
+[[redirects]]
+  from = "/diagnostic-obd2"
+  to = "/diagnostic-obd2.html"
+  status = 200
+  force = false
+# Garages Pro B2B
+[[redirects]]
+  from = "/garages"
+  to = "/garages.html"
+  status = 200
+  force = false
