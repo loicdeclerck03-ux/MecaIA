@@ -223,14 +223,46 @@ WINDOWS-MCP: git, npm, node, scripts PowerShell
 
 ---
 
-## 8. SKILLS — CHARGER AVANT DE CODER
+## 8. SKILLS — 20 SKILLS MECAIA + SYSTÈME
 
-frontend-design → tout composant UI ou page
-engineering:debug → bug complexe
-engineering:architecture → décision archi
-engineering:testing-strategy → nouveaux tests (Q46)
-searchfit-seo:seo-audit → audit SEO (Q44: une fois/semaine)
-data:write-query → SQL
+### Skills MecaIA (priorité absolue)
+Chemin: C:\Users\pasmoi\Desktop\Meca ia\00_IA_BRAIN\skills\
+
+#### CLUSTER A — CTO Core
+mecaia:session-start  → TOUJOURS en début de session (lire STATUS+INDEX, activer agents, choisir tâche)
+mecaia:deploy         → "déploie", "push prod" (checklist apostrophes+getSupa+Sentry)
+mecaia:incident       → "bug prod", "Sentry erreur", "urgence" (rollback immédiat si P0)
+mecaia:brainstorm     → "nouvelles idées", "brainstorming minuit" (4 phases, 20min)
+mecaia:report         → "génère le rapport", "bilan session" (format CLAUDE.md §10)
+
+#### CLUSTER B — Développement
+mecaia:feature        → "implémente X", "ajoute X" (11 agents, auto-éval ≥8.5)
+mecaia:dylan          → "améliore Dylan", "qualité diagnostic", "prompts Dylan"
+mecaia:supabase       → "SQL", "migration", "RLS", "schema DB"
+mecaia:refactor       → "nettoie le code", "dette technique", "index.html trop long"
+mecaia:security       → "audit sécurité", "failles", "OWASP" (scan apostrophes+getSupa+RLS)
+mecaia:debug          → "bug", "erreur", "ça marche pas", stack trace Sentry
+mecaia:test           → "tests automatisés", "E2E", "Playwright"
+
+#### CLUSTER C — Growth vers 200 abonnés
+mecaia:growth         → "combien d'abonnés", "MRR", "croissance", "on est où"
+mecaia:seo            → "SEO", "pages DTC", "blog", "référencement" (hebdo lundi)
+mecaia:stripe         → "paiements", "revenus", "Stripe" (vérifié chaque session)
+mecaia:compete        → "Carly", "FIXD", "concurrents", "positionnement"
+
+#### CLUSTER D — Swarms multi-agents (artifacts API Anthropic)
+mecaia:swarm-id       → "brainstorm agents", "10 agents", "swarm idées" (10 Haiku //)
+mecaia:audit-swarm    → "audit code", "code mort", "8 agents" (4 équipes ×2, liste avant suppression)
+mecaia:debug-swarm    → "debug complet", "12 agents", "inspecte tout" (6 équipes ×2)
+mecaia:orchestrator   → "mode NASA", "lance tout", "orchestre" (dispatch automatique)
+
+### Skills système (garder actifs)
+frontend-design       → composant UI ou page
+engineering:debug     → bug complexe non couvert par mecaia:debug
+engineering:architecture → décision archi système
+engineering:testing-strategy → nouveaux tests
+searchfit-seo:seo-audit → audit SEO complémentaire
+data:write-query      → SQL complexe
 engineering:documentation → docs
 
 ---

@@ -1,0 +1,13 @@
+{
+  "name": "mecaia-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server Supabase pour MecaIA",
+  "main": "index.js",
+  "scripts": { "start": "node index.js" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "zod": "^3.22.0",
+    "dotenv": "^16.4.0"
+  }
+}
