@@ -33,3 +33,12 @@
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+# Comparatif OBD IA
+[[redirects]]
+  from = "/comparatif-obd-ia"
+  to = "/comparatif-obd-ia.html"
+  status = 200
+  force = false
+
+[functions.scheduled_onboarding]
+  schedule = "0 9 * * *"

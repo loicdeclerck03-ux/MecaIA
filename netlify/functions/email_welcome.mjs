@@ -1,4 +1,4 @@
-// EMAIL_WELCOME — bienvenue MecaIA via Resend
+﻿// EMAIL_WELCOME — bienvenue MecaIA via Resend
 // Domaine mecaiaauto.com verifie dans Resend
 import { getUser, json, preflight, serviceClient } from "../lib/auth.mjs";
 
@@ -102,6 +102,23 @@ export const handler = async (event) => {
       });
     } catch (logErr) {
       console.warn("[EMAIL_WELCOME] log failed:", logErr.message);
+    }
+
+    // Alimenter la sequence email onboarding J+1 / J+3 / J+7
+    try {
+      const supa = (await import('@supabase/supabase-js')).createClient(
+        process.env.SUPABASE_URL, process.env.SUPABASE_SECRET,
+        { auth: { persistSession: false } }
+      );
+      const now = new Date();
+      const rows = [
+        { user_id: userId, email, step: 'j1', send_after: new Date(now.getTime() + 1*24*3600*1000).toISOString() },
+        { user_id: userId, email, step: 'j3', send_after: new Date(now.getTime() + 3*24*3600*1000).toISOString() },
+        { user_id: userId, email, step: 'j7', send_after: new Date(now.getTime() + 7*24*3600*1000).toISOString() },
+      ];
+      await supa.from('onboarding_emails').insert(rows);
+    } catch (oErr) {
+      console.warn('[EMAIL_WELCOME] onboarding queue failed:', oErr.message);
     }
 
     return json(200, { success: true, id: data.id || null });

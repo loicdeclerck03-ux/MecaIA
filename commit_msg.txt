@@ -1,26 +1,10 @@
-﻿refactor: audit NASA round 2 - score 17->20/20
+﻿chore: decommission agent CTO definitif
 
-FAILLE SECURITE CORRIGEE:
-- analyse_trends.mjs: user_id accepte depuis body -> JWT auth via getUser()
-  Utilise maintenant auth.mjs (getUser + serviceClient + json + preflight)
-- ct_check.mjs: user_id accepte depuis body -> JWT auth via getUser()
-  Import auth.mjs, preflight OPTIONS ajoute
-
-DESTRUCTURING DANGEREUX CORRIGES (3 fonctions):
-- diagnostic_complete.mjs: data:{user} -> data:_ad + guard
-- sound_analyse.mjs: data:{user} -> data:_ad + guard
-- stripe_ct_checkout.mjs: data:{user} -> data:_ad + guard
-
-CODE MORT SUPPRIME:
-- scheduled_pipeline.mjs: orchestrateur inexistant + orphelin netlify.toml
-
-CORS GLOBAL:
-- netlify.toml: headers globaux /.netlify/functions/* (evite duplication dans chaque fonction)
-- _CORS inline supprime de 11 fonctions (remplace par netlify.toml)
-
-QUALITE:
-- scheduled_relance.mjs: active dans netlify.toml (0 9 * * *)
-- analyse_trends.mjs: refactoring complet vers auth.mjs
-
-node --check: 34/34 OK
-Score audit: 20/20
+- Supprime nasa_audit.py dans le repo (depuis CTO_MecaIA)
+- Sur le PC local: 5 taches planifiees Windows supprimees
+  CTO_MecaIA_BRAINSTORM/MATIN/MODEMAX/NUIT/SOIR
+- Scripts supprimes: cto_session.ps1, send_report.ps1,
+  MODE_MAX_ON.bat, MODE_MAX_OFF.bat, config.json, claude.exe (225MB)
+- Dossier reports/ (50+ logs) supprime
+- Endpoint /.netlify/functions/send_cto_report: 404 confirme
+- Plus aucun email CTO possible
