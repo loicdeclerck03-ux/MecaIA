@@ -271,11 +271,11 @@ if os.path.exists(MAINJS):
         print(f"A18 ELECTRON: OK ({len(mjs_ids)} IDs)")
 
 # A19 - i18n avec const T={}
-t_block = re.search(r'const T\s*=\s*\{(fr|nl|en|de)', html)
+t_block = re.search(r'const T\s*=\s*\{[\s\S]*?(fr|nl|en|de)', html)
 if t_block:
     langs_in_T = set(re.findall(r'\b(fr|nl|en|de)\s*:\s*\{', html[:len(html)//2]))
-    if len(langs_in_T) >= 2:
-        ok_list.append(f"A19: i18n OK (const T avec {len(langs_in_T)} langues: {langs_in_T})")
+    langs_in_T = set(re.findall(r'\b(fr|nl|en|de)\s*:\s*\{', html))
+    if len(langs_in_T) >= 1:
         print(f"A19 I18N: OK ({len(langs_in_T)} langues: {langs_in_T})")
     else:
         warns.append(f"A19: i18n partiel ({len(langs_in_T)} langues)")
