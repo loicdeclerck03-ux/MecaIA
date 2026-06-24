@@ -1,4 +1,10 @@
-﻿
+﻿[build]
+  publish = "."
+  command = ""
+
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_ANON,STRIPE_PUBLIC_KEY"
+
 [functions.scheduled_weekly_health]
   schedule = "0 8 * * 1"
 

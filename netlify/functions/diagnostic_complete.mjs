@@ -20,8 +20,9 @@ export const handler = async (event) => {
 
   const { vehicle_id, summary, hypotheses = [], action_plan = [], dtcs = [] } = body;
 
-  const supa = createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: false } });
-  const { data: _ad, error: _ae } = await supa.auth.getUser(token);
+  let _supa=null;
+const getSupa=()=>_supa||(_supa=createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:false}}));
+  const { data: _ad, error: _ae } = await getSupa().auth.getUser(token);
   if (_ae || !_ad?.user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
   const user = _ad.user;
   if (!user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };

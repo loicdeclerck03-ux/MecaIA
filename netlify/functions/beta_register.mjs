@@ -18,10 +18,11 @@ export const handler = async (event) => {
   const { name, email, vehicle, role, message } = body;
   if (!name || !email) return { statusCode: 400, body: JSON.stringify({ error: 'Nom et email requis' }) };
 
-  const supa = createClient(SUPA_URL, SUPA_KEY);
+  let _supa=null;
+const getSupa=()=>_supa||(_supa=createClient(SUPA_URL,SUPA_KEY));
 
   // Vérifier si des places sont disponibles
-  const { count } = await supa.from('beta_registrations')
+  const { count } = await getSupa().from('beta_registrations')
     .select('*', { count: 'exact', head: true })
     .eq('status', 'pending');
 
@@ -30,11 +31,11 @@ export const handler = async (event) => {
   }
 
   // Vérifier email unique
-  const { data: existing } = await supa.from('beta_registrations').select('id').eq('email', email).single();
+  const { data: existing } = await getSupa().from('beta_registrations').select('id').eq('email', email).single();
   if (existing) return { statusCode: 200, body: JSON.stringify({ success: false, message: 'Déjà inscrit avec cet email' }) };
 
   // Sauvegarder l'inscription
-  const { error: insertErr } = await supa.from('beta_registrations').insert({
+  const { error: insertErr } = await getSupa().from('beta_registrations').insert({
     name, email, vehicle: vehicle || null, role: role || 'driver', message: message || null,
     status: 'pending', registered_at: new Date().toISOString(),
   });

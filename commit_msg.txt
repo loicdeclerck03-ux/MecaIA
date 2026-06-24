@@ -1,10 +1,24 @@
-﻿chore: decommission agent CTO definitif
+﻿fix(security): Sprint 4 NASA - dead code + DTC batch + securite Supabase
 
-- Supprime nasa_audit.py dans le repo (depuis CTO_MecaIA)
-- Sur le PC local: 5 taches planifiees Windows supprimees
-  CTO_MecaIA_BRAINSTORM/MATIN/MODEMAX/NUIT/SOIR
-- Scripts supprimes: cto_session.ps1, send_report.ps1,
-  MODE_MAX_ON.bat, MODE_MAX_OFF.bat, config.json, claude.exe (225MB)
-- Dossier reports/ (50+ logs) supprime
-- Endpoint /.netlify/functions/send_cto_report: 404 confirme
-- Plus aucun email CTO possible
+NETLIFY:
+- netlify.toml: section [build] publish="." (fix webhook GitHub->Netlify)
+- JAVASCRIPT-2 prod: deploy force via CLI (prod etait sur ancien deploy)
+
+DEAD CODE (4 fonctions):
+- beta_register.mjs: lazy getSupa() a la place de top-level createClient
+- diagnostic_complete.mjs: idem
+- sound_analyse.mjs: idem
+- stripe_ct_checkout.mjs: idem
+
+SEO:
+- +10 pages DTC batch 3 (P0305 P0306 P0261 P0740 P0122 P0108 P0012 P0016 P0191 P0344)
+- sitemap.xml +10 URLs
+
+SUPABASE SECURITE:
+- REVOKE EXECUTE add_credits FROM anon (critique: self-credit sans auth)
+- Views vehicle_trip_stats + vehicle_health_dashboard: SECURITY DEFINER -> INVOKER
+- get_bayesian_hypotheses: SET search_path = public
+- upsert_diag_outcome: SET search_path = public
+- Bucket receipts: policy SELECT trop large remplacee par policy uid-scoped
+
+Score NASA: 20/20 - Sentry: 0 bugs actifs

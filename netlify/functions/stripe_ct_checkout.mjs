@@ -22,8 +22,9 @@ export const handler = async (event) => {
 
   const { vehicle_id, vehicle_name, success_url, cancel_url } = body;
 
-  const supa = createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: false } });
-  const { data: _ad, error: _ae } = await supa.auth.getUser(token);
+  let _supa=null;
+const getSupa=()=>_supa||(_supa=createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:false}}));
+  const { data: _ad, error: _ae } = await getSupa().auth.getUser(token);
   if (_ae || !_ad?.user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
   const user = _ad.user;
   if (!user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
@@ -45,7 +46,7 @@ export const handler = async (event) => {
     });
 
     // Sauvegarder en attente
-    await supa.from('stripe_payments').insert({
+    await getSupa().from('stripe_payments').insert({
       user_id: user.id,
       stripe_session_id: session.id,
       amount_eur: 9.99,

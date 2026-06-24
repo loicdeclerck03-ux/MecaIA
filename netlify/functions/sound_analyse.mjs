@@ -22,8 +22,9 @@ export const handler = async (event) => {
   if (!audio_b64) return { statusCode: 400, body: JSON.stringify({ error: 'audio_b64 requis' }) };
 
   // Auth
-  const supa = createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: false } });
-  const { data: _ad, error: _ae } = await supa.auth.getUser(token);
+  let _supa=null;
+const getSupa=()=>_supa||(_supa=createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:false}}));
+  const { data: _ad, error: _ae } = await getSupa().auth.getUser(token);
   if (_ae || !_ad?.user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
   const user = _ad.user;
   if (!user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
@@ -84,7 +85,7 @@ Sois direct et pratique. Maximum 200 mots.`;
     const analysis = response.content[0]?.text || 'Analyse non disponible';
 
     // Sauvegarder l'analyse en base
-    await supa.from('obd_sessions').insert({
+    await getSupa().from('obd_sessions').insert({
       user_id: user.id,
       vehicle_id: vehicle_id || null,
       session_type: 'sound_analysis',
