@@ -2580,8 +2580,11 @@ window.boxLoadGarage = function() {
   if (!el) return;
   var body = document.getElementById('box-garage-body');
   if (body) body.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Chargement&#x2026;</div>';
+  // Restaurer depuis localStorage en attendant la reponse IPC (ou si pas auth)
+  if(!window._gv||!window._gv.length){
+    try{var cached=localStorage.getItem('mecaia_gv');if(cached){var cv=JSON.parse(cached);if(cv&&cv.length){window._gv=cv;window.boxRenderGarage(window._gv);_boxGarageChips(window._gv);if(!window.selCar){var prim=window._gv.find(function(v){return v.is_primary;})||window._gv[0];if(prim){window.selCar=prim;window.boxUpdateVehBadge();}}}}}catch(e){}
+  }
   if (el.getGarageVehicles) { el.getGarageVehicles(); return; }
-  // Fallback : utiliser _gv (sync Supabase) ou _garageVehicles (IPC)
   if (window.boxRenderGarage) window.boxRenderGarage(window._gv || window._garageVehicles || []);
 };
 
@@ -2634,8 +2637,15 @@ window.boxRenderGarage=function(vehicles){
 
 window.boxHandleGarageVehicles=function(vehicles){
   window._gv=vehicles||[];
+  // Persister en localStorage pour les redemarrages sans auth
+  if(window._gv.length){try{localStorage.setItem('mecaia_gv',JSON.stringify(window._gv));}catch(e){}}
   window.boxRenderGarage(window._gv);
   _boxGarageChips(window._gv);
+  // Auto-selectionner le vehicule primaire si aucun selectionne
+  if(!window.selCar&&window._gv.length){
+    var prim=window._gv.find(function(v){return v.is_primary;})||window._gv[0];
+    if(prim){window.selCar=prim;window.boxUpdateVehBadge();window.boxRenderOptions();window.boxRenderResets();}
+  }
 };
 
 window.boxPickVehicle=function(v){
