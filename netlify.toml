@@ -60,3 +60,15 @@
   to = "/garages.html"
   status = 200
   force = false
+# Blog
+[[redirects]]
+  from = "/blog"
+  to = "/blog.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/blog/:slug"
+  to = "/blog/:slug.html"
+  status = 200
+  force = false

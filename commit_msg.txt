@@ -1,24 +1,18 @@
-﻿fix(security): Sprint 4 NASA - dead code + DTC batch + securite Supabase
-
-NETLIFY:
-- netlify.toml: section [build] publish="." (fix webhook GitHub->Netlify)
-- JAVASCRIPT-2 prod: deploy force via CLI (prod etait sur ancien deploy)
-
-DEAD CODE (4 fonctions):
-- beta_register.mjs: lazy getSupa() a la place de top-level createClient
-- diagnostic_complete.mjs: idem
-- sound_analyse.mjs: idem
-- stripe_ct_checkout.mjs: idem
+﻿feat(sprint5): DTC batch 4 + Blog pilier SEO + TikTok plan
 
 SEO:
-- +10 pages DTC batch 3 (P0305 P0306 P0261 P0740 P0122 P0108 P0012 P0016 P0191 P0344)
-- sitemap.xml +10 URLs
+- +10 pages DTC batch 4 (P0430 P0022 P0088 P0520 P0456 P0351 P0404 P0234 P0715 P0115)
+- Total DTC: 66 pages (56+10)
+- /blog page index (8 articles listes)
+- /blog/comprendre-codes-obd2 (article pilier 1500 mots, FAQPage JSON-LD)
+- netlify.toml: redirects /blog et /blog/:slug
+- sitemap.xml: +12 URLs (10 DTC + blog + article)
 
-SUPABASE SECURITE:
-- REVOKE EXECUTE add_credits FROM anon (critique: self-credit sans auth)
-- Views vehicle_trip_stats + vehicle_health_dashboard: SECURITY DEFINER -> INVOKER
-- get_bayesian_hypotheses: SET search_path = public
-- upsert_diag_outcome: SET search_path = public
-- Bucket receipts: policy SELECT trop large remplacee par policy uid-scoped
+CONTENU ACQUISITION:
+- TIKTOK_PLAN_30_VIDEOS.md: plan complet 30 videos
+  - 5 series (Demystification / Live / Economies / Dylan / Education)
+  - Scripts complets pour les 10 premieres videos
+  - Calendrier 10 semaines
+  - Materiel necessaire: ~70euro
 
-Score NASA: 20/20 - Sentry: 0 bugs actifs
+Score NASA: 20/20
