@@ -576,6 +576,24 @@ export const handler = async (event) => {
       else msgs.push({ role: "user", content: `Analyse ce scan OBD2 :\n${scanSummary}` });
     }
 
+    // Injecter les PIDs live meme pour les questions follow-up (is_obd2_scan=false)
+    // Si l utilisateur a des donnees OBD en live dans son contexte, Dylan doit les voir
+    if (!isOBD2 && ctx && ctx.pids) {
+      const pids2 = ctx.pids || {};
+      const liveKeys = ["RPM","COOLANT","BATTERY","ENGINE_LOAD","SPEED","THROTTLE","MAF","BOOST","RAIL_PRESSURE"];
+      const livePids = liveKeys.filter(k => pids2[k] && pids2[k].value != null);
+      if (livePids.length > 0) {
+        const liveStr = livePids.map(k => {
+          const p = pids2[k];
+          return (p.label || k) + ":" + p.value + (p.unit || "");
+        }).join(" | ");
+        const last = msgs[msgs.length - 1];
+        if (last && last.role === "user") {
+          last.content += "\n\n[Donnees OBD2 live actuelles: " + liveStr + "]";
+        }
+      }
+    }
+
     // Recuperer le garage en parallele (info pour la reponse, pas bloquante)
     const garagePromise = uid
       ? getSupabase().from("user_vehicles")

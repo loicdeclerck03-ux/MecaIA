@@ -2565,7 +2565,8 @@ async function boxCallDylan(userMsg,isScan){
   boxAddTyping();
   BOX.convHistory.push({role:'user',content:isScan?'Scan OBD2 complet.':userMsg});
   try{
-    var r=await MecaIA.authedFetch('mecaia_box',{method:'POST',body:{messages:BOX.convHistory,is_obd2_scan:!!isScan,vehicle_context:BOX.scanResult||{},selected_vehicle:window.selCar||null,brand:(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase()||'default',language:'fr'}});
+    var _liveCtx=Object.assign({},BOX.scanResult||{});if(BOX.liveData&&Object.keys(BOX.liveData).length){_liveCtx.pids=Object.assign({},(BOX.scanResult&&BOX.scanResult.pids)||{},BOX.liveData);}
+var r=await MecaIA.authedFetch('mecaia_box',{method:'POST',body:{messages:BOX.convHistory,is_obd2_scan:!!isScan,vehicle_context:_liveCtx,selected_vehicle:window.selCar||null,brand:(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase()||'default',language:'fr'}});
     boxRemoveTyping();
     if(r.ok&&r.data&&r.data.message){boxMsg('dy',r.data.message);BOX.convHistory.push({role:'assistant',content:r.data.message});}
     else boxMsg('dy','\u26A0\uFE0F Dylan est momentan\u00e9ment indisponible. V\u00e9rifiez votre connexion internet.');
@@ -2715,9 +2716,11 @@ window.boxHandleStatus=function(s){
 
 window.boxUpdateLive=function(d){
   if(!d||d.value==null)return;
-// Cache live pour upload batch
+// Stocker dans BOX.liveData (objet complet pour Dylan)
+BOX.liveData=BOX.liveData||{};BOX.liveData[d.key]=d;
+// Cache live pour upload batch (corrige: d.key pas d.pid)
 if(!window._liveCache){window._liveCache={};}
-if(d&&d.pid&&d.value!=null){window._liveCache[d.pid]=d.value;}
+if(d&&d.key&&d.value!=null){window._liveCache[d.key]=d.value;}
 // Upload cloud toutes les 30s
 if(!window._obdCloudTs||Date.now()-window._obdCloudTs>29000){
   window._obdCloudTs=Date.now();
