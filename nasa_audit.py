@@ -18,10 +18,10 @@ issues, warns, ok_list = [], [], []
 DYNAMIC_IDS = {
     'toast-c', 'diag-empty-hint', 'm-ct-result', 'obd-alerts-wrap',
     'pay-eco-msg', 'meia-scroll', 'zd', 'box-live-bar', 'm-ct-sim',
+    'toast-c', 'diag-empty-hint', 'm-ct-result', 'obd-alerts-wrap',
+    'pay-eco-msg', 'meia-scroll', 'zd', 'box-live-bar', 'm-ct-sim',
     # Dead code avec null guards (chkD, togPT)
     'd-mk', 'd-mo', 'd-an', 'd-cb', 'btn-d', 'pr-ty', 'pr-vb',
-    # ID dans innerHTML généré dynamiquement
-    'pr-val', 'pr-val-1', 'pr-val-2',
 }
 
 print("=== NASA AUDIT v3 - MecaIA ===\n")

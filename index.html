@@ -1796,7 +1796,7 @@ textarea{resize:vertical;min-height:70px}
     <div class="cb">
       <div class="r2">
         <div class="f"><label>Marque *</label>
-          <select id="nc-mk">
+          <select id="nc-mk" onchange="loadVehicleSpecs(this.value)">
             <option value="">— Marque —</option>
             <option>Abarth</option><option>Alfa Romeo</option><option>Aston Martin</option>
             <option>Audi</option><option>Bentley</option><option>BMW</option>
@@ -1819,7 +1819,7 @@ textarea{resize:vertical;min-height:70px}
             <option>Volkswagen</option><option>Volvo</option>
           </select>
         </div>
-        <div class="f"><label>Modèle *</label><input type="text" id="nc-mo" placeholder="308, Golf, Clio..."></div>
+        <div class="f"><label>Modèle *</label><input type="text" id="nc-mo" placeholder="308, Golf, Clio..." list="dl-models" autocomplete="off"><datalist id="dl-models"></datalist></div>
       </div>
       <div class="r2">
         <div class="f"><label>Année *</label><input type="number" id="nc-an" placeholder="2019" min="1980" max="2026"></div>
@@ -1837,7 +1837,7 @@ textarea{resize:vertical;min-height:70px}
         <div class="f"><label>Kilométrage actuel</label><input type="number" id="nc-km" placeholder="85000" min="1"></div>
       </div>
       <div class="r2">
-        <div class="f"><label>Code moteur</label><input type="text" id="nc-cm" placeholder="N47D20" style="text-transform:uppercase"></div>
+        <div class="f"><label>Code moteur</label><input type="text" id="nc-cm" placeholder="N47D20" style="text-transform:uppercase" list="dl-engines" autocomplete="off"><datalist id="dl-engines"></datalist></div>
         <div class="f"><label>VIN (optionnel)</label><input type="text" id="nc-vn" placeholder="VF3..." style="text-transform:uppercase"></div>
       </div>
       <div class="f"><label>Surnom du véhicule</label><input type="text" id="nc-nm" placeholder="Ma Golf, Bonne mère..."></div>
@@ -5058,6 +5058,73 @@ window.showToast = function(type, msg, actionLabel, actionFn) {
 
 // Remplace l ancienne fonction showT si elle existe
 window.showT = window.showToast;
+
+
+// ── SELECTEUR VEHICULE HIERARCHIQUE (T-VEHICULE-01) ──────────────────────────
+window._vsCache = {};
+window.loadVehicleSpecs = async function(marque) {
+  var dlM = document.getElementById('dl-models');
+  var dlE = document.getElementById('dl-engines');
+  if (dlM) dlM.innerHTML = '';
+  if (dlE) dlE.innerHTML = '';
+  var moInput = document.getElementById('nc-mo');
+  if (moInput) moInput.placeholder = 'Chargement...';
+  if (!marque) { if (moInput) moInput.placeholder = '308, Golf, Clio...'; return; }
+  try {
+    var supa = window.MecaIA && window.MecaIA.supa;
+    if (!supa) { if (moInput) moInput.placeholder = '308, Golf, Clio...'; return; }
+    var res = await supa.from('vehicle_specs')
+      .select('model,year_from,year_to,engine,fuel')
+      .eq('make', marque)
+      .order('model');
+    var data = res.data || [];
+    if (!data.length) { if (moInput) moInput.placeholder = 'Saisir le modele'; return; }
+    window._vsCache[marque] = data;
+    // Populate models datalist
+    var models = {};
+    data.forEach(function(r) {
+      if (!models[r.model]) models[r.model] = {min: r.year_from, max: r.year_to};
+      else { if (r.year_from < models[r.model].min) models[r.model].min = r.year_from; if (r.year_to > models[r.model].max) models[r.model].max = r.year_to; }
+    });
+    if (dlM) dlM.innerHTML = Object.entries(models).map(function(e) { return '<option value="' + e[0] + '">' + e[0] + ' (' + e[1].min + '-' + e[1].max + ')</option>'; }).join('');
+    if (moInput) moInput.placeholder = Object.keys(models).slice(0,3).join(', ') + '...';
+  } catch(ex) { if (moInput) moInput.placeholder = '308, Golf, Clio...'; }
+};
+
+// Called when model input changes (via input event) to load engines
+document.addEventListener('DOMContentLoaded', function() {
+  var mo = document.getElementById('nc-mo');
+  if (!mo) return;
+  mo.addEventListener('change', function() {
+    var marque = document.getElementById('nc-mk') && document.getElementById('nc-mk').value;
+    var modele = mo.value.trim();
+    var dlE = document.getElementById('dl-engines');
+    var anInput = document.getElementById('nc-an');
+    if (!marque || !modele || !window._vsCache[marque]) return;
+    var rows = window._vsCache[marque].filter(function(r) { return r.model === modele; });
+    if (!rows.length) return;
+    // Update year hint
+    var yrMin = Math.min.apply(null, rows.map(function(r) { return r.year_from; }));
+    var yrMax = Math.max.apply(null, rows.map(function(r) { return r.year_to; }));
+    if (anInput) { anInput.placeholder = yrMin + '-' + yrMax + ' (ex: ' + yrMax + ')'; anInput.min = yrMin; anInput.max = yrMax; }
+    // Populate engines datalist
+    if (dlE) {
+      var seen = {};
+      dlE.innerHTML = rows.filter(function(r) { var k = r.engine; if (seen[k]) return false; seen[k] = true; return true; })
+        .map(function(r) { return '<option value="' + (r.engine || '') + '">' + (r.engine || '') + ' — ' + (r.fuel || '') + '</option>'; }).join('');
+    }
+    // Auto-fill fuel if empty
+    var cbSel = document.getElementById('nc-cb');
+    if (cbSel && !cbSel.value) {
+      var fuelMap = {'essence':'essence','petrol':'essence','diesel':'diesel','electric':'electrique','electrique':'electrique','hybrid':'hybride','hybride':'hybride','gpl':'gpl'};
+      var fuel = (rows[0].fuel || '').toLowerCase();
+      var mapped = fuelMap[fuel] || '';
+      if (mapped) cbSel.value = mapped;
+    }
+  });
+});
+// ── FIN SELECTEUR VEHICULE ────────────────────────────────────────────────────
+
 </script>
 <div id="m-newpw" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;align-items:center;justify-content:center;padding:20px">
   <div style="background:#0e141b;border:1px solid #1e2a36;border-radius:14px;max-width:380px;width:100%;padding:26px;font-family:'DM Sans',sans-serif">
