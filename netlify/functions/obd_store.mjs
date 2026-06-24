@@ -4,7 +4,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPA_URL = process.env.SUPABASE_URL;
-const SUPA_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SUPA_KEY = process.env.SUPABASE_SECRET; // Fix : env var unifiée (comme auth.mjs)
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
@@ -30,7 +30,6 @@ export const handler = async (event) => {
   const { data: _ad, error: authError } = await supa.auth.getUser(token);
   if (authError || !_ad?.user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
   const user = _ad.user;
-  if (authError || !user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
 
   const user_id = user.id;
   const ts = new Date().toISOString();

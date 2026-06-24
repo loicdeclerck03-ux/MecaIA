@@ -63,12 +63,18 @@ export const handler = async (event) => {
             status: 'succeeded',
             updated_at: new Date().toISOString()
           }).eq('stripe_session_id', session.id);
-          // Marquer le CT check comme payé pour cet utilisateur
-          await getSupabase().from('user_credits').upsert({
-            user_id: ctUserId,
-            ct_checks_available: getSupabase().rpc('increment', { x: 1, row_id: ctUserId })
-          }, { onConflict: 'user_id' }).select();
-          console.log('[STRIPE_WEBHOOK] CT Check payé user=' + ctUserId);
+          // Fix : incrément atomique — idempotent car session.id est unique Stripe
+          const { data: credRow } = await getSupabase()
+            .from('user_credits')
+            .select('ct_checks_available')
+            .eq('user_id', ctUserId)
+            .maybeSingle();
+          const currentCT = credRow?.ct_checks_available ?? 0;
+          await getSupabase().from('user_credits').upsert(
+            { user_id: ctUserId, ct_checks_available: currentCT + 1 },
+            { onConflict: 'user_id' }
+          );
+          console.log('[STRIPE_WEBHOOK] CT Check payé user=' + ctUserId + ' ct_checks=' + (currentCT + 1));
         }
         return { statusCode: 200, body: JSON.stringify({ received: true, product: 'ct_check' }) };
       }
