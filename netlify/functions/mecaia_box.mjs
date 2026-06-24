@@ -1,4 +1,4 @@
-// mecaia_box.mjs — Agent Dylan OBD2 Expert v8 — +Mode$06 +FuelTrimHistory +Misfire +BatteryDeep
+﻿// mecaia_box.mjs — Agent Dylan OBD2 Expert v8 — +Mode$06 +FuelTrimHistory +Misfire +BatteryDeep
 // Architecture : boucle agentique tool-use (ADR-022)
 // - SERVER tools executes directement en Netlify (Supabase : DTC, specs EU, procedures, cas similaires)
 // - DEVICE tools "maps" depuis le vehicle_context envoye par l'app Electron (donnees deja collectees)
@@ -108,9 +108,17 @@ const TOOLS = [
       vin: { type: "string", description: "VIN du vehicule pour filtrer l historique" }
     }, required: [] }
   },
+  {
+    name: "get_bayesian_hypotheses",
+    description: "Hypotheses de pannes les plus probables basees sur les reparations REELLEMENT confirmees par d autres utilisateurs (base bayesienne apprentissage). Appeler en ETAPE 2 si codes DTC trouves. Retourne les composants defaillants confirmes tries par probabilite avec taille d echantillon.",
+    input_schema: { "type": "object", "properties": {
+      "symptoms": { "type": "array", "items": { "type": "string" }, "description": "Codes DTC ex: ['P0171','P0300'] ou mots-cles symptomes" },
+      "make": { "type": "string", "description": "Marque vehicule ex: BMW, Renault (optionnel)" }
+    }, "required": ["symptoms"] }
+  },
 ];
 
-const SERVER_TOOLS = new Set(["get_vehicle_context","lookup_dtc","search_similar_cases","get_dtc_procedures","get_fuel_trim_history"]);
+const SERVER_TOOLS = new Set(["get_vehicle_context","lookup_dtc","search_similar_cases","get_dtc_procedures","get_fuel_trim_history","get_bayesian_hypotheses"]);
 
 // ── FORMATAGE SPECS EU ─────────────────────────────────────────────────────────
 // Champs reels : oil_spec, oil_interval_km, filter_air_km, timing_belt_km,
@@ -148,7 +156,26 @@ async function execServerTool(name, input, { brand, vehicleMeta }) {
   const url = process.env.SUPABASE_URL;
 
   try {
-    if (name === "get_vehicle_context") {
+    if (name === "get_bayesian_hypotheses") {
+    if (!vehicleMeta || !vehicleMeta.userId) return "Donnees bayesiennes non disponibles.";
+    try {
+      const symptoms = Array.isArray(input.symptoms) ? input.symptoms.filter(Boolean) : [];
+      if (!symptoms.length) return "Aucun symptome fourni.";
+      const body = { p_symptoms: symptoms, p_make: input.make || vehicleMeta.make || "", p_limit: 5 };
+      const r = await fetch(url + "/rest/v1/rpc/get_bayesian_hypotheses", { method: "POST", headers: h, body: JSON.stringify(body) });
+      const rows = await r.json();
+      if (!Array.isArray(rows) || !rows.length) {
+        return "Aucune donnee bayesienne pour ces symptomes (base en cours de construction — le premier retour utilisateur l alimentera).";
+      }
+      const lines2 = rows.map(function(row) {
+        return row.component + ": " + row.probability + "% de confiance (" + row.win_count + "/" + row.total_count + " cas confirmes, echantillon " + row.sample_size + ")";
+      });
+      const totalCases = rows.reduce(function(s, row) { return s + (row.total_count || 0); }, 0);
+      return "Hypotheses bayesiennes (" + totalCases + " reparations confirmees dans notre base):\n" + lines2.join("\n") + "\nNote: probabilites issues de vraies reparations — plus fiable que l intuition seule.";
+    } catch(e2) { return "Hypotheses bayesiennes non disponibles: " + e2.message; }
+  }
+
+  if (name === "get_vehicle_context") {
       const body = { p_make: input.make || brand || "", p_model: input.model || vehicleMeta.modele || "", p_year: input.year || vehicleMeta.year || null };
       const r = await fetch(`${url}/rest/v1/rpc/get_vehicle_context`, { method: "POST", headers: h, body: JSON.stringify(body) });
       const data = await r.json();
@@ -362,6 +389,11 @@ ETAPE 4 - INTERROGATION (pendant l acquisition)
   "Le probleme apparait-il a froid, chaud, ou toujours ?"
   "La perte de puissance est-elle permanente ou sous charge seulement ?"
   "Voyez-vous de la fumee ou sentez-vous quelque chose d inhabituel ?"
+
+ETAPE 2bis - BAYESIEN (si codes DTC trouves)
+- get_bayesian_hypotheses avec les codes DTC du ETAPE 2
+- Si echantillon > 5 cas : mentionner "notre base confirme X% des cas similaires"
+- Croise avec live data et freeze frame pour valider
 
 ETAPE 5 - DIAGNOSTIC & CAUSE RACINE
 - search_similar_cases si symptome complexe
