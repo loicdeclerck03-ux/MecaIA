@@ -2,7 +2,6 @@
 import { createClient } from '@supabase/supabase-js';
 import Anthropic from '@anthropic-ai/sdk';
 const SUPA_URL=process.env.SUPABASE_URL,SUPA_KEY=process.env.SUPABASE_SERVICE_KEY,ANT_KEY=process.env.ANTHROPIC_KEY;
-const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 let _s=null;const getSupa=()=>_s||(_s=createClient(SUPA_URL,SUPA_KEY));
 const EMPTY={known_issues:[],maintenance_done:[],driving_habits:{},special_notes:[],last_diagnostic:null};
 export const handler=async(event)=>{

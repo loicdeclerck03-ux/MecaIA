@@ -1,13 +1,10 @@
 ﻿// ct_check.mjs — MecaIA Certificat Contrôle Technique
 // Analyse les 8 moniteurs OBD readiness + DTC → verdict PRÊT/NON PRÊT
 // Tarif : 9,99€ one-shot (ou inclus abonnement Pro)
-import { createClient } from '@supabase/supabase-js';
+import { getUser, serviceClient, preflight } from '../lib/auth.mjs';
 import Anthropic from '@anthropic-ai/sdk';
 
-const SUPA_URL  = process.env.SUPABASE_URL;
-const SUPA_KEY  = process.env.SUPABASE_SERVICE_KEY;
-const ANT_KEY   = process.env.ANTHROPIC_KEY;
-const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
+const ANT_KEY = process.env.ANTHROPIC_KEY;
 
 // Les 8 moniteurs readiness EOBD
 const MONITORS = [
@@ -26,20 +23,23 @@ const INCOMPLETE = 'INCOMPLETE';
 const COMPLETE = 'COMPLETE';
 
 export const handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
-  }
+  if (event.httpMethod === 'OPTIONS') return preflight();
+  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
+
+  const auth = await getUser(event);
+  if (!auth) return { statusCode: 401, body: JSON.stringify({ error: 'Auth requise' }) };
+  const user_id = auth.userId;
 
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch { body = {}; }
 
-  const { user_id, vehicle_id, monitors, dtcs, mil_on, mileage } = body;
+  const { vehicle_id, monitors, dtcs, mil_on, mileage } = body;
 
-  if (!user_id || !monitors) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'user_id et monitors requis' }) };
+  if (!monitors) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'monitors requis' }) };
   }
 
-  const supa = createClient(SUPA_URL, SUPA_KEY);
+  const supa = serviceClient();
 
   // Vérifier abonnement ou paiement CT
   const { data: credits } = await supa

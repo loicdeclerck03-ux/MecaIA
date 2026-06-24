@@ -7,7 +7,6 @@ import { createClient } from '@supabase/supabase-js';
 const ANT_KEY  = process.env.ANTHROPIC_KEY;
 const SUPA_URL = process.env.SUPABASE_URL;
 const SUPA_KEY = process.env.SUPABASE_SERVICE_KEY;
-const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
@@ -24,7 +23,9 @@ export const handler = async (event) => {
 
   // Auth
   const supa = createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: false } });
-  const { data: { user } } = await supa.auth.getUser(token);
+  const { data: _ad, error: _ae } = await supa.auth.getUser(token);
+  if (_ae || !_ad?.user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
+  const user = _ad.user;
   if (!user) return { statusCode: 401, body: JSON.stringify({ error: 'Token invalide' }) };
 
   // Récupérer infos véhicule si dispo

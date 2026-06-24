@@ -1,7 +1,6 @@
 ﻿// baseline_learn.mjs — MecaIA ONE — Baseline personnalisée par véhicule
 import { createClient } from '@supabase/supabase-js';
 const SUPA_URL=process.env.SUPABASE_URL,SUPA_KEY=process.env.SUPABASE_SERVICE_KEY;
-const _CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Allow-Methods":"GET,POST,OPTIONS"};
 let _s=null;const getSupa=()=>_s||(_s=createClient(SUPA_URL,SUPA_KEY));
 export const handler=async(event)=>{
   if(event.httpMethod!=='POST')return{statusCode:405,body:'nope'};
