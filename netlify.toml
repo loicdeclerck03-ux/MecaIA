@@ -1,6 +1,7 @@
 ﻿[build]
   publish = "."
   command = ""
+  functions = "netlify/functions"
 
 [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "SUPABASE_ANON,STRIPE_PUBLIC_KEY"
