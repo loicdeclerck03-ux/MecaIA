@@ -6,7 +6,7 @@
 // USAGE: POST /.netlify/functions/email_marketing_sequence
 // Body: { segment: "cold_prospect"|"inactive_user"|"first_diag_done", email, name }
 
-import { json, preflight, serviceClient } from "../lib/auth.mjs";
+import { json, preflight } from "../lib/auth.mjs";
 
 const RESEND_KEY = process.env.RESEND_API_KEY;
 const FROM = "Loïc de MecaIA <noreply@mecaiaauto.com>";

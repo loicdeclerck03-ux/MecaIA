@@ -466,7 +466,7 @@ async function runAgenticLoop({ messages, system, ctx, brand, vehicleMeta, signa
       system,
       tools: TOOLS,
       messages: msgs,
-    });
+    }, signal ? { signal } : undefined);
     // Tracker les tokens pour metriques
     if (resp.usage) {
       tokens += (resp.usage.input_tokens || 0) + (resp.usage.output_tokens || 0);

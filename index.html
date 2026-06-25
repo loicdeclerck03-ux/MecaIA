@@ -3151,7 +3151,7 @@ window.chkD=function(){
   if(!document.getElementById('d-mk'))return;
   const mk=document.getElementById('d-mk').value;const mo=document.getElementById('d-mo').value.trim();
   const an=document.getElementById('d-an').value;const cb=document.getElementById('d-cb').value;
-  document.getElementById('btn-d').disabled=!(mk&&mo&&an&&cb);
+  const _btnd=document.getElementById('btn-d');if(_btnd)_btnd.disabled=!(mk&&mo&&an&&cb);
 };
 
 function loader(id){document.getElementById(id).innerHTML='<div class="loader">ANALYSE EN COURS<div class="lbar"><div class="lfill"></div></div></div>';}

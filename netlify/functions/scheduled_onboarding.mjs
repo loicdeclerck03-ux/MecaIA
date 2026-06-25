@@ -1,7 +1,7 @@
 ﻿// scheduled_onboarding.mjs — MecaIA
 // Cron: quotidien 9h UTC — envoie la sequence email onboarding J+1/J+3/J+7
 // Objectif : convertir beta testeurs en abonnes payants
-import { serviceClient, preflight } from "../lib/auth.mjs";
+import { serviceClient } from "../lib/auth.mjs";
 
 const RESEND_KEY = process.env.RESEND_API_KEY;
 const FROM = "Dylan MecaIA <noreply@mecaiaauto.com>";

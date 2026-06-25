@@ -6,11 +6,13 @@ const { z } = require('zod');
 const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   process.stderr.write('[mecaia-mcp] ERREUR: SUPABASE_URL et SUPABASE_SERVICE_KEY requis dans .env\n');
   process.exit(1);
 }
+const isServiceRole = !!(process.env.SUPABASE_SERVICE_KEY);
+process.stderr.write('[mecaia-mcp] Mode: ' + (isServiceRole ? 'service_role (admin)' : 'anon (lecture seule)') + '\n');
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false }
@@ -298,6 +300,6 @@ server.registerTool('mecaia_get_stats', {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  process.stderr.write('[mecaia-mcp-server] Demarre — Supabase: ' + SUPABASE_URL + '\n');
+  process.stderr.write('[mecaia-mcp-server] Demarre -- Supabase: ' + SUPABASE_URL + '\n');
 }
 main().catch(e => { process.stderr.write('[mecaia-mcp] FATAL: ' + e.message + '\n'); process.exit(1); });
