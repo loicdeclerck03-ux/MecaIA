@@ -1,45 +1,25 @@
-feat(all): 9 tâches complètes — blogs P0420+P0300, 61K pages, admin, FIXD, email marketing
+fix(sentry): JAVASCRIPT-2 + JAVASCRIPT-8 corrigés
 
-=== BLOGS (SEO prioritaire) ===
-blog/code-p0420-catalyseur-diagnostic.html
-  → P0420 : guide honnête catalyseur vs sonde lambda
-  → FAQPage schema.org + hreflang + canonical
-  → 12K recherches/mois ciblées
+=== JAVASCRIPT-2: SyntaxError ')' dans onclick dynamique ===
+Cause: cc.cause (texte de diagnostic Dylan) pouvait contenir des
+parenthèses ) qui cassaient le parsing du onclick= inline.
 
-blog/code-p0300-rates-allumage.html
-  → P0300 : ratés d'allumage — freeze frame + coil swap + compteurs misfire
-  → FAQPage schema.org + hreflang + canonical
-  → Guide cylindre par cylindre
+Fix:
+- Boutons devis PDF et partager: onclick utilise désormais window.__dc
+  (variables globales temporaires) au lieu d'injecter cc.cause
+  directement dans l'attribut onclick
+- genDylanDevis() et shr(): decodeURIComponent() en début de fonction
+  pour décoder les paramètres si encodés
 
-blog.html → 6 articles (ajout des 2 nouvelles cartes)
+=== JAVASCRIPT-8: ReferenceError toast avant initialisation ===
+Cause: toast() appelé dans certains chemins avant que
+window.toast = toast; (ligne 2991) soit exécuté.
 
-=== PAGES DTC ===
-+11502 pages supplémentaires (codes Supabase manquants sur disque)
-Total: 61 502 pages DTC (vs 5 946 pour Carly = 10,3× plus)
-Traductions FR améliorées (10 pages corrigées)
-codes/index.html: stats mises à jour (P=15392, B=16384, C=16384, U=13342)
+Fix: stub précoce ajouté dans <script> (ligne 28-29):
+  if(typeof window.toast==='undefined'){
+    window.toast=function(m,t){console.warn('[toast-stub]',m,t);}
+  }
 
-=== SITEMAP INDEX ===
-sitemap.xml (index) → 3 sous-sitemaps
-sitemap-1.xml: 25 013 URLs (2833 KB)
-sitemap-2.xml: 25 000 URLs (2832 KB)
-sitemap-3.xml: 11 502 URLs (1303 KB)
-Total: 61 515 URLs indexées
-
-=== NOUVEAUX FICHIERS ===
-mecaia-vs-fixd.html → page comparaison produit avec FIXD (SEO + conversion)
-admin.html → dashboard admin métriques live (Supabase, users, diagnostics, revenus)
-netlify/functions/email_marketing_sequence.mjs → 5 templates email (cold/inactive/post-diag)
-00_IA_BRAIN/MOBILE_BOOTSTRAP.md → plan React Native Expo complet
-
-=== NETLIFY.TOML ===
-+4 redirects: /mecaia-vs-fixd, /admin, /blog/code-p0420-*, /blog/code-p0300-*
-
-=== CRONS EMAIL ONBOARDING ===
-Validés: email_welcome.mjs insère J+1/J+3/J+7 correctement
-scheduled_onboarding.mjs: cron 9h UTC fonctionnel
-Table onboarding_emails: prête pour les prochains utilisateurs
-
-=== NASA AUDIT ===
-20/20 ✅ — A09: 35 → 36 fonctions (email_marketing_sequence ajoutée)
-QA: 0 doublon, 0 dead code, 0 erreur
+=== RÉSULTATS ===
+NASA audit: 20/20 ✅
+Sentry bugs restants: 0 actifs

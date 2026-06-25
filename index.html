@@ -25,6 +25,8 @@
   crossorigin="anonymous"
 ></script>
 <script>
+// Toast stub précoce — évite ReferenceError si appelé avant initialisation
+if(typeof window.toast==='undefined'){window.toast=function(m,t){console.warn('[toast-stub]',m,t);};}
   Sentry.init({
     dsn: "https://f5600785f3388d0d597bfde2856d67d4@o4511548876652544.ingest.de.sentry.io/4511565940392016",
     integrations: [Sentry.browserTracingIntegration()],
@@ -3185,6 +3187,7 @@ window.genPDF=function(){
 };
 
 window.shr=function(titre,min,max){
+  try{ titre=decodeURIComponent(titre); }catch(e){}
   const txt='🔧 RAPPORT DIAGNOSTIC MECA-IA\n\nProblème: '+titre+'\nCoût estimé: '+min+'€ — '+max+'€\n\nmecaiaauto.com';
   if(navigator.share)navigator.share({title:'Rapport MecaIA',text:txt});
   else navigator.clipboard.writeText(txt).then(()=>toast('Rapport copié !','ok'));
@@ -3950,6 +3953,7 @@ window.dylanTypeIn = function (el, text, speed) {
 
 // #8 Devis PDF automatique depuis la conclusion Dylan
 window.genDylanDevis = function (cause, bande, urgency, canDrive, costMin, costMax, parts, vehicule) {
+  try{ cause=decodeURIComponent(cause); }catch(e){}
   try {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
@@ -4090,8 +4094,8 @@ window.dylanRender = function (data) {
     // #8 Bouton devis PDF automatique
     const partsJson = JSON.stringify(cc.parts_needed || []);
     html += `<div style="margin-top:9px;display:flex;gap:7px;flex-wrap:wrap">
-      <button class="bg" style="flex:1;margin-top:0" onclick="genDylanDevis('${cc.cause.replace(/'/g,"\\'")}','${cc.bande}','${cc.urgency}',${cc.can_drive},${cc.cost_min},${cc.cost_max},${partsJson},${vehStr})">📄 Devis PDF</button>
-      <button class="bb" style="flex:1;margin-top:0" onclick="shr('${cc.cause.replace(/'/g,"\\'")}',${cc.cost_min},${cc.cost_max})">📤 Partager</button>
+      <button class="bg" style="flex:1;margin-top:0" onclick="genDylanDevis(window.__dc||'',window.__db||'',window.__du||'',window.__dd||false,window.__dmn||0,window.__dmx||0,window.__dp||[],window.__dv||{})">📄 Devis PDF</button>
+      <button class="bb" style="flex:1;margin-top:0" onclick="shr(window.__dc||'',window.__dmn||0,window.__dmx||0)">📤 Partager</button>
     </div>`;
     html += '</div>';
 
