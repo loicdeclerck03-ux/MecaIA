@@ -5187,5 +5187,34 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="np-msg" style="font-size:13px;margin-top:10px;text-align:center"></div>
   </div>
 </div>
+
+<!-- ── FOOTER LÉGAL ──────────────────────────────────────────────────── -->
+<footer id="legal-footer" style="border-top:1px solid #1a2430;padding:16px 24px;text-align:center;font-size:12px;color:#4a5568;margin-top:auto">
+  <a href="/mentions-legales" style="color:#4a5568;text-decoration:none;margin:0 8px" onmouseover="this.style.color='#e8a000'" onmouseout="this.style.color='#4a5568'">Mentions légales</a>
+  <span>&middot;</span>
+  <a href="/cgu" style="color:#4a5568;text-decoration:none;margin:0 8px" onmouseover="this.style.color='#e8a000'" onmouseout="this.style.color='#4a5568'">CGU</a>
+  <span>&middot;</span>
+  <a href="/mentions-legales#rgpd" style="color:#4a5568;text-decoration:none;margin:0 8px" onmouseover="this.style.color='#e8a000'" onmouseout="this.style.color='#4a5568'">Confidentialité</a>
+  <span>&middot;</span>
+  <span style="margin:0 8px">&copy; 2024-2026 MecaIA &mdash; Belgique</span>
+</footer>
+
+<!-- ── BANNER COOKIES (si pas de consentement mémorisé) ─────────────── -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0d1f35;border-top:1px solid #1a2430;padding:12px 24px;z-index:9999;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+  <p style="flex:1;font-size:13px;color:#b0bec5;margin:0">🍪 MecaIA utilise uniquement des cookies <strong>techniques essentiels</strong> (session) et un outil de monitoring anonyme (Sentry). Aucun cookie publicitaire.</p>
+  <div style="display:flex;gap:8px;flex-shrink:0">
+    <a href="/mentions-legales#cookies" style="font-size:12px;color:#4a5568;text-decoration:none;padding:6px 12px;border:1px solid #1a2430;border-radius:6px" onmouseover="this.style.color='#e8a000'" onmouseout="this.style.color='#4a5568'">En savoir plus</a>
+    <button onclick="document.getElementById('cookie-banner').style.display='none';localStorage.setItem('mecaia_cookie_ok','1')" style="background:#e8a000;color:#000;border:none;padding:6px 16px;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">OK</button>
+  </div>
+</div>
+<script>
+(function(){
+  if(!localStorage.getItem('mecaia_cookie_ok')){
+    const b=document.getElementById('cookie-banner');
+    if(b){b.style.display='flex';}
+  }
+})();
+</script>
+
 </body>
 </html>

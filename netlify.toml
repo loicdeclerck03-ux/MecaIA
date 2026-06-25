@@ -108,3 +108,16 @@
  to = "/blog/meilleur-scanner-obd2-2026.html"
  status = 200
  force = false
+
+# Pages légales
+[[redirects]]
+ from = "/mentions-legales"
+ to = "/mentions-legales.html"
+ status = 200
+ force = false
+
+[[redirects]]
+ from = "/cgu"
+ to = "/cgu.html"
+ status = 200
+ force = false
