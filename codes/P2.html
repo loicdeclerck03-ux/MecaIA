@@ -3780,6 +3780,30 @@ h1{font-size:26px;font-weight:700;margin-bottom:10px;line-height:1.3}
 
 
  <div class="back-link"><a href="/codes">&larr; Voir toutes les cat&eacute;gories OBD2</a></div>
+
+ <div style="background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:20px 24px;max-width:540px;margin:0 auto 32px;text-align:center">
+  <p style="color:#e8a000;font-weight:700;font-size:15px;margin:0 0 8px">📧 Reçois les conseils mécanique chaque semaine</p>
+  <p style="color:#7a9ab5;font-size:13px;margin:0 0 14px">Diagnostic gratuit &middot; Codes OBD2 expliqués &middot; Astuces anti-arnaque</p>
+  <div style="display:flex;gap:8px;max-width:380px;margin:0 auto" id="nl-form">
+   <input type="email" id="nl-email" placeholder="ton@email.com" style="flex:1;background:#060809;border:1px solid #1a2430;border-radius:6px;padding:9px 12px;color:#eef4fa;font-size:14px">
+   <button onclick="nlSignup(this)" style="background:#e8a000;color:#000;border:none;padding:9px 16px;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">OK</button>
+  </div>
+  <p id="nl-msg" style="color:#4a5568;font-size:12px;margin:8px 0 0;display:none"></p>
+ </div>
+<script>
+function nlSignup(btn){
+ var em=document.getElementById('nl-email').value.trim();
+ var msg=document.getElementById('nl-msg');
+ if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){msg.style.display='block';msg.textContent='Email invalide.';return;}
+ btn.disabled=true;btn.textContent='...';
+ var src=window.location.pathname.split('/').pop().replace('.html','');
+ fetch('/.netlify/functions/newsletter_signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,source:'category_hub',source_code:src})})
+  .then(r=>r.json()).then(d=>{
+   document.getElementById('nl-form').innerHTML='<p style="color:#e8a000;font-weight:700">✅ Inscrit(e) — vérifie tes emails !</p>';
+   msg.style.display='none';
+  }).catch(()=>{btn.disabled=false;btn.textContent='OK';msg.style.display='block';msg.textContent='Erreur, réessaie.';});
+}
+</script>
  <a href="/" class="cta">Diagnostic gratuit avec Dylan IA &rarr;</a>
 </div>
 </body>
