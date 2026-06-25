@@ -1,26 +1,28 @@
-feat(seo+blog+ux): blog#4 scanner + hreflang 12128 pages + nav /codes + FAQ
+fix(sentry): 3 bugs JS critiques — apostrophe + race condition + ES6 compat
 
-=== BLOG ===
-blog/meilleur-scanner-obd2-2026.html (18KB): comparatif honnête 2026
-  - Vgate iCar Pro 2S (recommandation principale, ~57€, BLE iOS/Android)
-  - OBDLink MX+, TOPDON Topscan Lite, ANCEL AD410, Carly, ELM327 no-name
-  - Tableau comparatif, recommandation par profil, FAQ schema.org
-  - CTA MecaIA intégré dans le contenu
-blog.html: +1 carte article scanner OBD2
-sitemap.xml: 12137 URLs (+1 blog)
+=== JAVASCRIPT-2 — SyntaxError (66 occurrences en 7j) ===
+Cause 1 (CONFIRMÉE): onclick="boxSendCmd('C'est grave ?')"
+  — L2318: &apos;C&apos;est grave ?&apos; → après HTML decode → 'C'est grave ?'
+  — node --check: SyntaxError: missing ) after argument list
+  Fix: changé en boxSendCmd('Est-ce grave ?') (apostrophe supprimée)
 
-=== SEO TECHNIQUE ===
-Hreflang FR/NL/DE/EN sur 12128 pages DTC + pages blog + index.html
-  - Cible: Belgique (FR+NL), France, Allemagne, UK, x-default
-  - 5 balises <link rel="alternate" hreflang> par page
-  - Améliore visibilité dans les marchés cibles
+Cause 2: vieux navigateurs (IE11/WebView) ne supportant pas ES6
+  Fix: check typeof Promise === 'undefined' → message "Navigateur non supporté"
+  Fix: try/catch wrapper autour du script BOX principal
 
-=== NAVIGATION ===
-index.html: lien "12 128 codes OBD2" ajouté dans la nav (l-nav-r)
-index.html: lien /codes ajouté sous le CTA du comparatif
+=== JAVASCRIPT-8 — boxSendCmd is not defined (6 occurrences) ===
+=== JAVASCRIPT-9 — boxToggleMonitors is not defined (2 occurrences) ===
+Cause: boutons HTML rendus L2314-L2381 AVANT que le script L2416 exécute
+  — Race condition si click ultra-rapide avant fin d'exécution JS
+  Fix: stubs précoces dans le script L1127 (s'exécute avant le body):
+    window.boxSendCmd = window.boxSendCmd || function(cmd){...};
+    window.boxToggleMonitors = window.boxToggleMonitors || function(){};
+    window.boxCallDylan = window.boxCallDylan || function(){};
+    window.boxStartScan = window.boxStartScan || function(){};
+    window.boxHandleConnect = window.boxHandleConnect || function(){};
 
-=== DOCUMENTATION ===
-FAQ.md: 4 nouvelles entrées (window.toast, boxSendCmd, T025, T032)
-STATUS.md: mis à jour
-
-NASA audit: 20/20 ✅ · Syntaxe: OK · Dead code: 0
+=== QUALITÉ ===
+NASA audit: 20/20 ✅
+Syntaxe JS (4 scripts inline): 0 erreur ✅
+Guards présents: boxSendCmd, boxToggleMonitors, boxCallDylan ✅
+Dead code: 0 doublon ✅

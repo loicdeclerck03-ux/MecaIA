@@ -1192,6 +1192,17 @@ textarea{resize:vertical;min-height:70px}
       console.warn('[MecaIA] Loading timeout — auth trop lente, spinner force-cache');
     }
   }, 5000);
+
+// ── STUBS PRÉCOCES — évite "is not defined" si click avant fin du script ─
+// Ces stubs seront surchargés par les vraies définitions dans le script BOX
+window.boxSendCmd = window.boxSendCmd || function(cmd) {
+  var inp = document.getElementById('box-input');
+  if (inp) { inp.value = cmd; }
+};
+window.boxToggleMonitors = window.boxToggleMonitors || function() {};
+window.boxCallDylan = window.boxCallDylan || function() {};
+window.boxStartScan = window.boxStartScan || function() {};
+window.boxHandleConnect = window.boxHandleConnect || function() {};
 })();
 </script><link rel="alternate" hreflang="fr" href="https://mecaiaauto.com/">
 <link rel="alternate" hreflang="nl" href="https://mecaiaauto.com/?lang=nl">
@@ -2315,7 +2326,7 @@ textarea{resize:vertical;min-height:70px}
       <button class="bqcmd" onclick="boxSendCmd(&apos;Explique les codes défauts&apos;)">&#x26A0; Codes</button>
       <button class="bqcmd" onclick="boxSendCmd(&apos;Température moteur ?&apos;)">&#x1F321; Temp</button>
       <button class="bqcmd" onclick="boxSendCmd(&apos;Remise à zéro vidange&apos;)">&#x1F6E2; Reset</button>
-      <button class="bqcmd" onclick="boxSendCmd(&apos;C&apos;est grave ?&apos;)">&#x1F4AC; Grave ?</button>
+      <button class="bqcmd" onclick="boxSendCmd('Est-ce grave ?')">&#x1F4AC; Grave ?</button>
       <button class="bqcmd" onclick="boxSendCmd(&apos;Que faire maintenant ?&apos;)">&#x1F527; Suite</button>
       <button class="bqcmd" onclick="boxSendCmd('Analyse la batterie et l alternateur en profondeur')" title="Battery Deep Test">&#x1F50B; Batterie</button>
       <button class="bqcmd" onclick="boxSendCmd('Lit et interprete les resultats Mode 06 (tests embarques) pour detecter les composants qui se degradent')" title="Mode $06">&#x1F52C; Mode 06</button>
@@ -2414,6 +2425,18 @@ textarea{resize:vertical;min-height:70px}
 </div></div><!-- /wrap /pg-box -->
 
 <script>
+// ── COMPATIBILITÉ NAVIGATEUR ─────────────────────────────────────────────
+// IE11 et anciens navigateurs ne supportent pas async/const/arrow functions
+if (typeof Promise === 'undefined' || typeof Symbol === 'undefined') {
+  document.getElementById('s-loading') && (document.getElementById('s-loading').innerHTML =
+    '<div style="font-family:Arial,sans-serif;text-align:center;padding:40px;color:#eef4fa">' +
+    '<div style="font-size:22px;margin-bottom:12px">&#x26A0;&#xFE0F; Navigateur non supporté</div>' +
+    '<p style="color:#7a9ab5">MecaIA n’est pas compatible avec ce navigateur.<br>' +
+    'Veuillez utiliser Chrome, Firefox, Safari ou Edge récent.</p>' +
+    '<a href="https://www.google.com/chrome/" style="color:#e8a000">Télécharger Chrome →</a>' +
+    '</div>');
+} else {
+try {
 (function(){
 var BOX={connected:false,scanning:false,port:null,scanResult:null,convHistory:[],liveData:{},monOpen:false,
 BRAND_OPTS:{bmw:['feux_journee','lane_assist','sport_display','feux_bienvenue','affichage_tete_haute','mode_sport_auto'],vw:['feux_journee','essuie_pluie','confort_fermeture','demarrage_sans_cle','lane_assist','retros_rabattables','feux_bienvenue','feux_virage','klaxon_verrouillage','mode_sport_auto'],audi:['feux_journee','essuie_pluie','lane_assist','retros_rabattables','feux_bienvenue'],peugeot:['feux_journee','lane_assist','retros_rabattables'],seat:['feux_journee'],skoda:['feux_journee'],citroen:['feux_journee'],opel:['feux_journee'],renault:['feux_journee','essuie_pluie'],ford:['feux_journee'],toyota:['feux_journee'],hyundai:['feux_journee'],kia:['feux_journee'],mercedes:['feux_journee'],mini:['feux_journee']},
@@ -2778,7 +2801,10 @@ if(!window._obdCloudTs||Date.now()-window._obdCloudTs>29000){
 window.boxUpdateVehBadge=function(){var b=document.getElementById('box-veh-badge');if(!b)return;if(window.selCar){b.textContent=(window.selCar.marque||'')+' '+(window.selCar.modele||'')+' '+(window.selCar.annee||'');b.style.display='';}else b.style.display='none';};
 
 })();
-</script>
+} catch(e) {
+  console.error("[MecaIA] Script error:", e.message);
+}
+}</script>
 
 </div></div>
 
