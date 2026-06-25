@@ -2,6 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://mecaiaauto.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://mecaiaauto.com/codes</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P0</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/P3</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/B0</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/B1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/B2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/B3</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/C0</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/C1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/C2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/C3</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/U0</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/U1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/U2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mecaiaauto.com/codes/U3</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
   <url><loc>https://mecaiaauto.com/diagnostic-obd2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://mecaiaauto.com/blog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://mecaiaauto.com/blog/comprendre-codes-obd2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
