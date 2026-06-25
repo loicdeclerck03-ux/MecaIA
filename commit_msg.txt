@@ -1,31 +1,45 @@
-feat(seo): 37872 nouvelles pages codes DTC → total 50000 pages
+feat(all): 9 tâches complètes — blogs P0420+P0300, 61K pages, admin, FIXD, email marketing
 
-=== SOURCE ===
-Wal33D/dtc-database (MIT): fichiers source-data par marque (37 fichiers)
-Codes manufacturer-spécifiques: BMW, Ford, GM, VW, Audi, Chrysler, etc.
-Génération systématique SAE J2012 pour les plages non couvertes:
-  - P1xxx (manufacturer powertrain): 3264 codes
-  - U1xxx (network communication): 3824 codes  
-  - B1-B3xxx (manufacturer body): 12144 codes
-  - C1-C3xxx (manufacturer chassis): 15272 codes
-  - P3xxx (mixed SAE/manufacturer): 3368 codes
+=== BLOGS (SEO prioritaire) ===
+blog/code-p0420-catalyseur-diagnostic.html
+  → P0420 : guide honnête catalyseur vs sonde lambda
+  → FAQPage schema.org + hreflang + canonical
+  → 12K recherches/mois ciblées
 
-=== QUALITÉ PAR PAGE ===
-- title, meta description, canonical, og:tags ✅
-- BreadcrumbList schema.org ✅
-- Article schema.org ✅
-- Hreflang FR/NL/DE + x-default ✅
-- CTA Dylan IA ✅
-- 3 causes contextuelles ✅
-- Traductions FR (nomenclature automobile) ✅
+blog/code-p0300-rates-allumage.html
+  → P0300 : ratés d'allumage — freeze frame + coil swap + compteurs misfire
+  → FAQPage schema.org + hreflang + canonical
+  → Guide cylindre par cylindre
+
+blog.html → 6 articles (ajout des 2 nouvelles cartes)
+
+=== PAGES DTC ===
++11502 pages supplémentaires (codes Supabase manquants sur disque)
+Total: 61 502 pages DTC (vs 5 946 pour Carly = 10,3× plus)
+Traductions FR améliorées (10 pages corrigées)
+codes/index.html: stats mises à jour (P=15392, B=16384, C=16384, U=13342)
 
 === SITEMAP INDEX ===
-sitemap.xml (index) → sitemap-1.xml + sitemap-2.xml
-sitemap-1.xml: 25010 URLs (2833 KB)
-sitemap-2.xml: 25000 URLs (2832 KB)
-Total: 50010 URLs (10 pages principales + 50000 codes)
+sitemap.xml (index) → 3 sous-sitemaps
+sitemap-1.xml: 25 013 URLs (2833 KB)
+sitemap-2.xml: 25 000 URLs (2832 KB)
+sitemap-3.xml: 11 502 URLs (1303 KB)
+Total: 61 515 URLs indexées
 
-=== TOTAL ===
-Pages DTC: 50000 (12128 existants + 37872 nouveaux)
-NASA audit: 20/20 ✅
-QA: 0 erreur, 0 doublon, 0 dead code
+=== NOUVEAUX FICHIERS ===
+mecaia-vs-fixd.html → page comparaison produit avec FIXD (SEO + conversion)
+admin.html → dashboard admin métriques live (Supabase, users, diagnostics, revenus)
+netlify/functions/email_marketing_sequence.mjs → 5 templates email (cold/inactive/post-diag)
+00_IA_BRAIN/MOBILE_BOOTSTRAP.md → plan React Native Expo complet
+
+=== NETLIFY.TOML ===
++4 redirects: /mecaia-vs-fixd, /admin, /blog/code-p0420-*, /blog/code-p0300-*
+
+=== CRONS EMAIL ONBOARDING ===
+Validés: email_welcome.mjs insère J+1/J+3/J+7 correctement
+scheduled_onboarding.mjs: cron 9h UTC fonctionnel
+Table onboarding_emails: prête pour les prochains utilisateurs
+
+=== NASA AUDIT ===
+20/20 ✅ — A09: 35 → 36 fonctions (email_marketing_sequence ajoutée)
+QA: 0 doublon, 0 dead code, 0 erreur

@@ -1,4 +1,4 @@
-﻿[build]
+[build]
   publish = "."
   command = ""
   functions = "netlify/functions"
@@ -71,5 +71,31 @@
 [[redirects]]
   from = "/blog/:slug"
   to = "/blog/:slug.html"
+  status = 200
+  force = false
+# MecaIA vs FIXD
+[[redirects]]
+  from = "/mecaia-vs-fixd"
+  to = "/mecaia-vs-fixd.html"
+  status = 200
+  force = false
+
+# Admin Dashboard
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+  force = false
+
+# Nouveaux articles blog P0420 et P0300
+[[redirects]]
+  from = "/blog/code-p0420-catalyseur-diagnostic"
+  to = "/blog/code-p0420-catalyseur-diagnostic.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/blog/code-p0300-rates-allumage"
+  to = "/blog/code-p0300-rates-allumage.html"
   status = 200
   force = false

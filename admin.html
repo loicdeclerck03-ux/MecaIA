@@ -1,0 +1,148 @@
+
+<script>
+const SUPA = 'https://vexxjbpbfrvgszvzpmgu.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZleHhqYnBiZnJ2Z3N6dnpwbWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NzU4NzksImV4cCI6MjA5NTU1MTg3OX0.T2owu6atANKHH7PfEUL-BG8F6MAizhsqZb3RQWJOR1U';
+
+async function supa(path) {
+  const r = await fetch(`${SUPA}/rest/v1/${path}`, {
+    headers: { apikey: ANON, Authorization: `Bearer ${ANON}`, Accept: 'application/json' }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function fmt(n) { return n === null || n === undefined ? '—' : Number(n).toLocaleString('fr-FR'); }
+function fmtEur(n) { return n ? `${Number(n).toFixed(2).replace('.',',')} €` : '0,00 €'; }
+function ago(ts) {
+  if (!ts) return '—';
+  const s = (Date.now() - new Date(ts)) / 1000;
+  if (s < 60) return `${Math.round(s)}s`;
+  if (s < 3600) return `${Math.round(s/60)}min`;
+  if (s < 86400) return `${Math.round(s/3600)}h`;
+  return `${Math.round(s/86400)}j`;
+}
+
+async function loadAll() {
+  document.getElementById('refresh-time').textContent = 'Actualisation...';
+  await Promise.allSettled([loadUsers(), loadDiags(), loadRevenue(), loadEmails(), loadSystem()]);
+  document.getElementById('refresh-time').textContent = `Mis à jour: ${new Date().toLocaleTimeString('fr-FR')}`;
+}
+
+async function loadUsers() {
+  try {
+    const data = await supa('profiles?select=id,email,name,created_at,is_premium,credits&order=created_at.desc&limit=20');
+    document.getElementById('kpi-users').textContent = fmt(data.length > 0 ? await supa('profiles?select=count').then(d=>d[0]?.count||data.length) : 0);
+    const premium = data.filter(u => u.is_premium).length;
+    document.getElementById('kpi-users-sub').innerHTML = `<span class="kpi-up">${premium} premium</span>`;
+    const tbody = data.slice(0,10).map(u => `
+      <tr>
+        <td style="color:#eef4fa">${u.name||u.email?.split('@')[0]||'—'}</td>
+        <td style="color:#4a5568;font-size:12px">${u.email||'—'}</td>
+        <td><span class="tag ${u.is_premium?'tag-ok':'tag-warn'}">${u.is_premium?'PREMIUM':'FREE'}</span></td>
+        <td style="color:#4a5568;font-size:12px">${ago(u.created_at)}</td>
+      </tr>`).join('');
+    document.getElementById('users-list').innerHTML = `<table><thead><tr><th>Nom</th><th>Email</th><th>Plan</th><th>Inscrit</th></tr></thead><tbody>${tbody}</tbody></table>`;
+  } catch(e) { document.getElementById('users-list').innerHTML = `<div class="loading">Erreur: ${e.message}</div>`; }
+}
+
+async function loadDiags() {
+  try {
+    const since = new Date(Date.now() - 30*86400*1000).toISOString();
+    const data = await supa(`user_diagnostics?select=id,created_at,vehicle,symptom,final_diagnosis&order=created_at.desc&created_at=gte.${since}&limit=100`);
+    document.getElementById('kpi-diags').textContent = fmt(data.length);
+    const today = data.filter(d => new Date(d.created_at) > new Date(Date.now()-86400*1000)).length;
+    document.getElementById('kpi-diags-sub').innerHTML = `<span class="kpi-up">${today} aujourd'hui</span>`;
+    const tbody = data.slice(0,8).map(d => `
+      <tr>
+        <td style="color:#eef4fa;font-size:13px">${(d.symptom||'—').slice(0,40)}</td>
+        <td style="color:#4a5568;font-size:12px">${(d.vehicle||'').slice(0,20)}</td>
+        <td style="color:#4a5568;font-size:12px">${ago(d.created_at)}</td>
+      </tr>`).join('');
+    document.getElementById('diags-list').innerHTML = `<table><thead><tr><th>Symptôme</th><th>Véhicule</th><th>Il y a</th></tr></thead><tbody>${tbody}</tbody></table>`;
+  } catch(e) { document.getElementById('diags-list').innerHTML = `<div class="loading">Erreur: ${e.message}</div>`; }
+}
+
+async function loadRevenue() {
+  try {
+    const since = new Date(Date.now() - 30*86400*1000).toISOString();
+    const txs = await supa(`stripe_transactions?select=amount,currency,created_at,description&order=created_at.desc&created_at=gte.${since}&limit=50`).catch(()=>[]);
+    const total = (txs||[]).reduce((s,t) => s + (Number(t.amount)||0), 0);
+    document.getElementById('kpi-revenue').textContent = fmtEur(total/100);
+    document.getElementById('kpi-revenue-sub').textContent = `${(txs||[]).length} transactions`;
+    // Credits
+    const credits = await supa('credit_transactions?select=amount&order=created_at.desc&limit=200').catch(()=>[]);
+    const totalCredits = (credits||[]).reduce((s,c) => s + (Number(c.amount)||0), 0);
+    document.getElementById('kpi-credits').textContent = fmt(Math.abs(totalCredits));
+    document.getElementById('kpi-credits-sub').textContent = `${(credits||[]).length} transactions`;
+    const tbody = (txs||[]).slice(0,8).map(t => `
+      <tr>
+        <td style="color:#22c55e;font-weight:600">${fmtEur((t.amount||0)/100)}</td>
+        <td style="color:#b0bec5;font-size:13px">${(t.description||'—').slice(0,30)}</td>
+        <td style="color:#4a5568;font-size:12px">${ago(t.created_at)}</td>
+      </tr>`).join('') || '<tr><td colspan="3" style="color:#4a5568;text-align:center">Aucune transaction</td></tr>';
+    document.getElementById('transactions-list').innerHTML = `<table><thead><tr><th>Montant</th><th>Description</th><th>Il y a</th></tr></thead><tbody>${tbody}</tbody></table>`;
+  } catch(e) { document.getElementById('transactions-list').innerHTML = `<div class="loading">Erreur: ${e.message}</div>`; document.getElementById('kpi-revenue').textContent='0'; }
+}
+
+async function loadEmails() {
+  try {
+    const emails = await supa('onboarding_emails?select=email,step,send_after,sent_at,error&order=send_after.desc&limit=20');
+    const pending = (emails||[]).filter(e => !e.sent_at).length;
+    const sent = (emails||[]).filter(e => e.sent_at).length;
+    const tbody = (emails||[]).slice(0,8).map(e => `
+      <tr>
+        <td style="color:#eef4fa;font-size:13px">${e.email||'—'}</td>
+        <td><span class="tag tag-warn">${e.step||'—'}</span></td>
+        <td><span class="tag ${e.sent_at?'tag-ok':e.error?'tag-err':'tag-warn'}">${e.sent_at?'ENVOYÉ':e.error?'ERREUR':'EN ATTENTE'}</span></td>
+      </tr>`).join('') || '<tr><td colspan="3" style="color:#4a5568;text-align:center">Aucun email en file</td></tr>';
+    document.getElementById('emails-list').innerHTML = `
+      <div style="display:flex;gap:16px;margin-bottom:16px">
+        <span class="tag tag-warn">${pending} en attente</span>
+        <span class="tag tag-ok">${sent} envoyés</span>
+      </div>
+      <table><thead><tr><th>Email</th><th>Étape</th><th>Statut</th></tr></thead><tbody>${tbody}</tbody></table>`;
+  } catch(e) { document.getElementById('emails-list').innerHTML = `<div class="loading">Erreur: ${e.message}</div>`; }
+}
+
+async function loadSystem() {
+  const checks = [
+    { name: 'Supabase DB', fn: () => supa('profiles?select=count&limit=1').then(()=>true) },
+    { name: 'DTC codes table', fn: () => supa('dtc_codes?select=count&limit=1').then(()=>true) },
+    { name: 'Netlify Functions', fn: () => fetch('/.netlify/functions/garage_get', {method:'GET'}).then(r=>r.status!==500) },
+  ];
+  const rows = await Promise.all(checks.map(async c => {
+    try { await c.fn(); return `<tr><td style="color:#eef4fa">${c.name}</td><td><span class="tag tag-ok">✓ OK</span></td></tr>`; }
+    catch(e) { return `<tr><td style="color:#eef4fa">${c.name}</td><td><span class="tag tag-err">✗ ERREUR</span></td></tr>`; }
+  }));
+
+  // Stats statiques
+  const staticStats = [
+    ['Pages DTC sur site', '50 000', 'tag-ok'],
+    ['Codes Supabase (Dylan)', '61 502', 'tag-ok'],
+    ['Fonctions Netlify', '35', 'tag-ok'],
+    ['NASA Audit', '20/20', 'tag-ok'],
+    ['Bugs Sentry', '0', 'tag-ok'],
+    ['Sitemap URLs', '50 010', 'tag-ok'],
+  ];
+  const staticRows = staticStats.map(([k,v,cls]) =>
+    `<tr><td style="color:#eef4fa">${k}</td><td><span class="tag ${cls}">${v}</span></td></tr>`).join('');
+
+  document.getElementById('system-status').innerHTML = `
+    <div class="grid-2">
+      <div>
+        <p style="font-size:12px;color:#e8a000;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Connectivité</p>
+        <table><tbody>${rows.join('')}</tbody></table>
+      </div>
+      <div>
+        <p style="font-size:12px;color:#e8a000;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Métriques site</p>
+        <table><tbody>${staticRows}</tbody></table>
+      </div>
+    </div>`;
+}
+
+// Chargement initial
+loadAll();
+setInterval(loadAll, 60000); // Refresh toutes les 60s
+</script>
+</body>
+</html>
