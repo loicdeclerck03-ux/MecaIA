@@ -99,3 +99,12 @@
   to = "/blog/code-p0300-rates-allumage.html"
   status = 200
   force = false
+
+[functions.scheduled_newsletter_cold]
+ schedule = "0 10 * * *"
+
+[[redirects]]
+ from = "/blog/meilleur-scanner-obd2-2026"
+ to = "/blog/meilleur-scanner-obd2-2026.html"
+ status = 200
+ force = false
