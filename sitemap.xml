@@ -3,6 +3,9 @@
   <url><loc>https://mecaiaauto.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://mecaiaauto.com/diagnostic-obd2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://mecaiaauto.com/blog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/blog/vidange-huile-moteur</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/blog/symptomes-pannes-frequentes</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mecaiaauto.com/blog/comprendre-codes-obd2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://mecaiaauto.com/garages</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://mecaiaauto.com/alternative-carly</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://mecaiaauto.com/codes/B0001</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>

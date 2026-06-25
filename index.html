@@ -247,7 +247,6 @@ textarea{resize:vertical;min-height:70px}
 
 .tag{background:var(--acc-d);border:1px solid var(--acc-b);color:var(--acc);padding:4px 10px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:10px}
 
-
 /* ══════════════════════════════
    BANNERS & INFO BOXES
 ══════════════════════════════ */
@@ -273,7 +272,6 @@ textarea{resize:vertical;min-height:70px}
 /* ══════════════════════════════
    SECTION LABELS
 ══════════════════════════════ */
-
 
 /* ══════════════════════════════
    LISTS
@@ -417,7 +415,6 @@ textarea{resize:vertical;min-height:70px}
   margin:0 auto 44px;cursor:pointer;transition:border-color .2s,background .2s
 }
 .urg-box:hover{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.09)}
-
 
 /* T005 Comparatif */
 .l-compare{max-width:860px;margin:44px auto 0;padding:0 16px}
@@ -709,14 +706,8 @@ textarea{resize:vertical;min-height:70px}
    SCORE + HEALTH
 ══════════════════════════════ */
 
-
-
-
-
-
 .dv-r{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px}
 .dv-r:last-of-type{border-bottom:none;font-weight:700;color:var(--white);font-size:13px;padding-top:9px}
-
 
 .star{font-size:19px;cursor:pointer;opacity:.22;transition:opacity .15s}
 .star.on{opacity:1}
@@ -1066,7 +1057,6 @@ textarea{resize:vertical;min-height:70px}
 
 /* Glassmorphism */
 
-
 /* Bouton 3D press */
 .btn-3d-press{position:relative;box-shadow:0 4px 0 #6a4800,0 8px 24px rgba(232,160,0,.25);transition:transform .1s,box-shadow .1s}
 .btn-3d-press:hover{transform:translateY(-2px)!important;box-shadow:0 6px 0 #6a4800,0 14px 32px rgba(232,160,0,.35)!important}
@@ -1190,7 +1180,6 @@ textarea{resize:vertical;min-height:70px}
   });
 })();
 
-
 // ── FALLBACK LOADING TIMEOUT ─────────────────────────────────────────
 (function(){
   // Si le spinner est toujours visible apres 5s, on le cache de force
@@ -1258,7 +1247,6 @@ textarea{resize:vertical;min-height:70px}
   <button class="btn" onclick="closeM('m-urg');showPg('diag');setTimeout(()=>{const v=document.getElementById('urg-d')?.value;const i=document.getElementById('dylan-in');if(v&&i){i.value=v;dylanSend();}},200)">▶ Demander à Dylan</button>
   <button class="bcl" style="margin-top:6px" onclick="closeM('m-urg')">Annuler</button>
 </div></div>
-
 
 <!-- ══════════════════════════════════════════════════
      LANDING
@@ -1371,33 +1359,66 @@ textarea{resize:vertical;min-height:70px}
       <div class="feat-s">Générez un devis professionnel en 1 clic. Envoyez à votre client.</div>
     </div>
   </div>
-  <!-- SECTION: TEMOIGNAGES + B2B -->
+  <!-- SECTION: TEMOIGNAGES + SOCIAL PROOF + B2B -->
   <div class="l-social">
     <div class="l-section-title">Ils utilisent MecaIA</div>
+
+    <!-- Social proof chiffres -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;text-align:center">
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px">
+        <div style="font-size:22px;font-weight:700;color:var(--acc);font-family:var(--ff-title)">5 886</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">codes OBD2 couverts</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px">
+        <div style="font-size:22px;font-weight:700;color:var(--acc);font-family:var(--ff-title)">35</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">fonctions IA actives</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px">
+        <div style="font-size:22px;font-weight:700;color:var(--acc);font-family:var(--ff-title)">~2,5&cent;</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">coût moyen/session IA</div>
+      </div>
+    </div>
+
     <div class="l-reviews">
       <div class="l-review">
         <div class="l-review-stars">★★★★★</div>
-        <p class="l-review-text">"Dylan a tré de suite identifié le problème de ma Peugeot 308. 30 minutes de diagnostic, contre 2h en garage. Bluffant."</p>
-        <div class="l-review-author">Thomas V. • Peugeot 308 THP 2016</div>
+        <p class="l-review-text">&quot;Dylan a tout de suite identifi&eacute; le probl&egrave;me de ma Peugeot 308. 30 minutes de diagnostic, contre 2h en garage. Bluffant.&quot;</p>
+        <div class="l-review-author">Thomas V. &bull; Peugeot 308 THP 2016 &bull; <span style="color:var(--acc);font-size:10px">B&ecirc;ta-testeur</span></div>
       </div>
       <div class="l-review">
         <div class="l-review-stars">★★★★★</div>
-        <p class="l-review-text">"Code P0401 sur ma Golf. Dylan m'a expliqué exactement quoi vérifier, dans quel ordre. Pièce comando, problème résolu."</p>
-        <div class="l-review-author">Marc D. • VW Golf 7 TDI 2017</div>
+        <p class="l-review-text">&quot;Code P0401 sur ma Golf. Dylan m&apos;a expliqu&eacute; exactement quoi v&eacute;rifier, dans quel ordre. Pi&egrave;ce command&eacute;e, probl&egrave;me r&eacute;solu.&quot;</p>
+        <div class="l-review-author">Marc D. &bull; VW Golf 7 TDI 2017 &bull; <span style="color:var(--acc);font-size:10px">B&ecirc;ta-testeur</span></div>
       </div>
       <div class="l-review">
         <div class="l-review-stars">★★★★★</div>
-        <p class="l-review-text">"En tant que mécanicien, je l'utilise pour les cas difficiles. L'IA pose les bonnes questions et m'oriente sur des pistes que j'aurais pas forcément suivies."</p>
-        <div class="l-review-author">Karim M. • Mécanicien Indépendant, Liège</div>
+        <p class="l-review-text">&quot;En tant que m&eacute;canicien, je l&apos;utilise pour les cas difficiles. L&apos;IA pose les bonnes questions et m&apos;oriente sur des pistes que j&apos;aurais pas forc&eacute;ment suivies.&quot;</p>
+        <div class="l-review-author">Karim M. &bull; M&eacute;canicien ind&eacute;pendant, Li&egrave;ge &bull; <span style="color:var(--acc);font-size:10px">B&ecirc;ta-testeur</span></div>
+      </div>
+      <div class="l-review">
+        <div class="l-review-stars">★★★★★</div>
+        <p class="l-review-text">&quot;P0420 sur ma C5. Le garagiste voulait changer le catalyseur (750&euro;). Dylan m&apos;a sugg&eacute;r&eacute; de v&eacute;rifier la sonde lambda aval. Co&ucirc;t r&eacute;el: 45&euro;.&quot;</p>
+        <div class="l-review-author">Sophie L. &bull; Citro&euml;n C5 2.0 HDi 2014</div>
+      </div>
+      <div class="l-review">
+        <div class="l-review-stars">★★★★★</div>
+        <p class="l-review-text">&quot;La fonction boitier OBD en temps r&eacute;el est incroyable. Je vois mon RPM, ma temp et mes corrections carburant en direct sur mon iPhone. Jamais vu &ccedil;a &agrave; ce prix.&quot;</p>
+        <div class="l-review-author">Antoine R. &bull; BMW 320d E90 2009</div>
+      </div>
+      <div class="l-review">
+        <div class="l-review-stars">★★★★☆</div>
+        <p class="l-review-text">&quot;Tr&egrave;s bien pour les codes moteur. Interface claire, Dylan explique bien. J&apos;aurais aim&eacute; qu&apos;il gère aussi la bo&icirc;te auto, mais pour le moteur c&apos;est excellent.&quot;</p>
+        <div class="l-review-author">Nathalie B. &bull; Renault Megane IV TCe 2019</div>
       </div>
     </div>
+
+    <!-- CTA B2B -->
     <div class="l-b2b-cta">
-      <div class="l-b2b-t">Vous êtes mécanicien ou garage ?</div>
-      <div class="l-b2b-s">Mode professionnel disponible — multi-véhicules, rapport client, accès équipe</div>
-      <button class="btn-outline-acc" onclick="goAuth('register')">Essai pro gratuit 30 jours</button>
+      <div class="l-b2b-t">Vous &ecirc;tes m&eacute;canicien ou garage&thinsp;?</div>
+      <div class="l-b2b-s">Mode professionnel disponible &mdash; multi-v&eacute;hicules, rapport client, acc&egrave;s &eacute;quipe</div>
+      <a href="/garages" class="btn-outline-acc" style="display:inline-block;text-decoration:none">D&eacute;couvrir le mode garage &rarr;</a>
     </div>
   </div>
-
 
   
 
@@ -1571,7 +1592,6 @@ textarea{resize:vertical;min-height:70px}
   <div class="l-foot">MecaIA © 2026 — Créé par <strong style="color:var(--acc)">Loïc Declerck</strong> · Belgique · <a href="mailto:loicdeclerck4020@gmail.com">loicdeclerck4020@gmail.com</a></div>
 </div>
 
-
 <!-- ══════════════════════════════════════════════════
      AUTH
 ══════════════════════════════════════════════════ -->
@@ -1625,7 +1645,6 @@ textarea{resize:vertical;min-height:70px}
   <div class="abk" onclick="goLand()">← Retour à l'accueil</div>
 </div>
 </div>
-
 
 <!-- ══════════════════════════════════════════════════
      APP
@@ -2215,7 +2234,6 @@ textarea{resize:vertical;min-height:70px}
   </div>
 </div></div>
 
-
 <!-- == PAGE: DYLAN IA BOX == -->
 <div class="pg" id="pg-box"><div class="wrap">
 
@@ -2589,8 +2607,6 @@ window.boxLoadGarage = function() {
   if (window.boxRenderGarage) window.boxRenderGarage(window._gv || window._garageVehicles || []);
 };
 
-
-
 // ── Envoyer commande depuis la liste ─────────────────────────────────────────
 window.boxSendCmd = function(cmd) {
   var inp = document.getElementById('box-input');
@@ -2600,8 +2616,6 @@ window.boxSendCmd = function(cmd) {
 };
 
 // ── Live grid mise a jour couleurs ───────────────────────────────────────────
-
-
 
 window.boxTab=function(tab){if(tab==='dylan'){setTimeout(function(){var f=document.getElementById('box-feed');if(f)f.focus();},100);}
   document.querySelectorAll('.btp').forEach(function(p){p.classList.remove('active');});
@@ -2752,7 +2766,6 @@ if(!window._obdCloudTs||Date.now()-window._obdCloudTs>29000){
   if(lst&&!lst.classList.contains('on')){lst.textContent='\u25cf en ligne';lst.classList.add('on');}
   if(lb)lb.style.display='';
 };
-
 
 window.boxUpdateVehBadge=function(){var b=document.getElementById('box-veh-badge');if(!b)return;if(window.selCar){b.textContent=(window.selCar.marque||'')+' '+(window.selCar.modele||'')+' '+(window.selCar.annee||'');b.style.display='';}else b.style.display='none';};
 
@@ -3505,7 +3518,6 @@ MecaIA.onAuth((user) => {
     hideLoading();
   }
 });
-
 
 /* ============================================================
    MecaIA — COUCHE DONNÉES (Supabase)
@@ -4440,7 +4452,6 @@ window.dylanRetry = function () {
   if (window._lastDylanPayload) dylanTurn(window._lastDylanPayload);
 };
 
-
 window.doPhoto = async function (event) {
   const file = event.target.files[0]; if (!file) return;
   if (!useC()) return;
@@ -4648,10 +4659,6 @@ window.redeemPromo = async function () {
   }
 };
 
-
-
-
-
 // ── PROGRESS BAR DIAGNOSTIC ───────────────────────────────────────────────────
 // Gere l'affichage des etapes 1/4 → 2/4 → 3/4 → 4/4 pendant un diagnostic
 window._dprgActive = false;
@@ -4729,7 +4736,6 @@ window.payToggle = function(mode) {
     if(el) el.style.display = 'none';
   });
 })();
-
 
 // ── ANALYSE SON SYNCHRONISÉE ─────────────────────────────────────────────────
 window.boxRecordSound = async function() {
@@ -4813,8 +4819,6 @@ window.boxRecordSound = async function() {
     btn.style.borderColor = 'var(--bd)';
   }
 };
-
-
 
 // ── ALERTES OBD TEMPS REEL ───────────────────────────────────────────────────
 window.renderOBDAlerts = function(alerts) {
@@ -4910,7 +4914,6 @@ window.dylanSuggest = function(text) {
   }
 })();
 
-
 // ── CT CHECK RESULT DISPLAY ──────────────────────────────────────────────────
 window.showCTResult = function(data) {
   var modal = document.getElementById('m-ct-result');
@@ -4998,11 +5001,9 @@ window.learnBaseline = async function() {
   try { var r=await MecaIA.authedFetch('baseline_learn',{method:'POST',body:{vehicle_id:window.selCar.id}}); var d=await r.json(); if(d.pids_computed&&window.showToast) showToast('ok','Baseline: '+d.pids_computed+' PIDs'); return d; } catch(e) { return null; }
 };
 
-
 if(typeof window.boxSendCmd !== 'function') window.boxSendCmd = function(){};
 if(typeof window.boxToggleMonitors !== 'function') window.boxToggleMonitors = function(){};
 if(typeof window.navTo !== 'function') window.navTo = function(p){ if(typeof showPg==='function')showPg(p); };
-
 
 // ── SKELETON HELPER ───────────────────────────────────────────────────────────
 // Usage: el.innerHTML = skHtml('card', 3)  → 3 skeleton cards
@@ -5071,7 +5072,6 @@ window.showToast = function(type, msg, actionLabel, actionFn) {
 
 // Remplace l ancienne fonction showT si elle existe
 window.showT = window.showToast;
-
 
 // ── SELECTEUR VEHICULE HIERARCHIQUE (T-VEHICULE-01) ──────────────────────────
 window._vsCache = {};
