@@ -289,10 +289,14 @@ function execDeviceTool(name, input, ctx) {
   }
 
   if (name === "read_readiness_monitors") {
-    const ready    = monitors.readyCount    ?? "?";
-    const notReady = monitors.notReadyCount ?? "?";
     const mil = monitors.milOn ? "ALLUME" : "eteint";
-    return `Moniteurs - MIL: ${mil} | Prets: ${ready} | Non prets: ${notReady}${monitors.dtcCount ? ` | DTC: ${monitors.dtcCount}` : ""}`;
+    const monList = Array.isArray(monitors.monitors) ? monitors.monitors : [];
+    const readyCount    = monList.filter(m => m.supported && m.ready === true).length;
+    const notReadyCount = monList.filter(m => m.supported && m.ready === false).length;
+    const monStr = monList.length
+      ? monList.filter(m => m.supported).map(m => `${m.name}:${m.ready ? "OK" : "NON PRET"}`).join(", ")
+      : "Non disponible";
+    return `Moniteurs - MIL: ${mil} | Prets: ${readyCount}/${monList.filter(m=>m.supported).length} | Non prets: ${notReadyCount}${monitors.dtcCount ? ` | DTC: ${monitors.dtcCount}` : ""}\nDetail: ${monStr}`;
   }
 
   if (name === "read_vin") {
@@ -463,6 +467,10 @@ async function runAgenticLoop({ messages, system, ctx, brand, vehicleMeta, signa
       tools: TOOLS,
       messages: msgs,
     });
+    // Tracker les tokens pour metriques
+    if (resp.usage) {
+      tokens += (resp.usage.input_tokens || 0) + (resp.usage.output_tokens || 0);
+    }
 
     const content = resp.content || [];
     const textBlocks = content.filter(b => b.type === "text");
