@@ -298,6 +298,7 @@ textarea{resize:vertical;min-height:70px}
 }
 .logo span{color:var(--acc)}
 .l-nav-r{display:flex;align-items:center;gap:8px}
+.l-codes-link{display:inline-block!important}@media(max-width:600px){.l-codes-link{display:none!important}}
 .btn-lnav-ghost{
   padding:7px 18px;background:transparent;border:1px solid var(--bd);
   color:var(--tx2);border-radius:var(--r-sm);font-family:'Rajdhani',sans-serif;
@@ -1192,7 +1193,12 @@ textarea{resize:vertical;min-height:70px}
     }
   }, 5000);
 })();
-</script></head>
+</script><link rel="alternate" hreflang="fr" href="https://mecaiaauto.com/">
+<link rel="alternate" hreflang="nl" href="https://mecaiaauto.com/?lang=nl">
+<link rel="alternate" hreflang="de" href="https://mecaiaauto.com/?lang=de">
+<link rel="alternate" hreflang="en" href="https://mecaiaauto.com/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://mecaiaauto.com/">
+</head>
 <body>
 
 <!-- LOADING -->
@@ -1262,7 +1268,8 @@ textarea{resize:vertical;min-height:70px}
         <option value="fr">🇫🇷 Français</option><option value="nl">🇳🇱 Nederlands</option>
         <option value="en">🇬🇧 English</option><option value="de">🇩🇪 Deutsch</option>
       </select>
-      <button class="btn-lnav-ghost" onclick="goAuth('login')" id="l-l">Connexion</button>
+      <a href="/codes" style="font-size:11px;font-weight:600;color:#7a9ab5;text-decoration:none;padding:4px 8px;display:none" id="l-codes" class="l-codes-link">12&thinsp;128 codes OBD2</a>
+<button class="btn-lnav-ghost" onclick="goAuth('login')" id="l-l">Connexion</button>
       <button class="btn-lnav-acc" onclick="goAuth('register')" id="l-s">Commencer</button>
     </div>
     <button class="tab" id="t-box" onclick="showPg('box')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;margin:0 auto 2px"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4"/><circle cx="8" cy="14" r="1.5" fill="currentColor"/><circle cx="12" cy="14" r="1.5" fill="currentColor"/><circle cx="16" cy="14" r="1.5" fill="currentColor"/></svg>Box</button>
@@ -1488,6 +1495,7 @@ textarea{resize:vertical;min-height:70px}
   </table>
   <div style="text-align:center;margin-top:20px">
     <button class="btn-primary" onclick="goAuth('register')">Commencer gratuitement avec MecaIA &rarr;</button>
+    <div style="margin-top:14px"><a href="/codes" style="font-size:13px;color:#7a9ab5;text-decoration:none;border-bottom:1px solid #1a2430;padding-bottom:2px">Parcourir les 12&thinsp;128 codes OBD2 &rarr;</a></div>
     <div style="font-size:11px;color:#2a3a4e;margin-top:10px">Donn&eacute;es publiques · Prix Carly carly.com 2025 · Prix FIXD fixdapp.com 2026 · Avis Trustpilot + ConsumerAffairs</div>
   </div>
 </div>

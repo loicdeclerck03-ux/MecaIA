@@ -1,32 +1,26 @@
-fix(sentry): toast + boxSendCmd + internal links 12128 pages DTC
+feat(seo+blog+ux): blog#4 scanner + hreflang 12128 pages + nav /codes + FAQ
 
-=== BUGS SENTRY CORRIGÉS ===
-JAVASCRIPT-8: toast is not defined
-  - Cause: function toast() non exposée sur window explicitement
-  - Fix: window.toast = toast; après définition
-  - onclick toast L2217: apostrophe d\'attente → window.toast&&window.toast()
+=== BLOG ===
+blog/meilleur-scanner-obd2-2026.html (18KB): comparatif honnête 2026
+  - Vgate iCar Pro 2S (recommandation principale, ~57€, BLE iOS/Android)
+  - OBDLink MX+, TOPDON Topscan Lite, ANCEL AD410, Carly, ELM327 no-name
+  - Tableau comparatif, recommandation par profil, FAQ schema.org
+  - CTA MecaIA intégré dans le contenu
+blog.html: +1 carte article scanner OBD2
+sitemap.xml: 12137 URLs (+1 blog)
 
-JAVASCRIPT-8: boxSendCmd is not defined
-  - window.boxSendCmd déjà correct (L2611), confirmé ✅
+=== SEO TECHNIQUE ===
+Hreflang FR/NL/DE/EN sur 12128 pages DTC + pages blog + index.html
+  - Cible: Belgique (FR+NL), France, Allemagne, UK, x-default
+  - 5 balises <link rel="alternate" hreflang> par page
+  - Améliore visibilité dans les marchés cibles
 
-JAVASCRIPT-2: SyntaxError Unexpected token ')'
-  - Parenthèses parfaitement équilibrées (5 scripts: 0/0 diff)
-  - Probable vieux navigateur (< ES2020) — non-actionnable
+=== NAVIGATION ===
+index.html: lien "12 128 codes OBD2" ajouté dans la nav (l-nav-r)
+index.html: lien /codes ajouté sous le CTA du comparatif
 
-=== SEO: INTERNAL LINKS + SCHEMA ===
-12128 pages DTC: BreadcrumbList schema.org ajouté
-  - Breadcrumb: Accueil > Codes OBD2 > [CODE]
-  - Améliore apparition dans les SERPs Google
+=== DOCUMENTATION ===
+FAQ.md: 4 nouvelles entrées (window.toast, boxSendCmd, T025, T032)
+STATUS.md: mis à jour
 
-12128 pages DTC: Internal links vers 4 codes similaires
-  - Lien "Tous les codes" → /codes
-  - Améliore crawl budget + autorité interne
-
-codes/index.html: Hub SEO central
-  - Stats: P=8188, B=1447, C=966, U=1527, Total=12128
-  - Grille codes populaires (18 codes les plus recherchés)
-  - Recherche directe par code avec validation format
-  - Schema CollectionPage
-
-NASA audit: 20/20 ✅
-Syntaxe JS: 4/4 scripts OK ✅
+NASA audit: 20/20 ✅ · Syntaxe: OK · Dead code: 0
