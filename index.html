@@ -2214,7 +2214,7 @@ textarea{resize:vertical;min-height:70px}
           </div>
           <div style="text-align:center">
             <div style="font-size:22px;font-weight:900">39,99<span style="font-size:13px">€</span></div>
-            <button class="bplan" style="margin-top:6px;padding:8px 20px;font-size:12px" onclick="toast('Le boîtier MecaIA Box sera disponible prochainement. Rejoignez la liste d\'attente via la FAQ !','ok')">Pré-commander</button>
+            <button class="bplan" style="margin-top:6px;padding:8px 20px;font-size:12px" onclick="window.toast&&window.toast('Boitier MecaIA Box bientôt disponible. Rejoignez la liste via la FAQ !','ok')">Pré-commander</button>
           </div>
         </div>
       </div>
@@ -2955,6 +2955,7 @@ de:{
 };
 
 function toast(m,t=''){const c=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+(t==='ok'?'ok':t==='er'?'er':'');el.textContent=m;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},2500);}
+window.toast = toast;
 function ss(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
 
 window.fillPCars = function () {

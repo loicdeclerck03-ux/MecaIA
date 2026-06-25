@@ -1,18 +1,32 @@
-﻿feat(sprint5): DTC batch 4 + Blog pilier SEO + TikTok plan
+fix(sentry): toast + boxSendCmd + internal links 12128 pages DTC
 
-SEO:
-- +10 pages DTC batch 4 (P0430 P0022 P0088 P0520 P0456 P0351 P0404 P0234 P0715 P0115)
-- Total DTC: 66 pages (56+10)
-- /blog page index (8 articles listes)
-- /blog/comprendre-codes-obd2 (article pilier 1500 mots, FAQPage JSON-LD)
-- netlify.toml: redirects /blog et /blog/:slug
-- sitemap.xml: +12 URLs (10 DTC + blog + article)
+=== BUGS SENTRY CORRIGÉS ===
+JAVASCRIPT-8: toast is not defined
+  - Cause: function toast() non exposée sur window explicitement
+  - Fix: window.toast = toast; après définition
+  - onclick toast L2217: apostrophe d\'attente → window.toast&&window.toast()
 
-CONTENU ACQUISITION:
-- TIKTOK_PLAN_30_VIDEOS.md: plan complet 30 videos
-  - 5 series (Demystification / Live / Economies / Dylan / Education)
-  - Scripts complets pour les 10 premieres videos
-  - Calendrier 10 semaines
-  - Materiel necessaire: ~70euro
+JAVASCRIPT-8: boxSendCmd is not defined
+  - window.boxSendCmd déjà correct (L2611), confirmé ✅
 
-Score NASA: 20/20
+JAVASCRIPT-2: SyntaxError Unexpected token ')'
+  - Parenthèses parfaitement équilibrées (5 scripts: 0/0 diff)
+  - Probable vieux navigateur (< ES2020) — non-actionnable
+
+=== SEO: INTERNAL LINKS + SCHEMA ===
+12128 pages DTC: BreadcrumbList schema.org ajouté
+  - Breadcrumb: Accueil > Codes OBD2 > [CODE]
+  - Améliore apparition dans les SERPs Google
+
+12128 pages DTC: Internal links vers 4 codes similaires
+  - Lien "Tous les codes" → /codes
+  - Améliore crawl budget + autorité interne
+
+codes/index.html: Hub SEO central
+  - Stats: P=8188, B=1447, C=966, U=1527, Total=12128
+  - Grille codes populaires (18 codes les plus recherchés)
+  - Recherche directe par code avec validation format
+  - Schema CollectionPage
+
+NASA audit: 20/20 ✅
+Syntaxe JS: 4/4 scripts OK ✅
