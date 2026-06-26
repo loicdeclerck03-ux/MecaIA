@@ -456,6 +456,7 @@ async function runAgenticLoop({ messages, system, ctx, brand, vehicleMeta, signa
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY });
   let msgs = [...messages];
   let lastText = "";
+  let tokens = 0;
 
   for (let turn = 0; turn < maxTurns; turn++) {
     if (signal?.aborted) break;

@@ -1121,10 +1121,6 @@ textarea{resize:vertical;min-height:70px}
 .l-stat-divider{width:1px;height:32px;background:rgba(255,255,255,.06)}
 /* ═════════════════════════════════════════════════════════════════════ */
 
-/* DTC Cards V2 */
-.dtc-card-v2 button:hover{opacity:.8;transition:opacity .15s}
-.dtc-card-v2{transition:box-shadow .2s}
-.dtc-card-v2:hover{box-shadow:0 4px 20px rgba(0,0,0,.3)}
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -2504,41 +2500,8 @@ function boxHandlePorts(ports){if(BOX.connected)return;var obd=(ports||[]).filte
 function boxHandleStatus(s){if(s.type==='connected'){BOX.connected=true;var d=document.getElementById('box-dot2');if(d){d.style.background='var(--green)';d.style.boxShadow='0 0 6px var(--green)';}var t=document.getElementById('box-conn-txt');if(t)t.textContent='Connect\u00e9 \u00b7 '+(s.version||'OBDLink').replace(/\|.*/,'').trim();var bd=document.getElementById('box-dot');if(bd)bd.style.background='var(--green)';var bar=document.getElementById('box-live-bar');if(bar)bar.style.display='flex';var ls=document.getElementById('box-live-status');if(ls){ls.textContent='● en ligne';ls.style.color='var(--green)';};boxSetScanBtn('\uD83D\uDD0D','SCAN COMPLET',false);if(window.MecaIAElectron&&window.MecaIAElectron.obd2&&typeof window.MecaIAElectron.obd2.startMonitor==='function')window.MecaIAElectron.obd2.startMonitor();boxMsg('dy','Boitier OBDLink connect\u00e9 \u2705\n\nPr\u00eat pour '+(window.selCar?window.selCar.marque+' '+window.selCar.modele:'votre voiture')+'. Cliquez sur **SCAN COMPLET** ou dites-moi ce que vous voulez.');setTimeout(function(){boxRenderOptions();boxRenderResets();},1000);}else if(s.type==='disconnected'){BOX.connected=false;var d=document.getElementById('box-dot2');if(d){d.style.background='var(--muted)';d.style.boxShadow='none';}var t=document.getElementById('box-conn-txt');if(t)t.textContent='Non connect\u00e9 \u00b7 Cliquer pour connecter';var bd=document.getElementById('box-dot');if(bd)bd.style.background='var(--muted)';var bar=document.getElementById('box-live-bar');if(bar)bar.style.display='none';var ls2=document.getElementById('box-live-status');if(ls2){ls2.textContent='hors ligne';ls2.style.color='var(--muted)';};boxSetScanBtn('\uD83D\uDD0C','Connecter le boitier',true);}}
 
 window.boxStartScan=function(){if(!BOX.connected||BOX.scanning)return;BOX.scanning=true;boxSetScanBtn('\u23F3','Scan en cours\u2026',true);boxMsg('user','Lancement du scan complet\u2026');window.MecaIAElectron.obd2.fullScan();};
-function boxHandleScanComplete(data){BOX.scanning=false;BOX.scanResult=data;boxSetScanBtn('\uD83D\uDD04','Nouveau scan',false);boxRenderDTCs(data.dtcs||[],data.pendingDtcs||[],data.permanentDtcs||[]);if(data.vin)boxShowVIN(data.vin);boxCallDylan('Voici les r\u00e9sultats du scan OBD2. Analyse et dis-moi tout.',true);}
+function boxHandleScanComplete(data){BOX.scanning=false;BOX.scanResult=data;boxSetScanBtn('\uD83D\uDD04','Nouveau scan',false);window.boxRenderDTCs(data.dtcs||[],data.pendingDtcs||[],data.permanentDtcs||[]);if(data.vin)boxShowVIN(data.vin);boxCallDylan('Voici les r\u00e9sultats du scan OBD2. Analyse et dis-moi tout.',true);}
 
-function boxRenderDTCs(dtcs,pending,permanent){
-  var all=(dtcs||[]).concat(pending||[]).filter(function(d){return d.code&&/^[A-Z][0-9A-F]{4}$/i.test(d.code);});
-  var body=document.getElementById('box-dtc-body');
-  var cnt=document.getElementById('box-dtc-count');
-  if(!body)return;
-  if(cnt)cnt.textContent=all.length?all.length+' code(s)':'\u2705 Aucun';
-  if(!all.length){
-    body.innerHTML='<div style="text-align:center;padding:24px 0"><span style="font-size:32px">\u2705</span><div style="font-size:13px;color:var(--muted);margin-top:8px">Aucun code d\u00e9faut<br>Voyant moteur \u00e9teint</div></div>';
-    return;
-  }
-  var CAT={'P':'Groupe moteur','C':'Groupe chassis','B':'Groupe carrosserie','U':'Groupe reseau'};
-  body.innerHTML=all.map(function(d){
-    var isPend=(pending||[]).some(function(p){return p.code===d.code;});
-    var isSev=d.code[0]==='P';
-    var col=isSev?'var(--red)':isPend?'var(--warn)':'var(--acc)';
-    var badgeBg=isSev?'rgba(239,68,68,.1)':isPend?'rgba(249,115,22,.1)':'rgba(232,160,0,.1)';
-    var status=isPend?'EN ATTENTE':'ACTIF';
-    var cat=CAT[d.code[0]]||'Inconnu';
-    return '<div class="dtc-card-v2" style="background:var(--s1);border:1px solid var(--bd);border-left:3px solid '+col+';border-radius:10px;padding:12px 14px;margin-bottom:8px">'+
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'+
-        '<span style="background:'+badgeBg+';border:1px solid '+col+';border-radius:5px;padding:3px 8px;font-family:monospace;font-size:13px;font-weight:700;color:'+col+'">'+d.code+'</span>'+
-        '<span style="font-size:10px;font-weight:700;color:'+col+';letter-spacing:.5px">'+status+'</span>'+
-        '<span style="font-size:10px;color:var(--muted);margin-left:auto">'+cat+'</span>'+
-      '</div>'+
-      '<div style="font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5">'+(d.description||'Code inconnu \u2014 cliquer pour analyse')+'</div>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
-        '<button onclick="boxAskDTC(&apos;'+d.code+'&apos;)" style="background:var(--acc);color:#000;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">\u25B6 Analyser avec Dylan</button>'+
-        '<button onclick="window.open(&apos;https://mecaiaauto.com/codes/'+d.code+'&apos;,&apos;_blank&apos;)" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx2);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit">\uD83D\uDCCB Proc\u00e9dure</button>'+
-        '<button onclick="boxReadFreezeFrame(&apos;'+d.code+'&apos;)" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx2);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit">\uD83D\uDCF8 Freeze Frame</button>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-}
 
 // ── FREEZE FRAME V2 ──────────────────────────────────────────────────────────
 window.boxReadFreezeFrame = async function(code) {
@@ -2613,16 +2576,23 @@ function boxRemoveTyping(){var t=document.getElementById('box-typing');if(t&&t.p
 window.boxSend=async function(){var inp=document.getElementById('box-input');var msg=inp?inp.value.trim():'';if(!msg)return;inp.value='';inp.style.height='auto';boxMsg('user',msg);await boxCallDylan(msg,false);};
 
 async function boxCallDylan(userMsg,isScan){
+  if(isScan)window._boxLastScan=true;
   boxAddTyping();
   BOX.convHistory.push({role:'user',content:isScan?'Scan OBD2 complet.':userMsg});
   try{
     var _liveCtx=Object.assign({},BOX.scanResult||{});if(BOX.liveData&&Object.keys(BOX.liveData).length){_liveCtx.pids=Object.assign({},(BOX.scanResult&&BOX.scanResult.pids)||{},BOX.liveData);}
 var r=await MecaIA.authedFetch('mecaia_box',{method:'POST',body:{messages:BOX.convHistory,is_obd2_scan:!!isScan,vehicle_context:_liveCtx,selected_vehicle:window.selCar||null,brand:(window.selCar&&window.selCar.marque?window.selCar.marque:'').toLowerCase()||'default',language:'fr'}});
     boxRemoveTyping();
-    if(r.ok&&r.data&&r.data.message){boxMsg('dy',r.data.message);BOX.convHistory.push({role:'assistant',content:r.data.message});}
-    else boxMsg('dy','\u26A0\uFE0F Dylan est momentan\u00e9ment indisponible. V\u00e9rifiez votre connexion internet.');
-  }catch(e){boxRemoveTyping();boxMsg('dy','\u26A0\uFE0F Erreur : '+e.message);}
+    if(r.data&&r.data.message){
+      boxMsg('dy',r.data.message);
+      if(r.ok)BOX.convHistory.push({role:'assistant',content:r.data.message});
+    }else{
+      var errInfo=r?'HTTP\u00a0'+r.status:'r\u00e9seau';
+      boxMsg('dy','\u26A0\uFE0F Dylan indisponible ('+errInfo+'). <button onclick="if(window._boxLastScan){boxCallDylan(\'Voici les r\u00e9sultats du scan OBD2. Analyse et dis-moi tout.\',true);}else{boxCallDylan(BOX.convHistory.length>1?BOX.convHistory[BOX.convHistory.length-2].content:\'Aide-moi\',false);}" style="background:var(--acc-d);border:1px solid var(--acc-b);color:var(--acc);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;margin-left:6px">\u21BA\u00a0R\u00e9essayer</button>');
+    }
+  }catch(e){boxRemoveTyping();boxMsg('dy','\u26A0\uFE0F Erreur\u00a0: '+e.message);}
 }
+window.boxCallDylan=boxCallDylan;
 
 function boxSetScanBtn(icon,lbl,dis){var btn=document.getElementById('box-btn-scan');if(btn){btn.textContent=icon+' '+lbl;btn.disabled=dis;btn.style.opacity=dis?'.45':'1';btn.style.background=dis?'var(--s3)':'var(--acc)';btn.style.color=dis?'var(--muted)':'#000';}}
 
