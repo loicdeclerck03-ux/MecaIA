@@ -2,5 +2,16 @@ User-agent: *
 Allow: /
 Disallow: /netlify/
 Disallow: /.netlify/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin.html
+
+# Bots crawl budget - limiter les versions de test/dev
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
 
 Sitemap: https://mecaiaauto.com/sitemap.xml
+Sitemap: https://mecaiaauto.com/sitemap-1.xml
+Sitemap: https://mecaiaauto.com/sitemap-2.xml
+Sitemap: https://mecaiaauto.com/sitemap-3.xml

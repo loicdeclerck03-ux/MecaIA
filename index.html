@@ -18,6 +18,9 @@
 <meta property="og:image:height" content="512">
 <meta property="og:locale" content="fr_BE">
 <meta property="og:site_name" content="MecaIA">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="nl_BE">
+<meta property="og:image:alt" content="MecaIA — L Expert Automobile IA">
 
 <!-- Sentry — monitoring erreurs prod -->
 <script
@@ -32,7 +35,7 @@ if(typeof window.toast==='undefined'){window.toast=function(m,t){console.warn('[
     integrations: [Sentry.browserTracingIntegration()],
     tracesSampleRate: 0.2,
     environment: "production",
-    release: "mecaia@1.0.0",
+    release: "mecaia@2.0.0",
   });
 </script>
 
@@ -53,7 +56,7 @@ if(typeof window.toast==='undefined'){window.toast=function(m,t){console.warn('[
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": ["Web","Windows","Android","iOS"],
   "featureList": ["Diagnostic OBD2 IA autonome","Activation options véhicule (coding)","Mode entretien freins EPB","7 réinitialisations service","Tests actionneurs","30+ paramètres temps réel","26 marques automobiles"],
-  "screenshot": "https://mecaiaauto.com/og-image.jpg",
+  "screenshot": "https://mecaiaauto.com/icon-512.png",
   "offers": [
     {"@type":"Offer","price":"0","priceCurrency":"EUR","description":"3 crédits gratuits à l\'inscription"},
     {"@type":"Offer","price":"4.99","priceCurrency":"EUR","description":"Pack Starter 8 crédits"},
@@ -76,13 +79,17 @@ if(typeof window.toast==='undefined'){window.toast=function(m,t){console.warn('[
 }
 </script>
 
-<script src="https://js.stripe.com/v3/"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://js.stripe.com/v3/" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <link rel="icon" type="image/png" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#060809">
 <meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://js.stripe.com">
+<link rel="preconnect" href="https://browser.sentry-cdn.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════
@@ -211,7 +218,7 @@ body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-
 ══════════════════════════════ */
 .f{margin-bottom:14px}
 .af{margin-bottom:14px}
-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.8px;text-transform:uppercase;display:block;margin-bottom:6px}
+label{font-family:'DM Sans',sans-serif;font-size:10px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-weight:500;display:block;margin-bottom:6px}
 input,select,textarea{
   width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r-sm);
   padding:10px 13px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;
@@ -266,7 +273,7 @@ textarea{resize:vertical;min-height:70px}
 /* ══════════════════════════════
    LOADER
 ══════════════════════════════ */
-.loader{text-align:center;padding:40px 20px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--acc);letter-spacing:3px}
+.loader{text-align:center;padding:40px 20px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:var(--acc);letter-spacing:3px}
 .lbar{width:160px;height:2px;background:var(--bd);border-radius:2px;margin:12px auto 0;overflow:hidden}
 .lfill{height:100%;background:var(--acc);border-radius:2px;animation:lrun 1.8s ease-in-out infinite}
 @keyframes lrun{0%{width:0;margin-left:0}50%{width:70%;margin-left:0}100%{width:0;margin-left:100%}}
@@ -371,7 +378,7 @@ textarea{resize:vertical;min-height:70px}
   position:relative;z-index:1;flex-wrap:wrap;border-top:1px solid var(--bd)
 }
 .stat-n{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;color:var(--acc);text-align:center}
-.stat-l{font-size:10px;color:var(--muted);margin-top:2px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-align:center}
+.stat-l{font-size:11px;color:var(--muted);margin-top:2px;font-family:'DM Sans',sans-serif;font-weight:400;letter-spacing:.2px;text-align:center}
 
 /* ── Landing Features ── */
 .l-feats{
@@ -494,7 +501,7 @@ textarea{resize:vertical;min-height:70px}
 
 .a-divider{display:flex;align-items:center;gap:10px;margin:14px 0}
 .a-divider::before,.a-divider::after{content:'';flex:1;height:1px;background:var(--bd)}
-.a-divider span{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px}
+.a-divider span{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--muted);letter-spacing:.5px}
 
 .a-tabs{display:flex;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:3px;margin-bottom:18px;gap:3px}
 .atab{flex:1;padding:8px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;color:var(--muted);border-radius:4px;cursor:pointer;border:none;background:none;transition:all .18s;text-transform:uppercase}
@@ -502,7 +509,7 @@ textarea{resize:vertical;min-height:70px}
 
 .abtn{width:100%;padding:12px;background:var(--acc);color:#0a0c0e;border:none;border-radius:var(--r-sm);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;margin-top:4px;transition:background .15s;text-transform:uppercase}
 .abtn:hover{background:#f5b020}
-.amsg{font-size:11px;text-align:center;margin-top:9px;font-family:'IBM Plex Mono',monospace;min-height:15px}
+.amsg{font-size:12px;text-align:center;margin-top:9px;font-family:'DM Sans',sans-serif;min-height:15px}
 .amsg.err{color:var(--red)}.amsg.ok{color:var(--green)}
 .afg{text-align:center;margin-top:10px;font-size:12px;color:var(--muted);cursor:pointer;transition:color .15s}
 .afg:hover{color:var(--acc)}
@@ -2257,7 +2264,7 @@ window.boxHandleConnect = window.boxHandleConnect || function() {};
 <div id="box-noapp">
   <div style="text-align:center;padding:32px 0 20px">
     <div style="display:inline-block;background:rgba(232,160,0,.12);border:1px solid rgba(232,160,0,.3);color:var(--acc);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:14px;letter-spacing:.5px">BOITIER OBD2 IA</div>
-    <h1 style="font-size:24px;font-weight:900;margin-bottom:8px">MECA<span style="color:var(--acc)">IA</span> BOX</h1>
+    <p class="raj" style="font-size:24px;font-weight:900;margin-bottom:8px">MECA<span style="color:var(--acc)">IA</span> BOX</p>
     <p style="color:var(--muted);font-size:14px;max-width:480px;margin:0 auto 20px;line-height:1.6">Téléchargez l'application pour brancher le boitier OBD2 et parler à Dylan de votre voiture en temps réel.</p>
     <a onclick="downloadApp('windows');return false" href="#" style="display:inline-flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--acc-b);border-radius:10px;padding:11px 18px;text-decoration:none;color:var(--tx)">
       <span style="font-size:22px">&#x1F5A5;&#xFE0F;</span><div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Windows 10/11</div><div style="font-size:13px;font-weight:700">MecaIA Desktop</div></div>
