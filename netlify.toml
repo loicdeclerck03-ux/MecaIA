@@ -158,3 +158,9 @@
   to = "/ghost-inspector.html"
   status = 200
   force = false
+
+[[redirects]]
+  from = "/blog/code-p0171-p0174-melange-pauvre"
+  to = "/blog/code-p0171-p0174-melange-pauvre.html"
+  status = 200
+  force = false

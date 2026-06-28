@@ -1130,7 +1130,7 @@ textarea{resize:vertical;min-height:70px}
 
 
 /* == TEST MODE HOLTER == */
-.tm-bar{background:rgba(232,160,0,.06);border:1px solid rgba(232,160,0,.18);border-radius:12px;padding:18px 20px;margin:14px 0}
+.tm-bar{background:rgba(232,160,0,.06);border:1px solid rgba(232,160,0,.18);border-radius:12px;padding:18px 20px;margin:14px 0;display:none!important}
 .tm-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase;margin-bottom:12px}
 .tm-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
 .tm-btn{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:10px;padding:13px 8px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text)}
@@ -3612,6 +3612,11 @@ hideLoading();
 // ---- Listener de session Supabase ----
 MecaIA.onAuth((user) => {
   if (user) {
+    // Paiement en attente depuis /tarifs (?action=pay&pkg=xxx)
+    if(window._pendingPkg){
+      var _pkg=window._pendingPkg; window._pendingPkg=null;
+      setTimeout(function(){if(typeof window.buyPack==='function')window.buyPack(_pkg);},600);
+    }
     majVis();
     setLang(lang);
     if (user.email === OWNER) showSc('s-dash'); else { showSc('s-app'); setTimeout(dylanWelcome, 150); if(window.MecaIAElectron&&window.boxInit)setTimeout(boxInit,500); }
@@ -4270,6 +4275,9 @@ window.buyPackage = function(pkg) {
 window.downloadApp=function(p){
   if(p==='ios'){toast("App iOS bientôt sur l'App Store !",'ok');return;}
   if(window.MecaIAElectron){
+  // Test Mode : visible uniquement dans l'app Electron (OBD2 requis)
+  var _tmEl=document.getElementById('tm-bar');if(_tmEl)_tmEl.style.display='';
+
     // Deja dans l'app Electron -> ouvrir l'onglet OBD IA directement
     if(window.navTo)navTo('box');
     else{var t=document.getElementById('t-box');if(t)t.click();}
@@ -5411,6 +5419,16 @@ window.tmReset=function(){
   document.getElementById('tm-elapsed').textContent='00:00';
 };
 // == FIN TEST MODE ==
+
+
+// Handler ?action=pay&pkg depuis /tarifs — stocke avant init app
+(function(){
+  var p=new URLSearchParams(location.search);
+  if(p.get('action')==='pay'&&p.get('pkg')){
+    window._pendingPkg=p.get('pkg');
+    try{history.replaceState(null,'',location.origin+'/');}catch(e){}
+  }
+})();
 
 </script>
 

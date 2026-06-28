@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codes P0171 et P0174 : Mélange pauvre — Causes, diagnostic et réparation | MecaIA</title>
+<meta name="description" content="P0171 et P0174 allumés ensemble ? Découvrez les causes exactes (fuite d'air, MAF, injecteurs) et comment les diagnostiquer sans aller chez le garagiste.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://mecaiaauto.com/blog/code-p0171-p0174-melange-pauvre">
+<meta property="og:title" content="P0171 / P0174 : Mélange pauvre moteur — Causes et diagnostic complet">
+<meta property="og:description" content="P0171 et P0174 ensemble ? Fuite d'admission, MAF encrassé ou injecteurs défaillants. Guide diagnostic complet avec données OBD2 live.">
+<meta property="og:url" content="https://mecaiaauto.com/blog/code-p0171-p0174-melange-pauvre">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://mecaiaauto.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_BE">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:site_name" content="MecaIA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="P0171 / P0174 : Mélange pauvre — Guide diagnostic OBD2">
+<meta name="twitter:image" content="https://mecaiaauto.com/og-image.png">
+<link rel="alternate" hreflang="fr" href="https://mecaiaauto.com/blog/code-p0171-p0174-melange-pauvre">
+<link rel="alternate" hreflang="x-default" href="https://mecaiaauto.com/blog/code-p0171-p0174-melange-pauvre">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Codes P0171 et P0174 : Mélange pauvre — Causes, diagnostic et réparation","description":"P0171 et P0174 allumés ensemble ? Guide complet pour identifier la cause exacte avec les données OBD2 live.","author":{"@type":"Person","name":"Loic Declerck"},"publisher":{"@type":"Organization","name":"MecaIA","url":"https://mecaiaauto.com","logo":{"@type":"ImageObject","url":"https://mecaiaauto.com/icon-512.png"}},"datePublished":"2026-06-28","dateModified":"2026-06-28","url":"https://mecaiaauto.com/blog/code-p0171-p0174-melange-pauvre","image":"https://mecaiaauto.com/og-image.png","inLanguage":"fr","keywords":"P0171,P0174,mélange pauvre,lean mixture,fuite admission,MAF encrassé,diagnostic OBD2"}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#060809;--card:#0c0e11;--text:#eef4fa;--subtle:#b4c4d4;--muted:#6b7f96;--acc:#e8a000;--acc-d:rgba(232,160,0,.08);--acc-b:rgba(232,160,0,.2);--bd:rgba(255,255,255,.07);--green:#10b981;--red:#ef4444;--warn:#f59e0b}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans','Segoe UI',Arial,sans-serif;font-size:16px;line-height:1.7}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--bd);max-width:900px;margin:0 auto}
+.logo{font-family:'Rajdhani','Arial Black',sans-serif;font-weight:700;font-size:22px;color:var(--text)}.logo span{color:var(--acc)}
+.nav-cta{background:var(--acc);color:#060809;padding:8px 18px;border-radius:8px;font-weight:700;font-size:14px}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px 80px}
+.bc{font-size:13px;color:var(--muted);padding:20px 0 0;display:flex;gap:6px}.bc a{color:var(--muted)}
+.art-header{padding:32px 0 24px;border-bottom:1px solid var(--bd)}
+.art-cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.art-cat{font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--acc);background:var(--acc-d);border:1px solid var(--acc-b);padding:4px 10px;border-radius:20px}
+h1{font-family:'Rajdhani','Arial Black',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:700;line-height:1.15;margin-bottom:16px}
+.art-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.cta-box{background:var(--acc-d);border:1px solid var(--acc-b);border-radius:12px;padding:20px 22px;margin:28px 0;display:flex;gap:14px}
+.cta-title{font-weight:700;color:var(--acc);margin-bottom:6px}
+.cta-desc{font-size:14px;color:var(--subtle)}
+.cta-btn{display:inline-block;margin-top:12px;background:var(--acc);color:#060809;padding:9px 20px;border-radius:8px;font-weight:700;font-size:14px}
+.art-body{padding-top:28px}
+.art-body h2{font-family:'Rajdhani','Arial Black',sans-serif;font-size:24px;font-weight:700;margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.art-body h3{font-size:18px;font-weight:600;margin:24px 0 10px}
+.art-body p{color:var(--subtle);margin-bottom:16px}
+.art-body ul,.art-body ol{color:var(--subtle);padding-left:20px;margin-bottom:16px}
+.art-body li{margin-bottom:8px}
+.art-body strong{color:var(--text);font-weight:600}
+code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(255,255,255,.06);border:1px solid var(--bd);padding:2px 6px;border-radius:4px;color:var(--acc)}
+.pid-box{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px 18px;margin:16px 0}
+.pid-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;color:var(--acc);margin-bottom:10px;text-transform:uppercase}
+.pid-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pid-item{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:6px;padding:8px 10px}
+.pid-name{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.pid-val{font-family:'IBM Plex Mono',monospace;font-size:14px}
+.pid-ok{color:var(--green)}
+.pid-bad{color:var(--red)}
+.pid-warn{color:var(--warn)}
+.cause-block{background:var(--card);border-left:3px solid var(--acc);border-radius:0 10px 10px 0;padding:16px 18px;margin:16px 0}
+.cause-num{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:28px;color:var(--acc);line-height:1;margin-bottom:6px}
+.cause-title{font-weight:700;font-size:16px;margin-bottom:8px}
+.cause-proba{font-size:12px;background:var(--acc-d);border:1px solid var(--acc-b);color:var(--acc);padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px}
+.cause-desc{font-size:14px;color:var(--subtle);margin-bottom:8px}
+.cause-fix{font-size:13px;color:var(--muted)}
+.cause-fix strong{color:var(--text)}
+.warn-box{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px}
+.warn-txt{font-size:14px;color:var(--subtle)}
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}
+th{background:rgba(255,255,255,.04);color:var(--acc);font-weight:600;padding:10px 12px;text-align:left;border-bottom:1px solid var(--bd)}
+td{padding:10px 12px;border-bottom:1px solid var(--bd);color:var(--subtle)}
+tr:last-child td{border-bottom:none}
+.related{margin-top:48px;padding-top:28px;border-top:1px solid var(--bd)}
+.related h2{font-family:'Rajdhani','Arial Black',sans-serif;font-size:20px;font-weight:700;margin-bottom:16px}
+.related-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rel-card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px;transition:border-color .2s}
+.rel-card:hover{border-color:var(--acc)}
+.rel-card h4{font-size:14px;font-weight:600;margin-bottom:6px}
+.rel-card p{font-size:13px;color:var(--muted)}
+footer{border-top:1px solid var(--bd);padding:20px 24px;text-align:center;font-size:12px;color:var(--muted);max-width:900px;margin:0 auto}
+@media(max-width:600px){.related-grid,.pid-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav><div class="nav"><a href="/" class="logo">MECA<span>IA</span></a><a href="/?action=diag" class="nav-cta">Diagnostic gratuit</a></div></nav>
+<div class="wrap">
+<nav class="bc"><a href="/">Accueil</a> › <a href="/blog">Blog</a> › P0171 / P0174 Mélange pauvre</nav>
+<header class="art-header">
+  <div class="art-cats"><span class="art-cat">Codes OBD2</span><span class="art-cat">Injection</span><span class="art-cat">Diagnostic</span></div>
+  <h1>P0171 et P0174 : Mélange pauvre — les vraies causes et comment les trouver</h1>
+  <div class="art-meta"><span>Par <strong>Loïc Declerck</strong>, mécanicien expert</span><span>28 juin 2026</span><span>8 min de lecture</span></div>
+</header>
+
+<div class="cta-box">
+  <div style="font-size:24px;flex-shrink:0">🔬</div>
+  <div>
+    <div class="cta-title">Lisez vos corrections d'injection en temps réel</div>
+    <div class="cta-desc">Dylan analyse vos STFT et LTFT live et identifie la cause exacte de votre mélange pauvre. Plus précis qu'un garagiste, 30 secondes de connexion.</div>
+    <a href="/?action=diag" class="cta-btn">Diagnostiquer P0171/P0174 →</a>
+  </div>
+</div>
+
+<article class="art-body">
+
+<p>Les codes <strong>P0171</strong> (Système trop pauvre — Banque 1) et <strong>P0174</strong> (Système trop pauvre — Banque 2) sont parmi les plus fréquents sur les moteurs à injection moderne. Ensemble, ils indiquent que les deux rangées de cylindres reçoivent un mélange air/carburant trop pauvre — trop d'air pour trop peu d'essence.</p>
+
+<h2>Ce que signifient vraiment ces codes</h2>
+
+<p>L'ECU surveille en permanence le rapport air/carburant via les sondes lambda. Si les corrections d'injection (<strong>STFT et LTFT</strong>) dépassent +10% pendant plusieurs cycles, l'ECU conclut que le moteur brûle un mélange trop pauvre et lève un code.</p>
+
+<div class="pid-box">
+  <div class="pid-title">📊 Données OBD2 à lire en live (via MecaIA)</div>
+  <div class="pid-grid">
+    <div class="pid-item"><div class="pid-name">STFT B1 (correction court terme)</div><div class="pid-val pid-bad">+18,0 % ← Anormal</div></div>
+    <div class="pid-item"><div class="pid-name">LTFT B1 (correction long terme)</div><div class="pid-val pid-bad">+14,5 % ← P0171 déclenché</div></div>
+    <div class="pid-item"><div class="pid-name">STFT B2</div><div class="pid-val pid-bad">+16,8 % ← Anormal</div></div>
+    <div class="pid-item"><div class="pid-name">LTFT B2</div><div class="pid-val pid-bad">+12,2 % ← P0174 déclenché</div></div>
+    <div class="pid-item"><div class="pid-name">STFT normal</div><div class="pid-val pid-ok">Entre -5% et +5%</div></div>
+    <div class="pid-item"><div class="pid-name">LTFT normal</div><div class="pid-val pid-ok">Entre -8% et +8%</div></div>
+  </div>
+</div>
+
+<p>Si <strong>les deux banques</strong> (B1 et B2) sont en mélange pauvre, la cause est presque toujours en amont des cylindres — avant la séparation des deux rangées. Si seulement B1 ou B2 est affecté, la cause est spécifique à cette rangée.</p>
+
+<h2>Les 6 causes classées par probabilité</h2>
+
+<div class="cause-block">
+  <div class="cause-num">01</div>
+  <div class="cause-title">Fuite d'air admission (post-débitmètre)</div>
+  <div class="cause-proba">⭐ Cause #1 — 40% des cas</div>
+  <div class="cause-desc">Une fuite d'air après le MAF (débitmètre) introduit de l'air non mesuré dans le moteur. L'ECU calcule la quantité de carburant sur la base du MAF, mais le cylindre reçoit plus d'air → mélange pauvre. Cette cause touche toujours les deux banques simultanément.</div>
+  <div class="cause-fix"><strong>Où chercher :</strong> joints de collecteur d'admission, durites entre MAF et papillon, vanne EGR, joint de culasse, flexibles de dépression. Bombe de carburant ou spray gaz autour des joints moteur tournant — si le régime change → fuite trouvée.</div>
+</div>
+
+<div class="cause-block">
+  <div class="cause-num">02</div>
+  <div class="cause-title">Débitmètre d'air (MAF) encrassé ou défaillant</div>
+  <div class="cause-proba">⭐ Cause #2 — 25% des cas</div>
+  <div class="cause-desc">Le MAF mesure la masse d'air entrant. S'il sous-estime la quantité d'air (fil chaud encrassé), l'ECU injecte trop peu de carburant → mélange pauvre. LTFT augmente pour compenser.</div>
+  <div class="cause-fix"><strong>Test :</strong> débrancher le MAF et rouler en mode dégradé. Si les LTFT diminuent → MAF défaillant. <strong>Coût nettoyage MAF :</strong> 15€ (spray MAF cleaner). <strong>Remplacement :</strong> 80–250€ selon le modèle.</div>
+</div>
+
+<div class="cause-block">
+  <div class="cause-num">03</div>
+  <div class="cause-title">Pression de carburant insuffisante</div>
+  <div class="cause-proba">Cause #3 — 15% des cas</div>
+  <div class="cause-desc">Pompe à essence usée, régulateur de pression défaillant, ou filtre à carburant colmaté réduisent le débit d'essence. L'ECU injecte au débit voulu mais la pression est insuffisante → mélange pauvre sous charge.</div>
+  <div class="cause-fix"><strong>Test :</strong> mesurer la pression rail (3,0–4,5 bar selon le moteur). Si LTFT augmente surtout sous charge et accélération → pression suspecte. <strong>Coût pompe :</strong> 80–300€.</div>
+</div>
+
+<div class="cause-block">
+  <div class="cause-num">04</div>
+  <div class="cause-title">Injecteurs encrassés ou sous-dosants</div>
+  <div class="cause-proba">Cause #4 — 10% des cas</div>
+  <div class="cause-desc">Des injecteurs partiellement obstrués délivrent moins de carburant que commandé. Si tous les injecteurs sont affectés → P0171 + P0174. Si un seul → ratés d'allumage sur ce cylindre.</div>
+  <div class="cause-fix"><strong>Test :</strong> nettoyage aux ultrasons ou additif nettoyant injecteurs. <strong>Nettoyage professionnel :</strong> 80–150€ pour 4 injecteurs.</div>
+</div>
+
+<div class="cause-block">
+  <div class="cause-num">05</div>
+  <div class="cause-title">Sonde lambda (O₂) défaillante</div>
+  <div class="cause-proba">Cause #5 — 7% des cas</div>
+  <div class="cause-desc">Une sonde lambda qui signale un mélange constamment riche pousse l'ECU à réduire l'injection → mélange réel pauvre. La sonde "ment" et l'ECU la croit.</div>
+  <div class="cause-fix"><strong>Test :</strong> observer la tension de la sonde lambda en live (doit osciller entre 0,1V et 0,9V). Signal figé → sonde HS. <strong>Coût :</strong> 50–200€.</div>
+</div>
+
+<div class="cause-block">
+  <div class="cause-num">06</div>
+  <div class="cause-title">Vanne EGR bloquée ouverte</div>
+  <div class="cause-proba">Cause #6 — 3% des cas</div>
+  <div class="cause-desc">La vanne EGR recircule les gaz d'échappement vers l'admission. Si elle reste ouverte au ralenti (encrassement), elle dilue le mélange → mélange pauvre apparent.</div>
+  <div class="cause-fix"><strong>Test :</strong> boucher temporairement l'EGR et voir si les LTFT s'améliorent. <strong>Nettoyage :</strong> 50–100€. <strong>Remplacement :</strong> 150–400€.</div>
+</div>
+
+<h2>Protocole de diagnostic OBD2 étape par étape</h2>
+
+<ol>
+  <li><strong>Lire les STFT et LTFT au ralenti ET à charge partielle</strong> — si LTFT &gt;+10% au ralenti → fuite d'air ou MAF. Si LTFT augmente surtout sous charge → pression carburant ou injecteurs.</li>
+  <li><strong>Observer le MAF en g/s</strong> — à 800 RPM, un 2.0L doit afficher ~2,5–4 g/s. Valeur anormalement basse → MAF sous-estime.</li>
+  <li><strong>Tester à l'arrêt avec bombe carburant</strong> — pulvériser sur les zones suspectes (collecteur, durites). Si le régime monte brièvement → fuite trouvée.</li>
+  <li><strong>Vérifier la pression carburant</strong> — avec un manomètre. Couper le contact : la pression doit tenir 30 minutes. Chute rapide → fuite interne ou pompe HS.</li>
+  <li><strong>Nettoyer le MAF</strong> — retirer le MAF, nettoyer le fil chaud avec du spray dédié. Remonter et vérifier les LTFT après 20 minutes de conduite.</li>
+</ol>
+
+<div class="warn-box">
+  <span style="font-size:20px">⚠️</span>
+  <div class="warn-txt"><strong>Ne pas effacer les codes avant le diagnostic.</strong> Les corrections LTFT mettent plusieurs cycles de conduite à se reconstruire. Si vous effacez les codes maintenant, vous perdez les données les plus précieuses pour identifier la cause.</div>
+</div>
+
+<h2>Tableau de diagnostic rapide</h2>
+<table>
+  <thead><tr><th>Symptôme OBD2</th><th>Cause probable</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr><td>LTFT &gt;+10% au ralenti, STFT varie beaucoup</td><td>Fuite d'air admission</td><td>Recherche fuite avec bombe</td></tr>
+    <tr><td>MAF &lt;2 g/s à 800 RPM (2.0L)</td><td>MAF encrassé ou HS</td><td>Nettoyer MAF, tester débranché</td></tr>
+    <tr><td>LTFT augmente sous charge, normal au ralenti</td><td>Pression carburant faible</td><td>Manomètre rail</td></tr>
+    <tr><td>P0171 seul (pas P0174) sur V6/V8</td><td>Fuite côté B1 uniquement</td><td>Chercher fuite sur B1</td></tr>
+    <tr><td>LTFT OK, sonde lambda figée à 0,45V</td><td>Sonde lambda HS</td><td>Remplacer sonde</td></tr>
+    <tr><td>LTFT OK au ralenti, ratés sur 1 cylindre</td><td>Injecteur bouchon</td><td>Nettoyage / remplacement injecteur</td></tr>
+  </tbody>
+</table>
+
+<h2>Coûts de réparation selon la cause</h2>
+<table>
+  <thead><tr><th>Réparation</th><th>DIY</th><th>Garagiste</th></tr></thead>
+  <tbody>
+    <tr><td>Remplacement joint collecteur</td><td>20–50€ (pièce)</td><td>150–400€ M.O. incluse</td></tr>
+    <tr><td>Nettoyage MAF</td><td>15€ (spray)</td><td>50–80€</td></tr>
+    <tr><td>Remplacement MAF</td><td>80–250€</td><td>200–400€</td></tr>
+    <tr><td>Pompe à essence</td><td>80–300€</td><td>250–500€</td></tr>
+    <tr><td>Nettoyage injecteurs</td><td>30€ (additif)</td><td>80–150€</td></tr>
+    <tr><td>Remplacement sonde lambda</td><td>50–150€</td><td>150–300€</td></tr>
+  </tbody>
+</table>
+
+<h2>Conclusion</h2>
+<p>P0171 et P0174 ensemble pointent presque toujours vers une fuite d'air ou un MAF défaillant. Avant de dépenser de l'argent chez le garagiste, passez 20 minutes avec un lecteur OBD2 à observer vos STFT et LTFT en live — les données vous diront exactement quelle piste suivre. Dylan de MecaIA peut analyser ces corrections en temps réel et vous guider vers la cause exacte.</p>
+</article>
+
+<section class="related">
+  <h2>Articles liés</h2>
+  <div class="related-grid">
+    <a href="/blog/code-p0420-catalyseur-diagnostic" class="rel-card"><h4>P0420 : Catalyseur sous seuil</h4><p>Diagnostic et options de réparation.</p></a>
+    <a href="/blog/code-p0300-rates-allumage" class="rel-card"><h4>P0300 : Ratés d'allumage</h4><p>Causes et solutions pas à pas.</p></a>
+    <a href="/blog/reinitialiser-voyant-moteur" class="rel-card"><h4>Réinitialiser le voyant moteur</h4><p>Méthodes légales et risques.</p></a>
+    <a href="/blog/acheter-voiture-occasion-verifications-obd2" class="rel-card"><h4>Vérifications VO avant achat</h4><p>5 checks OBD2 indispensables.</p></a>
+  </div>
+</section>
+</div>
+<footer><p>© 2026 MecaIA · <a href="/mentions-legales">Mentions légales</a> · <a href="/cgu">CGU</a> · <a href="/">Accueil</a></p></footer>
+</body>
+</html>
