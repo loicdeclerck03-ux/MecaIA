@@ -25,6 +25,26 @@ export const handler = async (event) => {
       case "start": {
         if (!vehicle_id || !session_type) return e400("vehicle_id + session_type requis");
         if (!DURATIONS[session_type]) return e400("session_type invalide");
+
+        // Ghost Inspector : verifier credits si non-abonne
+        if (session_type === "ghost_inspector") {
+          const GHOST_COST = 5;
+          const { data: udat } = await sb.from("users")
+            .select("credits, unlimited_until")
+            .eq("id", uid).single();
+          const now = new Date().toISOString();
+          const isUnlimited = udat?.unlimited_until && udat.unlimited_until > now;
+          const hasCredits = (udat?.credits || 0) >= GHOST_COST;
+          if (!isUnlimited && !hasCredits) {
+            return { statusCode:402, headers:{...CORS,"Content-Type":"application/json"},
+              body: JSON.stringify({ error:"credits_insuffisants", ghost_price_id:"price_1TnKusQ1QuRc9MT3CRIGvHb8", cost: GHOST_COST }) };
+          }
+          // Consommer credits si pas illimite
+          if (!isUnlimited) {
+            await sb.from("users").update({ credits: (udat.credits - GHOST_COST) }).eq("id", uid);
+          }
+        }
+
         const { data, error } = await sb.from("obd_sessions").insert({
           user_id:uid, vehicle_id, session_type, session_status:"active",
           target_duration_seconds:DURATIONS[session_type], elapsed_seconds:0,

@@ -80,6 +80,15 @@ const PACKAGES = {
   //   label        : "MecaIA Box — Boîtier OBD2 + 10 crédits · 39,99 €",
   // },
 
+  // ── GHOST INSPECTOR (one-shot inspection VO, €9.99) ─────────────────────────
+  "ghost_inspector": {
+    priceId      : "price_1TnKusQ1QuRc9MT3CRIGvHb8",
+    credits      : 5,
+    unlimitedDays: 0,
+    mode         : "payment",
+    label        : "Ghost Inspector — Rapport Inspection VO · 9,99 €",
+  },
+
   // ── ALIAS RÉTRO-COMPAT ────────────────────────────────────────────────────
   "monthly"   : null,   // → solo_monthly
   "20credits" : null,   // → standard

@@ -5282,6 +5282,18 @@ window.tmStart=async function(type){
   if(!tok){alert('Connexion requise');return;}
   const r=await fetch('/.netlify/functions/test_mode',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({action:'start',vehicle_id:vid,session_type:type})});
   const d=await r.json();
+  if(r.status===402){
+    // Ghost Inspector : pas assez de credits -> proposer achat
+    const ok=confirm('Ghost Inspector disponible pour 9,99 €.\nAcheter maintenant ?');
+    if(ok){
+      const sess=await window.sb.auth.getSession();
+      const tok=sess.data?.session?.access_token;
+      const cr=await fetch('/.netlify/functions/stripe_checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({package:'ghost_inspector',return_url:window.location.href+'?action=gi'})});
+      const cd=await cr.json();
+      if(cd.url) window.location.href=cd.url;
+    }
+    return;
+  }
   if(!r.ok){alert(d.error||'Erreur');return;}
   const t=window._tm;
   t.sid=d.session_id;t.type=type;t.target=d.target_seconds;t.elapsed=0;t.paused=false;t.snaps=0;
@@ -5354,6 +5366,16 @@ window.tmExportPDF=function(){
   doc.setFontSize(10);doc.text(doc.splitTextToSize(d.rapport,170),20,42);
   doc.save('mecaia-test-mode.pdf');
 };
+// Deep link ?action=gi -> Ghost Inspector auto
+(function(){
+  const p=new URLSearchParams(window.location.search);
+  if(p.get('action')==='gi'){
+    window.addEventListener('load',function(){
+      setTimeout(function(){ if(typeof window.tmStart==='function') window.tmStart('ghost_inspector'); },1200);
+    });
+  }
+})();
+
 window.tmReset=function(){
   window._tm={sid:null,type:null,target:0,elapsed:0,timer:null,paused:false,snaps:0};
   document.getElementById('tm-bar').style.display='';
