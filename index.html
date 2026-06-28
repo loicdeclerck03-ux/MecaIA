@@ -1128,6 +1128,48 @@ textarea{resize:vertical;min-height:70px}
 .l-stat-divider{width:1px;height:32px;background:rgba(255,255,255,.06)}
 /* ═════════════════════════════════════════════════════════════════════ */
 
+
+/* == TEST MODE HOLTER == */
+.tm-bar{background:rgba(232,160,0,.06);border:1px solid rgba(232,160,0,.18);border-radius:12px;padding:18px 20px;margin:14px 0}
+.tm-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase;margin-bottom:12px}
+.tm-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.tm-btn{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:10px;padding:13px 8px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text)}
+.tm-btn:hover{border-color:var(--acc);background:rgba(232,160,0,.07)}
+.tm-feat{border-color:rgba(232,160,0,.5)!important;background:rgba(232,160,0,.07)!important}
+.tm-pro{opacity:.6}
+.tm-dur{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:24px;color:var(--acc);display:block;line-height:1}
+.tm-lbl{font-size:11px;color:var(--muted);display:block;margin-top:4px}
+.tm-sub{font-size:10px;color:var(--acc);display:block;margin-top:3px;opacity:.8}
+.tm-sess{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:18px;margin:10px 0;display:none}
+.tm-sess.on{display:block}
+.tm-sess-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tm-sess-label{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.2px;color:var(--acc)}
+.tm-elapsed{font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--text)}
+.tm-prog-bar{height:5px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:14px;overflow:hidden}
+.tm-prog-fill{height:100%;background:var(--acc);border-radius:3px;transition:width .5s}
+.tm-pid-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.tm-pid{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:8px;padding:9px 11px}
+.tm-pid-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.tm-pid-val{font-family:'IBM Plex Mono',monospace;font-size:17px;color:var(--text)}
+.tm-pid-u{font-size:10px;color:var(--muted);margin-left:2px}
+.tm-snap-info{font-size:11px;color:var(--muted);margin-bottom:11px}
+.tm-acts{display:flex;gap:8px}
+.tm-btn-pause{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:8px;padding:7px 14px;color:var(--text);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif}
+.tm-btn-stop{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:7px 14px;color:#ef4444;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif}
+.tm-rapp{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:18px;margin:10px 0;display:none}
+.tm-rapp.on{display:block}
+.tm-rapp-hdr{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.2px;color:var(--acc);margin-bottom:10px}
+.tm-verdict{padding:9px 16px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;letter-spacing:.8px;display:inline-block;margin-bottom:12px}
+.vd-acheter{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#10b981}
+.vd-negocier{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:#f59e0b}
+.vd-refuser{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444}
+.vd-passe{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#10b981}
+.vd-attention{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:#f59e0b}
+.tm-rapp-txt{font-size:13px;color:var(--subtle);line-height:1.7;white-space:pre-wrap;max-height:280px;overflow-y:auto;border-top:1px solid var(--bd);padding-top:11px;margin-top:10px}
+.tm-rapp-acts{display:flex;gap:9px;margin-top:13px}
+.tm-btn-pdf{background:var(--acc);color:#060809;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px}
+.tm-btn-reset{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:8px;padding:8px 16px;color:var(--text);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif}
+
 </style>
 <script>
 // MecaIA Native Bridge — détection Electron/Capacitor
@@ -1748,6 +1790,40 @@ window.boxHandleConnect = window.boxHandleConnect || function() {};
     <div class="btxt">Crédits : <strong id="cd1">3</strong> · 1 crédit/utilisation · VIN gratuit</div>
     <button class="bbuy" onclick="openM('m-pay')">+ Acheter</button>
   </div>
+
+<div class="tm-bar" id="tm-bar">
+  <div class="tm-title">Test Mode &mdash; Holter automobile</div>
+  <div class="tm-btns">
+    <button class="tm-btn" onclick="window.tmStart('test_15min')"><span class="tm-dur">15 min</span><span class="tm-lbl">Post-r&eacute;paration</span></button>
+    <button class="tm-btn tm-feat" onclick="window.tmStart('ghost_inspector')"><span class="tm-dur">1 H</span><span class="tm-lbl">Bilan complet</span><span class="tm-sub">Ghost Inspector VO</span></button>
+    <button class="tm-btn tm-pro" onclick="window.tmStart('test_24h')"><span class="tm-dur">24 H</span><span class="tm-lbl">Pannes intermittentes</span><span class="tm-sub">Box requise</span></button>
+  </div>
+</div>
+<div class="tm-sess" id="tm-sess">
+  <div class="tm-sess-hdr"><span class="tm-sess-label" id="tm-sess-label">TEST EN COURS</span><span class="tm-elapsed" id="tm-elapsed">00:00</span></div>
+  <div class="tm-prog-bar"><div class="tm-prog-fill" id="tm-prog" style="width:0%"></div></div>
+  <div class="tm-pid-grid">
+    <div class="tm-pid"><div class="tm-pid-lbl">RPM</div><div class="tm-pid-val" id="tpid-rpm">--<span class="tm-pid-u">tr/min</span></div></div>
+    <div class="tm-pid"><div class="tm-pid-lbl">Eau</div><div class="tm-pid-val" id="tpid-cool">--<span class="tm-pid-u">&deg;C</span></div></div>
+    <div class="tm-pid"><div class="tm-pid-lbl">Batterie</div><div class="tm-pid-val" id="tpid-batt">--<span class="tm-pid-u">V</span></div></div>
+    <div class="tm-pid"><div class="tm-pid-lbl">Charge</div><div class="tm-pid-val" id="tpid-load">--<span class="tm-pid-u">%</span></div></div>
+  </div>
+  <div class="tm-snap-info" id="tm-snap-info">Snapshots : 0</div>
+  <div class="tm-acts">
+    <button class="tm-btn-pause" id="tm-pause-btn" onclick="window.tmPause()">Pause</button>
+    <button class="tm-btn-stop" onclick="window.tmStop()">Terminer</button>
+  </div>
+</div>
+<div class="tm-rapp" id="tm-rapp">
+  <div class="tm-rapp-hdr" id="tm-rapp-hdr">RAPPORT TEST MODE</div>
+  <div id="tm-verdict-wrap"></div>
+  <div class="tm-rapp-txt" id="tm-rapp-txt"></div>
+  <div class="tm-rapp-acts">
+    <button class="tm-btn-pdf" onclick="window.tmExportPDF()">PDF</button>
+    <button class="tm-btn-reset" onclick="window.tmReset()">Nouveau test</button>
+  </div>
+</div>
+
 
   <!-- Vehicle selector -->
   <div class="card" id="car-sel-box">
@@ -5195,6 +5271,99 @@ document.addEventListener('DOMContentLoaded', function() {
     if(b){b.style.display='flex';}
   }
 })();
+
+// == TEST MODE HOLTER ==
+window._tm={sid:null,type:null,target:0,elapsed:0,timer:null,paused:false,snaps:0};
+window.tmStart=async function(type){
+  const vid=window._selVehicle?.id||window._currentVehicle?.id||null;
+  if(!vid){alert('Selectionnez un vehicule');return;}
+  const sess=await window.sb.auth.getSession();
+  const tok=sess.data?.session?.access_token;
+  if(!tok){alert('Connexion requise');return;}
+  const r=await fetch('/.netlify/functions/test_mode',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({action:'start',vehicle_id:vid,session_type:type})});
+  const d=await r.json();
+  if(!r.ok){alert(d.error||'Erreur');return;}
+  const t=window._tm;
+  t.sid=d.session_id;t.type=type;t.target=d.target_seconds;t.elapsed=0;t.paused=false;t.snaps=0;
+  const LBL={test_15min:'TEST 15MIN',ghost_inspector:'GHOST INSPECTOR 1H',test_24h:'TEST 24H'};
+  document.getElementById('tm-sess-label').textContent=LBL[type]||'TEST EN COURS';
+  document.getElementById('tm-bar').style.display='none';
+  document.getElementById('tm-sess').classList.add('on');
+  document.getElementById('tm-rapp').classList.remove('on');
+  t.timer=setInterval(async()=>{
+    if(t.paused)return;
+    t.elapsed+=30;
+    window.tmUI(t);
+    const p=window.tmPIDs();
+    if(p){t.snaps++;await fetch('/.netlify/functions/test_mode',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({action:'snapshot',session_id:t.sid,snapshot_data:p})});}
+    if(t.elapsed>=t.target){clearInterval(t.timer);t.timer=null;window.tmStop();}
+  },30000);
+};
+window.tmPIDs=function(){
+  const g=(ids)=>{for(const id of ids){const el=document.getElementById(id);const v=parseFloat(el?.textContent||'');if(!isNaN(v))return v;}return null;};
+  const rpm=g(['live-rpm','vl-rpm']);const cool=g(['live-cool','vl-cool']);
+  const batt=g(['live-batt','vl-batt']);const load=g(['live-load','vl-load']);
+  if(!rpm&&!cool)return null;
+  const p={};
+  if(rpm)p.RPM=rpm;if(cool)p.COOLANT=cool;if(batt)p.BATTERY=batt;if(load)p.ENGINE_LOAD=load;
+  return p;
+};
+window.tmUI=function(t){
+  const pct=Math.min(100,Math.round((t.elapsed/t.target)*100));
+  const f=(s)=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  document.getElementById('tm-elapsed').textContent=f(t.elapsed)+' / '+f(t.target)+' ('+pct+'%)';
+  document.getElementById('tm-prog').style.width=pct+'%';
+  document.getElementById('tm-snap-info').textContent='Snapshots : '+t.snaps;
+};
+window.tmPause=async function(){
+  const t=window._tm;if(!t.sid)return;
+  const sess=await window.sb.auth.getSession();const tok=sess.data?.session?.access_token;
+  const a=t.paused?'resume':'pause';
+  await fetch('/.netlify/functions/test_mode',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({action:a,session_id:t.sid})});
+  t.paused=!t.paused;
+  document.getElementById('tm-pause-btn').textContent=t.paused?'Reprendre':'Pause';
+};
+window.tmStop=async function(){
+  const t=window._tm;
+  if(t.timer){clearInterval(t.timer);t.timer=null;}
+  if(!t.sid)return;
+  const sess=await window.sb.auth.getSession();const tok=sess.data?.session?.access_token;
+  document.getElementById('tm-sess-label').textContent='GENERATION RAPPORT...';
+  const r=await fetch('/.netlify/functions/test_mode',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({action:'complete',session_id:t.sid})});
+  const d=await r.json();
+  if(!r.ok){alert(d.error||'Erreur rapport');return;}
+  window.tmShowRapport(d.rapport,d.verdict,t.type);
+};
+window.tmShowRapport=function(rapport,verdict,type){
+  document.getElementById('tm-sess').classList.remove('on');
+  const el=document.getElementById('tm-rapp');el.classList.add('on');
+  const LBL={test_15min:'RAPPORT 15MIN',ghost_inspector:'RAPPORT GHOST INSPECTOR VO',test_24h:'RAPPORT 24H'};
+  document.getElementById('tm-rapp-hdr').textContent=LBL[type]||'RAPPORT TEST MODE';
+  const VCL={ACHETER:'vd-acheter',NEGOCIER:'vd-negocier',REFUSER:'vd-refuser',PASSE:'vd-passe',ATTENTION:'vd-attention'};
+  const vw=document.getElementById('tm-verdict-wrap');
+  vw.innerHTML=verdict?'<span class="tm-verdict '+(VCL[verdict]||'vd-passe')+'">'+verdict+'</span>':'';
+  document.getElementById('tm-rapp-txt').textContent=rapport;
+  window._tmLast={rapport,verdict,type};
+};
+window.tmExportPDF=function(){
+  const d=window._tmLast;if(!d)return;
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('MecaIA - Rapport Test Mode',20,20);
+  if(d.verdict){doc.setFontSize(13);doc.setFont('helvetica','normal');doc.text('Verdict : '+d.verdict,20,32);}
+  doc.setFontSize(10);doc.text(doc.splitTextToSize(d.rapport,170),20,42);
+  doc.save('mecaia-test-mode.pdf');
+};
+window.tmReset=function(){
+  window._tm={sid:null,type:null,target:0,elapsed:0,timer:null,paused:false,snaps:0};
+  document.getElementById('tm-bar').style.display='';
+  document.getElementById('tm-rapp').classList.remove('on');
+  document.getElementById('tm-sess').classList.remove('on');
+  document.getElementById('tm-prog').style.width='0%';
+  document.getElementById('tm-elapsed').textContent='00:00';
+};
+// == FIN TEST MODE ==
+
 </script>
 
 </body>
