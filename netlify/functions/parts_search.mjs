@@ -1,11 +1,11 @@
-// parts_search.mjs — Agent recherche pièces automobiles
+﻿// parts_search.mjs — Agent recherche pièces automobiles
 // Coût optimisé : Haiku + prompt court + réponse JSON max 600 tokens
 
 import Anthropic from "@anthropic-ai/sdk";
 import { json, preflight, getUser } from "../lib/auth.mjs";
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_KEY,
 });
 
 // Prompt système minimal — chaque mot coûte

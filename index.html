@@ -2906,6 +2906,18 @@ window.boxUpdateVehBadge=function(){var b=document.getElementById('box-veh-badge
 .beta-perk{background:rgba(232,160,0,.08);border:1px solid rgba(232,160,0,.2);border-radius:8px;padding:8px 14px;font-size:12px;color:#ccc}
 .beta-perk strong{color:#e8a000}
 </style>
+<script>
+// Guard: browser moderne requis (optional chaining ES2020)
+try{new Function("return null?.x")();}catch(e){
+  var b=document.body||document.documentElement;
+  if(b)b.innerHTML="<div style='font-family:sans-serif;text-align:center;padding:60px 20px;background:#060809;color:#eef4fa'><h1 style='color:#e8a000'>MecaIA</h1><p>Navigateur incompatible.</p><p>Utilisez Chrome 80+, Firefox 74+ ou Safari 13+</p><a href='https://www.google.com/chrome/' style='color:#e8a000'>Mettre à jour Chrome</a></div>";
+  throw new Error("Browser incompatible");
+}
+// Guard stub toast/showToast pour eviter ReferenceError avant chargement complet
+if(typeof window.toast==="undefined")window.toast=function(m,t){console.warn("[toast]",m);};
+if(typeof window.showToast==="undefined")window.showToast=function(m,t){console.warn("[showToast]",m);};
+</script>
+
 <div class="wrap"><div class="beta-banner">
 <div class="bb-badge">PHASE BETA — PLACES LIMITÉES</div>
 <h2>Rejoignez les 10 premiers beta testeurs</h2>
@@ -3047,7 +3059,7 @@ de:{
 }
 };
 
-function toast(m,t=''){const c=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+(t==='ok'?'ok':t==='er'?'er':'');el.textContent=m;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},2500);}
+window.toast=function toast(m,t){const c=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+(t==='ok'?'ok':t==='er'?'er':'');el.textContent=m;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},2500);}
 window.toast = toast;
 function ss(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
 

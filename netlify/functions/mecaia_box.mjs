@@ -453,7 +453,7 @@ Vehicule : ${vehicleStr}.${brand && brand !== "default" ? ` Marque : ${brand}.` 
 
 // ── BOUCLE AGENTIQUE ───────────────────────────────────────────────────────────
 async function runAgenticLoop({ messages, system, ctx, brand, vehicleMeta, signal, maxTurns = 12 }) {
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY });
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY || process.env.ANTHROPIC_KEY });
   let msgs = [...messages];
   let lastText = "";
   let tokens = 0;
