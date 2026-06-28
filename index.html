@@ -4633,15 +4633,27 @@ window.buyPack = async function (pkg) {
   if (r.ok && r.data && r.data.checkout_url) { window.location.href = r.data.checkout_url; }
   else { const msg = (r.data && r.data.error) || ('code ' + (r.status || '?')); toast('Erreur paiement: ' + msg, 'er'); }
 };
-(function () {
-  const p = new URLSearchParams(location.search); const sid = p.get('session_id');
-  if (!sid) return;
-  fetch('/.netlify/functions/stripe_verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: sid }) })
-    .then(r => r.json()).then(d => {
-      if (d && d.paid && window.toast) toast('✅ Paiement confirmé, crédits ajoutés !', 'ok');
-      let n = 0; const iv = setInterval(() => { n++; if (window.refreshCredits) refreshCredits(); if (n >= 4) clearInterval(iv); }, 1200);
-    }).catch(() => { if (window.refreshCredits) setTimeout(refreshCredits, 1500); });
-  try { var clean = location.origin + '/' + location.pathname.replace(/^\/+/, ''); history.replaceState(null, '', clean); } catch (e) { }
+(function(){
+  var p=new URLSearchParams(location.search);
+  var sid=p.get('session_id');
+  var isGI=p.get('action')==='gi';
+  if(!sid)return;
+  try{history.replaceState(null,'',location.origin+location.pathname);}catch(e){}
+  fetch('/.netlify/functions/stripe_verify',{method:'POST',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d&&d.paid&&window.toast)window.toast('✅ Paiement confirmé, crédits ajoutés !','ok');
+      var n=0;var iv=setInterval(function(){
+        n++;if(window.refreshCredits)refreshCredits();
+        if(n>=4)clearInterval(iv);
+      },800);
+      if(d&&d.paid&&isGI){
+        setTimeout(function(){
+          if(typeof window.tmStart==='function')window.tmStart('ghost_inspector');
+        },2000);
+      }
+    }).catch(function(){if(window.refreshCredits)setTimeout(refreshCredits,1500);});
 })();
 
 /* ===== DASHBOARD + PROMO ===== */
@@ -5300,9 +5312,9 @@ window.tmStart=async function(type){
     if(ok){
       const sess=await window.sb.auth.getSession();
       const tok=sess.data?.session?.access_token;
-      const cr=await fetch('/.netlify/functions/stripe_checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({package:'ghost_inspector',return_url:window.location.href+'?action=gi'})});
+      const cr=await fetch('/.netlify/functions/stripe_checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({package:'ghost_inspector'})});
       const cd=await cr.json();
-      if(cd.url) window.location.href=cd.url;
+      if(cd.checkout_url) window.location.href=cd.checkout_url;
     }
     return;
   }
@@ -5378,12 +5390,14 @@ window.tmExportPDF=function(){
   doc.setFontSize(10);doc.text(doc.splitTextToSize(d.rapport,170),20,42);
   doc.save('mecaia-test-mode.pdf');
 };
-// Deep link ?action=gi -> Ghost Inspector auto
+// Deep link ?action=gi -> Ghost Inspector auto (hors retour Stripe)
 (function(){
-  const p=new URLSearchParams(window.location.search);
-  if(p.get('action')==='gi'){
+  var p=new URLSearchParams(window.location.search);
+  var hasGI=p.get('action')==='gi';
+  var hasPayment=p.get('payment')==='success'; // retour Stripe gere par handler ci-dessus
+  if(hasGI&&!hasPayment){
     window.addEventListener('load',function(){
-      setTimeout(function(){ if(typeof window.tmStart==='function') window.tmStart('ghost_inspector'); },1200);
+      setTimeout(function(){if(typeof window.tmStart==='function')window.tmStart('ghost_inspector');},1500);
     });
   }
 })();

@@ -153,7 +153,9 @@ export const handler = async (event) => {
       mode      : pkg.mode,
       line_items: [{ price: pkg.priceId, quantity: 1 }],
       ...(discounts ? { discounts } : {}),
-      success_url: `${base}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: packageKey === "ghost_inspector"
+        ? `${base}?payment=success&session_id={CHECKOUT_SESSION_ID}&action=gi`
+        : `${base}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url : `${base}?payment=cancel`,
       metadata   : {
         user_id,
