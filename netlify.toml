@@ -1,4 +1,4 @@
-build]
+[build]
   publish = "."
   command = ""
   functions = "netlify/functions"
@@ -12,115 +12,14 @@ build]
 [functions.scheduled_ct_reminder]
   schedule = "0 8 * * *"
 
-# SEO Pages DTC
-[[redirects]]
-  from = "/codes/:code"
-  to = "/codes/:code.html"
-  status = 200
-  force = false
-
-# Alternative Carly
-[[redirects]]
-  from = "/alternative-carly"
-  to = "/alternative-carly.html"
-  status = 200
-  force = false
-# Page Beta
-[[redirects]]
-  from = "/beta"
-  to = "/beta.html"
-  status = 200
-  force = false
 [functions.scheduled_relance]
   schedule = "0 9 * * *"
 
-[[headers]]
-  for = "/.netlify/functions/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-# Comparatif OBD IA
-[[redirects]]
-  from = "/comparatif-obd-ia"
-  to = "/comparatif-obd-ia.html"
-  status = 200
-  force = false
-
 [functions.scheduled_onboarding]
   schedule = "0 9 * * *"
-# Diagnostic OBD2
-[[redirects]]
-  from = "/diagnostic-obd2"
-  to = "/diagnostic-obd2.html"
-  status = 200
-  force = false
-# Garages Pro B2B
-[[redirects]]
-  from = "/garages"
-  to = "/garages.html"
-  status = 200
-  force = false
-# Blog
-[[redirects]]
-  from = "/blog"
-  to = "/blog.html"
-  status = 200
-  force = false
-
-[[redirects]]
-  from = "/blog/:slug"
-  to = "/blog/:slug.html"
-  status = 200
-  force = false
-# MecaIA vs FIXD
-[[redirects]]
-  from = "/mecaia-vs-fixd"
-  to = "/mecaia-vs-fixd.html"
-  status = 200
-  force = false
-
-# Admin Dashboard
-[[redirects]]
-  from = "/admin"
-  to = "/admin.html"
-  status = 200
-  force = false
-
-# Nouveaux articles blog P0420 et P0300
-[[redirects]]
-  from = "/blog/code-p0420-catalyseur-diagnostic"
-  to = "/blog/code-p0420-catalyseur-diagnostic.html"
-  status = 200
-  force = false
-
-[[redirects]]
-  from = "/blog/code-p0300-rates-allumage"
-  to = "/blog/code-p0300-rates-allumage.html"
-  status = 200
-  force = false
 
 [functions.scheduled_newsletter_cold]
- schedule = "0 10 * * *"
-
-[[redirects]]
- from = "/blog/meilleur-scanner-obd2-2026"
- to = "/blog/meilleur-scanner-obd2-2026.html"
- status = 200
- force = false
-
-# Pages légales
-[[redirects]]
- from = "/mentions-legales"
- to = "/mentions-legales.html"
- status = 200
- force = false
-
-[[redirects]]
- from = "/cgu"
- to = "/cgu.html"
- status = 200
- force = false
+  schedule = "0 10 * * *"
 
 # ── Security headers — qualite Google / OWASP ──────────────────
 [[headers]]
@@ -132,6 +31,13 @@ build]
     X-XSS-Protection = "1; mode=block"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(self), usb=()"
     Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
 
 # ── Cache headers statiques ─────────────────────────────────────
 [[headers]]
@@ -149,3 +55,106 @@ build]
   [headers.values]
     Cache-Control = "public, max-age=86400"
     Content-Type = "application/manifest+json; charset=utf-8"
+
+# ── Redirects pages ─────────────────────────────────────────────
+[[redirects]]
+  from = "/codes/:code"
+  to = "/codes/:code.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/alternative-carly"
+  to = "/alternative-carly.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/beta"
+  to = "/beta.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/comparatif-obd-ia"
+  to = "/comparatif-obd-ia.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/diagnostic-obd2"
+  to = "/diagnostic-obd2.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/garages"
+  to = "/garages.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/blog/:slug"
+  to = "/blog/:slug.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/mecaia-vs-fixd"
+  to = "/mecaia-vs-fixd.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/blog/code-p0420-catalyseur-diagnostic"
+  to = "/blog/code-p0420-catalyseur-diagnostic.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/blog/code-p0300-rates-allumage"
+  to = "/blog/code-p0300-rates-allumage.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/blog/meilleur-scanner-obd2-2026"
+  to = "/blog/meilleur-scanner-obd2-2026.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/mentions-legales"
+  to = "/mentions-legales.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/cgu"
+  to = "/cgu.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/tarifs"
+  to = "/tarifs.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/ghost-inspector"
+  to = "/ghost-inspector.html"
+  status = 200
+  force = false
