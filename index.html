@@ -4286,6 +4286,15 @@ window.downloadApp=function(p){
   if(window.Capacitor){toast("Vous utilisez l'app mobile MecaIA !",'ok');return;}
   toast("Téléchargez l'app sur mecaiaauto.com",'ok');
 };
+window._refreshVehicleContext = async function() {
+  // Construit le contexte vehicule depuis selCar et le stocke en cache
+  // dylanTurn utilise selCar directement; ce cache sert de flag "contexte charge"
+  if (!window.selCar) return;
+  window._vehCtxCache = [
+    window.selCar.marque, window.selCar.modele, window.selCar.annee,
+    window.selCar.carbu, window.selCar.km ? window.selCar.km + ' km' : ''
+  ].filter(Boolean).join(' ');
+};
 window.dylanSend = async function () {
   // Refresh contexte vehicule si cache expiré
   if(window.selCar&&window.selCar.id&&!window._vehCtxCache){await window._refreshVehicleContext();}
@@ -4297,6 +4306,7 @@ window.dylanSend = async function () {
   await dylanTurn({ user_input: msg });
 
   if(window.dprgDone)window.dprgDone();
+};
 // ── MECAIA 3D TILT EFFECTS ──────────────────────────────────────────
 (function(){
   // 3D tilt sur les feat cards
