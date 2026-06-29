@@ -1,0 +1,2459 @@
+[
+  {
+    "id": 1,
+    "scenario_make": "Renault",
+    "scenario_model": "Clio IV",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "EGR",
+    "agent": "Marie Dupont",
+    "ok": false,
+    "ms": 10696,
+    "reply": "",
+    "eval": {
+      "score": 0,
+      "critiques": [
+        "Reponse vide ou trop courte"
+      ],
+      "forces": []
+    }
+  },
+  {
+    "id": 2,
+    "scenario_make": "Peugeot",
+    "scenario_model": "208",
+    "year": 2018,
+    "fuel": "essence",
+    "sys": "Catalyseur",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 7902,
+    "reply": "⚠️ Attention — tu me décris une Peugeot 208 1.2 PureTech 2018, mais je suis Dylan, spécialiste diesel. Je diagnostique les Renault Clio diesel. \n\n**Je ne peux pas te suivre correctement sur ce véhicule** : le PureTech essence a un fonctionnement moteur très différent (allumage commandé, pas d'EGR, pas de turbo classique). Mes méthodes et mes bases de données sont calibrées pour les Renault Clio diesel.\n\nPour un code P0420 sur 208 essence, tu as besoin d'un diagnosticien généraliste ou d'un expert Peugeot essence.\n\n**Si tu as une Clio diesel** avec le même code, reviens — je peux t'aider. Sinon, je te recommande un atelier multi-marques pour ce diagnostic.",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse detaillee",
+        "Conclusion orientee action"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "scenario_make": "Volkswagen",
+    "scenario_model": "Golf VII",
+    "year": 2015,
+    "fuel": "diesel",
+    "sys": "FAP",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3986,
+    "reply": "Pas de panique, c'est courant sur les diesels à kilométrage. Avant d'aller plus loin, j'ai besoin de savoir : **depuis combien de temps tu as ce code, et le moteur fonctionne-t-il normalement (puissance, consommation, fumée), ou tu constates aussi une perte de puissance ou une surconsommation ?**",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "scenario_make": "BMW",
+    "scenario_model": "Série 1 F20",
+    "year": 2014,
+    "fuel": "essence",
+    "sys": "Allumage",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4086,
+    "reply": "Pas de panique, les ratés d'allumage sont courants et généralement faciles à localiser. Avant de creuser, j'ai besoin de savoir : depuis combien de temps ça dure, et est-ce que c'est permanent (tout le temps) ou intermittent (par à-coups) ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "scenario_make": "Toyota",
+    "scenario_model": "Yaris III",
+    "year": 2017,
+    "fuel": "hybride",
+    "sys": "Systeme hybride",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4818,
+    "reply": "D'accord, j'ai bien noté : Toyota Yaris hybride 2017, voyant hybride + code P3000 + message batterie haute tension.\n\nLe P3000 sur une hybride pointe directement la batterie HT ou son circuit. Avant d'aller plus loin, une question importante : **le moteur démarre-t-il normalement et tourne, ou le système hybride refuse de s'allumer complètement ?**",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "scenario_make": "Ford",
+    "scenario_model": "Focus III",
+    "year": 2013,
+    "fuel": "essence",
+    "sys": "EVAP",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6834,
+    "reply": "Salut ! P0456, c'est une petite fuite du système EVAP — très courant, généralement bénin. Avant d'investiguer, je dois vérifier : **cette fuite, tu la vois/sens physiquement (odeur d'essence, trace humide près du réservoir ou moteur), ou c'est juste le voyant OBD qui s'allume ?**",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "scenario_make": "Opel",
+    "scenario_model": "Astra K",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "Injecteurs",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6072,
+    "reply": "P0201 sur un CDTI, c'est l'injecteur du cylindre 1 ou son circuit qui pose problème. Avant de toucher à l'injecteur lui-même (c'est invasif et cher), je dois vérifier le connecteur et le câblage — souvent c'est là que ça joue.\n\nQuel est l'état du connecteur de l'injecteur 1 (celui qui est collé directement sur l'injecteur) : il y a de l'oxydation, de l'humidité dedans, ou le verrouillage tient bien ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "scenario_make": "Citroën",
+    "scenario_model": "C3 III",
+    "year": 2018,
+    "fuel": "essence",
+    "sys": "Richesse",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6753,
+    "reply": "OK, P0171 + LTFT +12% c'est clair. Le moteur corrige en envoyant plus d'essence long terme, donc il essaie de compenser une fuite d'air ou un capteur qui lit mal l'air entrant.\n\nAvant d'investiguer : ce code apparaît au démarrage, à l'accélération, ou tu l'as en permanence depuis quand ?",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "scenario_make": "Fiat",
+    "scenario_model": "500X",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "Turbo",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6146,
+    "reply": "Pas de panique, c'est une panne courante sur les diesels à turbo. Le code P0299 te dit que la pression du turbo est trop faible — d'où la perte de puissance. Avant d'accuser le turbo lui-même (coûteux), je dois vérifier son système de commande.\n\nDeux questions rapides pour cibler :\n1. La perte de puissance est-elle **constante dès qu'on accélère**, ou seulement **par moments** (intermittente) ?\n2. As-tu entendu un **sifflement anormal du turbo**, des **claquements**, ou des **bruits de fuite d'air** depuis l'apparition du code ?",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "scenario_make": "Skoda",
+    "scenario_model": "Octavia III",
+    "year": 2015,
+    "fuel": "essence",
+    "sys": "Soupapes",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6345,
+    "reply": "Pas de panique — le P0011 sur un TSI à 134k km, c'est souvent une piste claire.\n\nLe cliquetis à froid est un bon indice. Juste pour affiner : est-ce que ce cliquetis **disparaît quelques secondes après le démarrage** (normal, typique calage), ou il **persiste** pendant que tu roules ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "scenario_make": "Mercedes",
+    "scenario_model": "Classe A W176",
+    "year": 2014,
+    "fuel": "diesel",
+    "sys": "SCR AdBlue",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 8089,
+    "reply": "Pas de panique, c'est un signal de ravitaillement en AdBlue, pas une panne moteur. Avant d'agir, j'ai besoin de savoir : depuis combien de temps tu as ce voyant, et est-ce que le niveau de réducteur dans le réservoir dédié est effectivement bas (ou tu ne peux pas vérifier) ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 12,
+    "scenario_make": "Audi",
+    "scenario_model": "A3 8V",
+    "year": 2016,
+    "fuel": "essence",
+    "sys": "Injection directe",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5924,
+    "reply": "Pas de panique, c'est courant sur les TFSI ! Une question pour bien cibler : ce problème est apparu d'un coup, ou progressivement sur les derniers kilomètres ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 13,
+    "scenario_make": "Hyundai",
+    "scenario_model": "i20",
+    "year": 2018,
+    "fuel": "essence",
+    "sys": "MAF",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6552,
+    "reply": "Pas de panique, c'est un code classique sur les i20 !  Le code P0101 pointe le débitmètre d'air (MAF), mais avant de le changer, j'ai besoin de savoir : cette consommation augmentée, tu l'as remarquée depuis combien de temps, et est-ce qu'elle est **constante** ou seulement sur certains trajets (ville, route, accélération) ?",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 14,
+    "scenario_make": "Kia",
+    "scenario_model": "Ceed III",
+    "year": 2019,
+    "fuel": "diesel",
+    "sys": "EGR",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6145,
+    "reply": "P0404 sur un diesel avec fumée noire à l'accélération, c'est un classique d'EGR colmatée ou de problème électrique. Avant de tester la vanne elle-même : la fumée noire apparaît-elle seulement en accélération forte, ou dès les premiers régimes ?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Action concrete recommandee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "scenario_make": "Seat",
+    "scenario_model": "Ibiza V",
+    "year": 2017,
+    "fuel": "essence",
+    "sys": "Lambda",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6144,
+    "reply": "Salut ! P0137 sur une TSI, c'est classique. Avant de creuser, je dois savoir : depuis combien de temps as-tu ce code ? Il s'affiche en permanence chaque fois que tu branches le diagnostic, ou il disparaît puis revient ?",
+    "eval": {
+      "score": 10,
+      "forces": [
+        "Conclusion orientee action"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 16,
+    "scenario_make": "Nissan",
+    "scenario_model": "Qashqai II",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "FAP + EGR",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 7666,
+    "reply": "Pas de panique, c'est un combo classique sur les diesels à kilométrage moyen. P2463 + P0401 ensemble = deux causes liées : FAP colmaté ET circuit EGR défaillant. Avant de te proposer des hypothèses, j'ai besoin de DEUX infos essentielles :\n\n1) Depuis combien de temps (jours/semaines) as-tu le message FAP plein et l'impossibilité de régénération ?\n\n2) As-tu un symptôme moteur visible (perte de puissance nette, fumée noire, surconsommation, ralenti instable) ou juste les codes ?",
+    "eval": {
+      "score": 60,
+      "forces": [
+        "Systeme correctement identifie",
+        "Hypotheses formulees",
+        "Estimation de cout fournie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 17,
+    "scenario_make": "Dacia",
+    "scenario_model": "Duster II",
+    "year": 2018,
+    "fuel": "essence",
+    "sys": "Allumage",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6342,
+    "reply": "P0304 sur un TCe, c'est classique et souvent facile à régler. Le tremblement au ralenti confirme qu'un cylindre ne tire pas. Avant d'aller plus loin : ce code est arrivé du jour au lendemain ou ça s'est dégradé progressivement ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 18,
+    "scenario_make": "Volvo",
+    "scenario_model": "V40",
+    "year": 2015,
+    "fuel": "diesel",
+    "sys": "Admission",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6955,
+    "reply": "P0234 sur diesel avec coupure puissance = protection anti-surcharge du turbo. Sur le V40 D2, c'est quasi systématiquement l'électrovanne de commande géométrie variable qui bloque ou l'actionneur qui ne répond plus.\n\nLe code seul suffit pour avancer. Avant de creuser, j'ai besoin de savoir : la coupure de puissance est-elle permanente (ça coupe à chaque démarrage/roulage), ou intermittente (par rafales, puis ça revient) ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "scenario_make": "Mini",
+    "scenario_model": "Cooper F56",
+    "year": 2016,
+    "fuel": "essence",
+    "sys": "EVAP",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6652,
+    "reply": "Pas de panique, le P0441 est courant sur les Mini et se règle généralement sans gros travaux. L'odeur d'essence légère que tu sens correspond bien au code.\n\nJuste une question pour affiner : **cette odeur de carburant, c'est surtout quand tu ouvres le réservoir, quand tu gares la voiture, ou tout le temps — même en roulant ?**",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "scenario_make": "Suzuki",
+    "scenario_model": "Vitara",
+    "year": 2017,
+    "fuel": "essence",
+    "sys": "Ralenti",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5774,
+    "reply": "D'accord, ça c'est clair. Le ralenti élevé est permanent depuis quand, ou ça apparaît dans des conditions particulières (froid, après démarrage, en roulage) ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "scenario_make": "Renault",
+    "scenario_model": "Megane IV",
+    "year": 2017,
+    "fuel": "diesel",
+    "sys": "Boite EDC",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6516,
+    "reply": "Pas de panique, le P0730 sur une EDC c'est classique et souvent pas grave. Avant de creuser, je dois savoir : ces à-coups, tu les sens **en toutes circonstances** (ville, autoroute, accélération, freinage) ou **seulement dans certains contextes** (par exemple juste au décollage, ou seulement quand tu appuies fort) ?",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "scenario_make": "Volkswagen",
+    "scenario_model": "Passat B8",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "DSG",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6546,
+    "reply": "Pas de panique, c'est courant sur les DSG7. Avant de creuser : ce choc en 2e apparaît à chaque passage ou seulement dans certaines conditions (par exemple au démarrage, ou plutôt à faible/haute température) ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "scenario_make": "BMW",
+    "scenario_model": "Série 5 F10",
+    "year": 2013,
+    "fuel": "diesel",
+    "sys": "BVA",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5981,
+    "reply": "Pas de panique, c'est courant sur les BMW auto à ce kilométrage. Avant de creuser plus loin : est-ce que ça patine/vibre dès que tu démarre en froid, ou seulement une fois que la boîte est chaude ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 24,
+    "scenario_make": "Peugeot",
+    "scenario_model": "308 II",
+    "year": 2015,
+    "fuel": "essence",
+    "sys": "EAT6",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6532,
+    "reply": "Pas de panique, le P0961 sur EAT6 pointe les solénoïdes de pression mais ce n'est pas automatiquement la panne complète.\n\nAvant d'aller plus loin : quand exactement la boîte se bloque en 3e — ça arrive dès le démarrage, ou seulement après quelques kilomètres (moteur froid vs chaud) ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "scenario_make": "Ford",
+    "scenario_model": "S-Max",
+    "year": 2015,
+    "fuel": "diesel",
+    "sys": "PowerShift",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 7763,
+    "reply": "P0751 sur PowerShift, c'est classique à ce kilométrage. Avant de conclure que le solénoïde A est HS, je dois éliminer une cause bien plus courante : l'huile de boîte surchauffée ou degradée qui provoque une perte de pression hydraulique et un blocage de la régulation en protection.\n\nQuand le patinage a commencé : progressivement (usure normale) ou brutalement après un événement (franchissement, remorquage, arrêt prolongé au ralenti par forte chaleur) ?",
+    "eval": {
+      "score": 60,
+      "forces": [
+        "Systeme correctement identifie",
+        "Hypotheses formulees",
+        "Estimation de cout fournie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "scenario_make": "Toyota",
+    "scenario_model": "Auris Hybrid",
+    "year": 2014,
+    "fuel": "hybride",
+    "sys": "CVT hybride",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 9353,
+    "reply": "⚠️ ATTENTION : Tu as écrit « Toyota Auris hybride 2014 » mais ma spécialité est configurée pour « Renault Clio diesel 2016 ». Je vais devoir te rediriger.\n\nJe suis Dylan, diagnosticien automobile — mais je suis spécialisé sur les véhicules diesel Renault. Ton Auris hybride Toyota est un système complètement différent (batterie de traction, moteurs électriques, gestion hybride) et sort de mon domaine d'expertise.\n\nPour un diagnostic fiable sur ta perte de puissance + mode EV HS avec code P3190, tu dois consulter :\n✓ Un atelier Toyota agréé (ils ont le diagnostic hybride)\n✓ Un expert en hybridation (batterie HV, contacteurs, moteur générateur)\n\nCe que je peux te dire : perte de puissance + mode EV perdu + P3190 sur hybride = généralement batterie de traction dégradée, défaut BMS (Battery Management System) ou problème contacteur haute tension — mais sans outillage hybride spécialisé, je ne peux pas te guider de façon fiable.\n\nDésolé de ne pas pouvoir t'aider sur ce coup ! 🔧",
+    "eval": {
+      "score": 50,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse detaillee",
+        "Conclusion orientee action"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "scenario_make": "Citroen",
+    "scenario_model": "DS5",
+    "year": 2013,
+    "fuel": "diesel",
+    "sys": "EAT8",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5239,
+    "reply": "Bienvenue, c'est un classique sur ces BlueHDi — capteur vitesse sortie boîte qui déconne. Avant de creuser : est-ce que le symptôme est **permanent** (depuis le démarrage, boîte toujours en défaut) ou **intermittent** (ça apparaît/disparaît en roulant) ?",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 28,
+    "scenario_make": "Opel",
+    "scenario_model": "Insignia B",
+    "year": 2017,
+    "fuel": "essence",
+    "sys": "Hydra-Matic",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5636,
+    "reply": "Pas de panique, c'est courant sur les Insignia à boîte auto ! Le P0706 pointe un souci du capteur de sélecteur (celui qui dit à la boîte où est le levier : P, R, N, D) ou son câblage.\n\nDeux questions rapides pour bien cibler :\n\n1️⃣ Quand tu mets les vitesses (P → R → N → D), est-ce que le lever se déplace NORMALEMENT, ou tu sens une résistance/blocage ?\n\n2️⃣ Est-ce que la boîte fonctionne (elle passe les vitesses), mais la position affichée à l'écran est fausse ou elle clignote ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 29,
+    "scenario_make": "Audi",
+    "scenario_model": "Q5 FY",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "Quattro S-tronic",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 7244,
+    "reply": "P0811 sur un Q5 TDI 2018, c'est classique et généralement l'embrayage qui commence à s'user. Avant de parler remplacement, j'ai besoin de préciser un truc : cette vibration au démarrage + le code, tu les as remarqués d'un coup ou c'est progressif depuis quelques semaines ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Action concrete recommandee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 30,
+    "scenario_make": "Mercedes",
+    "scenario_model": "Vito W447",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "722.9",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 7599,
+    "reply": "Pas de panique, c'est une panne courante sur 7G-Tronic usagée. Les deux codes ensemble pointent clairement vers la pression hydraulique. Avant d'aller plus loin : ces passages brutaux, c'est permanent depuis le démarrage, ou ça apparaît surtout en conduite dynamique / en montée ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "scenario_make": "BMW",
+    "scenario_model": "E46 320d",
+    "year": 2003,
+    "fuel": "diesel",
+    "sys": "Distribution",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6445,
+    "reply": "Pas de panique, c'est courant sur ces diesels. Le cliquetis au froid sans code, c'est généralement mécanique ou un calage d'injection. Avant d'aller plus loin : ce bruit, il vient du haut du moteur (sous le capot, zone culasse) ou du bas (carter, pompe) ?",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "scenario_make": "Volkswagen",
+    "scenario_model": "Polo VI",
+    "year": 2019,
+    "fuel": "essence",
+    "sys": "Freinage",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5939,
+    "reply": "Pas de panique, c'est courant sur les Polo ! Quelques précisions pour bien cibler : ce grincement, c'est un sifflement aigu ou plutôt un crissement/craquement métallique ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 33,
+    "scenario_make": "Renault",
+    "scenario_model": "Kangoo III",
+    "year": 2020,
+    "fuel": "diesel",
+    "sys": "Direction",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5848,
+    "reply": "D'accord, coup de barre sur chaussée dégradée avec craquement colonne — c'est à prendre au sérieux pour la sécurité. Une question importante : le craquement s'est produit **au moment du choc** (impact direct) ou **après** (en manœuvrant ensuite) ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "scenario_make": "Peugeot",
+    "scenario_model": "3008 II",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "Climatisation",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6434,
+    "reply": "Bon, le compresseur qui s'enclenche c'est une bonne nouvelle — ça veut dire l'électronique de commande marche. La clim souffle chaud : soit il y a une fuite de fluide frigorigène, soit le système de détente (détendeur ou tuyauterie) est bloqué, soit le fluide est absent.\n\nAvant d'aller plus loin : quand tu dis « air chaud », c'est de l'air à température ambiante (comme dehors) ou vraiment CHAUD (comme si le chauffage était allumé en même temps) ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "scenario_make": "Toyota",
+    "scenario_model": "RAV4 V",
+    "year": 2019,
+    "fuel": "hybride",
+    "sys": "Freinage regen",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5995,
+    "reply": "Pas de panique, c'est une question légitime sur hybride.\n\nCette vibration : elle survient UNIQUEMENT pendant la regen (ralentissement sans appui sur la pédale), ou tu la sens aussi quand tu appuies toi-même sur le frein en roulant normal ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "scenario_make": "Ford",
+    "scenario_model": "Fiesta VII",
+    "year": 2017,
+    "fuel": "essence",
+    "sys": "Suspension",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5703,
+    "reply": "Ce bruit sourd, c'est du genre frottement / grincement / claquement, ou plutôt une sorte de roulement / bourdonnement grave ? Et il disparaît quand tu roules tout droit, même à la même vitesse ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 37,
+    "scenario_make": "Citroen",
+    "scenario_model": "Berlingo III",
+    "year": 2019,
+    "fuel": "diesel",
+    "sys": "Embrayage",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 7131,
+    "reply": "Salut ! Situation claire. Deux symptômes ensemble : odeur de brûlé + pédale dure en effort. Avant de creuser, je dois savoir : **cette odeur de brûlé vient-elle de l'intérieur de l'habitacle (tu la sens dedans) ou du compartiment moteur/extérieur ?**",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 38,
+    "scenario_make": "Mercedes",
+    "scenario_model": "Sprinter W907",
+    "year": 2020,
+    "fuel": "diesel",
+    "sys": "Injection",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 7376,
+    "reply": "Salut ! Démarrage difficile au froid avec fumée blanche, c'est classique sur diesel. Quelques points rapides : **cette fumée blanche disparaît-elle après quelques secondes de roulage, ou elle persiste même une fois le moteur chaud ?**",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 39,
+    "scenario_make": "Nissan",
+    "scenario_model": "Leaf II",
+    "year": 2018,
+    "fuel": "electrique",
+    "sys": "Batterie VE",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6556,
+    "reply": "Pas de panique — à 45000 km sur une Leaf, une dégradation de batterie serait TRÈS anormale (elle en a pour 200000+ km). Avant de suspecter la batterie, je dois comprendre : cette perte d'autonomie, c'est depuis combien de temps tu l'observes, et est-ce que tu as changé ton style de conduite, les conditions météo, ou l'endroit où tu charges ?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Hypotheses formulees",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 40,
+    "scenario_make": "Honda",
+    "scenario_model": "CR-V V",
+    "year": 2019,
+    "fuel": "hybride",
+    "sys": "AWD hybride",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5804,
+    "reply": "Les vibrations à une vitesse bien précise c'est généralement roues/pneus ou freinage. Elles disparaissent en dessous et au-dessus de 110 km/h, c'est ça ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 41,
+    "scenario_make": "Skoda",
+    "scenario_model": "Fabia III",
+    "year": 2016,
+    "fuel": "essence",
+    "sys": "Direction",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5444,
+    "reply": "Compris. Le volant redevient normal après quelques secondes/minutes une fois que le moteur a chauffé, ou il reste dur même en roulant ?",
+    "eval": {
+      "score": 15,
+      "forces": [
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler",
+        "Reponse trop courte"
+      ]
+    }
+  },
+  {
+    "id": 42,
+    "scenario_make": "Seat",
+    "scenario_model": "Ateca",
+    "year": 2017,
+    "fuel": "diesel",
+    "sys": "4x4",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6037,
+    "reply": "D'accord, vibrations + accroche du 4×4 en virage lent — c'est une piste intéressante sur un 4Drive. Deux questions rapides : ces vibrations, c'est plutôt un tremblement dans le volant, dans la carrosserie, ou une saccade/blocage du train roulant ?",
+    "eval": {
+      "score": 5,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 43,
+    "scenario_make": "Dacia",
+    "scenario_model": "Logan MCV",
+    "year": 2015,
+    "fuel": "GPL",
+    "sys": "Carburation GPL",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6350,
+    "reply": "Pas de panique, c'est un problème assez courant sur GPL. Quelques questions rapides pour cibler :\n\n1️⃣ **Quand tu dis « passage en GPL difficile » — tu dois attendre combien de temps après le démarrage essence avant de basculer en GPL (normalement 30-40 sec) ?** Et tu le fais manuellement ou c'est automatique ?",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 44,
+    "scenario_make": "Hyundai",
+    "scenario_model": "Tucson III",
+    "year": 2019,
+    "fuel": "essence",
+    "sys": "Freinage",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5936,
+    "reply": "D'accord, frein mou — c'est une alerte importante. Avant de continuer : est-ce que tu vois du liquide qui fuit sous la voiture, ou tu remarques une odeur de brûlé quand tu freines ?",
+    "eval": {
+      "score": 35,
+      "forces": [
+        "Estimation de cout fournie",
+        "Urgence evaluee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique"
+      ]
+    }
+  },
+  {
+    "id": 45,
+    "scenario_make": "Kia",
+    "scenario_model": "Sportage IV",
+    "year": 2017,
+    "fuel": "diesel",
+    "sys": "Echappement",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6366,
+    "reply": "Pas de panique, c'est courant sur les diesel ! Le sifflement en décélération pointe généralement vers la suralimentation (turbo) ou le circuit d'échappement. Deux questions rapides pour affiner : **Ce sifflement, c'est permanent à chaque décélération, ou ça apparaît seulement dans certaines conditions (à froid, après un long trajet) ?**",
+    "eval": {
+      "score": 10,
+      "forces": [
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 46,
+    "scenario_make": "Volvo",
+    "scenario_model": "XC40",
+    "year": 2019,
+    "fuel": "essence",
+    "sys": "Turbo",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6223,
+    "reply": "Pas de panique — sur un turbo essence, un sifflement en forte accélération c'est très courant. Juste pour affiner le diagnostic : ce sifflement, tu le sens surtout en descendant de voiture après l'accélération, ou tu l'entends aussi pendant que tu appuies sur l'accélérateur ?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Conclusion orientee action"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 47,
+    "scenario_make": "Mini",
+    "scenario_model": "Countryman F60",
+    "year": 2017,
+    "fuel": "essence",
+    "sys": "VANOS",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6010,
+    "reply": "D'accord, grognement classique au démarrage diesel à froid. Deux questions rapides : ce bruit vient-il plutôt du haut du moteur (culasse/injecteurs) ou plutôt du bas (carter/vilebrequin), et as-tu noté une légère difficulté au démarrage ou juste le bruit ?",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 48,
+    "scenario_make": "Alfa Romeo",
+    "scenario_model": "Giulia",
+    "year": 2017,
+    "fuel": "diesel",
+    "sys": "Transmission",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5765,
+    "reply": "Vu. La vibration apparaît à quelle plage de vitesse exactement — c'est seulement entre 120 et 80 km/h, ou aussi avant/après ces vitesses ?",
+    "eval": {
+      "score": 0,
+      "forces": [],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler",
+        "Reponse trop courte"
+      ]
+    }
+  },
+  {
+    "id": 49,
+    "scenario_make": "Fiat",
+    "scenario_model": "Ducato IV",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "Freinage poids lourd",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5729,
+    "reply": "C'est une situation à prendre au sérieux. Avant de diagnostiquer, je dois confirmer : quand la pédale descend lentement sous pression constante, le freinage fonctionne encore (tu ralentis) ou tu n'as plus de freinage du tout ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 50,
+    "scenario_make": "Land Rover",
+    "scenario_model": "Discovery Sport",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "AWD",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 6283,
+    "reply": "Pas de panique, c'est un symptôme courant sur Discovery Sport.\n\nD'abord, petit point de clarification : le 4x4 reste ACTIVÉ en permanence (voyant allumé au tableau de bord), ou il est juste en MODE 4x4 auto/normal ? Et cet accrochage à la transmission — tu le sens comment exactement : une secousse brutale, une résistance, ou un bruit particulier lors des virages au parking ?",
+    "eval": {
+      "score": 10,
+      "forces": [
+        "Reponse detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — conducteur ne sait pas s il peut rouler"
+      ]
+    }
+  },
+  {
+    "id": 51,
+    "scenario_make": "Renault",
+    "scenario_model": "Zoe ZE50",
+    "year": 2020,
+    "fuel": "electrique",
+    "sys": "Chargeur embarque",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5180,
+    "reply": "📋 Renault Zoe ZE50 2020 — Huile AUCUNE (electrique) · distribution chaîne ✓ · pneus AV 2.2 / AR 2.1 bar\n\nBon, c'est un problème de charge AC bridée — classique sur Zoe. Avant de creuser : est-ce que ce bridage à 5kW est apparu d'un coup (après un trajet ou une charge normale), ou ça s'est dégradé progressivement ?",
+    "eval": {
+      "score": 5,
+      "forces": [
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 52,
+    "scenario_make": "Peugeot",
+    "scenario_model": "e-208",
+    "year": 2020,
+    "fuel": "electrique",
+    "sys": "Pompe chaleur",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4912,
+    "reply": "📋 Peugeot e-208 2020 — Huile 5W-30 PSA B71 2312 ACEA C2 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.1 / AR 2 bar\n\nPas de panique, c'est courant sur les électriques en hiver ! La pompe à chaleur e-2008 est un système clé pour économiser l'autonomie.\n\nQuand tu dis « pompe à chaleur non active selon écran » — l'écran affiche un message d'erreur précis (genre « défaut PAC », « mode dégradé ») ou juste que le symbole PAC est désactivé/grisé dans le menu climat ?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 53,
+    "scenario_make": "BMW",
+    "scenario_model": "330e G20",
+    "year": 2020,
+    "fuel": "hybride rechargeable",
+    "sys": "PHEV",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4085,
+    "reply": "📋 BMW 330e G20 2020 — distribution chaîne ✓\n\nBon, autonomie divisée par 3, c'est net. La charge complète est confirmée OK, donc la batterie accepte l'énergie.\n\nJe dois clarifier : cette baisse d'autonomie, c'est apparu d'un coup ou progressivement depuis quelques mois ?",
+    "eval": {
+      "score": 5,
+      "forces": [
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 54,
+    "scenario_make": "Volkswagen",
+    "scenario_model": "ID.3 Pro",
+    "year": 2021,
+    "fuel": "electrique",
+    "sys": "Pompe AC",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5830,
+    "reply": "📋 Volkswagen ID.3 Pro 2021 — Huile AUCUNE (electrique) · distribution chaîne ✓ · pneus AV 2.3 / AR 2.2 bar\n\n**Panne bien comprise** : clim qui s'arrête au-delà de 35°C extérieur + surchauffe onduleur relevée.\n\nC'est un scénario classique sur électrique en forte chaleur — l'onduleur doit gérer à la fois la propulsion et le circuit de clim, et la dissipation devient critique.\n\n**Première question cruciale** : quand la clim tombe en panne, est-ce qu'elle redémarre après 5-10 minutes d'arrêt (ou si tu coupe le moteur et relance), ou elle reste morte jusqu'au redémarrage complet ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Estimation de cout fournie",
+        "Urgence evaluee",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique"
+      ]
+    }
+  },
+  {
+    "id": 55,
+    "scenario_make": "Toyota",
+    "scenario_model": "Camry Hybrid",
+    "year": 2018,
+    "fuel": "hybride",
+    "sys": "ICE+electrique",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5011,
+    "reply": "📋 Toyota Camry Hybrid 2018 — Huile 0W-16 Toyota GF-6A · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.5 bar\n\nD'accord, mode EV bloqué sans code défaut — c'est classique sur les hybrides Toyota. Première question importante : **quand as-tu remarqué que le mode EV ne s'activait plus (depuis combien de temps, après un événement particulier, ou progressivement) ?**",
+    "eval": {
+      "score": 5,
+      "forces": [
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 56,
+    "scenario_make": "Audi",
+    "scenario_model": "A6 C8",
+    "year": 2019,
+    "fuel": "diesel mild hybrid",
+    "sys": "BSG 48V",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4717,
+    "reply": "📋 Audi A6 C8 2019 — distribution chaîne ✓\n\nD'accord, voyant système 48V allumé et l'arrêt-redémarrage auto est bloqué. C'est classique sur les mild hybrid Audi.\n\nAvant de parler batterie 48V : **as-tu reçu un code défaut (OBD) précis ?** Par exemple P0A7C, P0A7F ou autre référence qui s'affiche à la lecture ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 57,
+    "scenario_make": "Mercedes",
+    "scenario_model": "CLA W118",
+    "year": 2020,
+    "fuel": "essence",
+    "sys": "Start/stop",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5112,
+    "reply": "📋 Mercedes CLA W118 2020 — distribution chaîne ✓\n\nPas de panique, le start/stop qui lâche est courant ! J'ai besoin de préciser : **quand t'as remarqué que ça ne marchait plus, est-ce qu'il y avait un événement particulier — démarrage difficile, voyant batterie au tableau, ou ça s'est juste arrêté sans signe d'avertissement ?**",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 58,
+    "scenario_make": "Ford",
+    "scenario_model": "Kuga III PHEV",
+    "year": 2021,
+    "fuel": "hybride rechargeable",
+    "sys": "Rappel connu",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4199,
+    "reply": "📋 Ford Kuga III PHEV 2021 — Huile 5W-30 Ford WSS-M2C934-B1 ACEA C1 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.4 bar\n\nD'accord pour la charge qui s'arrête à 70%. C'est du 100% cible affiché avant, ou tu as jamais vu plus haut?\n\nEt une question importante : tu as un code défaut qui s'affiche (voyant batterie, HV, ou autre sur le tableau de bord)?",
+    "eval": {
+      "score": 5,
+      "forces": [
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 59,
+    "scenario_make": "Renault",
+    "scenario_model": "Megane III",
+    "year": 2012,
+    "fuel": "diesel",
+    "sys": "Alternateur",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4688,
+    "reply": "📋 Renault Megane III 2012 — Huile 5W-30 ACEA C3 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.2 / AR 2.1 bar\n\nParfait, je vois la situation : batterie qui ne se recharge plus. Avant de creuser, une question : tu as mesuré la tension **moteur éteint**, et c'est combien ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Action concrete recommandee",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 60,
+    "scenario_make": "Opel",
+    "scenario_model": "Mokka A",
+    "year": 2014,
+    "fuel": "essence",
+    "sys": "Centralisation",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4012,
+    "reply": "📋 Opel Mokka A 2014 — distribution chaîne ✓\n\nPas de panique, c'est courant ! Pile changée, c'est bien. Maintenant : **les portes se verrouillent-elles si tu appuies sur le bouton de verrouillage physique (celui sur la poignée de la portière conducteur) ?**",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 61,
+    "scenario_make": "Hyundai",
+    "scenario_model": "IONIQ Electric",
+    "year": 2019,
+    "fuel": "electrique",
+    "sys": "Recharge rapide",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4921,
+    "reply": "📋 Hyundai IONIQ Electric 2019 — distribution chaîne ✓\n\nD'accord, recharge DC bloquée à 30 kW, AC normal à 7.2 kW. C'est une vraie limite de charge rapide.\n\nQuand tu dis « bloquée à 30 kW » : c'est ce que affiche le chargeur public sur son écran, ou tu l'as diagnostiqué via l'OBD (Hyundai ou autre) ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 62,
+    "scenario_make": "Citroën",
+    "scenario_model": "C4 Picasso II",
+    "year": 2014,
+    "fuel": "diesel",
+    "sys": "Bougies",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4690,
+    "reply": "📋 Citroën C4 Picasso II 2014 — distribution chaîne ✓\n\nPas de panique, c'est classique sur les diesels à froid ! Petite correction d'abord : ta C4 est diesel BlueHDi, donc elle n'a pas de bougies d'allumage, mais des **bougies de préchauffage** qui chauffent la chambre avant le démarrage.\n\nMaintenant, quelques précisions pour bien diagnostiquer :\n**Quand tu dis « difficile à froid » : est-ce que le moteur refuse de tourner (démarreur qui tourne mais rien ne se passe), ou est-ce qu'il tourne mais très difficilement avant de s'allumer ?**",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 63,
+    "scenario_make": "Fiat",
+    "scenario_model": "Panda III",
+    "year": 2016,
+    "fuel": "GPL",
+    "sys": "Batterie 12V",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4908,
+    "reply": "📋 Fiat Panda III 2016 — Huile 5W-30 FIAT 9.55535-GS1 ACEA C3 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2 / AR 1.9 bar\n\nD'accord — situation classique d'absence totale d'électricité. Avant d'accuser la batterie, je vais te poser une seule question : **quand tu tournes la clé en position contact (avant la position démarrage), les voyants du tableau de bord s'allument-ils, même faiblement ?**",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 64,
+    "scenario_make": "Suzuki",
+    "scenario_model": "Swift V",
+    "year": 2018,
+    "fuel": "essence mild hybrid",
+    "sys": "ISG",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3789,
+    "reply": "📋 Suzuki Swift V 2018 — distribution chaîne ✓\n\nD'accord, l'ISG (start-stop mild hybrid) se désactive seul. Première question : quand cela arrive-t-il ? Au démarrage, en roulant à l'arrêt, ou aléatoirement pendant le trajet ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 65,
+    "scenario_make": "Land Rover",
+    "scenario_model": "Range Rover Evoque II",
+    "year": 2019,
+    "fuel": "hybride doux",
+    "sys": "MHEV 48V",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4497,
+    "reply": "📋 Land Rover Range Rover Evoque II 2019 — Huile 0W-20 Land Rover STJLR 03.5006 ACEA C5 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.6 / AR 2.5 bar\n\nEntendu. Batterie 48V défaut + freinage régénératif qui saccade en ville — c'est du classique sur ces MHEV. Avant d'avancer, une question : le voyant batterie est-il constant, ou il clignote/s'affiche par à-coups ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 66,
+    "scenario_make": "Volkswagen",
+    "scenario_model": "Touareg III",
+    "year": 2019,
+    "fuel": "diesel",
+    "sys": "SCR DEF",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3992,
+    "reply": "📋 Volkswagen Touareg III 2019 — distribution chaîne ✓\n\nCode P20EE : système SCR insuffisant avec AdBlue OK — c'est clair. Avant d'investiguer le catalyseur SCR, j'ai besoin de préciser : **ce code apparaît depuis combien de temps, et le voyant moteur reste allumé en permanence ou clignote-t-il par intermittence ?**",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 67,
+    "scenario_make": "BMW",
+    "scenario_model": "X5 G05",
+    "year": 2020,
+    "fuel": "diesel",
+    "sys": "DOC + FAP + SCR",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 8406,
+    "reply": "📋 BMW X5 G05 2020 — Huile 0W-20 BMW LL-17 FE+ ACEA C5 · vidange 30 000 km · distribution chaîne ✓ · pneus AV 2.8 / AR 2.8 bar\n\nD'accord, c'est une situation classique sur X5 diesel en usage urbain. Avant de creuser, j'ai besoin d'une info : tu as un ou plusieurs codes défaut OBD actifs en ce moment (P0401, P040F, codes DPF, codes SCR) ? Et le voyant moteur, il est constant ou intermittent ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 68,
+    "scenario_make": "Mercedes",
+    "scenario_model": "GLC W253",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "BlueTEC",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3766,
+    "reply": "📋 Mercedes GLC W253 2018 — distribution chaîne ✓\n\nCode P20BA confirmé — excellente info. Avant de pointer la pompe AdBlue, une question cruciale : le réservoir AdBlue est-il vide ou presque vide, ou tu sais qu'il y a du produit dedans ?",
+    "eval": {
+      "score": 5,
+      "forces": [
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 69,
+    "scenario_make": "Renault",
+    "scenario_model": "Trafic III",
+    "year": 2017,
+    "fuel": "diesel",
+    "sys": "EGR + FAP utilitaire",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4495,
+    "reply": "📋 Renault Trafic III 2017 — distribution chaîne ✓\n\nEGR + FAP défaillants ensemble, puissance limitée à 60% : c'est une piste très logique. Avant d'enquêter, une question essentielle : **as-tu des codes défaut OBD spécifiques (P0400, P0401, P040A, P0402, ou codes FAP comme P0471, P0472, P046A) ?** Cela m'indiquera si c'est une défaillance capteur (MAF/MAP colmatée), une restriction physique, ou un ordre de limp mode du calculateur.",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 70,
+    "scenario_make": "Audi",
+    "scenario_model": "A4 B9",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "EGR liquide",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5530,
+    "reply": "📋 Audi A4 B9 2016 — Huile 0W-30 VW 504 00 ACEA C3 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.5 bar\n\nD'accord, P0401 + surchauffe eau, ça c'est intéressant. Avant de parler vanne EGR haute pression : **le voyant eau/température s'allume au tableau ou tu constates juste que l'eau monte haut en roulant ?** Et c'est permanent ou ça vient par à-coups ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 71,
+    "scenario_make": "Peugeot",
+    "scenario_model": "Expert III",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "FAP utilitaire",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4375,
+    "reply": "📋 Peugeot Expert III 2018 — distribution chaîne ✓\n\nOK, FAP colmaté à 80% et regen impossible — c'est un classique sur ces Expert diesel. Avant d'agir, j'ai besoin de **confirmer** : tu as un **code défaut** affiché au tableau (type P0402, P0460, etc.) ou c'est juste l'info du compteur suie en diagnostic ?",
+    "eval": {
+      "score": 55,
+      "forces": [
+        "Systeme correctement identifie",
+        "Hypotheses formulees",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 72,
+    "scenario_make": "Toyota",
+    "scenario_model": "Land Cruiser 150",
+    "year": 2017,
+    "fuel": "diesel",
+    "sys": "DOC",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5649,
+    "reply": "📋 Toyota Land Cruiser 150 2017 — distribution chaîne ✓\n\nBien reçu, P2463 sur un tout-terrain à régime bas — classique. Avant d'aller au FAP, je dois vérifier deux choses critiques : **la régénération du filtre à particules fonctionne-t-elle normalement** (tu dois sentir une légère montée en température de l'échappement de temps en temps), et **as-tu d'autres symptômes** — perte de puissance, ralenti irrégulier, consommation anormale, ou juste le code P2463 seul ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Urgence evaluee",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout"
+      ]
+    }
+  },
+  {
+    "id": 73,
+    "scenario_make": "Citroen",
+    "scenario_model": "Jumper III",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "EGR utilitaire",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 11182,
+    "reply": "📋 Citroen Jumper III 2016 — distribution chaîne ✓\n\nD'accord, tableau classique sur ce diesel à haut kilométrage. EGR collée ouverte = suralimentation compromise + circuit admission encrassé. Avant de démonter, trois questions rapides pour affiner :\n\n**1) Avez-vous un code défaut OBD** (P0401, P0404, ou autre diagnostic ?) ou juste la perte de puissance constatée ?\n\n**2) Cette perte de puissance est-elle accompagnée de fumée noire visible à l'échappement** ou c'est juste une perte d'accélération ?",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 74,
+    "scenario_make": "Ford",
+    "scenario_model": "Transit Connect",
+    "year": 2019,
+    "fuel": "diesel",
+    "sys": "SCR",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4074,
+    "reply": "📋 Ford Transit Connect 2019 — distribution chaîne ✓\n\nParfait, cas classique sur EcoBlue. L'alarme AdBlue qui persiste alors que le réservoir est plein pointe généralement un capteur de niveau défaillant ou un problème de détection.\n\nQuand l'alarme a démarré (progressivement ou d'un coup ?), et est-ce que le compte à rebours des km affichés à l'écran a changé depuis l'apparition de l'alarme ?",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 75,
+    "scenario_make": "Volvo",
+    "scenario_model": "V60 II",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "FAP + DPF",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5125,
+    "reply": "📋 Volvo V60 II 2018 — Huile 0W-20 Volvo 31316244 ACEA C5 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.5 bar\n\nD'accord — FAP à 95%, régénération interrompue. Avant d'aller plus loin : **quel est le code défaut OBD affiché à l'écran (P20xx, P21xx, etc.) et quelle température ambiante faisait-il exactement quand la régénération s'est arrêtée ?**",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 76,
+    "scenario_make": "Skoda",
+    "scenario_model": "Superb III",
+    "year": 2019,
+    "fuel": "diesel",
+    "sys": "EGR haute pression",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4986,
+    "reply": "📋 Skoda Superb III 2019 — distribution chaîne ✓\n\nBon, le code P0401 + sifflement, c'est une piste EGR effectivement. Avant de creuser la vanne elle-même, je dois savoir : **ce sifflement est apparu brutalement ou ça s'est aggravé progressivement, et depuis combien de temps tu le remarques ?**",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 77,
+    "scenario_make": "Seat",
+    "scenario_model": "Leon III",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "EGR basse pression",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5420,
+    "reply": "📋 Seat Leon III 2016 — Huile 0W-20 VW 508 00 ACEA C5 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.4 / AR 2.3 bar\n\nP0401 + cliquetis à froid → excellent point de départ. Avant de creuser l'EGR BP : **ce cliquetis, il disparaît après 10-15 sec de fonctionnement ou il persiste?**",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 78,
+    "scenario_make": "Nissan",
+    "scenario_model": "NV200",
+    "year": 2015,
+    "fuel": "diesel",
+    "sys": "EGR + refroidisseur",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5451,
+    "reply": "📋 Nissan NV200 2015 — distribution chaîne ✓\n\nParfait, j'ai bien noté : **EGR + refroidisseur EGR signalés en défaut**, consommation d'eau imperceptible. Ça réduit déjà beaucoup les pistes.\n\nJuste une question pour affiner : **As-tu un code OBD exact** (P0400, P0401, P0402... ou autre) affiché sur ta valise, ou c'est juste le témoin moteur qui s'est allumé sans lire le code ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 79,
+    "scenario_make": "Dacia",
+    "scenario_model": "Sandero II",
+    "year": 2017,
+    "fuel": "diesel",
+    "sys": "FAP sans additif",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3865,
+    "reply": "📋 Dacia Sandero II 2017 — Huile 5W-30 ACEA C3 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2 / AR 2 bar\n\nParfait, je comprends : FAP à 85% sans système Eolys, c'est serré. Avant de parler régénération, une question importante : **ton moteur a-t-il perdu de la puissance, consomme-t-il plus, ou tu as juste reçu l'alerte FAP sur le diagnostic ?**",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 80,
+    "scenario_make": "Mitsubishi",
+    "scenario_model": "Outlander PHEV",
+    "year": 2019,
+    "fuel": "hybride rechargeable",
+    "sys": "PHEV + FAP",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4711,
+    "reply": "📋 Mitsubishi Outlander PHEV 2019 — Huile 5W-30 Mitsubishi API SN ACEA C3 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.6 / AR 2.5 bar\n\nD'accord, j'ai bien noté : FAP saturé en mode électrique pur ET moteur thermique qui reste froid. Ça fait deux symptômes liés en réalité.\n\nQuand tu dis « moteur jamais chaud » : tu remarques que le thermostat ou le compteur de température reste bloqué en bas, même après 20-30 min de roulage normal (pas seulement en électrique) ?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 81,
+    "scenario_make": "Renault",
+    "scenario_model": "Espace V",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "ABS+ESP",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4498,
+    "reply": "📋 Renault Espace V 2016 — distribution chaîne ✓\n\nBien reçu — code C1201 + pression frein insuffisante + ESP qui se coupe, c'est une signature classique de problème hydraulique ABS.\n\nD'abord : **quand ce code/symptôme est-il apparu** — brutalement ou progressivement (et y a-t-il eu une tentative de freinage anormal, vibrations à la pédale, ou réservoir bas avant) ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 82,
+    "scenario_make": "BMW",
+    "scenario_model": "Série 3 G20",
+    "year": 2020,
+    "fuel": "essence",
+    "sys": "Frein de parc electricite",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3889,
+    "reply": "📋 BMW Série 3 G20 2020 — distribution chaîne ✓\n\nTu dis que le frein ne se desserre pas au démarrage — est-ce qu'il reste bloqué complètement (la voiture ne bouge pas du tout) ou il y a une légère résistance mais le moteur fait bouger la voiture quand même ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 83,
+    "scenario_make": "Mercedes",
+    "scenario_model": "Viano W639",
+    "year": 2013,
+    "fuel": "diesel",
+    "sys": "ESP",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 5491,
+    "reply": "📋 Mercedes Viano W639 2013 — distribution chaîne ✓\n\nESP désactivé en permanence avec voyant allumé et plusieurs défauts capteurs : c'est classique sur Viano à ce kilométrage. Avant de chercher, j'ai besoin de savoir : **as-tu accès aux codes défauts du calculateur ESP (via valise de diagnostic ou chez un garagiste) — notamment lesquels ?** Les codes me diront exactement quel(s) capteur(s) pose(nt) problème (capteur vitesse roue ABS, capteur lacet, capteur accélération latérale, etc.).",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 84,
+    "scenario_make": "Volkswagen",
+    "scenario_model": "Sharan II",
+    "year": 2015,
+    "fuel": "diesel",
+    "sys": "ABS",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4380,
+    "reply": "📋 Volkswagen Sharan II 2015 — distribution chaîne ✓\n\nD'accord, ça c'est clairement anormal : l'ABS ne doit se déclencher que si tu freines trop fort ET que les roues risquent de patiner. Sur route sèche à 30 km/h, il n'y a aucune raison.\n\nDeux questions rapides pour préciser :\n\n1. Le déclenchement de l'ABS arrive-t-il UNIQUEMENT quand tu freines, ou aussi sans freiner (juste en roulant) ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Urgence evaluee",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout"
+      ]
+    }
+  },
+  {
+    "id": 85,
+    "scenario_make": "Audi",
+    "scenario_model": "Q7 4M",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "Freinage pneumatique",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4963,
+    "reply": "📋 Audi Q7 4M 2016 — distribution chaîne ✓\n\nParfait, je comprends bien : suspensions pneumatiques qui s'affaissent à l'arrêt, et le compresseur s'active régulièrement au démarrage à froid. C'est classique sur les Q7 avec suspension pneumatique.\n\nDeux questions rapides pour bien cibler :\n\n**1) Combien de temps la suspension met-elle à baisser complètement après avoir coupé le moteur — quelques minutes, une demi-heure, ou plusieurs heures ?**\n\n2) Le compresseur s'active uniquement au démarrage froid, ou aussi à chaud quand tu roules ?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 86,
+    "scenario_make": "Peugeot",
+    "scenario_model": "2008 II",
+    "year": 2020,
+    "fuel": "electrique",
+    "sys": "Frein regen",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4619,
+    "reply": "📋 Peugeot 2008 II 2020 — Huile 5W-30 PSA B71 2312 ACEA C2 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.3 / AR 2.2 bar\n\nD'accord, freinage régénératif qui coupe à vitesse modérée + batterie froide — c'est une protection logicielle classique sur les électriques. Avant de creuser, je dois savoir : **quand ça s'est produit pour la première fois, c'était dehors par quel type de température (disons 0°C, -10°C, ou plus tiède) ?**",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 87,
+    "scenario_make": "Ford",
+    "scenario_model": "Mondeo V",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "Correcteur frein",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4291,
+    "reply": "📋 Ford Mondeo V 2016 — Huile 5W-30 Ford WSS-M2C934-B ACEA C1 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.5 bar\n\nTireur à droite au freinage : c'est classique et presque jamais la géométrie du circuit hydraulique — c'est presque toujours soit une roue (plaquettes usées, étrier bloqué, tambour gonflé), soit un capteur de freinage qui panique.\n\nQuand ce phénomène a-t-il commencé : d'un coup ou progressivement?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 88,
+    "scenario_make": "Toyota",
+    "scenario_model": "Hilux VIII",
+    "year": 2019,
+    "fuel": "diesel",
+    "sys": "Freinage 4x4",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3894,
+    "reply": "📋 Toyota Hilux VIII 2019 — distribution chaîne ✓\n\nOK, blocage de différentiel qui engage mal + voyant qui clignote — c'est un problème d'actionnement ou de détection. Avant de creuser : tu as vu quel voyant clignote exactement (tableau de bord) ? Et le blocage refuse complètement de s'engager, ou il engage mais mal/incomplet ?",
+    "eval": {
+      "score": 5,
+      "forces": [
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 89,
+    "scenario_make": "Hyundai",
+    "scenario_model": "Santa Fe IV",
+    "year": 2019,
+    "fuel": "diesel",
+    "sys": "AEB",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4404,
+    "reply": "📋 Hyundai Santa Fe IV 2019 — distribution chaîne ✓\n\nFreinage autonome d'urgence (AEB) qui se déclenche intempestivement en ville — c'est un symptôme classique mais qu'il faut investiguer vite car ça crée un danger (freinage brutal imprévu).\n\nQuand ça se produit exactement : c'est à l'arrêt total, en roulant lentement (parkings, bouchons), ou à vitesse normale ? Et ça déclenche le frein seul ou il y a aussi des bips d'alerte avant ?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Urgence evaluee",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout"
+      ]
+    }
+  },
+  {
+    "id": 90,
+    "scenario_make": "Volvo",
+    "scenario_model": "XC90 II",
+    "year": 2016,
+    "fuel": "diesel",
+    "sys": "City Safety",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4405,
+    "reply": "📋 Volvo XC90 II 2016 — Huile 0W-20 Volvo 31316244 ACEA C5 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.8 / AR 2.7 bar\n\nD'accord, je vois deux symptômes liés : City Safety désactivé + message pare-brise sale faux. C'est presque toujours la **caméra avant** qui pose problème — elle lit la saleté du pare-brise ET gère City Safety.\n\nQue se passe-t-il exactement quand tu mets la clé : est-ce que City Safety redevient actif après quelques secondes, ou il reste bloqué désactivé jusqu'à l'arrêt du moteur ?",
+    "eval": {
+      "score": 45,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 91,
+    "scenario_make": "Renault",
+    "scenario_model": "Megane III RS",
+    "year": 2013,
+    "fuel": "essence",
+    "sys": "Refroidissement sport",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4400,
+    "reply": "📋 Renault Megane III RS 2013 — Huile 5W-30 ACEA C3 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.2 / AR 2.1 bar\n\nD'accord, température qui grimpe à chaud sous charge circuit et pompe eau confirmée OK. C'est un classique sur ces RS poussées.\n\nQuand tu dis « température grimpe », le ventilo refroidissement s'enclenche normalement, ou il reste silencieux ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 92,
+    "scenario_make": "BMW",
+    "scenario_model": "M3 F80",
+    "year": 2015,
+    "fuel": "essence",
+    "sys": "Refroidissement charge",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4516,
+    "reply": "📋 BMW M3 F80 2015 — distribution chaîne ✓\n\nD'accord, ça c'est un symptôme classique de turbo sur piste. La température de l'air admission monte = le radiateur intercooler (eau ou air) ne refroidit plus assez.\n\nPremière question : est-ce que la puissance revient progressivement après quelques secondes, ou elle reste coupée jusqu'à l'arrêt de la piste ?",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 93,
+    "scenario_make": "Ford",
+    "scenario_model": "Focus RS MK3",
+    "year": 2016,
+    "fuel": "essence",
+    "sys": "Diff actif GKN",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3990,
+    "reply": "📋 Ford Focus RS MK3 2016 — Huile 5W-30 Ford WSS-M2C934-B ACEA C1 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.4 / AR 2.3 bar\n\nD'accord, surchauffe embrayage + différentiel arrière en conduite sportive — c'est une signature RS classique mais il faut être précis.\n\nQuel est exactement le **message de défaut** affiché sur le tableau de bord (code défaut OBD si tu l'as, ou description exacte du message) ?",
+    "eval": {
+      "score": 30,
+      "forces": [
+        "Systeme correctement identifie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 94,
+    "scenario_make": "Volkswagen",
+    "scenario_model": "T6 Multivan",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "Circuit chauffage",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3285,
+    "reply": "📋 Volkswagen T6 Multivan 2018 — distribution chaîne ✓\n\nParfait, j'ai bien saisi : chauffage froid côté passager (droite) uniquement, côté conducteur (gauche) OK.\n\nC'est permanent depuis quand, ou intermittent ?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 95,
+    "scenario_make": "Citroën",
+    "scenario_model": "SpaceTourer",
+    "year": 2017,
+    "fuel": "diesel",
+    "sys": "Climatisation diesel",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3796,
+    "reply": "📋 Citroën SpaceTourer 2017 — distribution chaîne ✓\n\nD'accord, clim très froide avant et tiède arrière sur la 3e rangée — problème de distribution du froid typique sur les monospaces.\n\nQuand tu dis « tiède » à l'arrière : l'air soufflé est juste moins froid qu'avant, ou carrément chaud/ambient ?",
+    "eval": {
+      "score": 5,
+      "forces": [
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Pas d estimation de cout",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 96,
+    "scenario_make": "Mercedes",
+    "scenario_model": "Classe E W213",
+    "year": 2016,
+    "fuel": "essence",
+    "sys": "AIRMATIC",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4591,
+    "reply": "📋 Mercedes Classe E W213 2016 — distribution chaîne ✓\n\nBon — le compresseur tourne, c'est déjà ça. Le mode urgence signifie que le calculateur AIRMATIC a détecté une chute de pression ou une fuite et a fermé le circuit pour te laisser rouler sans casser la suspension.\n\nQuand as-tu vu le message pour la première fois — depuis combien de temps ça dure, et la voiture roule-t-elle normalement (à part la rigidité) ?",
+    "eval": {
+      "score": 60,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Urgence evaluee",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique"
+      ]
+    }
+  },
+  {
+    "id": 97,
+    "scenario_make": "Audi",
+    "scenario_model": "A8 D5",
+    "year": 2018,
+    "fuel": "diesel",
+    "sys": "48V PHEV suspension",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3775,
+    "reply": "📋 Audi A8 D5 2018 — distribution chaîne ✓\n\nD'accord, suspension active qui ne compense plus. C'est le système eAWS (direction active arrière) ou la suspension pneumatique/électronique qui ne monte/descend plus?\n\nQuand tu dis « ne compense plus », c'est quoi précisément : la voiture penche dans les virages alors qu'avant elle restait plate, ou la hauteur de caisse change toute seule sans raison?",
+    "eval": {
+      "score": 40,
+      "forces": [
+        "Systeme correctement identifie",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 98,
+    "scenario_make": "Porsche",
+    "scenario_model": "Cayenne III",
+    "year": 2019,
+    "fuel": "essence",
+    "sys": "Refroidissement V6",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3989,
+    "reply": "📋 Porsche Cayenne III 2019 — distribution chaîne ✓\n\nD'accord, fuite eau après arrêt moteur chaud — très classique. Deux questions pour affiner :\n\n**Où exactement vois-tu couler ?** (sous le moteur côté avant, près de la roue avant, sous le réservoir, arrière moteur... sois précis si possible)",
+    "eval": {
+      "score": 35,
+      "forces": [
+        "Hypotheses formulees",
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 99,
+    "scenario_make": "Land Rover",
+    "scenario_model": "Defender L663",
+    "year": 2021,
+    "fuel": "diesel",
+    "sys": "Refroidissement mild hybrid",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 3897,
+    "reply": "📋 Land Rover Defender L663 2021 — distribution chaîne ✓\n\nD'accord, ventilateurs au maximum au ralenti mais température stable — c'est un fonctionnement anormal. Avant de creuser, j'ai besoin de savoir : depuis combien de temps ça fait ça, et ça arrive à chaque démarrage ou seulement après avoir roulé ?",
+    "eval": {
+      "score": 20,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse de longueur correcte"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  },
+  {
+    "id": 100,
+    "scenario_make": "Tesla",
+    "scenario_model": "Model 3 LR",
+    "year": 2021,
+    "fuel": "electrique",
+    "sys": "Thermique batterie",
+    "agent": "Marie Dupont",
+    "ok": true,
+    "ms": 4705,
+    "reply": "📋 Tesla Model 3 LR 2021 — Huile AUCUNE (electrique) · distribution chaîne ✓ · pneus AV 2.9 / AR 2.9 bar\n\nPas de panique — le préconditionnement c'est un système intelligente, et ça peut être logiciel ou matériel. Je vais te poser juste une question précise pour bien comprendre :\n\nQuand tu demandes le préconditionnement (via l'appli Tesla ou l'écran tactile avant une recharge rapide), est-ce que tu vois un message d'erreur spécifique, ou simplement rien ne se passe (pas de bruit de pompe, pas de changement sur l'écran d'énergie) ?",
+    "eval": {
+      "score": 25,
+      "forces": [
+        "Estimation de cout fournie",
+        "Reponse complete et detaillee"
+      ],
+      "critiques": [
+        "Systeme en cause non mentionne",
+        "Aucune hypothese causale",
+        "Pas d action concrete — trop theorique",
+        "Urgence non evaluee — peut-on rouler ?"
+      ]
+    }
+  }
+]

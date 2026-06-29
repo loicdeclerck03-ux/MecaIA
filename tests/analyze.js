@@ -1,0 +1,14 @@
+const r = require('./battery_results.json');
+const scores = r.map(x => (x.eval && x.eval.score) || 0);
+const avg = (scores.reduce(function(a,b){return a+b},0)/scores.length).toFixed(1);
+const pass = scores.filter(function(s){return s>=70}).length;
+const warn = scores.filter(function(s){return s>=50&&s<70}).length;
+const fail = scores.filter(function(s){return s<50}).length;
+const noRep = r.filter(function(x){return !x.reply||x.reply.length<10}).length;
+console.log('Total:', r.length);
+console.log('Moyenne:', avg + '/100');
+console.log('Pass >=70:', pass, 'Warn 50-69:', warn, 'Fail <50:', fail);
+console.log('Sans reponse:', noRep);
+const best = r.slice().sort(function(a,b){return ((b.eval&&b.eval.score)||0)-((a.eval&&a.eval.score)||0)})[0];
+console.log('Meilleur test:', best.id, best.scenario_make, best.sys, (best.eval&&best.eval.score)||0);
+console.log(best.reply ? best.reply.slice(0,300) : 'vide');

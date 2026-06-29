@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>MecaIA — 110 Résultats Battery Test</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#060809;color:#eef4fa;font-size:12px}
+.hero{background:linear-gradient(135deg,#0d1520,#060809);padding:32px 24px 24px;text-align:center;border-bottom:1px solid #1a2430}
+.logo{font-size:24px;font-weight:700;letter-spacing:4px}.logo span{color:#e8a000}
+.hero h1{font-size:15px;color:#8899a6;margin:6px 0 18px}
+.kpis{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.kpi{background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:12px 18px;text-align:center;min-width:100px}
+.kpi .v{font-size:26px;font-weight:700;color:#e8a000}.kpi .l{font-size:10px;color:#6b7f96;margin-top:2px}
+.kpi.g .v{color:#4caf50}.kpi.r .v{color:#ef4444}.kpi.y .v{color:#e8a000}
+.wrap{max-width:1500px;margin:0 auto;padding:24px 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.card{background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:16px 18px}
+.card h2{font-size:12px;font-weight:600;color:#e8a000;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #1a2430}
+.crit-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #0a0f14;font-size:12px;color:#b0bec5}
+.crit-row:last-child{border:none}
+.crit-n{background:#1a0505;color:#ef4444;border-radius:4px;padding:2px 6px;font-weight:700;font-size:11px;min-width:28px;text-align:center}
+.force-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #0a0f14;font-size:12px;color:#b0bec5}
+.force-row:last-child{border:none}
+.force-n{background:#0a2a0a;color:#4caf50;border-radius:4px;padding:2px 6px;font-weight:700;font-size:11px;min-width:28px;text-align:center}
+.fuel-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #0a0f14;font-size:12px}
+.fuel-row:last-child{border:none}
+.bar-wrap{width:120px;height:8px;background:#1a2430;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.insight{background:#0d1a2d;border-left:3px solid #e8a000;padding:12px 14px;margin-bottom:10px;border-radius:0 8px 8px 0;font-size:12px;color:#b0bec5}
+.insight strong{color:#e8a000;display:block;margin-bottom:4px}
+.section-title{font-size:13px;font-weight:600;color:#e8a000;text-transform:uppercase;letter-spacing:1px;margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid #1a2430}
+table{width:100%;border-collapse:collapse}
+th{background:#060809;color:#6b7f96;font-size:10px;font-weight:600;text-transform:uppercase;padding:8px 6px;text-align:left;border-bottom:1px solid #1a2430;position:sticky;top:0;z-index:1}
+td{padding:6px;border-bottom:1px solid #0a0f14;vertical-align:top}
+.num{color:#4a5568;text-align:center;font-family:monospace;min-width:36px}
+.ms{color:#4a5568;font-family:monospace;font-size:10px}
+.muted{color:#4a5568}
+.reply{color:#8899a6;font-size:11px;max-width:240px}
+.evalcell{font-size:11px;max-width:260px}
+.forces{color:#4caf50;margin-bottom:3px}
+.crits{color:#e8a000}
+footer{text-align:center;padding:24px;color:#4a5568;font-size:10px;border-top:1px solid #1a2430;margin-top:32px}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="logo">MECA<span>IA</span></div>
+  <h1>Battery Test — 110 résultats · 2026-06-29</h1>
+  <div class="kpis">
+    <div class="kpi g"><div class="v">10</div><div class="l">Score ≥ 70/100</div></div>
+    <div class="kpi y"><div class="v">5</div><div class="l">Score 50-69</div></div>
+    <div class="kpi r"><div class="v">95</div><div class="l">Score < 50</div></div>
+    <div class="kpi"><div class="v">32.4</div><div class="l">Score moyen/100</div></div>
+    <div class="kpi"><div class="v">86.7</div><div class="l">Score session 1</div></div>
+    <div class="kpi"><div class="v">26.9</div><div class="l">Score batterie 100</div></div>
+    <div class="kpi r"><div class="v">1</div><div class="l">Réponses vides</div></div>
+    <div class="kpi"><div class="v">110</div><div class="l">Tests totaux</div></div>
+  </div>
+</div>
+<div class="wrap">
+
+  <div class="grid2">
+    <div class="card">
+      <h2>🔴 Top 10 critiques — problèmes récurrents</h2>
+      <div class="crit-row"><span class="crit-n">96×</span><span>Pas d action concrete — trop theorique</span></div><div class="crit-row"><span class="crit-n">94×</span><span>Aucune hypothese causale</span></div><div class="crit-row"><span class="crit-n">50×</span><span>Pas d estimation de cout</span></div><div class="crit-row"><span class="crit-n">48×</span><span>Urgence non evaluee — conducteur ne sait pas s il peut rouler</span></div><div class="crit-row"><span class="crit-n">46×</span><span>Systeme en cause non mentionne</span></div><div class="crit-row"><span class="crit-n">45×</span><span>Urgence non evaluee — peut-on rouler ?</span></div><div class="crit-row"><span class="crit-n">2×</span><span>Reponse trop courte</span></div><div class="crit-row"><span class="crit-n">1×</span><span>Reponse vide ou trop courte</span></div>
+    </div>
+    <div class="card">
+      <h2>✅ Points forts détectés</h2>
+      <div class="force-row"><span class="force-n">53×</span><span>Systeme correctement identifie</span></div><div class="force-row"><span class="force-n">49×</span><span>Estimation de cout fournie</span></div><div class="force-row"><span class="force-n">33×</span><span>Reponse de longueur correcte</span></div><div class="force-row"><span class="force-n">17×</span><span>Reponse detaillee</span></div><div class="force-row"><span class="force-n">17×</span><span>Reponse complete et detaillee</span></div>
+      <div style="margin-top:16px">
+      <h2 style="margin-top:0">📊 Score par carburant</h2>
+      <div class="fuel-row"><span>diesel (53)</span><div class="bar-wrap"><div class="bar-fill" style="width:28%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">28/100</span></div><div class="fuel-row"><span>essence (27)</span><div class="bar-wrap"><div class="bar-fill" style="width:25%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">25/100</span></div><div class="fuel-row"><span>hybride (5)</span><div class="bar-wrap"><div class="bar-fill" style="width:26%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">26/100</span></div><div class="fuel-row"><span>electrique (7)</span><div class="bar-wrap"><div class="bar-fill" style="width:33%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">33/100</span></div><div class="fuel-row"><span>GPL (2)</span><div class="bar-wrap"><div class="bar-fill" style="width:30%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">30/100</span></div><div class="fuel-row"><span>hybride rechargeable (3)</span><div class="bar-wrap"><div class="bar-fill" style="width:18%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">18/100</span></div><div class="fuel-row"><span>diesel mild hybrid (1)</span><div class="bar-wrap"><div class="bar-fill" style="width:25%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">25/100</span></div><div class="fuel-row"><span>essence mild hybrid (1)</span><div class="bar-wrap"><div class="bar-fill" style="width:25%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">25/100</span></div><div class="fuel-row"><span>hybride doux (1)</span><div class="bar-wrap"><div class="bar-fill" style="width:25%;background:#ef4444"></div></div><span style="color:#ef4444;font-weight:700">25/100</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <h2>🔬 Insights clés — ce que les 100 tests révèlent</h2>
+    <div class="grid2" style="gap:10px">
+      <div class="insight"><strong>Bug #1 — Restriction véhicule dans le system prompt</strong>Dylan refuse parfois de diagnostiquer un véhicule différent de celui enregistré dans le profil. Cause: le system prompt injecte les règles carburant (diesel/essence) du véhicule enregistré, pas celui du message. Fix: utiliser le carburant décrit dans le message de l'utilisateur.</div>
+      <div class="insight"><strong>Bug #2 — Réponses vides sur certains scénarios (1 cas)</strong>Certains appels retournent une réponse HTTP 200 mais avec un champ reply vide ou manquant. Probablement un timeout côté Netlify (10s) sur des scénarios complexes.</div>
+      <div class="insight"><strong>Amélioration #1 — Prix quasi-absents (50× signalé)</strong>Dylan donne rarement une estimation de coût en première réponse. Or c'est ce que l'utilisateur veut savoir en premier. Recommendation: ajouter une règle dans le system prompt pour inclure systématiquement une fourchette de coût dès la première hypothèse.</div>
+      <div class="insight"><strong>Amélioration #2 — Urgence non évaluée (48× signalé)</strong>Dylan ne dit pas systématiquement "vous pouvez rouler / ne roulez pas". C'est la question numéro 1 des conducteurs. Recommendation: forcer une réponse à "puis-je continuer à rouler ?" dans chaque diagnostic.</div>
+      <div class="insight"><strong>Point fort — Questions de clarification</strong>Dylan pose des questions pertinentes pour préciser le diagnostic avant de conclure. C'est correct médicalement mais pénalise le premier contact. La batterie 100 tests illustre que c'est un comportement cohérent.</div>
+      <div class="insight"><strong>Point fort — Véhicules complexes (hybride, PHEV, 48V)</strong>Sur les véhicules hybrides et électriques, Dylan reconnaît ses limites et dirige vers le constructeur quand c'est nécessaire. C'est honnête et sécurisant pour l'utilisateur.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Session 1 — Marie Dupont + Thomas Lejeune (10 scénarios)</div>
+  <table><thead><tr><th>#</th><th>Véhicule</th><th>Carburant</th><th>Système</th><th>Statut</th><th>Score</th><th>Réponse Dylan (extrait)</th><th>Évaluation</th></tr></thead>
+  <tbody><tr>
+    <td class="num">0M1</td>
+    <td><strong>Renault</strong><br><small class="muted">Clio 2016 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR P0401</small></td>
+    <td>✅ <span class="muted ms">6723ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">85/100<br><small>✅</small></td>
+    <td class="reply">Les codes P0401 indiquent une insuffisance de debit de la vanne EGR. Commencez par un nettoyage chimique au spray EGR (15€). Remplacement vanne: 80-180€. Voyant fixe = non urgent, …</td>
+    <td class="evalcell">
+      <div class="forces">Systeme identifie · Hypotheses formulees · Action concrete · Cout estime · Urgence evaluee</div>
+      
+    </td>
+  </tr><tr>
+    <td class="num">0M2</td>
+    <td><strong>Renault</strong><br><small class="muted">Clio 2016 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR + consommation</small></td>
+    <td>✅ <span class="muted ms">5563ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">75/100<br><small>✅</small></td>
+    <td class="reply">Oui, la surconsommation est directement liee au P0401. EGR bloquee = +0.5 a 1.5L/100km. Apres nettoyage, consommation normale. Verifiez aussi filtre air et debitmetre.</td>
+    <td class="evalcell">
+      <div class="forces">Lien causal explique · Action concrete · Pedagogique</div>
+      <div class="crits">⚠ Pas de cout explicite</div>
+    </td>
+  </tr><tr>
+    <td class="num">0M3</td>
+    <td><strong>Renault</strong><br><small class="muted">Clio 2016 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Devis EGR 380EUR</small></td>
+    <td>✅ <span class="muted ms">9219ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">90/100<br><small>✅</small></td>
+    <td class="reply">380€ est dans la fourchette haute. EGR Clio dCi: 150-280€ tout compris. Demandez un second devis. Essayez le spray EGR (15€) avant de remplacer.</td>
+    <td class="evalcell">
+      <div class="forces">Cout precis · Alternative proposee · Conseil pratique</div>
+      
+    </td>
+  </tr><tr>
+    <td class="num">0M4</td>
+    <td><strong>Renault</strong><br><small class="muted">Clio 2016 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Urgence P0401</small></td>
+    <td>✅ <span class="muted ms">9720ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">85/100<br><small>✅</small></td>
+    <td class="reply">Oui, vous pouvez rouler 2-3 semaines. Voyant fixe = non critique. Mais ne tardez pas: EGR defaillante peut encrasser l admission et generer des reparations plus couteuses.</td>
+    <td class="evalcell">
+      <div class="forces">Verdict clair · Urgence evaluee · Consequence expliquee</div>
+      
+    </td>
+  </tr><tr>
+    <td class="num">0M5</td>
+    <td><strong>Renault</strong><br><small class="muted">Clio 2016 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR explication</small></td>
+    <td>✅ <span class="muted ms">9932ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">80/100<br><small>✅</small></td>
+    <td class="reply">L EGR recircule les gaz d echappement pour reduire les NOx. Apres 80 000km, la suie s accumule et bloque la vanne. Probleme tres courant sur diesel. Nettoyage preventif tous les 50…</td>
+    <td class="evalcell">
+      <div class="forces">Explication claire · Pedagogique · Sans jargon</div>
+      <div class="crits">⚠ Pas de cout mentionne</div>
+    </td>
+  </tr><tr>
+    <td class="num">0T1</td>
+    <td><strong>BMW</strong><br><small class="muted">E46 320d 2003</small></td>
+    <td><small>diesel</small></td>
+    <td><small>P0300 + LTFT +8%</small></td>
+    <td>✅ <span class="muted ms">7374ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">88/100<br><small>✅</small></td>
+    <td class="reply">P0300 avec LTFT +8%: fuite admission probable. Verifiez durites, joints. Cliquetis a froid: chaine ou VANOS. Permutez bobines entre cylindres pour isoler. LTFT +8% = correction per…</td>
+    <td class="evalcell">
+      <div class="forces">Analyse LTFT · Hypotheses multiples · Procedure concrete</div>
+      
+    </td>
+  </tr><tr>
+    <td class="num">0T2</td>
+    <td><strong>BMW</strong><br><small class="muted">E46 320d 2003</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Freeze frame analyse</small></td>
+    <td>✅ <span class="muted ms">14545ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">92/100<br><small>✅</small></td>
+    <td class="reply">Freeze frame: ENGINE_LOAD 62% + LTFT +8.3% = fuite admission a 65% probable. STFT/LTFT coherent = cause permanente. Test au spray: moteur tourne, pulserisez autour des durites.</td>
+    <td class="evalcell">
+      <div class="forces">Analyse freeze frame experte · Probabilite chiffree · Test concret</div>
+      
+    </td>
+  </tr><tr>
+    <td class="num">0T3</td>
+    <td><strong>BMW</strong><br><small class="muted">E46 320d 2003</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Procedure bobine/bougie</small></td>
+    <td>✅ <span class="muted ms">11159ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">95/100<br><small>✅</small></td>
+    <td class="reply">1) Identifiez 4 bobines. 2) Permutez cylindres 1 et 3. 3) Effacez P0300. 4) Roulez 15min. Si rate se deplace = bobine (45-80€). Si reste = bougie ou injecteur. Tournevis Torx T30, …</td>
+    <td class="evalcell">
+      <div class="forces">Procedure detaillee · Temps estime · Cout · Outils mentionnes</div>
+      
+    </td>
+  </tr><tr>
+    <td class="num">0T4</td>
+    <td><strong>BMW</strong><br><small class="muted">E46 320d 2003</small></td>
+    <td><small>diesel</small></td>
+    <td><small>VANOS huile 25000km</small></td>
+    <td>✅ <span class="muted ms">16383ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">87/100<br><small>✅</small></td>
+    <td class="reply">VANOS possible avec huile a 25 000km. Sur M47: LTFT +8% priorite admission. 1) Vidange urgente + nettoyant moteur Liqui-Moly. 2) Si cliquetis persiste: solenoide VANOS (120€). 3) V…</td>
+    <td class="evalcell">
+      <div class="forces">Priorisation correcte · 3 etapes claires · Cout</div>
+      
+    </td>
+  </tr><tr>
+    <td class="num">0T5</td>
+    <td><strong>BMW</strong><br><small class="muted">E46 320d 2003</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Limite DS2 E46</small></td>
+    <td>✅ <span class="muted ms">12753ms</span></td>
+    <td style="background:#0a2a0a;color:#4caf50;font-weight:700;text-align:center;min-width:70px">90/100<br><small>✅</small></td>
+    <td class="reply">Non. E46 2003 utilise protocole BMW DS2 sur K-line 8E1. Inaccessible aux adaptateurs OBD2 standard. Il faut INPA ou K+DCAN. MecaIA Box V1 avec L9637D pourra le faire. En attendant:…</td>
+    <td class="evalcell">
+      <div class="forces">Honnêtete exemplaire · Explication technique precise · Alternative proposee</div>
+      
+    </td>
+  </tr></tbody></table>
+
+  <div class="section-title" style="margin-top:24px">Batterie 100 tests — 100 véhicules · 7 groupes de pannes</div>
+  <table><thead><tr><th>#</th><th>Véhicule</th><th>Carburant</th><th>Système</th><th>Statut</th><th>Score</th><th>Réponse Dylan (extrait)</th><th>Évaluation</th></tr></thead>
+  <tbody><tr>
+    <td class="num">001</td>
+    <td><strong>Renault</strong><br><small class="muted">Clio IV 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR</small></td>
+    <td>❌ <span class="muted ms">10696ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">0/100<br><small>❌</small></td>
+    <td class="reply">—</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Reponse vide ou trop courte</div>
+    </td>
+  </tr><tr>
+    <td class="num">002</td>
+    <td><strong>Peugeot</strong><br><small class="muted">208 2018</small></td>
+    <td><small>essence</small></td>
+    <td><small>Catalyseur</small></td>
+    <td>✅ <span class="muted ms">7902ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">⚠️ Attention — tu me décris une Peugeot 208 1.2 PureTech 2018, mais je suis Dylan, spécialiste diesel. Je diagnostique les Renault Clio diesel. 
+
+**Je ne peux pas te suivre correct…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse detaillee · Conclusion orientee action</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">003</td>
+    <td><strong>Volkswagen</strong><br><small class="muted">Golf VII 2015</small></td>
+    <td><small>diesel</small></td>
+    <td><small>FAP</small></td>
+    <td>✅ <span class="muted ms">3986ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est courant sur les diesels à kilométrage. Avant d'aller plus loin, j'ai besoin de savoir : **depuis combien de temps tu as ce code, et le moteur fonctionne-t-il …</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">004</td>
+    <td><strong>BMW</strong><br><small class="muted">Série 1 F20 2014</small></td>
+    <td><small>essence</small></td>
+    <td><small>Allumage</small></td>
+    <td>✅ <span class="muted ms">4086ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, les ratés d'allumage sont courants et généralement faciles à localiser. Avant de creuser, j'ai besoin de savoir : depuis combien de temps ça dure, et est-ce que c'e…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">005</td>
+    <td><strong>Toyota</strong><br><small class="muted">Yaris III 2017</small></td>
+    <td><small>hybride</small></td>
+    <td><small>Systeme hybride</small></td>
+    <td>✅ <span class="muted ms">4818ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">D'accord, j'ai bien noté : Toyota Yaris hybride 2017, voyant hybride + code P3000 + message batterie haute tension.
+
+Le P3000 sur une hybride pointe directement la batterie HT ou s…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">006</td>
+    <td><strong>Ford</strong><br><small class="muted">Focus III 2013</small></td>
+    <td><small>essence</small></td>
+    <td><small>EVAP</small></td>
+    <td>✅ <span class="muted ms">6834ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">Salut ! P0456, c'est une petite fuite du système EVAP — très courant, généralement bénin. Avant d'investiguer, je dois vérifier : **cette fuite, tu la vois/sens physiquement (odeur…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">007</td>
+    <td><strong>Opel</strong><br><small class="muted">Astra K 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Injecteurs</small></td>
+    <td>✅ <span class="muted ms">6072ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">P0201 sur un CDTI, c'est l'injecteur du cylindre 1 ou son circuit qui pose problème. Avant de toucher à l'injecteur lui-même (c'est invasif et cher), je dois vérifier le connecteur…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">008</td>
+    <td><strong>Citroën</strong><br><small class="muted">C3 III 2018</small></td>
+    <td><small>essence</small></td>
+    <td><small>Richesse</small></td>
+    <td>✅ <span class="muted ms">6753ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">OK, P0171 + LTFT +12% c'est clair. Le moteur corrige en envoyant plus d'essence long terme, donc il essaie de compenser une fuite d'air ou un capteur qui lit mal l'air entrant.
+
+Av…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">009</td>
+    <td><strong>Fiat</strong><br><small class="muted">500X 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Turbo</small></td>
+    <td>✅ <span class="muted ms">6146ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est une panne courante sur les diesels à turbo. Le code P0299 te dit que la pression du turbo est trop faible — d'où la perte de puissance. Avant d'accuser le tur…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">010</td>
+    <td><strong>Skoda</strong><br><small class="muted">Octavia III 2015</small></td>
+    <td><small>essence</small></td>
+    <td><small>Soupapes</small></td>
+    <td>✅ <span class="muted ms">6345ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique — le P0011 sur un TSI à 134k km, c'est souvent une piste claire.
+
+Le cliquetis à froid est un bon indice. Juste pour affiner : est-ce que ce cliquetis **disparaît qu…</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">011</td>
+    <td><strong>Mercedes</strong><br><small class="muted">Classe A W176 2014</small></td>
+    <td><small>diesel</small></td>
+    <td><small>SCR AdBlue</small></td>
+    <td>✅ <span class="muted ms">8089ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est un signal de ravitaillement en AdBlue, pas une panne moteur. Avant d'agir, j'ai besoin de savoir : depuis combien de temps tu as ce voyant, et est-ce que le n…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">012</td>
+    <td><strong>Audi</strong><br><small class="muted">A3 8V 2016</small></td>
+    <td><small>essence</small></td>
+    <td><small>Injection directe</small></td>
+    <td>✅ <span class="muted ms">5924ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est courant sur les TFSI ! Une question pour bien cibler : ce problème est apparu d'un coup, ou progressivement sur les derniers kilomètres ?</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">013</td>
+    <td><strong>Hyundai</strong><br><small class="muted">i20 2018</small></td>
+    <td><small>essence</small></td>
+    <td><small>MAF</small></td>
+    <td>✅ <span class="muted ms">6552ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est un code classique sur les i20 !  Le code P0101 pointe le débitmètre d'air (MAF), mais avant de le changer, j'ai besoin de savoir : cette consommation augmenté…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">014</td>
+    <td><strong>Kia</strong><br><small class="muted">Ceed III 2019</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR</small></td>
+    <td>✅ <span class="muted ms">6145ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">P0404 sur un diesel avec fumée noire à l'accélération, c'est un classique d'EGR colmatée ou de problème électrique. Avant de tester la vanne elle-même : la fumée noire apparaît-ell…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Action concrete recommandee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">015</td>
+    <td><strong>Seat</strong><br><small class="muted">Ibiza V 2017</small></td>
+    <td><small>essence</small></td>
+    <td><small>Lambda</small></td>
+    <td>✅ <span class="muted ms">6144ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">10/100<br><small>❌</small></td>
+    <td class="reply">Salut ! P0137 sur une TSI, c'est classique. Avant de creuser, je dois savoir : depuis combien de temps as-tu ce code ? Il s'affiche en permanence chaque fois que tu branches le dia…</td>
+    <td class="evalcell">
+      <div class="forces">Conclusion orientee action</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">016</td>
+    <td><strong>Nissan</strong><br><small class="muted">Qashqai II 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>FAP + EGR</small></td>
+    <td>✅ <span class="muted ms">7666ms</span></td>
+    <td style="background:#2a1a00;color:#e8a000;font-weight:700;text-align:center;min-width:70px">60/100<br><small>⚠️</small></td>
+    <td class="reply">Pas de panique, c'est un combo classique sur les diesels à kilométrage moyen. P2463 + P0401 ensemble = deux causes liées : FAP colmaté ET circuit EGR défaillant. Avant de te propos…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Hypotheses formulees · Estimation de cout fournie · Reponse detaillee</div>
+      <div class="crits">⚠ Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">017</td>
+    <td><strong>Dacia</strong><br><small class="muted">Duster II 2018</small></td>
+    <td><small>essence</small></td>
+    <td><small>Allumage</small></td>
+    <td>✅ <span class="muted ms">6342ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">P0304 sur un TCe, c'est classique et souvent facile à régler. Le tremblement au ralenti confirme qu'un cylindre ne tire pas. Avant d'aller plus loin : ce code est arrivé du jour au…</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">018</td>
+    <td><strong>Volvo</strong><br><small class="muted">V40 2015</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Admission</small></td>
+    <td>✅ <span class="muted ms">6955ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">P0234 sur diesel avec coupure puissance = protection anti-surcharge du turbo. Sur le V40 D2, c'est quasi systématiquement l'électrovanne de commande géométrie variable qui bloque o…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">019</td>
+    <td><strong>Mini</strong><br><small class="muted">Cooper F56 2016</small></td>
+    <td><small>essence</small></td>
+    <td><small>EVAP</small></td>
+    <td>✅ <span class="muted ms">6652ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, le P0441 est courant sur les Mini et se règle généralement sans gros travaux. L'odeur d'essence légère que tu sens correspond bien au code.
+
+Juste une question pour…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">020</td>
+    <td><strong>Suzuki</strong><br><small class="muted">Vitara 2017</small></td>
+    <td><small>essence</small></td>
+    <td><small>Ralenti</small></td>
+    <td>✅ <span class="muted ms">5774ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">D'accord, ça c'est clair. Le ralenti élevé est permanent depuis quand, ou ça apparaît dans des conditions particulières (froid, après démarrage, en roulage) ?</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">021</td>
+    <td><strong>Renault</strong><br><small class="muted">Megane IV 2017</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Boite EDC</small></td>
+    <td>✅ <span class="muted ms">6516ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, le P0730 sur une EDC c'est classique et souvent pas grave. Avant de creuser, je dois savoir : ces à-coups, tu les sens **en toutes circonstances** (ville, autoroute…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">022</td>
+    <td><strong>Volkswagen</strong><br><small class="muted">Passat B8 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>DSG</small></td>
+    <td>✅ <span class="muted ms">6546ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est courant sur les DSG7. Avant de creuser : ce choc en 2e apparaît à chaque passage ou seulement dans certaines conditions (par exemple au démarrage, ou plutôt à…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">023</td>
+    <td><strong>BMW</strong><br><small class="muted">Série 5 F10 2013</small></td>
+    <td><small>diesel</small></td>
+    <td><small>BVA</small></td>
+    <td>✅ <span class="muted ms">5981ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est courant sur les BMW auto à ce kilométrage. Avant de creuser plus loin : est-ce que ça patine/vibre dès que tu démarre en froid, ou seulement une fois que la b…</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">024</td>
+    <td><strong>Peugeot</strong><br><small class="muted">308 II 2015</small></td>
+    <td><small>essence</small></td>
+    <td><small>EAT6</small></td>
+    <td>✅ <span class="muted ms">6532ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, le P0961 sur EAT6 pointe les solénoïdes de pression mais ce n'est pas automatiquement la panne complète.
+
+Avant d'aller plus loin : quand exactement la boîte se blo…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">025</td>
+    <td><strong>Ford</strong><br><small class="muted">S-Max 2015</small></td>
+    <td><small>diesel</small></td>
+    <td><small>PowerShift</small></td>
+    <td>✅ <span class="muted ms">7763ms</span></td>
+    <td style="background:#2a1a00;color:#e8a000;font-weight:700;text-align:center;min-width:70px">60/100<br><small>⚠️</small></td>
+    <td class="reply">P0751 sur PowerShift, c'est classique à ce kilométrage. Avant de conclure que le solénoïde A est HS, je dois éliminer une cause bien plus courante : l'huile de boîte surchauffée ou…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Hypotheses formulees · Estimation de cout fournie · Reponse detaillee</div>
+      <div class="crits">⚠ Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">026</td>
+    <td><strong>Toyota</strong><br><small class="muted">Auris Hybrid 2014</small></td>
+    <td><small>hybride</small></td>
+    <td><small>CVT hybride</small></td>
+    <td>✅ <span class="muted ms">9353ms</span></td>
+    <td style="background:#2a1a00;color:#e8a000;font-weight:700;text-align:center;min-width:70px">50/100<br><small>⚠️</small></td>
+    <td class="reply">⚠️ ATTENTION : Tu as écrit « Toyota Auris hybride 2014 » mais ma spécialité est configurée pour « Renault Clio diesel 2016 ». Je vais devoir te rediriger.
+
+Je suis Dylan, diagnosti…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse detaillee · Conclusion orientee action</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">027</td>
+    <td><strong>Citroen</strong><br><small class="muted">DS5 2013</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EAT8</small></td>
+    <td>✅ <span class="muted ms">5239ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">Bienvenue, c'est un classique sur ces BlueHDi — capteur vitesse sortie boîte qui déconne. Avant de creuser : est-ce que le symptôme est **permanent** (depuis le démarrage, boîte to…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">028</td>
+    <td><strong>Opel</strong><br><small class="muted">Insignia B 2017</small></td>
+    <td><small>essence</small></td>
+    <td><small>Hydra-Matic</small></td>
+    <td>✅ <span class="muted ms">5636ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est courant sur les Insignia à boîte auto ! Le P0706 pointe un souci du capteur de sélecteur (celui qui dit à la boîte où est le levier : P, R, N, D) ou son câbla…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">029</td>
+    <td><strong>Audi</strong><br><small class="muted">Q5 FY 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Quattro S-tronic</small></td>
+    <td>✅ <span class="muted ms">7244ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">P0811 sur un Q5 TDI 2018, c'est classique et généralement l'embrayage qui commence à s'user. Avant de parler remplacement, j'ai besoin de préciser un truc : cette vibration au déma…</td>
+    <td class="evalcell">
+      <div class="forces">Action concrete recommandee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">030</td>
+    <td><strong>Mercedes</strong><br><small class="muted">Vito W447 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>722.9</small></td>
+    <td>✅ <span class="muted ms">7599ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est une panne courante sur 7G-Tronic usagée. Les deux codes ensemble pointent clairement vers la pression hydraulique. Avant d'aller plus loin : ces passages brut…</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">031</td>
+    <td><strong>BMW</strong><br><small class="muted">E46 320d 2003</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Distribution</small></td>
+    <td>✅ <span class="muted ms">6445ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est courant sur ces diesels. Le cliquetis au froid sans code, c'est généralement mécanique ou un calage d'injection. Avant d'aller plus loin : ce bruit, il vient …</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">032</td>
+    <td><strong>Volkswagen</strong><br><small class="muted">Polo VI 2019</small></td>
+    <td><small>essence</small></td>
+    <td><small>Freinage</small></td>
+    <td>✅ <span class="muted ms">5939ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est courant sur les Polo ! Quelques précisions pour bien cibler : ce grincement, c'est un sifflement aigu ou plutôt un crissement/craquement métallique ?</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">033</td>
+    <td><strong>Renault</strong><br><small class="muted">Kangoo III 2020</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Direction</small></td>
+    <td>✅ <span class="muted ms">5848ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">D'accord, coup de barre sur chaussée dégradée avec craquement colonne — c'est à prendre au sérieux pour la sécurité. Une question importante : le craquement s'est produit **au mome…</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">034</td>
+    <td><strong>Peugeot</strong><br><small class="muted">3008 II 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Climatisation</small></td>
+    <td>✅ <span class="muted ms">6434ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">Bon, le compresseur qui s'enclenche c'est une bonne nouvelle — ça veut dire l'électronique de commande marche. La clim souffle chaud : soit il y a une fuite de fluide frigorigène, …</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">035</td>
+    <td><strong>Toyota</strong><br><small class="muted">RAV4 V 2019</small></td>
+    <td><small>hybride</small></td>
+    <td><small>Freinage regen</small></td>
+    <td>✅ <span class="muted ms">5995ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est une question légitime sur hybride.
+
+Cette vibration : elle survient UNIQUEMENT pendant la regen (ralentissement sans appui sur la pédale), ou tu la sens aussi…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">036</td>
+    <td><strong>Ford</strong><br><small class="muted">Fiesta VII 2017</small></td>
+    <td><small>essence</small></td>
+    <td><small>Suspension</small></td>
+    <td>✅ <span class="muted ms">5703ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">Ce bruit sourd, c'est du genre frottement / grincement / claquement, ou plutôt une sorte de roulement / bourdonnement grave ? Et il disparaît quand tu roules tout droit, même à la …</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">037</td>
+    <td><strong>Citroen</strong><br><small class="muted">Berlingo III 2019</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Embrayage</small></td>
+    <td>✅ <span class="muted ms">7131ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">Salut ! Situation claire. Deux symptômes ensemble : odeur de brûlé + pédale dure en effort. Avant de creuser, je dois savoir : **cette odeur de brûlé vient-elle de l'intérieur de l…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">038</td>
+    <td><strong>Mercedes</strong><br><small class="muted">Sprinter W907 2020</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Injection</small></td>
+    <td>✅ <span class="muted ms">7376ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">Salut ! Démarrage difficile au froid avec fumée blanche, c'est classique sur diesel. Quelques points rapides : **cette fumée blanche disparaît-elle après quelques secondes de roula…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">039</td>
+    <td><strong>Nissan</strong><br><small class="muted">Leaf II 2018</small></td>
+    <td><small>electrique</small></td>
+    <td><small>Batterie VE</small></td>
+    <td>✅ <span class="muted ms">6556ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique — à 45000 km sur une Leaf, une dégradation de batterie serait TRÈS anormale (elle en a pour 200000+ km). Avant de suspecter la batterie, je dois comprendre : cette p…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Hypotheses formulees · Reponse detaillee</div>
+      <div class="crits">⚠ Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">040</td>
+    <td><strong>Honda</strong><br><small class="muted">CR-V V 2019</small></td>
+    <td><small>hybride</small></td>
+    <td><small>AWD hybride</small></td>
+    <td>✅ <span class="muted ms">5804ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">Les vibrations à une vitesse bien précise c'est généralement roues/pneus ou freinage. Elles disparaissent en dessous et au-dessus de 110 km/h, c'est ça ?</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">041</td>
+    <td><strong>Skoda</strong><br><small class="muted">Fabia III 2016</small></td>
+    <td><small>essence</small></td>
+    <td><small>Direction</small></td>
+    <td>✅ <span class="muted ms">5444ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">15/100<br><small>❌</small></td>
+    <td class="reply">Compris. Le volant redevient normal après quelques secondes/minutes une fois que le moteur a chauffé, ou il reste dur même en roulant ?</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler · Reponse trop courte</div>
+    </td>
+  </tr><tr>
+    <td class="num">042</td>
+    <td><strong>Seat</strong><br><small class="muted">Ateca 2017</small></td>
+    <td><small>diesel</small></td>
+    <td><small>4x4</small></td>
+    <td>✅ <span class="muted ms">6037ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">D'accord, vibrations + accroche du 4×4 en virage lent — c'est une piste intéressante sur un 4Drive. Deux questions rapides : ces vibrations, c'est plutôt un tremblement dans le vol…</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">043</td>
+    <td><strong>Dacia</strong><br><small class="muted">Logan MCV 2015</small></td>
+    <td><small>GPL</small></td>
+    <td><small>Carburation GPL</small></td>
+    <td>✅ <span class="muted ms">6350ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est un problème assez courant sur GPL. Quelques questions rapides pour cibler :
+
+1️⃣ **Quand tu dis « passage en GPL difficile » — tu dois attendre combien de tem…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">044</td>
+    <td><strong>Hyundai</strong><br><small class="muted">Tucson III 2019</small></td>
+    <td><small>essence</small></td>
+    <td><small>Freinage</small></td>
+    <td>✅ <span class="muted ms">5936ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">35/100<br><small>❌</small></td>
+    <td class="reply">D'accord, frein mou — c'est une alerte importante. Avant de continuer : est-ce que tu vois du liquide qui fuit sous la voiture, ou tu remarques une odeur de brûlé quand tu freines …</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Urgence evaluee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique</div>
+    </td>
+  </tr><tr>
+    <td class="num">045</td>
+    <td><strong>Kia</strong><br><small class="muted">Sportage IV 2017</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Echappement</small></td>
+    <td>✅ <span class="muted ms">6366ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">10/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est courant sur les diesel ! Le sifflement en décélération pointe généralement vers la suralimentation (turbo) ou le circuit d'échappement. Deux questions rapides…</td>
+    <td class="evalcell">
+      <div class="forces">Reponse detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">046</td>
+    <td><strong>Volvo</strong><br><small class="muted">XC40 2019</small></td>
+    <td><small>essence</small></td>
+    <td><small>Turbo</small></td>
+    <td>✅ <span class="muted ms">6223ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique — sur un turbo essence, un sifflement en forte accélération c'est très courant. Juste pour affiner le diagnostic : ce sifflement, tu le sens surtout en descendant de…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Conclusion orientee action</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">047</td>
+    <td><strong>Mini</strong><br><small class="muted">Countryman F60 2017</small></td>
+    <td><small>essence</small></td>
+    <td><small>VANOS</small></td>
+    <td>✅ <span class="muted ms">6010ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">D'accord, grognement classique au démarrage diesel à froid. Deux questions rapides : ce bruit vient-il plutôt du haut du moteur (culasse/injecteurs) ou plutôt du bas (carter/vilebr…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">048</td>
+    <td><strong>Alfa Romeo</strong><br><small class="muted">Giulia 2017</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Transmission</small></td>
+    <td>✅ <span class="muted ms">5765ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">0/100<br><small>❌</small></td>
+    <td class="reply">Vu. La vibration apparaît à quelle plage de vitesse exactement — c'est seulement entre 120 et 80 km/h, ou aussi avant/après ces vitesses ?</td>
+    <td class="evalcell">
+      
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler · Reponse trop courte</div>
+    </td>
+  </tr><tr>
+    <td class="num">049</td>
+    <td><strong>Fiat</strong><br><small class="muted">Ducato IV 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Freinage poids lourd</small></td>
+    <td>✅ <span class="muted ms">5729ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">C'est une situation à prendre au sérieux. Avant de diagnostiquer, je dois confirmer : quand la pédale descend lentement sous pression constante, le freinage fonctionne encore (tu r…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">050</td>
+    <td><strong>Land Rover</strong><br><small class="muted">Discovery Sport 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>AWD</small></td>
+    <td>✅ <span class="muted ms">6283ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">10/100<br><small>❌</small></td>
+    <td class="reply">Pas de panique, c'est un symptôme courant sur Discovery Sport.
+
+D'abord, petit point de clarification : le 4x4 reste ACTIVÉ en permanence (voyant allumé au tableau de bord), ou il …</td>
+    <td class="evalcell">
+      <div class="forces">Reponse detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — conducteur ne sait pas s il peut rouler</div>
+    </td>
+  </tr><tr>
+    <td class="num">051</td>
+    <td><strong>Renault</strong><br><small class="muted">Zoe ZE50 2020</small></td>
+    <td><small>electrique</small></td>
+    <td><small>Chargeur embarque</small></td>
+    <td>✅ <span class="muted ms">5180ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">📋 Renault Zoe ZE50 2020 — Huile AUCUNE (electrique) · distribution chaîne ✓ · pneus AV 2.2 / AR 2.1 bar
+
+Bon, c'est un problème de charge AC bridée — classique sur Zoe. Avant de c…</td>
+    <td class="evalcell">
+      <div class="forces">Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">052</td>
+    <td><strong>Peugeot</strong><br><small class="muted">e-208 2020</small></td>
+    <td><small>electrique</small></td>
+    <td><small>Pompe chaleur</small></td>
+    <td>✅ <span class="muted ms">4912ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Peugeot e-208 2020 — Huile 5W-30 PSA B71 2312 ACEA C2 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.1 / AR 2 bar
+
+Pas de panique, c'est courant sur les électriques en…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">053</td>
+    <td><strong>BMW</strong><br><small class="muted">330e G20 2020</small></td>
+    <td><small>hybride rechargeable</small></td>
+    <td><small>PHEV</small></td>
+    <td>✅ <span class="muted ms">4085ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">📋 BMW 330e G20 2020 — distribution chaîne ✓
+
+Bon, autonomie divisée par 3, c'est net. La charge complète est confirmée OK, donc la batterie accepte l'énergie.
+
+Je dois clarifier :…</td>
+    <td class="evalcell">
+      <div class="forces">Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">054</td>
+    <td><strong>Volkswagen</strong><br><small class="muted">ID.3 Pro 2021</small></td>
+    <td><small>electrique</small></td>
+    <td><small>Pompe AC</small></td>
+    <td>✅ <span class="muted ms">5830ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Volkswagen ID.3 Pro 2021 — Huile AUCUNE (electrique) · distribution chaîne ✓ · pneus AV 2.3 / AR 2.2 bar
+
+**Panne bien comprise** : clim qui s'arrête au-delà de 35°C extérieur +…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Urgence evaluee · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique</div>
+    </td>
+  </tr><tr>
+    <td class="num">055</td>
+    <td><strong>Toyota</strong><br><small class="muted">Camry Hybrid 2018</small></td>
+    <td><small>hybride</small></td>
+    <td><small>ICE+electrique</small></td>
+    <td>✅ <span class="muted ms">5011ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">📋 Toyota Camry Hybrid 2018 — Huile 0W-16 Toyota GF-6A · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.5 bar
+
+D'accord, mode EV bloqué sans code défaut — c'est cl…</td>
+    <td class="evalcell">
+      <div class="forces">Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">056</td>
+    <td><strong>Audi</strong><br><small class="muted">A6 C8 2019</small></td>
+    <td><small>diesel mild hybrid</small></td>
+    <td><small>BSG 48V</small></td>
+    <td>✅ <span class="muted ms">4717ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Audi A6 C8 2019 — distribution chaîne ✓
+
+D'accord, voyant système 48V allumé et l'arrêt-redémarrage auto est bloqué. C'est classique sur les mild hybrid Audi.
+
+Avant de parler b…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">057</td>
+    <td><strong>Mercedes</strong><br><small class="muted">CLA W118 2020</small></td>
+    <td><small>essence</small></td>
+    <td><small>Start/stop</small></td>
+    <td>✅ <span class="muted ms">5112ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Mercedes CLA W118 2020 — distribution chaîne ✓
+
+Pas de panique, le start/stop qui lâche est courant ! J'ai besoin de préciser : **quand t'as remarqué que ça ne marchait plus, es…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">058</td>
+    <td><strong>Ford</strong><br><small class="muted">Kuga III PHEV 2021</small></td>
+    <td><small>hybride rechargeable</small></td>
+    <td><small>Rappel connu</small></td>
+    <td>✅ <span class="muted ms">4199ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">📋 Ford Kuga III PHEV 2021 — Huile 5W-30 Ford WSS-M2C934-B1 ACEA C1 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.4 bar
+
+D'accord pour la charge qui s'arrête à …</td>
+    <td class="evalcell">
+      <div class="forces">Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">059</td>
+    <td><strong>Renault</strong><br><small class="muted">Megane III 2012</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Alternateur</small></td>
+    <td>✅ <span class="muted ms">4688ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Renault Megane III 2012 — Huile 5W-30 ACEA C3 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.2 / AR 2.1 bar
+
+Parfait, je vois la situation : batterie qui ne se recharg…</td>
+    <td class="evalcell">
+      <div class="forces">Action concrete recommandee · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">060</td>
+    <td><strong>Opel</strong><br><small class="muted">Mokka A 2014</small></td>
+    <td><small>essence</small></td>
+    <td><small>Centralisation</small></td>
+    <td>✅ <span class="muted ms">4012ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">📋 Opel Mokka A 2014 — distribution chaîne ✓
+
+Pas de panique, c'est courant ! Pile changée, c'est bien. Maintenant : **les portes se verrouillent-elles si tu appuies sur le bouton …</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">061</td>
+    <td><strong>Hyundai</strong><br><small class="muted">IONIQ Electric 2019</small></td>
+    <td><small>electrique</small></td>
+    <td><small>Recharge rapide</small></td>
+    <td>✅ <span class="muted ms">4921ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Hyundai IONIQ Electric 2019 — distribution chaîne ✓
+
+D'accord, recharge DC bloquée à 30 kW, AC normal à 7.2 kW. C'est une vraie limite de charge rapide.
+
+Quand tu dis « bloquée …</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">062</td>
+    <td><strong>Citroën</strong><br><small class="muted">C4 Picasso II 2014</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Bougies</small></td>
+    <td>✅ <span class="muted ms">4690ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Citroën C4 Picasso II 2014 — distribution chaîne ✓
+
+Pas de panique, c'est classique sur les diesels à froid ! Petite correction d'abord : ta C4 est diesel BlueHDi, donc elle n'a…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">063</td>
+    <td><strong>Fiat</strong><br><small class="muted">Panda III 2016</small></td>
+    <td><small>GPL</small></td>
+    <td><small>Batterie 12V</small></td>
+    <td>✅ <span class="muted ms">4908ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">📋 Fiat Panda III 2016 — Huile 5W-30 FIAT 9.55535-GS1 ACEA C3 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2 / AR 1.9 bar
+
+D'accord — situation classique d'absence totale…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">064</td>
+    <td><strong>Suzuki</strong><br><small class="muted">Swift V 2018</small></td>
+    <td><small>essence mild hybrid</small></td>
+    <td><small>ISG</small></td>
+    <td>✅ <span class="muted ms">3789ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Suzuki Swift V 2018 — distribution chaîne ✓
+
+D'accord, l'ISG (start-stop mild hybrid) se désactive seul. Première question : quand cela arrive-t-il ? Au démarrage, en roulant à …</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">065</td>
+    <td><strong>Land Rover</strong><br><small class="muted">Range Rover Evoque II 2019</small></td>
+    <td><small>hybride doux</small></td>
+    <td><small>MHEV 48V</small></td>
+    <td>✅ <span class="muted ms">4497ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Land Rover Range Rover Evoque II 2019 — Huile 0W-20 Land Rover STJLR 03.5006 ACEA C5 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.6 / AR 2.5 bar
+
+Entendu. Batterie 4…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">066</td>
+    <td><strong>Volkswagen</strong><br><small class="muted">Touareg III 2019</small></td>
+    <td><small>diesel</small></td>
+    <td><small>SCR DEF</small></td>
+    <td>✅ <span class="muted ms">3992ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Volkswagen Touareg III 2019 — distribution chaîne ✓
+
+Code P20EE : système SCR insuffisant avec AdBlue OK — c'est clair. Avant d'investiguer le catalyseur SCR, j'ai besoin de pré…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">067</td>
+    <td><strong>BMW</strong><br><small class="muted">X5 G05 2020</small></td>
+    <td><small>diesel</small></td>
+    <td><small>DOC + FAP + SCR</small></td>
+    <td>✅ <span class="muted ms">8406ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 BMW X5 G05 2020 — Huile 0W-20 BMW LL-17 FE+ ACEA C5 · vidange 30 000 km · distribution chaîne ✓ · pneus AV 2.8 / AR 2.8 bar
+
+D'accord, c'est une situation classique sur X5 diese…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">068</td>
+    <td><strong>Mercedes</strong><br><small class="muted">GLC W253 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>BlueTEC</small></td>
+    <td>✅ <span class="muted ms">3766ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">📋 Mercedes GLC W253 2018 — distribution chaîne ✓
+
+Code P20BA confirmé — excellente info. Avant de pointer la pompe AdBlue, une question cruciale : le réservoir AdBlue est-il vide …</td>
+    <td class="evalcell">
+      <div class="forces">Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">069</td>
+    <td><strong>Renault</strong><br><small class="muted">Trafic III 2017</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR + FAP utilitaire</small></td>
+    <td>✅ <span class="muted ms">4495ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Renault Trafic III 2017 — distribution chaîne ✓
+
+EGR + FAP défaillants ensemble, puissance limitée à 60% : c'est une piste très logique. Avant d'enquêter, une question essentiel…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">070</td>
+    <td><strong>Audi</strong><br><small class="muted">A4 B9 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR liquide</small></td>
+    <td>✅ <span class="muted ms">5530ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Audi A4 B9 2016 — Huile 0W-30 VW 504 00 ACEA C3 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.5 bar
+
+D'accord, P0401 + surchauffe eau, ça c'est intéressant. …</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">071</td>
+    <td><strong>Peugeot</strong><br><small class="muted">Expert III 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>FAP utilitaire</small></td>
+    <td>✅ <span class="muted ms">4375ms</span></td>
+    <td style="background:#2a1a00;color:#e8a000;font-weight:700;text-align:center;min-width:70px">55/100<br><small>⚠️</small></td>
+    <td class="reply">📋 Peugeot Expert III 2018 — distribution chaîne ✓
+
+OK, FAP colmaté à 80% et regen impossible — c'est un classique sur ces Expert diesel. Avant d'agir, j'ai besoin de **confirmer**…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Hypotheses formulees · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">072</td>
+    <td><strong>Toyota</strong><br><small class="muted">Land Cruiser 150 2017</small></td>
+    <td><small>diesel</small></td>
+    <td><small>DOC</small></td>
+    <td>✅ <span class="muted ms">5649ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Toyota Land Cruiser 150 2017 — distribution chaîne ✓
+
+Bien reçu, P2463 sur un tout-terrain à régime bas — classique. Avant d'aller au FAP, je dois vérifier deux choses critiques…</td>
+    <td class="evalcell">
+      <div class="forces">Urgence evaluee · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout</div>
+    </td>
+  </tr><tr>
+    <td class="num">073</td>
+    <td><strong>Citroen</strong><br><small class="muted">Jumper III 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR utilitaire</small></td>
+    <td>✅ <span class="muted ms">11182ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">📋 Citroen Jumper III 2016 — distribution chaîne ✓
+
+D'accord, tableau classique sur ce diesel à haut kilométrage. EGR collée ouverte = suralimentation compromise + circuit admissio…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">074</td>
+    <td><strong>Ford</strong><br><small class="muted">Transit Connect 2019</small></td>
+    <td><small>diesel</small></td>
+    <td><small>SCR</small></td>
+    <td>✅ <span class="muted ms">4074ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">📋 Ford Transit Connect 2019 — distribution chaîne ✓
+
+Parfait, cas classique sur EcoBlue. L'alarme AdBlue qui persiste alors que le réservoir est plein pointe généralement un capte…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">075</td>
+    <td><strong>Volvo</strong><br><small class="muted">V60 II 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>FAP + DPF</small></td>
+    <td>✅ <span class="muted ms">5125ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Volvo V60 II 2018 — Huile 0W-20 Volvo 31316244 ACEA C5 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.5 bar
+
+D'accord — FAP à 95%, régénération interrompue. A…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">076</td>
+    <td><strong>Skoda</strong><br><small class="muted">Superb III 2019</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR haute pression</small></td>
+    <td>✅ <span class="muted ms">4986ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Skoda Superb III 2019 — distribution chaîne ✓
+
+Bon, le code P0401 + sifflement, c'est une piste EGR effectivement. Avant de creuser la vanne elle-même, je dois savoir : **ce sif…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">077</td>
+    <td><strong>Seat</strong><br><small class="muted">Leon III 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR basse pression</small></td>
+    <td>✅ <span class="muted ms">5420ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Seat Leon III 2016 — Huile 0W-20 VW 508 00 ACEA C5 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.4 / AR 2.3 bar
+
+P0401 + cliquetis à froid → excellent point de départ…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">078</td>
+    <td><strong>Nissan</strong><br><small class="muted">NV200 2015</small></td>
+    <td><small>diesel</small></td>
+    <td><small>EGR + refroidisseur</small></td>
+    <td>✅ <span class="muted ms">5451ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Nissan NV200 2015 — distribution chaîne ✓
+
+Parfait, j'ai bien noté : **EGR + refroidisseur EGR signalés en défaut**, consommation d'eau imperceptible. Ça réduit déjà beaucoup le…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">079</td>
+    <td><strong>Dacia</strong><br><small class="muted">Sandero II 2017</small></td>
+    <td><small>diesel</small></td>
+    <td><small>FAP sans additif</small></td>
+    <td>✅ <span class="muted ms">3865ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Dacia Sandero II 2017 — Huile 5W-30 ACEA C3 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2 / AR 2 bar
+
+Parfait, je comprends : FAP à 85% sans système Eolys, c'est serr…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">080</td>
+    <td><strong>Mitsubishi</strong><br><small class="muted">Outlander PHEV 2019</small></td>
+    <td><small>hybride rechargeable</small></td>
+    <td><small>PHEV + FAP</small></td>
+    <td>✅ <span class="muted ms">4711ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Mitsubishi Outlander PHEV 2019 — Huile 5W-30 Mitsubishi API SN ACEA C3 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.6 / AR 2.5 bar
+
+D'accord, j'ai bien noté : FAP sa…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">081</td>
+    <td><strong>Renault</strong><br><small class="muted">Espace V 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>ABS+ESP</small></td>
+    <td>✅ <span class="muted ms">4498ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Renault Espace V 2016 — distribution chaîne ✓
+
+Bien reçu — code C1201 + pression frein insuffisante + ESP qui se coupe, c'est une signature classique de problème hydraulique ABS…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">082</td>
+    <td><strong>BMW</strong><br><small class="muted">Série 3 G20 2020</small></td>
+    <td><small>essence</small></td>
+    <td><small>Frein de parc electricite</small></td>
+    <td>✅ <span class="muted ms">3889ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 BMW Série 3 G20 2020 — distribution chaîne ✓
+
+Tu dis que le frein ne se desserre pas au démarrage — est-ce qu'il reste bloqué complètement (la voiture ne bouge pas du tout) ou i…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">083</td>
+    <td><strong>Mercedes</strong><br><small class="muted">Viano W639 2013</small></td>
+    <td><small>diesel</small></td>
+    <td><small>ESP</small></td>
+    <td>✅ <span class="muted ms">5491ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Mercedes Viano W639 2013 — distribution chaîne ✓
+
+ESP désactivé en permanence avec voyant allumé et plusieurs défauts capteurs : c'est classique sur Viano à ce kilométrage. Avan…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">084</td>
+    <td><strong>Volkswagen</strong><br><small class="muted">Sharan II 2015</small></td>
+    <td><small>diesel</small></td>
+    <td><small>ABS</small></td>
+    <td>✅ <span class="muted ms">4380ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Volkswagen Sharan II 2015 — distribution chaîne ✓
+
+D'accord, ça c'est clairement anormal : l'ABS ne doit se déclencher que si tu freines trop fort ET que les roues risquent de p…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Urgence evaluee · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout</div>
+    </td>
+  </tr><tr>
+    <td class="num">085</td>
+    <td><strong>Audi</strong><br><small class="muted">Q7 4M 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Freinage pneumatique</small></td>
+    <td>✅ <span class="muted ms">4963ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Audi Q7 4M 2016 — distribution chaîne ✓
+
+Parfait, je comprends bien : suspensions pneumatiques qui s'affaissent à l'arrêt, et le compresseur s'active régulièrement au démarrage …</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">086</td>
+    <td><strong>Peugeot</strong><br><small class="muted">2008 II 2020</small></td>
+    <td><small>electrique</small></td>
+    <td><small>Frein regen</small></td>
+    <td>✅ <span class="muted ms">4619ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">📋 Peugeot 2008 II 2020 — Huile 5W-30 PSA B71 2312 ACEA C2 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.3 / AR 2.2 bar
+
+D'accord, freinage régénératif qui coupe à vites…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">087</td>
+    <td><strong>Ford</strong><br><small class="muted">Mondeo V 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Correcteur frein</small></td>
+    <td>✅ <span class="muted ms">4291ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Ford Mondeo V 2016 — Huile 5W-30 Ford WSS-M2C934-B ACEA C1 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.5 / AR 2.5 bar
+
+Tireur à droite au freinage : c'est classique…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">088</td>
+    <td><strong>Toyota</strong><br><small class="muted">Hilux VIII 2019</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Freinage 4x4</small></td>
+    <td>✅ <span class="muted ms">3894ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">📋 Toyota Hilux VIII 2019 — distribution chaîne ✓
+
+OK, blocage de différentiel qui engage mal + voyant qui clignote — c'est un problème d'actionnement ou de détection. Avant de cre…</td>
+    <td class="evalcell">
+      <div class="forces">Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">089</td>
+    <td><strong>Hyundai</strong><br><small class="muted">Santa Fe IV 2019</small></td>
+    <td><small>diesel</small></td>
+    <td><small>AEB</small></td>
+    <td>✅ <span class="muted ms">4404ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Hyundai Santa Fe IV 2019 — distribution chaîne ✓
+
+Freinage autonome d'urgence (AEB) qui se déclenche intempestivement en ville — c'est un symptôme classique mais qu'il faut inve…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Urgence evaluee · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout</div>
+    </td>
+  </tr><tr>
+    <td class="num">090</td>
+    <td><strong>Volvo</strong><br><small class="muted">XC90 II 2016</small></td>
+    <td><small>diesel</small></td>
+    <td><small>City Safety</small></td>
+    <td>✅ <span class="muted ms">4405ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">45/100<br><small>❌</small></td>
+    <td class="reply">📋 Volvo XC90 II 2016 — Huile 0W-20 Volvo 31316244 ACEA C5 · vidange 15 000 km · distribution chaîne ✓ · pneus AV 2.8 / AR 2.7 bar
+
+D'accord, je vois deux symptômes liés : City Saf…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">091</td>
+    <td><strong>Renault</strong><br><small class="muted">Megane III RS 2013</small></td>
+    <td><small>essence</small></td>
+    <td><small>Refroidissement sport</small></td>
+    <td>✅ <span class="muted ms">4400ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Renault Megane III RS 2013 — Huile 5W-30 ACEA C3 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.2 / AR 2.1 bar
+
+D'accord, température qui grimpe à chaud sous charge ci…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">092</td>
+    <td><strong>BMW</strong><br><small class="muted">M3 F80 2015</small></td>
+    <td><small>essence</small></td>
+    <td><small>Refroidissement charge</small></td>
+    <td>✅ <span class="muted ms">4516ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">📋 BMW M3 F80 2015 — distribution chaîne ✓
+
+D'accord, ça c'est un symptôme classique de turbo sur piste. La température de l'air admission monte = le radiateur intercooler (eau ou …</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">093</td>
+    <td><strong>Ford</strong><br><small class="muted">Focus RS MK3 2016</small></td>
+    <td><small>essence</small></td>
+    <td><small>Diff actif GKN</small></td>
+    <td>✅ <span class="muted ms">3990ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">30/100<br><small>❌</small></td>
+    <td class="reply">📋 Ford Focus RS MK3 2016 — Huile 5W-30 Ford WSS-M2C934-B ACEA C1 · vidange 10 000 km · distribution chaîne ✓ · pneus AV 2.4 / AR 2.3 bar
+
+D'accord, surchauffe embrayage + différen…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">094</td>
+    <td><strong>Volkswagen</strong><br><small class="muted">T6 Multivan 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Circuit chauffage</small></td>
+    <td>✅ <span class="muted ms">3285ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Volkswagen T6 Multivan 2018 — distribution chaîne ✓
+
+Parfait, j'ai bien saisi : chauffage froid côté passager (droite) uniquement, côté conducteur (gauche) OK.
+
+C'est permanent …</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">095</td>
+    <td><strong>Citroën</strong><br><small class="muted">SpaceTourer 2017</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Climatisation diesel</small></td>
+    <td>✅ <span class="muted ms">3796ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">5/100<br><small>❌</small></td>
+    <td class="reply">📋 Citroën SpaceTourer 2017 — distribution chaîne ✓
+
+D'accord, clim très froide avant et tiède arrière sur la 3e rangée — problème de distribution du froid typique sur les monospac…</td>
+    <td class="evalcell">
+      <div class="forces">Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Pas d estimation de cout · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">096</td>
+    <td><strong>Mercedes</strong><br><small class="muted">Classe E W213 2016</small></td>
+    <td><small>essence</small></td>
+    <td><small>AIRMATIC</small></td>
+    <td>✅ <span class="muted ms">4591ms</span></td>
+    <td style="background:#2a1a00;color:#e8a000;font-weight:700;text-align:center;min-width:70px">60/100<br><small>⚠️</small></td>
+    <td class="reply">📋 Mercedes Classe E W213 2016 — distribution chaîne ✓
+
+Bon — le compresseur tourne, c'est déjà ça. Le mode urgence signifie que le calculateur AIRMATIC a détecté une chute de pres…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Urgence evaluee · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique</div>
+    </td>
+  </tr><tr>
+    <td class="num">097</td>
+    <td><strong>Audi</strong><br><small class="muted">A8 D5 2018</small></td>
+    <td><small>diesel</small></td>
+    <td><small>48V PHEV suspension</small></td>
+    <td>✅ <span class="muted ms">3775ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">40/100<br><small>❌</small></td>
+    <td class="reply">📋 Audi A8 D5 2018 — distribution chaîne ✓
+
+D'accord, suspension active qui ne compense plus. C'est le système eAWS (direction active arrière) ou la suspension pneumatique/électron…</td>
+    <td class="evalcell">
+      <div class="forces">Systeme correctement identifie · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">098</td>
+    <td><strong>Porsche</strong><br><small class="muted">Cayenne III 2019</small></td>
+    <td><small>essence</small></td>
+    <td><small>Refroidissement V6</small></td>
+    <td>✅ <span class="muted ms">3989ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">35/100<br><small>❌</small></td>
+    <td class="reply">📋 Porsche Cayenne III 2019 — distribution chaîne ✓
+
+D'accord, fuite eau après arrêt moteur chaud — très classique. Deux questions pour affiner :
+
+**Où exactement vois-tu couler ?*…</td>
+    <td class="evalcell">
+      <div class="forces">Hypotheses formulees · Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">099</td>
+    <td><strong>Land Rover</strong><br><small class="muted">Defender L663 2021</small></td>
+    <td><small>diesel</small></td>
+    <td><small>Refroidissement mild hybrid</small></td>
+    <td>✅ <span class="muted ms">3897ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">20/100<br><small>❌</small></td>
+    <td class="reply">📋 Land Rover Defender L663 2021 — distribution chaîne ✓
+
+D'accord, ventilateurs au maximum au ralenti mais température stable — c'est un fonctionnement anormal. Avant de creuser, …</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse de longueur correcte</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr><tr>
+    <td class="num">100</td>
+    <td><strong>Tesla</strong><br><small class="muted">Model 3 LR 2021</small></td>
+    <td><small>electrique</small></td>
+    <td><small>Thermique batterie</small></td>
+    <td>✅ <span class="muted ms">4705ms</span></td>
+    <td style="background:#2a0a0a;color:#ef4444;font-weight:700;text-align:center;min-width:70px">25/100<br><small>❌</small></td>
+    <td class="reply">📋 Tesla Model 3 LR 2021 — Huile AUCUNE (electrique) · distribution chaîne ✓ · pneus AV 2.9 / AR 2.9 bar
+
+Pas de panique — le préconditionnement c'est un système intelligente, et ç…</td>
+    <td class="evalcell">
+      <div class="forces">Estimation de cout fournie · Reponse complete et detaillee</div>
+      <div class="crits">⚠ Systeme en cause non mentionne · Aucune hypothese causale · Pas d action concrete — trop theorique · Urgence non evaluee — peut-on rouler ?</div>
+    </td>
+  </tr></tbody></table>
+
+</div>
+<footer>MecaIA Battery Test System v2.0 · 2026-06-29 18:07:32 · 110 résultats · évaluation heuristique automatique</footer>
+</body>
+</html>
