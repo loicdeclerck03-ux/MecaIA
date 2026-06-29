@@ -1,0 +1,13 @@
+{
+  "name": "mecaia-beta-agents",
+  "version": "1.0.0",
+  "description": "2 agents IA qui testent mecaiaauto.com de A a Z",
+  "type": "module",
+  "scripts": {
+    "test": "node run_agents.mjs",
+    "test:eval": "ANTHROPIC_KEY=$ANTHROPIC_KEY node run_agents.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Rapport Beta Agents — MecaIA 2026-06-29 16:54:23</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#060809;color:#eef4fa;font-size:14px;padding:0}
+.header{background:linear-gradient(135deg,#0d1520,#060809);padding:40px;border-bottom:1px solid #1a2430;text-align:center}
+.logo{font-size:28px;font-weight:700;letter-spacing:4px;color:#eef4fa;margin-bottom:8px}
+.logo span{color:#e8a000}
+.header h1{font-size:18px;color:#8899a6;margin-bottom:16px}
+.global-scores{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.global-pill{background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:16px 24px;text-align:center}
+.global-pill .val{font-size:32px;font-weight:700;color:#e8a000}
+.global-pill .lbl{font-size:12px;color:#6b7f96;margin-top:4px}
+.wrap{max-width:1100px;margin:0 auto;padding:40px 24px}
+.agent-section{background:#0d1520;border:1px solid #1a2430;border-radius:12px;padding:28px;margin-bottom:28px}
+.agent-header{display:flex;gap:16px;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap}
+.agent-avatar{font-size:48px;flex-shrink:0}
+.agent-name{font-size:20px;font-weight:700;color:#eef4fa}
+.agent-persona{font-size:13px;color:#8899a6;margin-top:4px}
+.agent-vehicle{font-size:13px;color:#6b7f96;margin-top:4px}
+.agent-scores{margin-left:auto;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.score-pill{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600}
+.score-pill.green{background:#0a2a0a;border:1px solid #1a4a1a;color:#4caf50}
+.score-pill.yellow{background:#2a1a00;border:1px solid #4a3a00;color:#e8a000}
+.score-pill.red{background:#2a0a0a;border:1px solid #4a1a1a;color:#ef4444}
+h3{font-size:14px;font-weight:600;color:#e8a000;text-transform:uppercase;letter-spacing:1px;margin:20px 0 12px}
+.test-table{width:100%;border-collapse:collapse;font-size:13px}
+.test-table th{text-align:left;padding:8px 12px;background:#060809;color:#6b7f96;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #1a2430}
+.test-table td{padding:8px 12px;border-bottom:1px solid #0d1520;vertical-align:top}
+.test-table tr:last-child td{border-bottom:none}
+.ms{color:#6b7f96;font-family:monospace;white-space:nowrap}
+.detail{color:#8899a6;font-size:12px}
+.dylan-table .detail{font-size:11px}
+.eval-comment{background:#060809;border-left:3px solid #e8a000;padding:10px 14px;margin-top:8px;font-size:13px;color:#b0bec5}
+.eval-comment strong{color:#e8a000}
+footer{text-align:center;padding:40px;color:#4a5568;font-size:12px;border-top:1px solid #1a2430;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">MECA<span>IA</span></div>
+  <h1>Rapport Beta Agents IA — 2026-06-29 16:54:23</h1>
+  <div class="global-scores">
+    <div class="global-pill"><div class="val">12/15</div><div class="lbl">Tests UI reussis</div></div>
+    
+    <div class="global-pill"><div class="val">123s</div><div class="lbl">Duree totale</div></div>
+    <div class="global-pill"><div class="val">10</div><div class="lbl">Scenarios Dylan</div></div>
+  </div>
+</div>
+<div class="wrap">
+
+<div class="agent-section">
+  <div class="agent-header">
+    <span class="agent-avatar">👩</span>
+    <div>
+      <div class="agent-name">Marie Dupont</div>
+      <div class="agent-persona">Conductrice non technique, 45 ans, Liege BE. Premiere utilisation.</div>
+      <div class="agent-vehicle">🚗 Renault Clio 2016 · 87000km</div>
+    </div>
+    <div class="agent-scores">
+      <div class="score-pill yellow">6/7 UI tests OK</div>
+      
+    </div>
+  </div>
+
+  <h3>Tests UI & Endpoints</h3>
+  <table class="test-table">
+    <thead><tr><th>Feature</th><th>Statut</th><th>Temps</th><th>Detail</th></tr></thead>
+    <tbody><tr><td>Page accueil</td><td>✅</td><td class="ms">323ms</td><td class="detail">Page chargee, "MecaIA" present</td></tr><tr><td>Authentification</td><td>✅</td><td class="ms">—</td><td class="detail">Connecte · userId: 62d53d98...</td></tr><tr><td>Profil utilisateur</td><td>✅</td><td class="ms">1316ms</td><td class="detail">OK · credits: ?</td></tr><tr><td>Ajout vehicule</td><td>✅</td><td class="ms">1497ms</td><td class="detail">Vehicule ajoute · id: existant</td></tr><tr><td>Lecture garage</td><td>✅</td><td class="ms">918ms</td><td class="detail">1 vehicule(s) en garage</td></tr><tr><td>VIN decoder</td><td>✅</td><td class="ms">3115ms</td><td class="detail">Decodage OK · "voir data"</td></tr><tr><td>Recherche pieces</td><td>⚠️</td><td class="ms">1134ms</td><td class="detail">400</td></tr></tbody>
+  </table>
+
+  <h3>Conversations Dylan (5 scenarios)</h3>
+  <table class="test-table dylan-table">
+    <thead><tr><th>Scenario</th><th>OK</th><th>ms</th><th>Score</th><th>Criteres</th><th>Extrait reponse</th></tr></thead>
+    <tbody><tr>
+        <td><strong>Voyant + code P0401</strong></td>
+        <td>✅</td>
+        <td class="ms">6723ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr><tr>
+        <td><strong>Lien consommation</strong></td>
+        <td>✅</td>
+        <td class="ms">5563ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr><tr>
+        <td><strong>Devis 380 EUR garage</strong></td>
+        <td>✅</td>
+        <td class="ms">9219ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr><tr>
+        <td><strong>Peut-on rouler ?</strong></td>
+        <td>✅</td>
+        <td class="ms">9720ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr><tr>
+        <td><strong>Explication simple EGR</strong></td>
+        <td>✅</td>
+        <td class="ms">9932ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr></tbody>
+  </table>
+
+  
+</div>
+
+<div class="agent-section">
+  <div class="agent-header">
+    <span class="agent-avatar">👨‍🔧</span>
+    <div>
+      <div class="agent-name">Thomas Lejeune</div>
+      <div class="agent-persona">Technicien auto passionne, 32 ans, Bruxelles BE. Connait LTFT + freeze frame.</div>
+      <div class="agent-vehicle">🚗 BMW Serie 3 E46 320d 2003 · 156000km</div>
+    </div>
+    <div class="agent-scores">
+      <div class="score-pill yellow">6/8 UI tests OK</div>
+      
+    </div>
+  </div>
+
+  <h3>Tests UI & Endpoints</h3>
+  <table class="test-table">
+    <thead><tr><th>Feature</th><th>Statut</th><th>Temps</th><th>Detail</th></tr></thead>
+    <tbody><tr><td>Page accueil</td><td>✅</td><td class="ms">117ms</td><td class="detail">Page chargee, "MecaIA" present</td></tr><tr><td>Authentification</td><td>✅</td><td class="ms">—</td><td class="detail">Connecte · userId: b5cb8502...</td></tr><tr><td>Profil utilisateur</td><td>✅</td><td class="ms">1427ms</td><td class="detail">OK · credits: ?</td></tr><tr><td>Ajout vehicule</td><td>✅</td><td class="ms">716ms</td><td class="detail">Vehicule ajoute · id: existant</td></tr><tr><td>Lecture garage</td><td>✅</td><td class="ms">1536ms</td><td class="detail">1 vehicule(s) en garage</td></tr><tr><td>VIN decoder</td><td>✅</td><td class="ms">4817ms</td><td class="detail">Decodage OK · "voir data"</td></tr><tr><td>Recherche pieces</td><td>⚠️</td><td class="ms">608ms</td><td class="detail">400</td></tr><tr><td>CT check</td><td>⚠️</td><td class="ms">1224ms</td><td class="detail">400</td></tr></tbody>
+  </table>
+
+  <h3>Conversations Dylan (5 scenarios)</h3>
+  <table class="test-table dylan-table">
+    <thead><tr><th>Scenario</th><th>OK</th><th>ms</th><th>Score</th><th>Criteres</th><th>Extrait reponse</th></tr></thead>
+    <tbody><tr>
+        <td><strong>P0300 + cliquetis + LTFT +8%</strong></td>
+        <td>✅</td>
+        <td class="ms">7374ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr><tr>
+        <td><strong>Analyse freeze frame</strong></td>
+        <td>✅</td>
+        <td class="ms">14545ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr><tr>
+        <td><strong>Procedure isolation bobine/bougie</strong></td>
+        <td>✅</td>
+        <td class="ms">11159ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr><tr>
+        <td><strong>VANOS + huile 25000km</strong></td>
+        <td>✅</td>
+        <td class="ms">16383ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr><tr>
+        <td><strong>Limite DS2 E46</strong></td>
+        <td>✅</td>
+        <td class="ms">12753ms</td>
+        <td style="color:#6b7f96;font-weight:700">—/10</td>
+        <td style="white-space:nowrap"></td>
+        <td class="detail">—...</td>
+      </tr></tbody>
+  </table>
+
+  
+</div>
+</div>
+<footer>MecaIA Beta Agent System v1.0 · 2026-06-29 16:54:23 · 2 agents · Auto-genere</footer>
+</body>
+</html>
