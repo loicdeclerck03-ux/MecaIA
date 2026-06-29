@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guide Bêta Testeur — MecaIA</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#060809;color:#eef4fa;line-height:1.8;font-size:16px}
+a{color:#e8a000;text-decoration:none}
+a:hover{text-decoration:underline}
+.hero{background:linear-gradient(180deg,#0d1520 0%,#060809 100%);padding:60px 24px 48px;text-align:center;border-bottom:1px solid #1a2430}
+.logo{font-size:32px;font-weight:700;letter-spacing:4px;color:#eef4fa;margin-bottom:8px}
+.logo span{color:#e8a000}
+.hero h1{font-size:26px;font-weight:700;margin:16px 0 10px;line-height:1.3}
+.hero p{color:#8899a6;font-size:17px;max-width:560px;margin:0 auto}
+.badge{display:inline-block;background:#1a3a1a;border:1px solid #2a6a2a;color:#4caf50;font-size:12px;font-weight:600;padding:4px 14px;border-radius:20px;margin-top:16px;letter-spacing:1px}
+.wrap{max-width:820px;margin:0 auto;padding:0 24px}
+.toc{background:#0d1520;border:1px solid #1a2430;border-radius:12px;padding:28px 32px;margin:48px auto;max-width:820px;margin-left:auto;margin-right:auto}
+.toc-wrap{max-width:820px;margin:0 auto;padding:0 24px}
+.toc h2{font-size:14px;font-weight:600;color:#e8a000;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+.toc a{font-size:14px;color:#8899a6;display:flex;align-items:center;gap:8px;padding:4px 0;transition:.15s}
+.toc a:hover{color:#e8a000;text-decoration:none}
+.toc-num{font-size:11px;font-weight:600;color:#e8a000;min-width:20px}
+section{padding:48px 0;border-bottom:1px solid #1a2430}
+section:last-child{border-bottom:none}
+.section-tag{font-size:11px;font-weight:600;color:#e8a000;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px}
+h2.section-title{font-size:24px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.section-lead{color:#8899a6;font-size:16px;margin-bottom:32px}
+.step{display:flex;gap:16px;margin-bottom:28px;align-items:flex-start}
+.step-num{width:36px;height:36px;border-radius:50%;background:#e8a000;color:#000;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-body h3{font-size:16px;font-weight:600;margin-bottom:6px;color:#eef4fa}
+.step-body p{color:#b0bec5;font-size:15px;margin-bottom:8px}
+.step-body p:last-child{margin-bottom:0}
+.callout{border-radius:8px;padding:14px 18px;margin:12px 0;font-size:14px}
+.callout-tip{background:#0a1a0a;border-left:3px solid #4caf50;color:#86efac}
+.callout-warn{background:#1a0f00;border-left:3px solid #e8a000;color:#fbbf24}
+.callout-info{background:#0d1f35;border-left:3px solid #60a5fa;color:#93c5fd}
+.callout-danger{background:#1a0505;border-left:3px solid #ef4444;color:#fca5a5}
+.callout strong{display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;opacity:.8}
+.ui-box{background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:20px 24px;margin:16px 0;font-size:14px}
+.ui-box .ui-label{font-size:11px;color:#4a5568;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.field{background:#060809;border:1px solid #2a3a4a;border-radius:6px;padding:10px 14px;margin-bottom:8px;font-size:14px;color:#6b7f96}
+.field strong{color:#eef4fa}
+.btn-demo{display:inline-block;background:#e8a000;color:#000;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn-demo-sec{display:inline-block;background:none;border:1px solid #e8a000;color:#e8a000;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;margin-left:8px}
+.capability-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.cap{background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:16px 18px}
+.cap-icon{font-size:22px;margin-bottom:8px}
+.cap h4{font-size:14px;font-weight:600;margin-bottom:4px;color:#eef4fa}
+.cap p{font-size:13px;color:#8899a6;line-height:1.5}
+.example-chat{background:#0d1520;border:1px solid #1a2430;border-radius:12px;overflow:hidden;margin:20px 0}
+.chat-header{background:#0a1018;padding:10px 16px;font-size:12px;color:#4a5568;border-bottom:1px solid #1a2430;display:flex;align-items:center;gap:8px}
+.chat-dot{width:8px;height:8px;border-radius:50%;background:#e8a000}
+.chat-body{padding:20px 16px;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:82%;padding:12px 16px;border-radius:10px;font-size:14px;line-height:1.6}
+.msg-user{background:#1a2a3a;color:#b0bec5;align-self:flex-end;border-bottom-right-radius:3px}
+.msg-dylan{background:#0a1a0a;border:1px solid #1a2a1a;color:#86efac;align-self:flex-start;border-bottom-left-radius:3px}
+.msg-dylan strong{color:#4caf50;font-size:12px;display:block;margin-bottom:6px}
+.credits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
+.credit-card{background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:20px;text-align:center}
+.credit-card.featured{border-color:#e8a000}
+.credit-card .credit-name{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#e8a000;margin-bottom:8px}
+.credit-card .credit-price{font-size:26px;font-weight:700;color:#eef4fa;margin-bottom:4px}
+.credit-card .credit-detail{font-size:12px;color:#6b7f96}
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.do-box{background:#0a1a0a;border:1px solid #1a4a1a;border-radius:10px;padding:16px}
+.dont-box{background:#1a0a0a;border:1px solid #4a1a1a;border-radius:10px;padding:16px}
+.do-box h4{color:#4caf50;font-size:13px;font-weight:600;margin-bottom:10px;text-transform:uppercase}
+.dont-box h4{color:#ef4444;font-size:13px;font-weight:600;margin-bottom:10px;text-transform:uppercase}
+.do-box li,.dont-box li{font-size:13px;color:#b0bec5;margin-bottom:6px;margin-left:14px}
+.limit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.limit{background:#0d1520;border:1px solid #1a2430;border-radius:8px;padding:14px 16px}
+.limit .ok{color:#4caf50;font-size:12px;font-weight:600;margin-bottom:4px}
+.limit .no{color:#ef4444;font-size:12px;font-weight:600;margin-bottom:4px}
+.limit p{font-size:13px;color:#8899a6}
+.faq-item{margin-bottom:20px;background:#0d1520;border:1px solid #1a2430;border-radius:10px;padding:18px 20px}
+.faq-item h3{font-size:15px;font-weight:600;color:#eef4fa;margin-bottom:8px}
+.faq-item p{font-size:14px;color:#b0bec5}
+footer{background:#060809;border-top:1px solid #1a2430;padding:40px 24px;text-align:center}
+footer p{color:#4a5568;font-size:13px;line-height:1.8}
+footer a{color:#e8a000}
+.version-badge{background:#0d1520;border:1px solid #1a2430;border-radius:6px;padding:3px 10px;font-size:11px;color:#6b7f96;margin-top:8px;display:inline-block}
+@media(max-width:600px){
+  .toc-grid{grid-template-columns:1fr}
+  .do-dont{grid-template-columns:1fr}
+  .limit-grid{grid-template-columns:1fr}
+  .credits-grid{grid-template-columns:1fr}
+  h2.section-title{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="logo">MECA<span>IA</span></div>
+  <h1>Guide Bêta Testeur</h1>
+  <p>Tout ce que tu dois savoir pour tester Dylan — le premier mécanicien IA qui raisonne vraiment.</p>
+  <div class="badge">✦ VERSION BÊTA PRIVÉE — JUIN 2026</div>
+</div>
+
+<div class="toc-wrap">
+<div class="toc">
+  <h2>Sommaire</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="toc-num">01</span> C'est quoi MecaIA ?</a>
+    <a href="#s2"><span class="toc-num">02</span> Créer ton compte</a>
+    <a href="#s3"><span class="toc-num">03</span> Ton espace personnel</a>
+    <a href="#s4"><span class="toc-num">04</span> Ajouter ta voiture</a>
+    <a href="#s5"><span class="toc-num">05</span> Parler avec Dylan</a>
+    <a href="#s6"><span class="toc-num">06</span> Ce que Dylan peut faire</a>
+    <a href="#s7"><span class="toc-num">07</span> Les limites honnêtes</a>
+    <a href="#s8"><span class="toc-num">08</span> Les crédits</a>
+    <a href="#s9"><span class="toc-num">09</span> Rapport Ghost Inspector</a>
+    <a href="#s10"><span class="toc-num">10</span> Conseils et FAQ</a>
+  </div>
+</div>
+</div>
+
+<div class="wrap">
+
+<!-- ───────────── SECTION 1 ───────────── -->
+<section id="s1">
+  <div class="section-tag">01 — Introduction</div>
+  <h2 class="section-title">C'est quoi MecaIA ?</h2>
+  <p class="section-lead">MecaIA c'est un mécanicien IA disponible 24h/24, accessible depuis n'importe quel navigateur. Il s'appelle <strong>Dylan</strong>.</p>
+
+  <div class="capability-grid">
+    <div class="cap">
+      <div class="cap-icon">🔍</div>
+      <h4>Un vrai diagnostic</h4>
+      <p>Dylan ne donne pas juste la définition d'un code. Il raisonne, pose des questions, formule des hypothèses, t'indique quoi vérifier.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">💬</div>
+      <h4>En conversation naturelle</h4>
+      <p>Tu décris ta panne comme tu le ferais à un ami mécanicien. Pas besoin de jargon technique.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🧠</div>
+      <h4>Alimenté par Claude AI</h4>
+      <p>Dylan utilise le modèle IA Claude d'Anthropic + une base de 61 500 codes DTC européens.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🚗</div>
+      <h4>Connaît ta voiture</h4>
+      <p>Quand tu as ajouté ton véhicule, Dylan adapte ses réponses à ta marque, modèle et kilométrage.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Ce que tu testes en bêta</strong>
+    Le cerveau de Dylan — sa capacité à analyser une panne, proposer des hypothèses et guider vers la solution. Les fonctionnalités OBD2 en direct (données live) sont disponibles via l'application Windows séparée.
+  </div>
+</section>
+
+<!-- ───────────── SECTION 2 ───────────── -->
+<section id="s2">
+  <div class="section-tag">02 — Création de compte</div>
+  <h2 class="section-title">Créer ton compte</h2>
+  <p class="section-lead">L'inscription prend moins de 2 minutes. Voici exactement quoi faire, étape par étape.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Va sur le site</h3>
+      <p>Ouvre ton navigateur (Chrome, Firefox, Edge ou Safari) et tape :</p>
+      <div class="ui-box">
+        <div class="ui-label">Adresse URL</div>
+        <div style="font-size:18px;font-weight:700;color:#e8a000;font-family:monospace">mecaiaauto.com</div>
+      </div>
+      <p>Tu arrives sur la page d'accueil avec Dylan visible en bas de page.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Clique sur "Commencer" ou "Connexion"</h3>
+      <p>Dans la barre de navigation en haut de la page, deux boutons sont visibles :</p>
+      <div class="ui-box">
+        <div class="ui-label">Navigation — ce que tu vois</div>
+        <span class="btn-demo">Commencer</span>
+        <span class="btn-demo-sec">Connexion</span>
+        <p style="font-size:12px;color:#4a5568;margin-top:10px">Si tu n'as pas encore de compte → clique sur <strong style="color:#e8a000">Commencer</strong><br>Si tu as déjà un compte → clique sur <strong style="color:#e8a000">Connexion</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Remplis le formulaire d'inscription</h3>
+      <p>Une fenêtre s'ouvre. Sélectionne l'onglet <strong>"Inscription"</strong> si ce n'est pas déjà le cas.</p>
+      <div class="ui-box">
+        <div class="ui-label">Formulaire d'inscription</div>
+        <div class="field">📧 <strong>Adresse email</strong> — ton email personnel</div>
+        <div class="field">🔒 <strong>Mot de passe</strong> — au moins 6 caractères</div>
+        <div class="field">🔒 <strong>Confirmer le mot de passe</strong> — identique au précédent</div>
+        <span class="btn-demo">Créer mon compte →</span>
+      </div>
+      <div class="callout callout-tip">
+        <strong>✓ Bon à savoir</strong>
+        Utilise une vraie adresse email — tu vas recevoir un lien de confirmation. Vérifie aussi tes spams si tu ne le reçois pas dans 2 minutes.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Confirme ton email</h3>
+      <p>Tu reçois un email de <strong>MecaIA</strong> avec un lien de confirmation. Clique dessus.</p>
+      <div class="callout callout-warn">
+        <strong>⚠ Si tu ne reçois pas l'email</strong>
+        Vérifie ton dossier Spams / Indésirables. L'expéditeur sera une adresse @mecaiaauto.com. Si toujours rien après 5 minutes, contacte Loïc directement.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>Connecte-toi</h3>
+      <p>Après confirmation de l'email, retourne sur <strong>mecaiaauto.com</strong>. Clique sur <strong>"Connexion"</strong>, entre ton email et mot de passe. Tu es connecté.</p>
+      <div class="callout callout-tip">
+        <strong>✓ Les crédits bêta</strong>
+        En tant que bêta testeur, tu recevras des crédits gratuits pour tester. Loïc t'en attribue manuellement — confirme-lui ton inscription par message.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────── SECTION 3 ───────────── -->
+<section id="s3">
+  <div class="section-tag">03 — Navigation</div>
+  <h2 class="section-title">Ton espace personnel</h2>
+  <p class="section-lead">Une fois connecté, voici ce que tu vois et où chaque bouton t'emmène.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>La barre de navigation</h3>
+      <p>En haut de chaque page, tu trouves :</p>
+      <div class="ui-box">
+        <div class="ui-label">Navigation connecté</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px">
+          <span style="color:#e8a000;font-weight:700;font-size:18px;letter-spacing:2px">MECAIA</span>
+          <span style="color:#6b7f96;font-size:13px">|</span>
+          <span style="color:#eef4fa;font-size:14px;cursor:pointer">Diagnostic</span>
+          <span style="color:#eef4fa;font-size:14px;cursor:pointer">Tarifs</span>
+          <span style="color:#eef4fa;font-size:14px;cursor:pointer">Blog</span>
+          <span style="color:#6b7f96;font-size:13px">|</span>
+          <span style="background:#0d1520;border:1px solid #1a2430;border-radius:6px;padding:4px 12px;font-size:13px;color:#e8a000">Mon compte ▾</span>
+          <span style="background:#e8a000;color:#000;border-radius:6px;padding:5px 14px;font-size:13px;font-weight:700">🔥 Crédits : 5</span>
+        </div>
+        <p style="font-size:12px;color:#4a5568;margin-top:12px">Le compteur de crédits est affiché en haut à droite quand tu es connecté.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Le menu "Mon compte"</h3>
+      <p>Clique sur <strong>"Mon compte"</strong> pour accéder à :</p>
+      <div class="ui-box">
+        <div class="ui-label">Menu déroulant</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:#b0bec5">
+          <div>👤 <strong style="color:#eef4fa">Mon profil</strong> — tes informations personnelles</div>
+          <div>🚗 <strong style="color:#eef4fa">Mon garage</strong> — gérer tes véhicules</div>
+          <div>💳 <strong style="color:#eef4fa">Mes crédits</strong> — solde et historique</div>
+          <div>📋 <strong style="color:#eef4fa">Mes diagnostics</strong> — historique de tes sessions</div>
+          <div>🚪 <strong style="color:#eef4fa">Déconnexion</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>La page d'accueil</h3>
+      <p>Sur la page principale tu vois Dylan directement en bas de page — c'est là que se passe tout le diagnostic. Tu peux scroller pour découvrir les fonctionnalités, les tarifs, et le blog.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── SECTION 4 ───────────── -->
+<section id="s4">
+  <div class="section-tag">04 — Ton véhicule</div>
+  <h2 class="section-title">Ajouter ta voiture</h2>
+  <p class="section-lead">Dylan devient beaucoup plus précis quand il connaît ton véhicule. C'est la première chose à faire après ton inscription.</p>
+
+  <div class="callout callout-info">
+    <strong>Pourquoi c'est important</strong>
+    Un P0420 sur une Renault Clio 2010 essence n'a pas les mêmes causes que sur une BMW E46 2003 diesel. Dylan adapte ses hypothèses à ton modèle exact, son moteur, et son kilométrage.
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Accéder à "Mon garage"</h3>
+      <p>Clique sur <strong>"Mon compte"</strong> dans la navigation → <strong>"Mon garage"</strong>. Ou depuis le tableau de bord si tu vois une invite "Ajoutez votre véhicule".</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Cliquer sur "Ajouter un véhicule"</h3>
+      <p>Si tu n'as pas encore de voiture enregistrée, tu verras :</p>
+      <div class="ui-box">
+        <div class="ui-label">Écran Mon garage — vide</div>
+        <div style="text-align:center;padding:20px;color:#4a5568;font-size:14px">
+          🚗<br><span style="color:#6b7f96">Aucun véhicule enregistré</span><br><br>
+          <span class="btn-demo">+ Ajouter un véhicule</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Remplir le formulaire véhicule</h3>
+      <p>Un formulaire s'affiche. Remplis chaque champ :</p>
+      <div class="ui-box">
+        <div class="ui-label">Formulaire — Nouveau véhicule</div>
+        <div class="field">🏷️ <strong>Marque</strong> — ex : Renault, BMW, Peugeot, Volkswagen…</div>
+        <div class="field">🚗 <strong>Modèle</strong> — ex : Clio, Série 3, 308, Golf…</div>
+        <div class="field">📅 <strong>Année</strong> — ex : 2015</div>
+        <div class="field">⛽ <strong>Motorisation / carburant</strong> — ex : 1.5 dCi diesel, 1.6 THP essence</div>
+        <div class="field">🔢 <strong>Kilométrage actuel</strong> — ex : 145 000</div>
+        <span class="btn-demo">Enregistrer →</span>
+      </div>
+      <div class="callout callout-tip">
+        <strong>✓ Conseil précision</strong>
+        Plus tu es précis (ex: "BMW Série 3 E46 320d 2003" plutôt que "BMW"), plus Dylan sera pertinent. La motorisation exacte est particulièrement importante pour les pannes liées au carburant et à l'injection.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Vérifier l'enregistrement</h3>
+      <p>Après enregistrement, tu vois ta voiture affichée dans "Mon garage" avec ses informations. Tu peux :</p>
+      <div class="ui-box">
+        <div class="ui-label">Carte véhicule</div>
+        <div style="font-size:14px;color:#b0bec5;line-height:2">
+          🚗 <strong style="color:#eef4fa">Renault Clio 1.5 dCi</strong> — 2015 — 145 000 km<br>
+          <span style="font-size:12px;color:#4a5568">✎ Modifier &nbsp;&nbsp; 🗑 Supprimer &nbsp;&nbsp; ⭐ Véhicule principal</span>
+        </div>
+      </div>
+      <p>Tu peux ajouter plusieurs voitures (ex : ta voiture + celle de ta compagne). Dylan te demandera laquelle tu utilises au début de chaque diagnostic.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>Mettre à jour le kilométrage</h3>
+      <p>Pense à mettre à jour le kilométrage avant chaque session de diagnostic importante — ça aide Dylan à évaluer l'usure des composants et suggérer les entretiens préventifs appropriés.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────── SECTION 5 ───────────── -->
+<section id="s5">
+  <div class="section-tag">05 — Le diagnostic</div>
+  <h2 class="section-title">Parler avec Dylan</h2>
+  <p class="section-lead">Dylan fonctionne comme une conversation. Il pose des questions, tu réponds, il raisonne. Voici comment tirer le meilleur de chaque échange.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Trouver Dylan sur le site</h3>
+      <p>Depuis la page d'accueil, scrolle vers le bas jusqu'à voir le chat Dylan — reconnaissable à son fond sombre et l'interface de conversation. Ou clique sur <strong>"Diagnostic"</strong> dans la navigation.</p>
+      <div class="ui-box">
+        <div class="ui-label">Interface Dylan</div>
+        <div style="background:#060809;border-radius:8px;padding:16px;font-size:13px;color:#6b7f96;text-align:center">
+          💬 Décris ta panne ou colle ton code OBD2...<br><br>
+          <div style="display:flex;gap:8px;justify-content:center">
+            <span style="background:#1a2430;border-radius:6px;padding:6px 12px;color:#8899a6;font-size:12px">📷 Photo</span>
+            <span style="background:#1a2430;border-radius:6px;padding:6px 12px;color:#8899a6;font-size:12px">🔢 Code OBD2</span>
+            <span style="background:#e8a000;color:#000;border-radius:6px;padding:6px 16px;font-size:12px;font-weight:700">Envoyer →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Comment écrire ton premier message</h3>
+      <p>Décris ta panne comme si tu expliquais à un ami mécanicien de confiance. Plus tu es précis, plus Dylan est pertinent.</p>
+      <div class="do-dont">
+        <div class="do-box">
+          <h4>✅ Bons exemples</h4>
+          <ul>
+            <li>"Mon voyant moteur est allumé depuis 3 jours. Code P0420. Renault Mégane 2014 essence."</li>
+            <li>"Bruit de cliquetis à froid au démarrage sur mon BMW E46 2003 diesel. Disparaît après 2 minutes."</li>
+            <li>"Ma Peugeot 308 2016 tremble au ralenti depuis 1 semaine. Le scanner donne P0303."</li>
+          </ul>
+        </div>
+        <div class="dont-box">
+          <h4>❌ À éviter</h4>
+          <ul>
+            <li>"Ma voiture fait un bruit" (trop vague)</li>
+            <li>"Aidez-moi" (sans détails)</li>
+            <li>"Est-ce grave ?" (sans décrire le problème)</li>
+            <li>"P0420" seul (sans contexte véhicule)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Ce que Dylan va faire après ton message</h3>
+      <p>Dylan analyse ta description et démarre sa méthode de diagnostic. Voici comment ça se passe typiquement :</p>
+      <div class="example-chat">
+        <div class="chat-header"><div class="chat-dot"></div> Dylan — Mécanicien IA MecaIA</div>
+        <div class="chat-body">
+          <div class="msg msg-user">Mon voyant moteur s'allume depuis 2 jours. Scanner donne P0420. Renault Mégane 2016 essence 85 000 km.</div>
+          <div class="msg msg-dylan">
+            <strong>Dylan IA</strong>
+            P0420 détecté — efficacité du catalyseur en dessous du seuil.<br><br>
+            Avant de te parler de catalyseur à 800€, je dois éliminer 3 causes fréquentes sur ta Mégane IV :<br><br>
+            1️⃣ Le bouchon de réservoir — joint usé = vapeurs = déclenchement P0420 faussement positif.<br>
+            2️⃣ La sonde lambda amont — si elle répond trop lentement, elle fait croire que le catalyseur est mort.<br>
+            3️⃣ Une fuite d'échappement avant la sonde.<br><br>
+            Quel est le prix du devis du garagiste ? Et est-ce que le voyant clignote ou reste fixe ?
+          </div>
+          <div class="msg msg-user">Le voyant reste fixe. Le garagiste n'a pas encore proposé de prix, il veut d'abord "faire un diagnostic complet".</div>
+          <div class="msg msg-dylan">
+            <strong>Dylan IA</strong>
+            Voyant fixe = situation non urgente, tu peux rouler prudemment.<br><br>
+            Pour le diagnostic garagiste, demande-leur d'inspecter spécifiquement la sonde lambda amont — c'est le test qui coûte le moins et qui élimine la cause la plus fréquente.<br><br>
+            Entre-temps : commence par vérifier le bouchon de réservoir. Dévisse-le, et revisse-le fermement. Efface le code. Si le P0420 revient dans moins de 5 trajets → bouchon OK, cherche ailleurs. S'il revient après 2 semaines → c'était lui.<br><br>
+            Ce test prend 30 secondes et coûte 0€.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Répondre aux questions de Dylan</h3>
+      <p>Dylan va poser des questions précises pour affiner son diagnostic. Réponds le plus précisément possible :</p>
+      <div class="ui-box">
+        <div class="ui-label">Questions fréquentes de Dylan</div>
+        <div style="font-size:14px;color:#b0bec5;line-height:2.2">
+          ❓ "Le voyant clignote ou reste fixe ?"<br>
+          ❓ "Depuis combien de kilomètres ou de temps ?"<br>
+          ❓ "Est-ce que la consommation a augmenté ?"<br>
+          ❓ "Est-ce que tu entends un bruit particulier en même temps ?"<br>
+          ❓ "Quel est le dernier entretien effectué et à combien de km ?"<br>
+          ❓ "Est-ce que tu as le scanner branché ? Quel est le LTFT ?"
+        </div>
+      </div>
+      <div class="callout callout-tip">
+        <strong>✓ Astuce</strong>
+        Toutes les informations que tu donnes enrichissent le diagnostic. Même des détails qui semblent sans rapport — température extérieure, utilisation principalement ville ou autoroute, type de carburant utilisé.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>La conclusion de Dylan</h3>
+      <p>Après plusieurs échanges, Dylan formule une conclusion avec :</p>
+      <div class="ui-box">
+        <div class="ui-label">Structure d'une conclusion Dylan</div>
+        <div style="font-size:14px;color:#b0bec5;line-height:2.2">
+          🎯 <strong style="color:#eef4fa">Cause principale identifiée</strong> — avec niveau de confiance en mots (certain / très probable / probable)<br>
+          🔧 <strong style="color:#eef4fa">Pièce(s) à vérifier ou remplacer</strong> — avec référence si possible<br>
+          💶 <strong style="color:#eef4fa">Fourchette de prix réaliste</strong> — pièce seule + main d'œuvre garagiste<br>
+          ⚠️ <strong style="color:#eef4fa">Urgence</strong> — peut-on rouler ? Jusqu'à quand ?<br>
+          ✅ <strong style="color:#eef4fa">Étapes suivantes recommandées</strong> — dans quel ordre agir
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h3>Continuer la conversation</h3>
+      <p>Tu peux continuer à poser des questions après la conclusion — demander des précisions, remettre en question une hypothèse, ou donner le résultat d'un test que Dylan t'avait suggéré. La session reste ouverte pendant 10 minutes d'inactivité.</p>
+      <div class="callout callout-warn">
+        <strong>⚠ Durée de session</strong>
+        Une session de diagnostic = 1 crédit débité à l'ouverture. La session reste active 10 minutes après ton dernier message. Si tu reprends après ce délai, un nouveau crédit est utilisé.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────── SECTION 6 ───────────── -->
+<section id="s6">
+  <div class="section-tag">06 — Capacités</div>
+  <h2 class="section-title">Ce que Dylan peut faire</h2>
+  <p class="section-lead">Dylan est un expert en diagnostic automobile. Voici ses domaines de compétence.</p>
+
+  <div class="capability-grid">
+    <div class="cap">
+      <div class="cap-icon">🔴</div>
+      <h4>Analyser un code OBD2</h4>
+      <p>Donne-lui un code (P0420, P0171, P0300…). Il l'explique, donne les causes possibles par ordre de probabilité et indique quoi vérifier.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🔍</div>
+      <h4>Diagnostiquer par symptôme</h4>
+      <p>Pas de code ? Décris ce que tu entends, vois ou ressens. Bruit, vibration, odeur, comportement anormal — Dylan part de là.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">💡</div>
+      <h4>Expliquer la mécanique</h4>
+      <p>Tu veux comprendre pourquoi ? Dylan explique simplement le fonctionnement d'un composant et pourquoi sa défaillance provoque tes symptômes.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">💶</div>
+      <h4>Estimer les coûts</h4>
+      <p>Fourchettes de prix réalistes pour les pièces et la main d'œuvre en Belgique et France. Comparaison DIY vs garagiste.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">⚙️</div>
+      <h4>Interpréter les données live</h4>
+      <p>Tu as un scanner OBD2 avec des données live ? Donne-lui les valeurs de LTFT, MAP, MAF, température, O2 — il les analyse.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🔧</div>
+      <h4>Guider un test DIY</h4>
+      <p>Dylan indique les tests simples à faire soi-même : permutation de bobine, test au spray, lecture de résistance — étape par étape.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🔁</div>
+      <h4>Analyser un devis garage</h4>
+      <p>Ton garagiste te propose des réparations ? Demande à Dylan si c'est cohérent avec le code et les symptômes décrits.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🛡️</div>
+      <h4>Évaluer l'urgence</h4>
+      <p>Peut-on continuer à rouler ? Jusqu'à combien de km ? Qu'est-ce qui risque d'aggraver la situation ? Dylan évalue clairement.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🚘</div>
+      <h4>Conseils d'entretien préventif</h4>
+      <p>Kilométrage connu ? Dylan rappelle les entretiens à venir (distribution, bougie, filtre) selon ton modèle précis.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🚗</div>
+      <h4>Préparer un contrôle technique</h4>
+      <p>Dylan explique les moniteurs OBD2 et comment s'assurer que ta voiture est prête — ce que la plupart des gens ne savent pas.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🔎</div>
+      <h4>Recherche de pièces</h4>
+      <p>Via le module Pièces intégré, Dylan peut orienter vers les références correctes pour ton véhicule.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">📸</div>
+      <h4>Analyser une photo (bêta)</h4>
+      <p>Tu peux envoyer une photo de ta panne, d'un composant usé ou d'un code affiché sur écran — Dylan analyse visuellement.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>✓ Le super-pouvoir de Dylan</strong>
+    Contrairement à un scanner standard qui donne juste "P0420 = catalyseur en dessous du seuil", Dylan croise le code, les symptômes, les données live, le kilométrage et le modèle pour arriver à une hypothèse précise sur la vraie cause — pas seulement la définition du code.
+  </div>
+</section>
+
+<!-- ───────────── SECTION 7 ───────────── -->
+<section id="s7">
+  <div class="section-tag">07 — Limites</div>
+  <h2 class="section-title">Ce que Dylan ne peut pas faire</h2>
+  <p class="section-lead">Par honnêteté totale, voici les limites actuelles — pour que tu saches exactement à quoi t'attendre.</p>
+
+  <div class="limit-grid">
+    <div class="limit">
+      <div class="no">✗ Remplacer un garagiste physique</div>
+      <p>Dylan diagnostique. Il ne met pas les mains dans le moteur. Pour les réparations, un technicien reste nécessaire.</p>
+    </div>
+    <div class="limit">
+      <div class="no">✗ Garantir un diagnostic à 100%</div>
+      <p>La mécanique est complexe. Dylan donne des hypothèses probabilistes — il peut se tromper, surtout sur des pannes intermittentes rares.</p>
+    </div>
+    <div class="limit">
+      <div class="no">✗ Lire les données OBD en direct (site web)</div>
+      <p>La lecture live des PIDs OBD2 nécessite l'application Windows MecaIA avec boîtier branché. Sur le site web, Dylan travaille avec ce que tu lui décris.</p>
+    </div>
+    <div class="limit">
+      <div class="no">✗ Accéder aux modules constructeur sur anciens BMW</div>
+      <p>Les modules ABS, airbag et DSC sur BMW E46/E39 pré-2007 utilisent un protocole particulier (DS2) non supporté par les adaptateurs OBD2 standard.</p>
+    </div>
+    <div class="limit">
+      <div class="ok">✓ Mais il le dira clairement</div>
+      <p>Si Dylan ne sait pas ou si la cause est incertaine, il le dit explicitement. Il ne va pas inventer une réponse pour paraître compétent.</p>
+    </div>
+    <div class="limit">
+      <div class="ok">✓ Il s'améliore en continu</div>
+      <p>Chaque session enregistrée (anonymisée) enrichit la base de cas. Plus il y a d'utilisateurs, plus Dylan devient précis.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-danger">
+    <strong>⚠ Important — Sécurité</strong>
+    Si le voyant de température moteur s'allume en rouge, si ta voiture fume abondamment, ou si tu as une perte totale de freinage ou de direction — arrête-toi immédiatement. Ces situations nécessitent un garagiste immédiatement, pas un diagnostic IA.
+  </div>
+</section>
+
+<!-- ───────────── SECTION 8 ───────────── -->
+<section id="s8">
+  <div class="section-tag">08 — Crédits</div>
+  <h2 class="section-title">Le système de crédits</h2>
+  <p class="section-lead">MecaIA fonctionne avec des crédits. 1 crédit = 1 session de diagnostic avec Dylan.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Comment les crédits fonctionnent</h3>
+      <div class="ui-box">
+        <div class="ui-label">Règle simple</div>
+        <div style="font-size:14px;color:#b0bec5;line-height:2">
+          ▸ Tu envoies ton premier message → 1 crédit est débité<br>
+          ▸ La session reste ouverte 10 minutes après ton dernier message<br>
+          ▸ Tu peux continuer à poser des questions sans crédit supplémentaire<br>
+          ▸ Après 10 min d'inactivité → session fermée<br>
+          ▸ Si tu reprends → 1 nouveau crédit est utilisé
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Les packs disponibles</h3>
+      <div class="credits-grid">
+        <div class="credit-card">
+          <div class="credit-name">Starter</div>
+          <div class="credit-price">4,99€</div>
+          <div class="credit-detail">8 crédits · 0,62€/diagnostic</div>
+        </div>
+        <div class="credit-card featured">
+          <div class="credit-name">⭐ Standard</div>
+          <div class="credit-price">9,99€</div>
+          <div class="credit-detail">20 crédits · 0,50€/diagnostic</div>
+        </div>
+        <div class="credit-card">
+          <div class="credit-name">Expert</div>
+          <div class="credit-price">19,99€</div>
+          <div class="credit-detail">50 crédits · 0,40€/diagnostic</div>
+        </div>
+        <div class="credit-card">
+          <div class="credit-name">Garage Pro</div>
+          <div class="credit-price">29,99€/mois</div>
+          <div class="credit-detail">Illimité · pour professionnels</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Acheter des crédits</h3>
+      <p>Va sur <strong>mecaiaauto.com/tarifs</strong> ou clique sur <strong>"Mes crédits"</strong> dans ton espace. Tu choisis un pack, tu paies par carte (Stripe — sécurisé), tes crédits sont ajoutés immédiatement.</p>
+      <div class="callout callout-tip">
+        <strong>✓ Crédits bêta</strong>
+        En tant que bêta testeur, Loïc t'attribue des crédits gratuits. Confirme-lui ton inscription et il les ajoute manuellement depuis le panel admin.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Voir son solde</h3>
+      <p>Ton nombre de crédits restants est toujours visible en haut à droite de la page quand tu es connecté — à côté de ton compte.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ───────────── SECTION 9 ───────────── -->
+<section id="s9">
+  <div class="section-tag">09 — Ghost Inspector</div>
+  <h2 class="section-title">Le rapport Ghost Inspector</h2>
+  <p class="section-lead">Une option spéciale pour les acheteurs de voiture d'occasion — 9,99€ pour un rapport complet avant d'acheter.</p>
+
+  <div class="callout callout-info">
+    <strong>C'est quoi Ghost Inspector ?</strong>
+    Tu envisages d'acheter une voiture d'occasion ? Tu branches un scanner OBD2 et Ghost Inspector génère un rapport complet : codes défauts présents et effacés, état des moniteurs, santé batterie, kilométrage OBD, et analyse Dylan des risques.
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Accéder au rapport Ghost Inspector</h3>
+      <p>Va sur <strong>mecaiaauto.com/ghost-inspector</strong> ou depuis la navigation principale.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Payer le rapport (9,99€)</h3>
+      <p>Le rapport Ghost Inspector coûte 9,99€ par véhicule. Paiement unique via Stripe (carte bancaire). Tu reçois le rapport en PDF par email.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Ce que contient le rapport</h3>
+      <div class="ui-box">
+        <div class="ui-label">Contenu du rapport Ghost Inspector</div>
+        <div style="font-size:14px;color:#b0bec5;line-height:2.2">
+          📊 Codes DTC actifs et historiques (codes effacés récemment — signe suspect)<br>
+          🔋 État de la batterie (tension, santé estimée)<br>
+          🔢 Kilométrage OBD2 (difficile à falsifier contrairement au compteur)<br>
+          ✅ État des moniteurs d'émissions (préparation CT)<br>
+          ⚠️ Score de risque global (Faible / Moyen / Élevé)<br>
+          🧠 Analyse Dylan des anomalies détectées<br>
+          📄 PDF téléchargeable et imprimable
+        </div>
+      </div>
+      <div class="callout callout-tip">
+        <strong>✓ Conseil achat occasion</strong>
+        Si le vendeur refuse que tu branches un scanner OBD2 → fuis. Cette résistance est un signal d'alarme.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── SECTION 10 ───────────── -->
+<section id="s10">
+  <div class="section-tag">10 — Conseils & FAQ</div>
+  <h2 class="section-title">Bonnes pratiques et questions fréquentes</h2>
+  <p class="section-lead">Pour tirer le maximum de Dylan et de ta session bêta.</p>
+
+  <h3 style="font-size:18px;font-weight:600;margin-bottom:20px;color:#e8a000">Conseils d'expert</h3>
+
+  <div class="capability-grid">
+    <div class="cap">
+      <div class="cap-icon">📋</div>
+      <h4>Prépare les infos avant de commencer</h4>
+      <p>Marque, modèle, année, km, code(s) OBD2 si tu en as, et une description précise du symptôme. Plus tu as d'infos prêtes, plus la session est efficace.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🎯</div>
+      <h4>Une panne à la fois</h4>
+      <p>Si tu as plusieurs problèmes, commence par le plus urgent. Une session = un sujet = un diagnostic propre. Les pannes multiples simultanées brouillent l'analyse.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">💬</div>
+      <h4>Réponds aux questions de Dylan</h4>
+      <p>Ne saute pas les questions de Dylan. Chaque réponse affine l'hypothèse. Un "je sais pas" est aussi une info utile.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">🔄</div>
+      <h4>Fais les tests suggérés et reviens</h4>
+      <p>Si Dylan te suggère de vérifier quelque chose, fais-le et reviens lui dire le résultat. C'est comme ça qu'un vrai mécanicien travaille.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">📸</div>
+      <h4>Utilise les photos</h4>
+      <p>Tu as une photo de la pièce usée ? De l'écran du scanner ? D'une fuite ? Envoie-la directement dans le chat — Dylan peut analyser visuellement.</p>
+    </div>
+    <div class="cap">
+      <div class="cap-icon">📝</div>
+      <h4>Donne ton feedback</h4>
+      <p>En bêta, ton avis est crucial. Si Dylan se trompe ou n'est pas clair — dis-le nous directement. C'est comme ça qu'on s'améliore.</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:18px;font-weight:600;margin:36px 0 20px;color:#e8a000">Questions fréquentes</h3>
+
+  <div class="faq-item">
+    <h3>Est-ce que Dylan peut remplacer mon garagiste habituel ?</h3>
+    <p>Pour le diagnostic et la compréhension de la panne : souvent oui. Pour les réparations physiques : non. Dylan est là pour que tu arrives chez le garagiste en sachant exactement ce qui ne va pas — et en évitant de payer pour des réparations inutiles.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Je n'ai pas de scanner OBD2. Puis-je quand même utiliser Dylan ?</h3>
+    <p>Oui, parfaitement. Décris simplement tes symptômes en français naturel. Dylan pose des questions et arrive à des hypothèses même sans codes OBD2. Cela dit, un scanner à 30€ sur Amazon améliore considérablement la précision du diagnostic — c'est le meilleur investissement auto de 30€.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Dylan peut-il analyser n'importe quelle voiture ?</h3>
+    <p>Dylan connaît 26 marques européennes et américaines, avec une base de 61 500 codes DTC. Il est plus précis sur les véhicules courants (Renault, Peugeot, VW, BMW, Ford, Toyota…) et moins sur des modèles très rares ou exotiques.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Est-ce que mes données sont confidentielles ?</h3>
+    <p>Oui. Tes diagnostics sont liés à ton compte personnel. Les données utilisées pour améliorer Dylan sont anonymisées. MecaIA ne revend jamais tes informations à des tiers.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>J'ai utilisé un crédit mais le site a planté. Que faire ?</h3>
+    <p>Contacte Loïc directement — il peut vérifier la session dans le panel admin et re-créditer manuellement si la session ne s'est pas correctement déroulée.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Comment me déconnecter ?</h3>
+    <p>Clique sur "Mon compte" en haut à droite → "Déconnexion" tout en bas du menu. Tes données restent enregistrées pour ta prochaine connexion.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Je veux tester avec ma vraie panne. Comment donner un retour utile ?</h3>
+    <p>Note ce que Dylan t'a dit, fais le test suggéré, observe le résultat. Si Dylan avait raison → dis-le nous. Si Dylan s'est trompé → explique-nous ce que tu as finalement trouvé. Ce retour est précieux pour améliorer le produit.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Le site fonctionne-t-il sur téléphone ?</h3>
+    <p>Oui, mecaiaauto.com est responsive et fonctionne sur iPhone et Android via le navigateur. Une application mobile dédiée est prévue pour plus tard.</p>
+  </div>
+
+  <div style="background:#0d1f35;border:1px solid #1a3a5a;border-radius:12px;padding:28px 32px;margin:36px 0;text-align:center">
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px">Un problème ? Une question ?</div>
+    <div style="color:#8899a6;font-size:15px;margin-bottom:16px">Contacte Loïc directement — pas de formulaire, pas de ticket. En bêta, tu as un accès direct au fondateur.</div>
+    <div style="font-size:14px;color:#b0bec5">
+      📧 <a href="mailto:loicdeclerck4020@gmail.com">loicdeclerck4020@gmail.com</a><br>
+      🌐 <a href="https://mecaiaauto.com">mecaiaauto.com</a>
+    </div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="logo" style="font-size:24px;margin-bottom:12px">MECA<span>IA</span></div>
+  <p>Merci de faire partie des premiers testeurs de MecaIA.<br>
+  Ton feedback est ce qui permet à Dylan de devenir le meilleur mécanicien IA d'Europe.<br>
+  <a href="https://mecaiaauto.com">mecaiaauto.com</a></p>
+  <div class="version-badge">Guide Bêta v1.0 · Juin 2026 · Document confidentiel — ne pas diffuser publiquement</div>
+</footer>
+
+</body>
+</html>
