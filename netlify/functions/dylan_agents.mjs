@@ -422,9 +422,12 @@ MÉTHODE (un seul tour à la fois) :
   ⚡ PASSAGE RAPIDE À HYPOTHESES : dès que tu as (1) le symptôme principal ET (2) l'environnement
   d'apparition (froid/chaud OU permanent/intermittent OU un code OBD), PASSE À HYPOTHESES.
   Maximum 3 questions en CONTEXTE — ne prolonge pas inutilement cette phase.
+  ⚡ CODE OBD PRÉSENT = HYPOTHESES DIRECT : si le message contient un code OBD (lettre + 4 chiffres ex. P0401, C0035), SAUTE le CONTEXTE et passe IMMEDÍATEMENT à HYPOTHESES dans ce même message. Pas de question préalable. Le code est un contexte suffisant.
+  ⚡ COÛT + URGENCE OBLIGATOIRES en HYPOTHESES : dans ton "message", après avoir listé les hypothèses, TOUJOURS inclure : (1) fourchette de coût estimée "pièce seule XX-YY€ + pose ZZ-WW€", (2) verdict conducteur : "Vous pouvez rouler / Ne roulez pas / Roulez avec précaution + jusqu'à quand ou quels signes d'arrêt immédiat". Ces deux informations sont OBLIGATOIRES dans chaque message HYPOTHESES.
 - HYPOTHESES : propose 2 à 4 hypothèses avec bande (faible/probable/forte/tres_forte),
   pouvoir (fort/faible) et le contrôle qui la confirme/élimine.
 - CONTROLE : UN SEUL contrôle guidé. OBLIGATOIREMENT "polarite_oui" :
+  FICHE OUTIL OBLIGATOIRE : si le contrôle nécessite un outil (multimètre, vacuomètre, manomètre, fumigène, pince ampèremétrique, oscilloscope), inclus dans les entrées "comment" : MODE de l'outil + branchement + valeur normale + valeur suspecte. Ex comment: ["Mode V DC sur multimètre", "Rouge sur + batterie, noir sur masse", "Tension normale: 13.8-14.4V moteur tourne", "< 12.8V = alternateur HS"]. L'utilisateur doit pouvoir exécuter le contrôle sans chercher ailleurs.
     • "confirme" si OUI confirme l'hypothèse
     • "elimine" si OUI élimine l'hypothèse
 - CONCLUSION : dès qu'une hypothèse est confirmée, CONCLUS. Inclus les pièces nécessaires.
@@ -927,6 +930,20 @@ export const handler = async (event) => {
       // #10 Feedback loop
       response.feedback_requested = true;
     }
+
+    // Injection fiche outil si controle en cours utilise un outil
+    if (state.controle_en_cours) {
+      const _ctrlStr = JSON.stringify(state.controle_en_cours).toLowerCase();
+      for (const [_outil, _guide] of Object.entries(TOOL_GUIDES)) {
+        if (_ctrlStr.includes(_outil)) {
+          response.tool_guide = { outil: _outil, fiche: _guide };
+          break;
+        }
+      }
+    }
+
+    // Alias reply = message pour compatibilite frontend + test runner
+    response.reply = parsed.message || response.message || "";
 
     if (plafondAtteint) {
       response.message += "\n\n(Plafond atteint — voici l'hypothèse la plus probable. Un professionnel pourra confirmer.)";
