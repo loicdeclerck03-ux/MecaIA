@@ -933,7 +933,7 @@ export const handler = async (event) => {
 
     // Injection fiche outil si controle en cours utilise un outil
     if (state.controle_en_cours) {
-      const _ctrlStr = JSON.stringify(state.controle_en_cours).toLowerCase();
+      const _ctrlStr = JSON.stringify(state.controle_en_cours || {}).toLowerCase() + ' ' + (parsed.message || '').toLowerCase() + ' ' + JSON.stringify(state.controles_faits || []).toLowerCase();
       for (const [_outil, _guide] of Object.entries(TOOL_GUIDES)) {
         if (_ctrlStr.includes(_outil)) {
           response.tool_guide = { outil: _outil, fiche: _guide };
