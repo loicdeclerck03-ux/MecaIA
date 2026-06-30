@@ -113,8 +113,8 @@ async function runHealthCheck() {
 // Prompts repris tels quels de NEXUS_ARCHITECTURE.md §3.
 // ──────────────────────────────────────────────────────────────
 
-const DIAGNOSIS_TIMEOUT_MS = 15000;
-const CHALLENGER_TIMEOUT_MS = 7000; // 15s+7s=22s — donnees reelles 30/06: budget 9s+4s encore insuffisant (4/13 diagnostic timeout, majorite challenger timeout). Plafond Pro confirme 26s actif (appels a 13.4s reussis avec le budget precedent).
+const DIAGNOSIS_TIMEOUT_MS = 14000;
+const CHALLENGER_TIMEOUT_MS = 10000; // 14s+10s=24s — donnees reelles 30/06: 13/13 cas ont depasse 7s pour le challenger (pas seulement les cas complexes), confirme via debug temporaire que c'est un vrai timeout (APIUserAbortError) et non un echec de parsing. Reste sous le plafond Pro 26s.
 
 const NEXUS_SYSTEM_PROMPT = `Tu es Dylan, expert automobile certifié. Analyse avec rigueur causale.
 Priorise la sécurité conducteur. Indique toujours si on peut rouler et jusqu'à quand.
@@ -283,13 +283,10 @@ export async function handler(event) {
           failles: chall.failles || null,
         };
         needsTier3Escalation = challenger.vulnerability_score !== null && challenger.vulnerability_score > 50;
-      } else {
-        challenger._debug = "chall_was_null_no_throw";
       }
     } catch (e) {
       const isAbort = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError";
       console.error("[nexus_orchestrator] Challenger error (non bloquant):", isAbort ? "timeout" : e.message);
-      challenger._debug = { isAbort, name: e.name, ctor: e?.constructor?.name, message: e.message };
     }
   }
 
