@@ -113,8 +113,8 @@ async function runHealthCheck() {
 // Prompts repris tels quels de NEXUS_ARCHITECTURE.md §3.
 // ──────────────────────────────────────────────────────────────
 
-const DIAGNOSIS_TIMEOUT_MS = 6000;
-const CHALLENGER_TIMEOUT_MS = 3000; // 6s+3s reste sous la limite Netlify 10s
+const DIAGNOSIS_TIMEOUT_MS = 9000;
+const CHALLENGER_TIMEOUT_MS = 4000; // 9s+4s=13s — site confirmee Pro plan, timeout etendu 26s configure dans netlify.toml (30/06, suite a echec 502 sur tier 2 a 6s — voir LESSONS_LEARNED)
 
 const NEXUS_SYSTEM_PROMPT = `Tu es Dylan, expert automobile certifié. Analyse avec rigueur causale.
 Priorise la sécurité conducteur. Indique toujours si on peut rouler et jusqu'à quand.
@@ -255,13 +255,9 @@ export async function handler(event) {
   try {
     diagnosis = await withTimeout((signal) => runDiagnosis(modelToUse, caseDescription, signal), DIAGNOSIS_TIMEOUT_MS);
   } catch (e) {
-    const isAbort = e.name === "AbortError";
+    const isAbort = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError";
     console.error("[nexus_orchestrator] Diagnosis error:", isAbort ? "timeout" : e.message);
-    // DEBUG TEMPORAIRE 30/06 — a retirer une fois la cause des 502 Tier2 identifiee
-    return json(isAbort ? 504 : 502, {
-      error: "Service de diagnostic temporairement indisponible",
-      _debug: { name: e.name, message: e.message, status: e.status, ctor: e.constructor?.name, stack: (e.stack || "").split("\n").slice(0,5) },
-    });
+    return json(isAbort ? 504 : 502, { error: "Service de diagnostic temporairement indisponible" });
   }
 
   if (!diagnosis) {
@@ -284,7 +280,8 @@ export async function handler(event) {
         needsTier3Escalation = challenger.vulnerability_score !== null && challenger.vulnerability_score > 50;
       }
     } catch (e) {
-      console.error("[nexus_orchestrator] Challenger error (non bloquant):", e.name === "AbortError" ? "timeout" : e.message);
+      const isAbort = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError";
+      console.error("[nexus_orchestrator] Challenger error (non bloquant):", isAbort ? "timeout" : e.message);
     }
   }
 

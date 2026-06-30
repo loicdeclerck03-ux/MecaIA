@@ -6,6 +6,17 @@
 [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "SUPABASE_ANON,STRIPE_PUBLIC_KEY"
 
+# ── Timeout etendu (plan Pro = jusqu a 26s) — appels IA NEXUS plus longs
+# que la limite par defaut 10s. Si toujours en echec apres deploy malgre
+# cette config: contacter le support Netlify pour activer manuellement
+# "extended function timeout" cote compte (pattern documente forums Netlify 2026).
+[functions."nexus_orchestrator"]
+  timeout = 26
+
+[functions."nexus_parts_price"]
+  timeout = 26
+
+
 [functions.scheduled_weekly_health]
   schedule = "0 8 * * 1"
 
