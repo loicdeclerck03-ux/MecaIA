@@ -283,10 +283,13 @@ export async function handler(event) {
           failles: chall.failles || null,
         };
         needsTier3Escalation = challenger.vulnerability_score !== null && challenger.vulnerability_score > 50;
+      } else {
+        challenger._debug = "chall_was_null_no_throw";
       }
     } catch (e) {
       const isAbort = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError";
       console.error("[nexus_orchestrator] Challenger error (non bloquant):", isAbort ? "timeout" : e.message);
+      challenger._debug = { isAbort, name: e.name, ctor: e?.constructor?.name, message: e.message };
     }
   }
 
