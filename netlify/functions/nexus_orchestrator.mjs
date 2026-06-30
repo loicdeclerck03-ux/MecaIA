@@ -195,13 +195,18 @@ async function runChallenger(caseDescription, diagnosis, signal) {
   const r = await anthropic.messages.create(
     {
       model: MODEL_HAIKU,
-      max_tokens: 300,
+      max_tokens: 600,
       system: CHALLENGER_SYSTEM_PROMPT,
       messages: [{ role: "user", content: input }],
     },
     { signal }
   );
-  return parseModelJSON(r?.content?.[0]?.text || "");
+  const text = r?.content?.[0]?.text || "";
+  const parsed = parseModelJSON(text);
+  if (!parsed) {
+    console.error("[nexus_orchestrator] Challenger JSON non parsable. stop_reason:", r?.stop_reason, "extrait:", text.slice(0, 300));
+  }
+  return parsed;
 }
 
 export async function handler(event) {
