@@ -16,6 +16,15 @@
 [functions."nexus_parts_price"]
   timeout = 26
 
+[functions."nexus_vision"]
+  timeout = 26
+
+[functions."nexus_voice"]
+  timeout = 22
+
+[functions."nexus_recall_radar"]
+  timeout = 20
+
 
 [functions.scheduled_weekly_health]
   schedule = "0 8 * * 1"
