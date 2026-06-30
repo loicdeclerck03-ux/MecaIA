@@ -1,0 +1,92 @@
+[
+  {
+    "label": "Bruit freinage",
+    "ms": 16192,
+    "ok": true,
+    "consensus": "accord",
+    "vuln": 62,
+    "sonnetOk": true,
+    "gptOk": true
+  },
+  {
+    "label": "Fumee blanche froid",
+    "ms": 16253,
+    "ok": true,
+    "consensus": "accord_partiel",
+    "vuln": 62,
+    "sonnetOk": true,
+    "gptOk": true
+  },
+  {
+    "label": "Perte puissance + clignotant",
+    "ms": 16820,
+    "ok": true,
+    "consensus": "accord_partiel",
+    "vuln": 62,
+    "sonnetOk": true,
+    "gptOk": true
+  },
+  {
+    "label": "Odeur essence (securite)",
+    "ms": 14102,
+    "ok": true,
+    "consensus": "accord",
+    "vuln": 72,
+    "sonnetOk": true,
+    "gptOk": true
+  },
+  {
+    "label": "2 codes (cat + pauvre)",
+    "ms": 13148,
+    "ok": true,
+    "consensus": "accord_partiel",
+    "vuln": 62,
+    "sonnetOk": true,
+    "gptOk": true
+  },
+  {
+    "label": "Calage ralenti",
+    "ms": 15934,
+    "ok": true,
+    "consensus": "accord_partiel",
+    "vuln": 62,
+    "sonnetOk": true,
+    "gptOk": true
+  },
+  {
+    "label": "Claquement virage",
+    "ms": 13641,
+    "ok": true,
+    "consensus": "accord_partiel",
+    "vuln": 62,
+    "sonnetOk": true,
+    "gptOk": true
+  },
+  {
+    "label": "Voyant batterie + demarrage",
+    "ms": 12964,
+    "ok": true,
+    "consensus": "accord_partiel",
+    "vuln": 62,
+    "sonnetOk": true,
+    "gptOk": true
+  },
+  {
+    "label": "P0401 + echec reparation",
+    "ms": 19288,
+    "ok": true,
+    "consensus": "un_seul_avis",
+    "vuln": 72,
+    "sonnetOk": false,
+    "gptOk": true
+  },
+  {
+    "label": "P0011 seul (VANOS)",
+    "ms": 14581,
+    "ok": true,
+    "consensus": "accord_partiel",
+    "vuln": 62,
+    "sonnetOk": true,
+    "gptOk": true
+  }
+]
