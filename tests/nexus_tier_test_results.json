@@ -1,0 +1,1156 @@
+[
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0420"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0420 seul (catalyseur)",
+    "status": 200,
+    "ms": 6761,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Défaillance du catalyseur ou sonde lambda aval (O2 sensor). Le code P0420 indique une efficacité insuffisante du système de dépollution, généralement causé par un catalyseur encrassé, usé ou défaillant sur ce kilométrage.",
+        "hypotheses_alternatives": [
+          "Sonde lambda aval (capteur O2 post-catalyseur) défectueuse ou encrassée",
+          "Fuite d'échappement avant le catalyseur augmentant les polluants mesurés",
+          "Problème électrique du circuit sonde lambda aval (connecteur corrodé, câblage)",
+          "Accumulation de carbone interne dans le catalyseur réduisant l'efficacité"
+        ],
+        "peut_rouler": "oui",
+        "jusqu_quand": "plusieurs semaines, mais risque d'augmentation des émissions polluantes. Consulter rapidement pour contrôle technique futur.",
+        "cout_estime_min": 450,
+        "cout_estime_max": 1200,
+        "urgence": "moyenne",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": true,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:06:31.303Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0171"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0171 seul (melange pauvre)",
+    "status": 200,
+    "ms": 4816,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Mélange air-carburant trop pauvre (système de carburant défaillant). Avec 87000 km sur un diesel 2016, suspicion prioritaire : capteur MAF encrassé, fuite d'air d'admission, ou défaut de la pompe/injecteurs diesel.",
+        "hypotheses_alternatives": [
+          "Injecteur diesel encrassé ou défectueux",
+          "Fuite d'air dans le circuit d'admission",
+          "Capteur de pression turbo défaillant",
+          "Pompe à carburant usée",
+          "Régulateur de pression carburant encrassé"
+        ],
+        "peut_rouler": "oui",
+        "jusqu_quand": "quelques jours sans surcharge, max 100km avant diagnostic complet. Risque d'augmentation consommation et perte de puissance progressive.",
+        "cout_estime_min": 150,
+        "cout_estime_max": 850,
+        "urgence": "moyenne",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:06:36.106Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0401"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0401 seul (EGR) - cas reel Marie",
+    "status": 200,
+    "ms": 2998,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Débit insuffisant du système EGR (Exhaust Gas Recirculation). La vanne EGR est probablement encrassée ou partiellement bloquée, réduisant la circulation des gaz d'échappement vers l'admission.",
+        "hypotheses_alternatives": [
+          "Capteur de débit massique d'air (MAF) défaillant donnant une fausse lecture",
+          "Tuyauterie EGR obstruée par des dépôts de calamine",
+          "Électrovanne EGR défectueuse"
+        ],
+        "peut_rouler": "oui",
+        "jusqu_quand": "plusieurs semaines, mais prévoir réparation sous 15 jours pour éviter dégradation moteur",
+        "cout_estime_min": 250,
+        "cout_estime_max": 800,
+        "urgence": "moyenne",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:06:39.124Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0455"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0455 seul (EVAP fuite large)",
+    "status": 200,
+    "ms": 5009,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Fuite du système d'évaporation (EVAP) ou bouchon de réservoir défectueux. Le code P0455 signale une fuite importante du système anti-pollution des vapeurs d'essence/gazole, souvent causée par un bouchon usé, un joint endommagé ou une canalisation craquelée.",
+        "hypotheses_alternatives": [
+          "Capteur de pression EVAP défaillant donnant un faux positif",
+          "Canule de charbon usée ou fissurée",
+          "Électrovanne de purge bloquée en position ouverte"
+        ],
+        "peut_rouler": "oui",
+        "jusqu_quand": "quelques semaines, sans restriction de kilométrage immédiate (défaut de pollution, pas de sécurité critique)",
+        "cout_estime_min": 80,
+        "cout_estime_max": 350,
+        "urgence": "basse",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:06:44.129Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0442"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0442 seul (EVAP fuite petite)",
+    "status": 200,
+    "ms": 3400,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Fuite mineure du système de dépollution des vapeurs d'essence (EVAP). Le code P0442 indique une fuite détectée dans le circuit de récupération des vapeurs de carburant, généralement de petite importance.",
+        "hypotheses_alternatives": [
+          "Bouchon de réservoir défectueux ou mal serré",
+          "Tuyau EVAP craqué ou mal connecté",
+          "Électrovanne de purge du canister défaillante",
+          "Joint ou connecteur du canister endommagé"
+        ],
+        "peut_rouler": "oui",
+        "jusqu_quand": "plusieurs semaines sans risque immédiat, mais réparation recommandée avant contrôle technique",
+        "cout_estime_min": 80,
+        "cout_estime_max": 350,
+        "urgence": "basse",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:06:47.455Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0301"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0301 seul (rate cyl 1)",
+    "status": 200,
+    "ms": 5869,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Raté d'allumage sur le cylindre 1, très probablement dû à une bougie de préchauffage défaillante (diesel) ou à un injecteur encrassé. Le code P0301 indique une détection de combustion anormale sur cyl. 1.",
+        "hypotheses_alternatives": [
+          "Compression insuffisante dans le cylindre 1 (usure piston/segments)",
+          "Fuite d'injection ou injecteur diesel défectueux",
+          "Problème de timing d'injection ou capteur de position d'arbre à cames",
+          "Mauvais contact électrique sur bougie de préchauffage"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "quelques jours maximum, ne pas dépasser 80 km/h, éviter trajets longs. Diagnostic urgent recommandé sous 48-72h",
+        "cout_estime_min": 150,
+        "cout_estime_max": 850,
+        "urgence": "moyenne",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:06:53.404Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [
+      "P0128"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0128 seul (thermostat)",
+    "status": 200,
+    "ms": 4350,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Défaut de régulation de la température du moteur. Le thermostat ne s'ouvre pas correctement ou le système de refroidissement ne maintient pas la température optimale, empêchant le moteur d'atteindre rapidement sa température de fonctionnement nominale.",
+        "hypotheses_alternatives": [
+          "Capteur de température du liquide de refroidissement (NTC) défaillant donnant une fausse lecture",
+          "Vanne de mélange du circuit de refroidissement bloquée",
+          "Module de commande moteur (DME) avec logiciel erroné ou problème électronique"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "jusqu'à diagnostic approfondi, maximum 1-2 semaines en conduite urbaine douce. Éviter longs trajets ou performances élevées",
+        "cout_estime_min": 150,
+        "cout_estime_max": 450,
+        "urgence": "moyenne",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": true,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:06:57.740Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [
+      "P0011"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0011 seul (VANOS/distribution)",
+    "status": 200,
+    "ms": 3530,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Décalage de l'arbre à cames d'admission (VVT) hors limites. Sur E46 320d, généralement dû à une usure de la chaîne de distribution, un capteur de position d'arbre à cames défaillant ou une huile moteur dégradée affectant le système hydraulique VVT.",
+        "hypotheses_alternatives": [
+          "Capteur de position d'arbre à cames (CMP) encrassé ou défaillant",
+          "Chaîne de distribution étirée ou usée",
+          "Problème de distribution d'huile au système VVT (huile usée, filtres encrassés)"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "quelques jours maximum en conduite urbaine/modérée. À vérifier rapidement car risque d'endommagement du moteur à long terme.",
+        "cout_estime_min": 200,
+        "cout_estime_max": 1200,
+        "urgence": "moyenne",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:07:01.284Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [
+      "C1201"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "C1201 seul (ABS)",
+    "status": 200,
+    "ms": 8339,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Dysfonctionnement du système de freinage ABS/DSC. Le code C1201 indique un défaut de communication ou de capteur ABS, souvent lié à un capteur de vitesse de roue défaillant ou à un connecteur corrodé sur une roue.",
+        "hypotheses_alternatives": [
+          "Capteur ABS défaillant (roue avant ou arrière)",
+          "Connecteur ou faisceau endommagé du circuit ABS",
+          "Unité de commande ABS/DSC défectueuse",
+          "Batterie faible affectant les circuits électriques"
+        ],
+        "peut_rouler": "oui",
+        "jusqu_quand": "plusieurs jours sans urgence, mais freinage normal maintenu. Faire diagnostiquer avant long trajet",
+        "cout_estime_min": 80,
+        "cout_estime_max": 450,
+        "urgence": "basse",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:07:09.625Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [
+      "P0016"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0016 seul (correlation vilebrequin/came)",
+    "status": 200,
+    "ms": 4346,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Désalignement des arbres à cames (vilebrequin/arbre à cames). Le code P0016 indique une corrélation incorrecte entre la position de l'arbre à cames et du vilebrequin, typiquement causé par une chaîne de distribution usée, un capteur CMP/CKP défaillant, ou un problème de calage variable.",
+        "hypotheses_alternatives": [
+          "Capteur de position d'arbre à cames (CMP) encrassé ou défaillant",
+          "Capteur de vilebrequin (CKP) mal calibré ou usé",
+          "Chaîne de distribution étirée ou usée (fréquent à 156000 km)",
+          "Problème de solénoïde VVT (variateur de distribution) encrassée"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Quelques jours maximum pour diagnostic. Ne pas dépasser 80 km/h et éviter les trajets longs. Diagnostic obligatoire avant 500 km supplémentaires.",
+        "cout_estime_min": 150,
+        "cout_estime_max": 1200,
+        "urgence": "moyenne",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:07:13.972Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [
+      "P0299"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0299 seul (sous-suralimentation turbo)",
+    "status": 200,
+    "ms": 4481,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Défaut de suralimentation du turbocompresseur. Le code P0299 indique une sous-alimentation (underboost) : le turbo ne génère pas assez de pression. Causes probables : fuite de vide, turbo encrassé, débitmètre défaillant ou problème de chaîne d'injection.",
+        "hypotheses_alternatives": [
+          "Débitmètre (MAF) encrassé ou défaillant",
+          "Fuite d'air/vide en aval du turbo",
+          "Turbocompresseur usé ou encrassé (calamine)",
+          "Problème de vérin de wastegate bloqué",
+          "Capteur de pression d'air (boost) défaillant"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "quelques jours maximum, sans sollicitation (pas d'accélération franche)",
+        "cout_estime_min": 400,
+        "cout_estime_max": 1800,
+        "urgence": "moyenne",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:07:18.392Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0700"
+    ],
+    "symptoms": "",
+    "expectedTier": 1,
+    "label": "P0700 seul (boite auto generique)",
+    "status": 200,
+    "ms": 4324,
+    "ok": true,
+    "raw": {
+      "tier": 1,
+      "tier_reason": "1 seul code DTC, aucun symptôme texte additionnel — cas simple",
+      "diagnosis": {
+        "cause_principale": "Défaut générique du système de commande du moteur détecté par le calculateur. Le code P0700 est un code générique indiquant une malfonction de la transmission ou du système de contrôle moteur sans spécifier la cause exacte. Diagnostic complémentaire obligatoire.",
+        "hypotheses_alternatives": [
+          "Capteur de position de l'accélérateur (TPS) défaillant",
+          "Problème du système de dépollution (EGR, FAP, turbo)",
+          "Capteur de température/pression d'air défaillant",
+          "Connecteur ou câblage endommagé au niveau des capteurs"
+        ],
+        "peut_rouler": "oui",
+        "jusqu_quand": "Jusqu'au diagnostic complémentaire (24-48h recommandé). Rouler normalement mais surveiller le comportement du moteur.",
+        "cout_estime_min": 50,
+        "cout_estime_max": 400,
+        "urgence": "basse",
+        "confidence": "basse"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-haiku-4-5-20251001",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:07:22.769Z"
+    },
+    "tierActual": 1,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0401"
+    ],
+    "symptoms": "Ma voiture consomme aussi plus depuis 2 mois, et le voyant moteur est allume.",
+    "expectedTier": 2,
+    "label": "P0401 + symptome conso (cas reel Marie)",
+    "status": 200,
+    "ms": 13510,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "code DTC + symptômes texte — nuance au-delà d'un code seul",
+      "diagnosis": {
+        "cause_principale": "Recirculation des gaz d'échappement insuffisante (EGR) : le code P0401 indique un débit trop faible dans le circuit EGR, très probablement dû à une vanne EGR encrassée ou bloquée, fréquent sur les Clio IV diesel à ce kilométrage. L'augmentation de consommation confirme un fonctionnement moteur dégradé lié à ce défaut.",
+        "hypotheses_alternatives": [
+          "Tuyau ou circuit EGR obstrué ou percé (dépôts de suie importants dans la tubulure d'admission)",
+          "Capteur de position ou débitmètre air (MAF) défaillant, faussant la lecture du flux EGR",
+          "Radiateur EGR colmaté nécessitant un remplacement complet du module EGR"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Ne pas dépasser 2 à 3 semaines / 500 km sans intervention : un EGR défaillant prolongé peut encrasser l'admission, endommager le turbo ou le FAP et aggraver significativement la facture",
+        "cout_estime_min": 80,
+        "cout_estime_max": 650,
+        "urgence": "moyenne",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 25,
+        "failles": "Diagnostic bien structuré et justifié pour une Clio IV diesel. Peu de failles majeures, mais quelques points à nuancer : (1) Le code P0401 peut aussi résulter d'une fuite d'air (admission ou circuit EGR) non mentionnée explicitement - les dépôts de suie ne sont qu'une cause parmi d'autres. (2) Sur une Clio 2016 à 87000 km, l'encrassement EGR existe mais n'est pas systématique à ce kilométrage - un diagnostic visuel préalable serait prudent avant intervention majeure. (3) L'augmentation de consommation depuis 2 mois pourrait aussi être liée à une suralimentation moteur (turbo fuyant) ou un problème d'injection, non explicitement écartés. (4) L'estimation de coût (80-650€) est très large et peu ciblée - utile d'ajouter : nettoyage EGR simple (~150-250€) vs remplacement complet (~400-650€). (5) La limite de 2-3 semaines/500 km est prudente mais potentiellement exagérée pour un simple EGR encrassé sans symptômes de surchauffe moteur rapportés. (6) Pas de mention du contrôle du capteur de température des gaz d'échappement (CTS) qui influence aussi la commande EGR. Diagnostic solide dans sa logique générale, mais manque de hiérarchisation des hypothèses et de détails sur le protocole de vérification préalable."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:07:36.285Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [],
+    "symptoms": "Bruit bizarre au freinage depuis hier, pas de voyant allume.",
+    "expectedTier": 2,
+    "label": "Symptome seul: bruit freinage",
+    "status": 200,
+    "ms": 15568,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Usure avancée des plaquettes de frein atteignant le témoin d'usure métallique, provoquant un bruit de frottement ou de grincement caractéristique. À 87 000 km sur un diesel souvent utilisé en ville, c'est le scénario statistiquement le plus probable.",
+        "hypotheses_alternatives": [
+          "Disque de frein voilé ou oxydé en surface (véhicule laissé à l'arrêt par temps humide), créant un bruit rythmique à basse vitesse",
+          "Corps étranger (caillou, débris) coincé entre la plaquette et le disque",
+          "Étrier de frein grippé ou piston d'étrier ne se rétraçant plus correctement, causant un frottement permanent",
+          "Roulement de roue en début de défaillance, bruit amplifié lors du freinage par le transfert de charge"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Maximum 2-3 jours ou 150 km — consultation en atelier cette semaine impérative. Stopper immédiatement si le bruit s'intensifie, si la pédale devient molle, ou si le véhicule tire d'un côté au freinage.",
+        "cout_estime_min": 80,
+        "cout_estime_max": 350,
+        "urgence": "haute",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 25,
+        "failles": "Le diagnostic manque de rigueur sur plusieurs points critiques : (1) ABSENCE DE CODE DTC - le diagnostic affirme une usure de plaquettes mais un système de freinage défaillant (étrier grippé, fuite, piston bloqué) génère généralement des codes (C1000-C1999). L'absence totale de code rend le diagnostic d'usure moins certain que présenté. (2) CONFUSION SYMPTOMATIQUE - un bruit de grincement caractéristique d'usure n'est PAS équivalent à un bruit 'bizarre' non décrit. Le diagnostic suppose une identification sonore que le propriétaire n'a pas fournie. Un bruit metalloïde ≠ bruit sourd ≠ crissement. (3) HYPOTHÈSE D'ÉTRIER GRIPPÉ SOUS-ESTIMÉE - sur diesel urbain, l'étrier grippé est aussi probable que l'usure simple : il expliquerait l'absence de code ET un bruit bizarre persistent. (4) ROULEMENT DE ROUE REJETÉ TROP RAPIDEMENT - bruit 'amplifié lors du freinage' contredit l'hypothèse listée; or un roulement défaillant peut produire des bruits variables avec la charge. (5) DÉLAI IRRÉALISTE - '2-3 jours' est agressif sans avoir ausculté le véhicule (freinage performant? pédale normale? vibration?). Un diagnostic 'moyenne confiance' ne justifie pas une urgence 'haute'. (6) COÛT SOUS-ESTIMÉ - 80€ minimum pour simple usure est correct, mais si étrier: oubli du coût majeur (remplacement complet 200-400€). Pas de scénario 'roulement roue' (300-600€). Points forts : hypothèses alternatives pertinentes, prudence explicite ('arrêter si...'), recommandation d'atelier. Mais la base diagnostique est faible."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:07:51.853Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [
+      "P0300"
+    ],
+    "symptoms": "Rates aleatoires depuis 3 semaines, cliquetis a froid 2-3s qui disparait, LTFT +8%, bougies neuves il y a 15000km.",
+    "expectedTier": 2,
+    "label": "P0300 + contexte riche (cas reel Thomas)",
+    "status": 200,
+    "ms": 18156,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "code DTC + symptômes texte — nuance au-delà d'un code seul",
+      "diagnosis": {
+        "cause_principale": "Injecteurs diesel défaillants ou encrassés provoquant une mauvaise pulvérisation du carburant, entraînant des ratés d'allumage aléatoires (P0300). Sur un E46 320d à 156 000 km, la dégradation des injecteurs Bosch est une cause fréquente, cohérente avec le LTFT élevé (+8%) indiquant une compensation active du mélange par l'ECU.",
+        "hypotheses_alternatives": [
+          "Fuite de compression sur un ou plusieurs cylindres (joints de soupapes usés, segment défaillant) — le cliquetis à froid de 2-3s pourrait indiquer un début de problème de lubrification ou un jeu de soupapes excessif",
+          "Pompe haute pression d'injection (HP pump) défaillante avec pression rail insuffisante, particulièrement en démarrage à froid — très répandu sur M47 à ce kilométrage",
+          "Débitmètre d'air (MAF) encrassé ou vieillissant faussant le calcul de masse d'air et expliquant le LTFT +8% ainsi que les ratés",
+          "Filtre à carburant colmaté réduisant l'alimentation en charge et provoquant des ratés aléatoires sous sollicitation"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Ne pas dépasser 1 semaine ou 300 km — les ratés répétés peuvent endommager le catalyseur/FAP et provoquer une dilution de l'huile par le carburant (risque moteur grave). Éviter autoroute et forte charge moteur.",
+        "cout_estime_min": 350,
+        "cout_estime_max": 1800,
+        "urgence": "haute",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 28,
+        "failles": "Le diagnostic est globalement bien structuré mais présente quelques faiblesses à investiguer : (1) BOUGIES NEUVES : sur un diesel M47, il n'y a pas de bougies d'allumage classiques — le diagnostic mentionne 'bougies neuves il y a 15000km' ce qui est soit une erreur de saisie (bougies de préchauffage ?), soit indique une confusion véhicule essence/diesel, réduisant la crédibilité initiale. (2) LTFT +8% : sur un diesel, les trim-codes Long-Term Fuel Trim sont moins pertinents que sur essence (pas de feedback O2 classique en boucle fermée). Cette référence suggère une approche trop 'essence-centrée'. (3) CLIQUETIS À FROID 2-3s : bien identifié, mais plusieurs causes possibles non explorées : problème de glow-plugs (bougies de préchauffage défectueuses), froid excessif, délai de démarrage anormal. (4) MANQUE DE DONNEES : aucune mention de pressiomètre rail haute pression effectif, consommation anormale, coloration des gaz d'échappement, ou comportement sous charge (ratés constants ou intermittents ?). (5) P0300 seul : pas de codes spécifiques par cylindre (P0301-P0304) — l'ECU a-t-il enregistré des ratés multiples ou sélectifs ? (6) INJECTEURS DIAGNOSIS TROP RAPIDE : avant de remplacer 4 injecteurs (coûteux), un test de compression et une analyse des gaz pourraient éliminer les fuites de compression. L'hypothèse pompe HP est bonne mais le diagnostic principal sur injecteurs bénéficierait d'une vérification du rail pressure d'abord. Conclusion : diagnostic d'une prudence acceptable mais manque rigueur diagnostique diesel (absence de tests de pression de rail, confusion bougies/glow-plugs, surutilisation LTFT)."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:08:10.011Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [],
+    "symptoms": "Fumee blanche au demarrage a froid, disparait apres quelques minutes.",
+    "expectedTier": 2,
+    "label": "Symptome seul: fumee blanche froid",
+    "status": 200,
+    "ms": 19438,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Condensation normale ou légère fuite de joint de culasse débutante permettant à de l'eau de s'infiltrer dans la chambre de combustion, se vaporisant au démarrage à froid avant que le moteur atteigne sa température de fonctionnement. Sur un E46 320d à 156 000 km, le joint de culasse est une usure connue et fréquente.",
+        "hypotheses_alternatives": [
+          "Condensation atmosphérique banale dans le pot d'échappement par temps froid ou humide, sans caractère pathologique",
+          "Injecteur défaillant ou encrassé provoquant une combustion incomplète au démarrage à froid (gazole non brûlé se transformant en vapeur blanchâtre)",
+          "Turbocompresseur usé avec légère fuite d'huile côté admission, visible uniquement à froid"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Surveiller attentivement pendant 1 à 2 semaines maximum : vérifier le niveau de liquide de refroidissement tous les 2-3 jours, l'aspect de l'huile moteur (émulsion laiteuse = stop immédiat) et si la fumée blanche persiste plus longtemps ou augmente. Consulter un mécanicien sous 10 jours.",
+        "cout_estime_min": 30,
+        "cout_estime_max": 1800,
+        "urgence": "moyenne",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": false,
+        "vulnerability_score": null,
+        "failles": null
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:08:29.443Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": false,
+    "needsEscalation": false,
+    "pass": false
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0401",
+      "P0299"
+    ],
+    "symptoms": "",
+    "expectedTier": 2,
+    "label": "2 codes simultanes (EGR + turbo)",
+    "status": 200,
+    "ms": 14305,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Recirculation insuffisante des gaz d'échappement (EGR encrassé ou défaillant) couplée à une sous-alimentation du turbocompresseur, probablement liée à un colmatage du circuit EGR qui perturbe la pression d'admission et la suralimentation.",
+        "hypotheses_alternatives": [
+          "Vanne EGR encrassée/bloquée partiellement fermée entraînant une pression turbo insuffisante par effet de cascade sur la gestion moteur",
+          "Fuite sur le circuit d'air d'admission (durit, intercooler) réduisant simultanément le flux EGR mesuré et la pression turbo",
+          "Géométrie variable du turbo (VGT) encrassée ou défaillante, causant à la fois P0299 et une mauvaise régulation EGR en amont"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "ne pas dépasser 300-400 km ou 1 semaine, diagnostic atelier impératif avant aggravation (risque d'emballement ou de casse turbo)",
+        "cout_estime_min": 150,
+        "cout_estime_max": 1200,
+        "urgence": "moyenne",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 35,
+        "failles": "Le diagnostic présente une structure logique cohérente mais contient plusieurs faiblesses critiques : 1) ABSENCE DE HIÉRARCHISATION : Les deux codes (P0401 EGR insuffisante et P0299 sous-alimentation turbo) sont traités comme liés par causalité, mais le diagnostic ne justifie pas mécaniquement pourquoi un EGR encrassé causerait une sous-alimentation turbo - la relation inverse (turbo faible → mauvaise ventilation EGR) est plus plausible; 2) HYPOTHÈSES CONTRADICTOIRES : La deuxième hypothèse (fuite d'air admission) contredit l'EGR encrassé en tant que cause principale - une fuite réduirait la pression turbo mais ne causerait pas nécessairement un encrassement EGR observable en P0401; 3) DONNÉES MANQUANTES CRITIQUES : Aucun symptôme décrit signifie pas de perte de puissance, pas de bruit turbo, pas de consommation anormale - or ces symptômes confirmeraient une sous-alimentation turbo réelle; 4) LOGIQUE EGR/TURBO INVERSÉE : Un EGR encrassé crée PLUS de contre-pression, ce qui aide théoriquement le turbo, ne le gêne pas; 5) COÛT ESTIMÉ TROP LARGE (150-1200€) : Cette amplitude énorme suggère l'incertitude du diagnostic - un nettoyage EGR coûte ~400€, un turbo ~800€, mais le diagnostic ne choisit pas; 6) DIAGNOSTIC ALTERNATIF OMIS : P0401 + P0299 sans symptômes pourrait indiquer un simple problème de capteur (débitmètre MAF, capteur pression turbo) plutôt qu'un défaut mécanique; 7) L'URGENCE 'MOYENNE' EST SURÉVALUÉE : Aucun symptôme + codes sans dégradation = diagnostic peut attendre une analyse approfondie, pas 1 semaine."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:08:43.726Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [],
+    "symptoms": "Perte de puissance progressive depuis 1 semaine, voyant moteur clignote (pas fixe).",
+    "expectedTier": 2,
+    "label": "Symptome seul: perte puissance + clignotant (urgence)",
+    "status": 200,
+    "ms": 15352,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Défaillance partielle d'un ou plusieurs injecteurs diesel provoquant une combustion irrégulière, très fréquente sur le M47 156ch à ce kilométrage. Le clignotement du voyant moteur (vs fixe) indique une faute intermittente active, typiquement liée à des ratés d'allumage ou une injection déséquilibrée.",
+        "hypotheses_alternatives": [
+          "Filtre à particules (FAP) en cours de colmatage réduisant le débit d'échappement et la puissance, surtout si utilisation urbaine prédominante",
+          "Débitmètre d'air (MAF) encrassé ou défaillant fournissant des données erronées à l'ECU, causant un appauvrissement du mélange",
+          "Turbocompresseur à géométrie variable (VGT) grippé ou encrassé limitant la suralimentation, fréquent sur E46 320d",
+          "Vanne EGR encrassée ou bloquée perturbant le recyclage des gaz et la combustion"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Maximum 3 à 5 jours ou 150 km sans diagnostic approfondi — le clignotement du voyant indique des ratés actifs pouvant endommager le catalyseur/FAP de façon irréversible si prolongé",
+        "cout_estime_min": 80,
+        "cout_estime_max": 1800,
+        "urgence": "haute",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 35,
+        "failles": "Le diagnostic présente une ABSENCE CRITIQUE : aucun code DTC n'a été fourni, ce qui invalide partiellement l'analyse. Voici les failles majeures : 1) CONTRADICTION INTERNE : un voyant moteur qui clignote (intermittent) est généralement associé à des codes DTC enregistrés, même temporaires. L'absence totale de codes rend suspecte la conclusion sur 'ratés d'allumage' ou 'injection déséquilibrée'. 2) HYPOTHÈSE DE BASE NON TESTÉE : sur un E46 320d M47 à 156k km, la perte de puissance progressive sans codes pourrait aussi être : problème électrique mineur (connecteur MAF mal branché, causant un clignotement sans code stocké), encrassement graduel du filtre à carburant diesel (pas toujours détecté par codes), ou problème de chauffage du gazole en hiver (non mentionné). 3) ERREUR MÉTHODOLOGIQUE : attribuer une 'confiance moyenne' tout en recommandant une action 'haute urgence' sans données diagnostiques (lecture complète de l'ECU, scan préalable) est incohérent. 4) FAP/VGT : bien que pertinent pour ce modèle, un colmatage FAP avancé génère typiquement des codes de régénération. 5) COÛT ESTIMÉ ÉNORME (80-1800€) : trop large, basé sur un diagnostic spéculatif. MANQUE : historique d'entretien, contexte (urbain/route), température extérieure, fréquence du clignotement du voyant, lecture réelle des codes DTC."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:08:59.100Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [],
+    "symptoms": "Odeur d'essence dans l'habitacle depuis ce matin.",
+    "expectedTier": 2,
+    "label": "Symptome seul: odeur essence (securite)",
+    "status": 200,
+    "ms": 12144,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Fuite de carburant probable au niveau du circuit d'alimentation (injecteurs, rampe, durites) ou du réservoir, générant une vapeur d'hydrocarbures qui s'infiltre dans l'habitacle via le plancher ou le compartiment moteur.",
+        "hypotheses_alternatives": [
+          "Fuite au niveau du bouchon de réservoir ou de la jauge de carburant (joint défaillant)",
+          "Fuite sur une durite de carburant fissurée ou mal connectée après une intervention récente",
+          "Accumulation de carburant sous le véhicule suite à un plein débordant (moins préoccupant mais à vérifier)"
+        ],
+        "peut_rouler": "non",
+        "jusqu_quand": "immédiat — ne pas rouler avant inspection complète",
+        "cout_estime_min": 80,
+        "cout_estime_max": 600,
+        "urgence": "haute",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 35,
+        "failles": "Le diagnostic présente une faille majeure : absence totale de différenciation entre 'odeur d'essence' et 'odeur diesel'. Or, c'est un Renault Clio DIESEL (87000 km). L'odeur rapportée comme 'essence' pourrait être : (1) une mauvaise interprétation du propriétaire entre essence et diesel (odorats différents), (2) une odeur de gazole normal provenant du compartiment moteur lors d'une condensation ou fuite mineure sans gravité, (3) une odeur résiduelle d'un ravitaillement récent mal nettoyé. Deuxième faille : aucun code DTC fourni. Sur un diesel 2016 avec injecteurs sous haute pression (rampe jusqu'à 1600 bar), une VRAIE fuite de carburant provoque presque toujours des codes défaut (P0087, P0088, anomalies de richesse). Son absence suggère qu'une fuite majeure du circuit d'alimentation est peu probable. Troisième faille : pas de demande de vérification du niveau de carburant (consommation anormale non mentionnée), ni de précision sur la localisation exacte de l'odeur (habitacle avant/arrière, après/avant moteur). Quatrième faille : pas d'investigation sur d'autres causes olfactives (filtre à particules encrassé chauffant anormalement, huile moteur brûlée, joint de prise d'air d'admission défaillant). Le diagnostic saute des étapes évidentes avant de conclure à une urgence 'ne pas rouler'. Cinquième faille : le coût estimé 80-600€ est trop large et peu utile sans diagnostic visuel préalable."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:09:11.247Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [
+      "P0420",
+      "P0171"
+    ],
+    "symptoms": "",
+    "expectedTier": 2,
+    "label": "2 codes simultanes (cat + pauvre)",
+    "status": 200,
+    "ms": 15206,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Le P0420 indique une efficacité du catalyseur dégradée (sonde lambda aval détectant une mauvaise conversion des gaz), tandis que le P0171 signale un mélange trop pauvre, probablement causé par une fuite d'air en amont ou une sonde lambda amont défaillante envoyant des valeurs erronées qui appauvrissent inutilement le mélange et accélèrent la dégradation du catalyseur.",
+        "hypotheses_alternatives": [
+          "Sonde lambda amont (pré-catalyseur) défaillante ou encrassée, causant un mélange pauvre chronique et endommageant le catalyseur à terme",
+          "Fuite d'air sur le circuit d'admission (durite, joint de collecteur) faussant la mesure du débit d'air et provoquant le P0171",
+          "Catalyseur en fin de vie indépendamment (87 000 km, diesel, usage potentiellement urbain intensif) avec sonde lambda secondaire dégradée",
+          "Injecteurs encrassés ou débit faible contribuant à l'appauvrissement du mélange"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "2 à 3 semaines maximum, sans dépasser 500 km supplémentaires sans diagnostic approfondi — risque d'aggravation du catalyseur et potentiel colmatage du FAP en cascade",
+        "cout_estime_min": 150,
+        "cout_estime_max": 950,
+        "urgence": "moyenne",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 25,
+        "failles": "Le diagnostic fourni est globalement solide, mais présente quelques faiblesses : (1) Il ignore complètement le FAP (Filtre à Particules), critique sur un diesel 2016 — un mélange pauvre chronique peut effectivement colmater le FAP, mais ce risque en cascade devrait être explicité dans la cause principale, pas seulement mentionné en passant. (2) L'hypothèse 'injecteurs encrassés' est correcte pour un diesel, mais le diagnostic ne distingue pas les symptômes d'un défaut d'injection (bruit, secousses) qui seraient visibles — aucun symptôme n'est rapporté, ce qui rend cette hypothèse moins probable. (3) À 87 000 km sur un diesel, le catalyseur/FAP ne devrait pas être 'en fin de vie' indépendamment ; l'hypothèse 3 est donc spéculative sans données de consommation carburant ou historique d'entretien. (4) Absence de mention de la régénération du FAP ou d'un éventuel colmatage préalable, pourtant courant sur cette génération Clio dCi. (5) La fourchette de coût (150-950€) est très large et peu utile sans diagno approfondie première. Le diagnostic reste raisonnable dans sa priorisation (sonde amont + fuite d'air d'abord), mais manque de rigueur sur le FAP et l'ordre d'investigation réel sur un diesel Renault 2016."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:09:26.410Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [],
+    "symptoms": "Le moteur cale au ralenti par intermittence depuis ce matin.",
+    "expectedTier": 2,
+    "label": "Symptome seul: calage ralenti",
+    "status": 200,
+    "ms": 15653,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Encrassement ou défaillance du régulateur de ralenti (vanne EGR partiellement obstruée ou capteur MAF encrassé), très fréquent sur le 320d M47 à ce kilométrage, provoquant une instabilité du mélange air/carburant au ralenti.",
+        "hypotheses_alternatives": [
+          "Pompe à injection haute pression en début de défaillance (perte de pression au ralenti, typique du M47 à 150k+)",
+          "Injecteurs encrassés ou présentant des fuites internes causant un mauvais dosage du carburant",
+          "Vanne EGR collée partiellement ouverte introduisant trop de gaz brûlés dans l'admission",
+          "Capteur de position vilebrequin (CKP) défaillant, causant des calages intermittents sans code DTC immédiat",
+          "Fuite d'air dans le circuit d'admission (durite fendue, débitmètre MAF mal étanché)"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Maximum 3 à 5 jours ou 150 km — surveiller attentivement : si les calages se multiplient, deviennent plus fréquents ou surviennent en roulant (pas seulement au ralenti), arrêt immédiat et remorquage conseillé",
+        "cout_estime_min": 80,
+        "cout_estime_max": 1200,
+        "urgence": "moyenne",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 35,
+        "failles": "Le diagnostic présente une couverture raisonnablement équilibrée avec plusieurs failles mineures mais identifiables : (1) ABSENCE DE CODES DTC : Le diagnostic ne souligne pas assez que l'absence totale de codes DTC contredit partiellement la théorie du capteur MAF/CKP défaillant, qui génère généralement des codes. Cela renforce plutôt les hypothèses mécaniques (EGR, injecteurs, fuite d'air) non détectées par l'OBD. (2) POMPE À INJECTION HAUTE PRESSION : Listée comme alternative mais moins probable au ralenti seul — une défaillance HPFP provoque généralement des pertes de puissance progressives en charge, pas des calages intermittents spécifiquement au ralenti sans symptômes en roulage. (3) MANQUE : Pas de mention de l'état de la batterie/alternateur ou des connecteurs (corrosion sur capteurs), causes simples et fréquentes d'instabilités intermittentes sans DTC. (4) DÉLAI DE ROULAGE INCOHÉRENT : L'avertissement '3-5 jours/150 km' est raisonnablement prudent mais contradictoire avec 'rouler avec précaution' — sur un moteur qui cale au ralenti, le risque de caler en circulation (à un feu rouge, en intersection) est sous-estimé. (5) FOURCHETTE DE COÛTS : 80-1200€ est très large et peu discriminante, suggérant une faible certitude sur la cause réelle. Points positifs : hypothèses alternatives bien structurées, contexte kilométrique pertinent (M47 156k km), prudence appropriée."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:09:42.096Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [],
+    "symptoms": "Vibration importante en acceleration, voyant DSC allume.",
+    "expectedTier": 2,
+    "label": "Symptome seul: vibration + DSC",
+    "status": 200,
+    "ms": 17278,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Défaillance probable d'un cardan ou d'un silent-bloc de triangle de suspension, provoquant des vibrations en accélération. Le voyant DSC allumé est vraisemblablement une conséquence indirecte via un capteur de vitesse de roue perturbé par les vibrations mécaniques.",
+        "hypotheses_alternatives": [
+          "Joint homocinétique (CV joint) usé ou soufflet déchiré côté transmission — très fréquent sur E46 à ce kilométrage",
+          "Palier de transmission centrale (support de cardan) défaillant, classique sur les BMW à propulsion de cette génération",
+          "Disque de volant moteur bimasse (DMF) en fin de vie — fréquent sur 320d E46, génère vibrations en charge et peut perturber la gestion moteur/DSC",
+          "Capteur ABS/DSC défaillant sur une roue, qui perturbe le système DSC et peut créer une sensation de vibration via l'intervention électronique intempestive"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Ne pas dépasser 3 à 5 jours ou 150 km sans diagnostic — si la vibration s'aggrave brutalement ou si le véhicule tire d'un côté, arrêt immédiat obligatoire. Un cardan ou CV joint en rupture peut provoquer une perte de contrôle.",
+        "cout_estime_min": 150,
+        "cout_estime_max": 1200,
+        "urgence": "haute",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 35,
+        "failles": "Le diagnostic proposé est globalement SOLIDE mais présente des lacunes exploitables : (1) ABSENCE DE DONNÉES CRITIQUES : Aucun code DTC fourni alors que le voyant DSC est allumé — cela invalide partiellement l'hypothèse 'perturbation capteur indirecte'. Un DSC activé génère systématiquement des codes (C0xxx pour ABS/DSC). L'absence totale de codes suggère soit un lecteur OBD insuffisant, soit un dysfonctionnement du module DSC lui-même (plus grave que prévu). (2) CONFUSION DIAGNOSTIQUE : Le lien causal 'vibration mécanique → perturbation capteur → activation DSC' est spéculatif. Si c'était vrai, on verrait des codes d'erreur capteur/ABS. L'inverse est possible : un capteur ABS défaillant cause l'activation DSC SANS vibrations mécaniques réelles. (3) OMISSION MAJEURE : Aucune mention du FILTRE À CARBURANT ou INJECTEURS (très courant sur 320d E46 à 156k km) — une vibration + voyant peut aussi indiquer une combustion irrégulière, ratés moteur ou suralimentation défaillante (turbo e/ou intercooler). (4) DMF EN FIN DE VIE : Bien identifié mais risqué d'en faire une hypothèse sans données sur la consommation d'huile ou la température moteur — cela nécessiterait un contrôle préalable. (5) COÛT ESTIMÉ TROP LARGE (150-1200€) : Manque de hiérarchisation. Les diagnostics à faire en priorité (scanner OBD complet, injecteurs, turbo) coûtent 50-200€ et pourraient éliminer 60% des hypothèses. (6) 'PEUT ROULER AVEC PRÉCAUTION' : Dangereux sans diagnostic du DSC. Si le capteur ABS est défaillant, le DSC peut se déclencher inopinément et déstabiliser le véhicule. Le diagnostic aurait dû exiger un diagnostic électronique AVANT de donner ce conseil."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:09:59.381Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [],
+    "symptoms": "Bruit de claquement en virage, surtout a basse vitesse.",
+    "expectedTier": 2,
+    "label": "Symptome seul: claquement virage (cardan)",
+    "status": 200,
+    "ms": 13797,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Usure ou rupture d'un joint de transmission (homocinétique) côté avant, très fréquent sur Clio IV diesel à ce kilométrage. Le claquement rythmé en virage à basse vitesse est la signature classique d'un soufflet de cardan fissuré ou d'un joint homocinétique en fin de vie.",
+        "hypotheses_alternatives": [
+          "Rotule de suspension avant usée ou desserrée (bruit similaire mais souvent plus présent sur les bosses également)",
+          "Silent-bloc de triangle de suspension avant dégradé",
+          "Roulement de roue avant en début d'usure (bruit plutôt continu mais peut se manifester en virage)"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Ne pas dépasser 1 à 2 semaines ou 300-500 km sans diagnostic confirmé — si le claquement s'intensifie ou devient permanent, stopper immédiatement (risque de rupture de transmission)",
+        "cout_estime_min": 180,
+        "cout_estime_max": 520,
+        "urgence": "moyenne",
+        "confidence": "haute"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 28,
+        "failles": "Le diagnostic présente une logique solide mais repose sur des présomptions sans confirmation. Points faibles majeurs : (1) Aucun code DTC fourni — sur une Clio IV diesel 2016, l'absence de codes limite la validation (un joint homocinétique très usé devrait générer des vibrations détectées par l'ESP/ABS). (2) Le claquement 'en virage à basse vitesse' est effectivement signature classique d'un cardan, MAIS aussi compatible avec : roulement de roue (le diagnostic le mentionne mais le rejette trop vite — un roulement peut créer un claquement rhythmé en virage du fait des forces latérales), un galet de poulie tendue usé, ou une fixation de barre stabilisatrice/silent-bloc avant. (3) Aucune mention de durée/fréquence du claquement ni de corrélation avec d'autres symptômes (vibration au volant, usure de pneu asymétrique, jeu dans la colonne, changement de bruit à l'accélération). (4) La confiance est déclarée 'haute' alors que sans inspection visuelle du soufflet de cardan ou essai diagnostique (écoute amplifiée, vérification du jeu), c'est une présomption. (5) L'estimation de coût 180-520€ est très large et peu fiable sans localisation confirmée du bruit. Point positif : Le diagnostic ne sur-dramatise pas, propose un délai raisonnable, et liste des hypothèses alternatives pertinentes. Mais sans un diagnostic physique (inspection du soufflet, vérification du jeu du cardan, test du roulement), le classement 'cause principale' reste prématuré."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:10:13.180Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "marie",
+    "dtcCodes": [],
+    "symptoms": "Voyant batterie allume et difficultes au demarrage a froid depuis 3 jours.",
+    "expectedTier": 2,
+    "label": "Symptome seul: voyant batterie + demarrage",
+    "status": 200,
+    "ms": 13741,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "0 ou plusieurs codes DTC, ou symptômes sans code — nécessite Sonnet",
+      "diagnosis": {
+        "cause_principale": "Batterie 12V en fin de vie ou alternateur défaillant : à 87 000 km sur un véhicule de 2016 (9 ans), la batterie d'origine approche ou dépasse sa durée de vie typique (5-7 ans), ce qui explique les difficultés de démarrage à froid et l'allumage du voyant charge.",
+        "hypotheses_alternatives": [
+          "Alternateur défaillant (diode HS ou régulateur de tension) ne rechargeant plus correctement la batterie entre les trajets",
+          "Courroie d'accessoires (courroie d'alternateur) usée ou détendue réduisant l'efficacité de charge",
+          "Mauvaise connexion ou oxydation sur les bornes de batterie ou masse carrosserie provoquant une résistance parasite"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "2 à 3 jours maximum, ne pas effectuer de longs trajets sans vérification préalable — risque de panne sèche électrique imminente (coupure moteur, perte de direction assistée électrique)",
+        "cout_estime_min": 80,
+        "cout_estime_max": 350,
+        "urgence": "haute",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 25,
+        "failles": "Le diagnostic est globalement solide mais présente quelques faiblesses : (1) Absence de codes DTC mentionnée - or un voyant batterie allumé devrait souvent générer des codes (P0562, P0563, etc.). L'absence de codes n'est pas expliquée et pourrait indiquer un diagnostic incomplet ou un véhicule jamais scanné. (2) La batterie d'origine après 9 ans est une hypothèse correcte, mais le diagnostic ne fait pas la distinction entre batterie HS et charge insuffisante - les symptômes sont identiques. (3) L'hypothèse de connexions oxydées est mentionnée mais pas priorisée : c'est une cause très fréquente et facilement vérifiable AVANT de conclure à un remplacement batterie/alternateur coûteux. (4) Aucune mention du test simple : tension batterie moteur arrêté (doit être 12-13V) et sous charge moteur tournant (doit être 13,5-15V). Ces mesures sépareraient rapidement batterie d'alternateur. (5) Les difficultés de démarrage à froid depuis 3 jours seulement : pourquoi si brutal ? Cela pourrait suggérer une défaillance soudaine (mauvaise connexion) plutôt qu'une dégradation progressive de batterie. (6) Le coût estimé (80-350€) est très large et peu utile sans diagnostic préalable. Points positifs : identification correcte des risques (perte direction assistée), temporalité réaliste, mention des alternatives. Mais le diagnostic manque de rigueur séquentielle avant de proposer des remplacements."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:10:26.926Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  },
+  {
+    "agent": "thomas",
+    "dtcCodes": [
+      "P0401"
+    ],
+    "symptoms": "Le code P0401 revient toujours apres nettoyage de la vanne EGR par le garage.",
+    "expectedTier": 2,
+    "label": "P0401 + contexte echec reparation",
+    "status": 200,
+    "ms": 16007,
+    "ok": true,
+    "raw": {
+      "tier": 2,
+      "tier_reason": "code DTC + symptômes texte — nuance au-delà d'un code seul",
+      "diagnosis": {
+        "cause_principale": "La vanne EGR elle-même n'est probablement pas la cause racine : le code P0401 (débit EGR insuffisant) qui persiste après nettoyage indique très probablement un colmatage sévère ou une obstruction du circuit EGR en amont/aval (tubulure d'admission encrassée, radiateur EGR bouché, ou capteur MAP/différentiel de pression EGR défaillant ne détectant pas correctement le flux).",
+        "hypotheses_alternatives": [
+          "Capteur de pression différentielle EGR (DPFE) défectueux ou encrassé, donnant une lecture erronée du débit même si la vanne fonctionne correctement",
+          "Tubulure d'admission et collecteur d'admission massivement encrassés (calamine), réduisant physiquement le débit des gaz recirculés malgré une vanne propre",
+          "Radiateur EGR partiellement obstrué limitant le débit de gaz recyclés",
+          "Vanne EGR mécaniquement usée ou grippée en position insuffisamment ouverte, nécessitant un remplacement plutôt qu'un nettoyage"
+        ],
+        "peut_rouler": "avec précaution",
+        "jusqu_quand": "Quelques semaines maximum, mais prévoir un diagnostic complet rapidement (sous 500 km) — le moteur ne risque pas de casse immédiate mais l'encrassement progressif de l'admission peut endommager le turbo et les injecteurs à terme",
+        "cout_estime_min": 150,
+        "cout_estime_max": 900,
+        "urgence": "moyenne",
+        "confidence": "moyenne"
+      },
+      "challenger": {
+        "active": true,
+        "vulnerability_score": 15,
+        "failles": "Le diagnostic est robuste et bien structuré. Points solides : (1) La logique de non-cause-racine est correcte — le nettoyage suivi de la réapparition du code P0401 oriente effectivement vers un problème amont/aval, pas la vanne elle-même. (2) Les hypothèses alternatives sont exhaustives et pertinentes pour un E46 320d connu pour l'encrassement EGR. (3) La mention du capteur DPFE est cruciale — il est fréquemment défaillant sur cette génération. Failles mineures identifiées : (1) Absence de priorisation entre les hypothèses — le DPFE défectueux devrait être testé EN PREMIER (diagnostic électronique simple, coût ~150€) avant de démonter le radiateur EGR ou l'admission. (2) Le diagnostic ne mentionne pas le test du débitmètre MAF (mass airflow) qui peut aussi affecter la détection du débit EGR sur les diesels E46. (3) Absence de vérification de la continuité des durites EGR et des connexions électriques — une durite fissurée crée des fuites d'air parasites affectant les capteurs de pression. (4) La durée 'quelques semaines' est vague ; avec un code actif, le mode dégradé peut être enclenché, impactant plus fortement les émissions et la consommation. Conclusion : diagnostic fiable et utile, mais manque un ordre d'investigation optimal pour économiser temps/coûts."
+      },
+      "needs_tier3_escalation": false,
+      "model_used": "claude-sonnet-4-6",
+      "session_charged": false,
+      "unlimited": false,
+      "queried_at": "2026-06-30T18:10:42.877Z"
+    },
+    "tierActual": 2,
+    "tierMatch": true,
+    "diagIssues": [],
+    "challengerOk": true,
+    "needsEscalation": false,
+    "pass": true
+  }
+]
