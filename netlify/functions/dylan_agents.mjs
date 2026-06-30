@@ -301,7 +301,7 @@ async function majMemoire(userId, veh, conclusion, supabase) {
   } catch (e) { console.error("[DYLAN] majMemoire:", e.message); }
 }
 
-function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruction = "", vehicleCtx = null) {
+function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruction = "", vehicleCtx = null, prevDiags = []) {
   // Compact state allégé : symptome tronqué, hypotheses sans preuves
   const compact = JSON.stringify({
     etat: state.etat,
@@ -366,10 +366,32 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
     }
   }
 
-  // #9 Mémoire véhicule
-  const memoireLine = memoireContext
-    ? `\nMÉMOIRE VÉHICULE (pannes précédentes sur ce véhicule chez cet utilisateur) :\n${(memoireContext.known_issues || []).slice(-3).map(i => `- ${i.cause} (vu ${i.sessions_count} fois)`).join("\n")}\n`
+  // #9 Mémoire véhicule (known_issues sur ce véhicule — sessions precedentes)
+  const memoireLine = memoireContext && (memoireContext.known_issues || []).length
+    ? `\nMÉMOIRE VÉHICULE (pannes déjà vues sur ce véhicule) :\n${
+        (memoireContext.known_issues || []).slice(-5)
+          .map(i => `- ${i.cause}${i.sessions_count > 1 ? ` (récurrent × ${i.sessions_count})` : ""}${i.last_seen ? ` — vu le ${new Date(i.last_seen).toLocaleDateString("fr-FR")}` : ""}`)
+          .join("\n")
+      }${memoireContext.last_diagnosis_summary ? `\nDernier diagnostic : ${memoireContext.last_diagnosis_summary}` : ""}\n`
     : "";
+
+  // Historique inter-session : diagnostics passés sur ce vehicule (charge au 1er tour)
+  // REGLE ABSOLUE injectee directement — le LLM ne peut pas ignorer ce bloc.
+  let prevDiagsLine = "";
+  if (prevDiags && prevDiags.length > 0) {
+    const lignes = prevDiags.map(d => {
+      const ds = d.enquete_state || {};
+      const date = new Date(d.maj_le).toLocaleDateString("fr-FR");
+      const symptome = ds.contexte?.symptome || "symptôme non enregistré";
+      const conclusion = (ds.hypotheses || []).find(h => h.statut === "confirmee")?.libelle
+        || ds.resume_enquete
+        || "diagnostic sans conclusion formelle";
+      const codes = (ds.contexte?.codes || []).join(", ");
+      const controles = (ds.controles_faits || []).length;
+      return `• ${date} — symptôme : "${symptome}"${codes ? ` | codes : ${codes}` : ""} → conclusion : ${conclusion} (${controles} contrôle(s) effectué(s))`;
+    });
+    prevDiagsLine = `\n⚠️ HISTORIQUE DIAGNOSTICS SUR CE VÉHICULE (sessions précédentes) :\n${lignes.join("\n")}\n\nRÈGLE ABSOLUE MÉMOIRE — ces informations sont connues, ne pose JAMAIS de question sur :\n- Des symptômes déjà décrits ci-dessus\n- Des codes OBD déjà mentionnés\n- "Depuis quand ?" si déjà dans l'historique\nSi le symptôme actuel ressemble à un précédent, SIGNALE-LE immédiatement : "J'ai déjà vu ce symptôme sur ton véhicule le [date]..."\n`
+  }
 
   // Fiche outil — injectée automatiquement si l'outil est mentionné dans les contrôles
   let toolGuideBlock = "";
@@ -403,7 +425,7 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
 Chaque message doit être utile, rassurant et précis. Tu parles comme un expert mais tu restes accessible.
 
 ${blocVehicule}${SAFETY_BLOCK}
-${vehicleCtxLine}${ragLine}${dtcLine}${memoireLine}${toolGuideBlock}
+${vehicleCtxLine}${prevDiagsLine}${ragLine}${dtcLine}${memoireLine}${toolGuideBlock}
 ÉTAT D'ENQUÊTE ACTUEL (JSON) :
 ${compact}
 
@@ -643,7 +665,7 @@ export const handler = async (event) => {
     const vKey = vehicleKey(state.vehicule);
     let ragContext = "";
     const isFirstTurn = (state.tour || 0) === 0;
-    const [ragResult, memoire, dtcResult, vehicleCtx] = await Promise.all([
+    const [ragResult, memoire, dtcResult, vehicleCtx, prevDiags] = await Promise.all([
       // RAG : uniquement CONTEXTE phase (tour < 3, pas encore d'hypothèses)
       (!state.hypotheses.length && (state.tour || 0) < 3)
         ? supabase.rpc("search_diagnostic_cases_text", {
@@ -656,7 +678,7 @@ export const handler = async (event) => {
             : ""
           ).catch(e => { console.error("[DYLAN] RAG:", e.message); return ""; })
         : Promise.resolve(""),
-      // Mémoire véhicule
+      // Mémoire véhicule (known_issues inter-session)
       lireMemoire(userId, vKey, supabase),
       // DTC lookup — uniquement si codes nouveaux et pas déjà enrichis
       needsDTC
@@ -668,6 +690,20 @@ export const handler = async (event) => {
         ? getVehicleContext(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year, supabase)
             .catch(() => null)
         : Promise.resolve(state.vehicleCtx || null),
+      // Diagnostics précédents sur ce véhicule (mémoire inter-session) — premier tour uniquement
+      isFirstTurn && vehiculeRecu.make && vehiculeRecu.model
+        ? supabase
+            .from("diag_sessions")
+            .select("maj_le, enquete_state, final_confidence_band, veh_make, veh_model")
+            .eq("user_id", userId)
+            .ilike("veh_make", vehiculeRecu.make)
+            .ilike("veh_model", `%${String(vehiculeRecu.model).split(" ")[0]}%`)
+            .eq("status", "attente_resultat")
+            .order("maj_le", { ascending: false })
+            .limit(4)
+            .then(({ data }) => (data || []).filter(d => d.enquete_state?.contexte?.symptome))
+            .catch(() => [])
+        : Promise.resolve([]),
     ]);
 
     ragContext = ragResult;
@@ -680,6 +716,8 @@ export const handler = async (event) => {
     }
     // Sauvegarder le contexte véhicule dans le state (chargé une seule fois)
     if (vehicleCtx) state.vehicleCtx = vehicleCtx;
+    // Sauvegarder les diags précédents dans le state (chargés une seule fois au tour 0)
+    if (isFirstTurn && prevDiags && prevDiags.length) state.prev_diags = prevDiags;
 
     // ---- 4) Appliquer résultat contrôle ----
     state.reexpliquer = false;
@@ -693,15 +731,23 @@ export const handler = async (event) => {
     const isConclusion = state.etat === "CONCLUSION" || peutConclure(state) !== null;
     const modelChoisi = isConclusion ? MODEL_CONCLUSION : MODEL_ENQUETE;
 
-    const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction, state.vehicleCtx);
+    const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction, state.vehicleCtx, state.prev_diags || []);
     const userMsg = control_result
       ? `Résultat du contrôle : ${control_result}`
       : `Message du client : ${user_input}`;
 
     console.log(`[DYLAN] tour=${state.tour} etat=${state.etat} model=${modelChoisi} dtc=${dtcContext.length} elapsed=${Date.now() - startTime}ms`);
 
-    // Timeout manuel : 22s toutes phases / 22s conclusion (Netlify Pro 26s → 22s safe)
-    // Si plan Free (10s), Netlify coupe silencieusement avant ce timeout
+    // Historique conversation — pass aux 4 derniers tours (8 messages) pour que le LLM
+    // se souvienne des echanges precedents sans reconstruire depuis le seul JSON d etat.
+    // Le JSON d etat dans le system prompt reste la source de verite structuree ;
+    // l historique donne le fil narratif. Sans ca, le LLM redemande au 3e question.
+    if (!state.conv_history) state.conv_history = [];
+    const apiMessages = [
+      ...(state.conv_history).slice(-8), // derniers 4 tours = 8 messages
+      { role: "user", content: userMsg },
+    ];
+
     let completion;
     try {
       const abortCtrl = new AbortController();
@@ -709,9 +755,9 @@ export const handler = async (event) => {
       try {
         completion = await anthropic.messages.create({
           model: modelChoisi,
-          max_tokens: isConclusion ? 2500 : 2400,   // +600 tokens → plus de troncature
+          max_tokens: isConclusion ? 2500 : 2400,
           system,
-          messages: [{ role: "user", content: userMsg }],
+          messages: apiMessages,
         }, { signal: abortCtrl.signal });
       } finally {
         clearTimeout(killTimer);
@@ -754,12 +800,30 @@ export const handler = async (event) => {
       }
     }
 
-    // ---- 6) Fusion état + transitions déterministes ----
+    // ---- 6) Sauvegarder historique conversation ----
+    // Stocker le message utilisateur + la reponse lisible (pas le JSON brut)
+    // pour que les tours suivants aient le fil narratif. Limite 4 tours = 8 messages.
+    state.conv_history.push(
+      { role: "user", content: userMsg },
+      { role: "assistant", content: parsed.message || "" }
+    );
+    state.conv_history = state.conv_history.slice(-8);
+
+    // ---- 7) Fusion état + transitions déterministes ----
     if (parsed.contexte) {
       const incoming = { ...parsed.contexte };
-      // Ne jamais ecraser un symptome deja capture par une valeur vide/floue renvoyee par le LLM.
-      if (!incoming.symptome || String(incoming.symptome).trim().length < 3) delete incoming.symptome;
-      state.contexte = { ...state.contexte, ...incoming };
+      // Fix critique : ne jamais ecraser une valeur existante avec null/undefined.
+      // Le LLM renvoie souvent null pour les champs pas encore collectes — ce qui
+      // ecrasait ce qui avait deja ete capture aux tours precedents.
+      Object.keys(incoming).forEach(k => {
+        if (incoming[k] === null || incoming[k] === undefined) delete incoming[k];
+      });
+      // Symptome trop court = ignore (evite "ok" ou "oui" qui remplacent le vrai symptome)
+      if (incoming.symptome && String(incoming.symptome).trim().length < 3) delete incoming.symptome;
+      // Codes OBD : union stricte — ne jamais remplacer par tableau vide
+      const codes = [...new Set([...(state.contexte.codes || []), ...(incoming.codes || [])])];
+      delete incoming.codes;
+      state.contexte = { ...state.contexte, ...incoming, codes };
     }
     // Capture deterministe du symptome au 1er tour uniquement, puis verrouille (cause du blocage en CONTEXTE).
     if (!state.contexte.symptome && (state.tour || 0) <= 1 && user_input && String(user_input).trim().length >= 3) {
