@@ -257,7 +257,11 @@ export async function handler(event) {
   } catch (e) {
     const isAbort = e.name === "AbortError";
     console.error("[nexus_orchestrator] Diagnosis error:", isAbort ? "timeout" : e.message);
-    return json(isAbort ? 504 : 502, { error: "Service de diagnostic temporairement indisponible" });
+    // DEBUG TEMPORAIRE 30/06 — a retirer une fois la cause des 502 Tier2 identifiee
+    return json(isAbort ? 504 : 502, {
+      error: "Service de diagnostic temporairement indisponible",
+      _debug: { name: e.name, message: e.message, status: e.status, ctor: e.constructor?.name, stack: (e.stack || "").split("\n").slice(0,5) },
+    });
   }
 
   if (!diagnosis) {
