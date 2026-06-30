@@ -107,11 +107,6 @@ export async function handler(event) {
   if (event.httpMethod === "OPTIONS") return preflight();
 
   if (event.httpMethod === "GET" && event.queryStringParameters?.ping) {
-    if (event.headers?.["x-nexus-debug"] === "verify-30062026c") {
-      const results = await runHealthCheck();
-      console.log("NEXUS_HEALTHCHECK_DEBUG", JSON.stringify(results));
-      return json(200, { debug: true });
-    }
     const auth = await getUser(event);
     if (!isOwner(auth)) return json(403, { error: "forbidden" });
     const results = await runHealthCheck();
