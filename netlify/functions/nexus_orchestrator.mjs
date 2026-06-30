@@ -1,16 +1,18 @@
 // ============================================================
 // NEXUS ORCHESTRATOR — Chef d'orchestre multi-IA (ADR-027)
-// 30/06 : healthcheck 4 IAs (scaffold) + Tier 1 (Haiku seul) +
-// Tier 2 (Sonnet + Challenger Haiku) + Tier 3 (Sonnet ‖ GPT web
-// search + consensus/challenge combine Haiku) implementes.
-// Tier 4 (tribunal 4 IAs complet) reste a faire — NEXUS_ARCHITECTURE.md §4.
-// Tier 3 = appel explicite (body.forceTier:3) uniquement, jamais
-// chaine automatiquement depuis Tier 2 dans la meme requete HTTP
-// (depasserait le plafond Netlify) — voir needs_tier3_escalation.
+// 30/06 : Tier 1 (Haiku seul) + Tier 2 (Sonnet + Challenger) +
+// Tier 3 (Sonnet ‖ GPT web search) + Tier 4 (tribunal complet
+// Sonnet ‖ GPT ‖ Gemini ‖ Mistral) tous implementes. Consensus/
+// challenge generalise (2 ou 4 avis) en un seul appel Haiku.
+// Tier 3/4 = appel explicite (body.forceTier:3|4) uniquement,
+// jamais chaine automatiquement depuis un tier inferieur dans la
+// meme requete HTTP (depasserait le plafond Netlify) — voir
+// needs_tier3_escalation / needs_human_escalation.
 // dylan_agents.mjs reste le moteur d'enquête conversationnel
 // (multi-tours) ; nexus_orchestrator produit un verdict validé
 // à tier croissant pour un cas déjà formulé (codes + symptômes).
 // Pas encore câblé au frontend — testable en direct uniquement.
+// Tier 5 (escalade mécanicien humain) reste a faire.
 // ============================================================
 
 import Anthropic from "@anthropic-ai/sdk";
@@ -143,7 +145,10 @@ Réponds UNIQUEMENT en JSON valide, au format exact :
 {
   "vulnerability_score": <0-100>,
   "failles": "explication des failles trouvées, ou aucune faille majeure identifiée"
-}`;
+}
+Barème pour vulnerability_score — utilise toute l'échelle, ne réponds JAMAIS une valeur par défaut :
+0-20 = diagnostic solide, bien étayé par les données. 21-45 = zones d'ombre mineures sans gravité.
+46-70 = lacune réelle qui mérite vérification avant d'agir. 71-100 = diagnostic probablement incomplet ou risqué.`;
 
 function parseModelJSON(text) {
   try {
@@ -229,15 +234,10 @@ Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact :
   "cause_retenue": "la cause la plus probable en tenant compte du ou des avis disponibles, 1-2 phrases",
   "vulnerability_score": <0-100>,
   "failles": "explication des failles ou angles morts trouvés, ou 'aucune faille majeure identifiée'"
-}`;
-
-function buildConsensusInput(caseDescription, diagSonnet, diagGPT) {
-  return `Cas : ${caseDescription}
-
-Diagnostic A (Claude Sonnet) : ${diagSonnet ? JSON.stringify(diagSonnet) : "indisponible (timeout ou erreur)"}
-
-Diagnostic B (GPT avec recherche web) : ${diagGPT ? JSON.stringify(diagGPT) : "indisponible (timeout ou erreur)"}`;
 }
+Barème pour vulnerability_score — utilise toute l'échelle, ne réponds JAMAIS une valeur par défaut :
+0-20 = diagnostic(s) solide(s), bien étayé(s). 21-45 = zones d'ombre mineures sans gravité.
+46-70 = lacune réelle qui mérite vérification avant d'agir. 71-100 = diagnostic(s) probablement incomplet(s) ou risqué(s).`;
 
 async function runGPTDiagnosis(caseDescription, signal) {
   const r = await fetch("https://api.openai.com/v1/responses", {
@@ -264,13 +264,24 @@ async function runGPTDiagnosis(caseDescription, signal) {
   return parseModelJSON(outputText);
 }
 
-async function runConsensus(caseDescription, diagSonnet, diagGPT, signal) {
+// ──────────────────────────────────────────────────────────────
+// Consensus generalise — accepte 2 (Tier3) ou 4 (Tier4) diagnostics.
+// ──────────────────────────────────────────────────────────────
+
+function buildConsensusInput(caseDescription, diagnoses) {
+  const lines = diagnoses.map(
+    ({ label, diagnosis }) => `Diagnostic ${label} : ${diagnosis ? JSON.stringify(diagnosis) : "indisponible (timeout ou erreur)"}`
+  );
+  return `Cas : ${caseDescription}\n\n${lines.join("\n\n")}`;
+}
+
+async function runConsensus(caseDescription, diagnoses, maxTokens, signal) {
   const r = await anthropic.messages.create(
     {
       model: MODEL_HAIKU,
-      max_tokens: 600,
+      max_tokens: maxTokens,
       system: CONSENSUS_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: buildConsensusInput(caseDescription, diagSonnet, diagGPT) }],
+      messages: [{ role: "user", content: buildConsensusInput(caseDescription, diagnoses) }],
     },
     { signal }
   );
@@ -280,6 +291,56 @@ async function runConsensus(caseDescription, diagSonnet, diagGPT, signal) {
     console.error("[nexus_orchestrator] Consensus JSON non parsable. stop_reason:", r?.stop_reason, "extrait:", text.slice(0, 300));
   }
   return parsed;
+}
+
+// ──────────────────────────────────────────────────────────────
+// TIER 4 — Tribunal complet (Sonnet ‖ GPT ‖ Gemini ‖ Mistral)
+// Gemini et Mistral n'avaient jamais ete testes sur une vraie tache
+// de raisonnement (seulement ping healthcheck "reponds OK") — budgets
+// ci-dessous sont une hypothese de depart a valider empiriquement,
+// pas une certitude (meme demarche que Tier2/Tier3).
+// ──────────────────────────────────────────────────────────────
+
+const SONNET_T4_TIMEOUT_MS = 12000;
+const GEMINI_DIAGNOSIS_TIMEOUT_MS = 12000;
+const MISTRAL_DIAGNOSIS_TIMEOUT_MS = 12000;
+const TIER4_CONSENSUS_TIMEOUT_MS = 10000;
+// Pire cas: max(12000 sonnet, 15000 gpt, 12000 gemini, 12000 mistral) + 10000 = 25000ms, sous 26s — marge faible, a valider.
+
+async function runGeminiDiagnosis(caseDescription, signal) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_GEMINI}:generateContent`;
+  const r = await fetch(url, {
+    method: "POST",
+    signal,
+    headers: { "x-goog-api-key": process.env.GOOGLE_GEMINI_API_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: `${NEXUS_SYSTEM_PROMPT}\n\n${caseDescription}` }] }],
+    }),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data?.error?.message || `HTTP ${r.status}`);
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return parseModelJSON(text);
+}
+
+async function runMistralDiagnosis(caseDescription, signal) {
+  const r = await fetch("https://api.mistral.ai/v1/chat/completions", {
+    method: "POST",
+    signal,
+    headers: { Authorization: `Bearer ${process.env.MISTRAL_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: MODEL_MISTRAL,
+      messages: [
+        { role: "system", content: NEXUS_SYSTEM_PROMPT },
+        { role: "user", content: caseDescription },
+      ],
+      max_tokens: 700,
+    }),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data?.message || data?.error?.message || `HTTP ${r.status}`);
+  const text = data?.choices?.[0]?.message?.content || "";
+  return parseModelJSON(text);
 }
 
 export async function handler(event) {
@@ -327,13 +388,80 @@ export async function handler(event) {
 
   const caseDescription = buildCaseDescription({ dtcCodes, symptoms, make, model, year, fuel, mileage });
 
-  // Tier 3 = demande explicite uniquement (escalade depuis needs_tier3_escalation d'un
-  // appel Tier 2 precedent, ou appel direct de test). Jamais decide automatiquement ici :
-  // chainer Tier2 -> Tier3 dans la meme requete depasserait le plafond Netlify.
-  const forceTier3 = body.forceTier === 3;
-  const { tier, reason } = forceTier3
-    ? { tier: 3, reason: "Tier 3 demandé explicitement (escalade ou appel direct)" }
+  // Tier 3/4 = demande explicite uniquement (escalade depuis needs_tier3_escalation /
+  // needs_tier4_escalation d'un appel precedent, ou appel direct de test). Jamais
+  // chaine automatiquement ici : ferait depasser le plafond Netlify dans la meme requete.
+  const forceTier = body.forceTier === 4 ? 4 : body.forceTier === 3 ? 3 : null;
+  const { tier, reason } = forceTier
+    ? { tier: forceTier, reason: `Tier ${forceTier} demandé explicitement (escalade ou appel direct)` }
     : decideTier({ dtcCodes, symptoms });
+
+  if (tier === 4) {
+    const [sonnetR, gptR, geminiR, mistralR] = await Promise.allSettled([
+      withTimeout((signal) => runDiagnosis(MODEL_SONNET, caseDescription, signal), SONNET_T4_TIMEOUT_MS),
+      withTimeout((signal) => runGPTDiagnosis(caseDescription, signal), GPT_DIAGNOSIS_TIMEOUT_MS),
+      withTimeout((signal) => runGeminiDiagnosis(caseDescription, signal), GEMINI_DIAGNOSIS_TIMEOUT_MS),
+      withTimeout((signal) => runMistralDiagnosis(caseDescription, signal), MISTRAL_DIAGNOSIS_TIMEOUT_MS),
+    ]);
+
+    const diagSonnet = sonnetR.status === "fulfilled" ? sonnetR.value : null;
+    const diagGPT = gptR.status === "fulfilled" ? gptR.value : null;
+    const diagGemini = geminiR.status === "fulfilled" ? geminiR.value : null;
+    const diagMistral = mistralR.status === "fulfilled" ? mistralR.value : null;
+
+    [["Sonnet", sonnetR], ["GPT", gptR], ["Gemini", geminiR], ["Mistral", mistralR]].forEach(([name, r]) => {
+      if (r.status === "rejected") {
+        console.error(`[nexus_orchestrator] Tier4 ${name} echec:`, r.reason?.message || r.reason);
+      }
+    });
+
+    const availableDiagnoses = [
+      { label: "A (Claude Sonnet)", diagnosis: diagSonnet },
+      { label: "B (GPT avec recherche web)", diagnosis: diagGPT },
+      { label: "C (Gemini)", diagnosis: diagGemini },
+      { label: "D (Mistral)", diagnosis: diagMistral },
+    ];
+    const successfulCount = availableDiagnoses.filter((d) => d.diagnosis).length;
+
+    if (successfulCount === 0) {
+      return json(502, { error: "Service de diagnostic temporairement indisponible (les 4 IAs ont échoué)" });
+    }
+
+    let consensus = null;
+    try {
+      consensus = await withTimeout((signal) => runConsensus(caseDescription, availableDiagnoses, 800, signal), TIER4_CONSENSUS_TIMEOUT_MS);
+    } catch (e) {
+      const isAbort = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError";
+      console.error("[nexus_orchestrator] Tier4 Consensus error (non bloquant):", isAbort ? "timeout" : e.message);
+    }
+
+    const needsHumanEscalation = !!(
+      consensus &&
+      (consensus.consensus === "divergence" ||
+        (typeof consensus.vulnerability_score === "number" && consensus.vulnerability_score > 50))
+    );
+
+    return json(200, {
+      tier: 4,
+      tier_reason: reason,
+      diagnosis: diagSonnet || diagGPT || diagGemini || diagMistral,
+      diagnosis_sonnet: diagSonnet,
+      diagnosis_gpt: diagGPT,
+      diagnosis_gemini: diagGemini,
+      diagnosis_mistral: diagMistral,
+      ia_disponibles: successfulCount,
+      consensus,
+      challenger: {
+        active: !!consensus,
+        vulnerability_score: consensus?.vulnerability_score ?? null,
+        failles: consensus?.failles ?? null,
+      },
+      needs_human_escalation: needsHumanEscalation,
+      session_charged: !!session.charged,
+      unlimited: !!session.unlimited,
+      queried_at: new Date().toISOString(),
+    });
+  }
 
   if (tier === 3) {
     const [sonnetResult, gptResult] = await Promise.allSettled([
@@ -357,7 +485,19 @@ export async function handler(event) {
 
     let consensus = null;
     try {
-      consensus = await withTimeout((signal) => runConsensus(caseDescription, diagSonnet, diagGPT, signal), CONSENSUS_TIMEOUT_MS);
+      consensus = await withTimeout(
+        (signal) =>
+          runConsensus(
+            caseDescription,
+            [
+              { label: "A (Claude Sonnet)", diagnosis: diagSonnet },
+              { label: "B (GPT avec recherche web)", diagnosis: diagGPT },
+            ],
+            600,
+            signal
+          ),
+        CONSENSUS_TIMEOUT_MS
+      );
     } catch (e) {
       const isAbort = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError";
       console.error("[nexus_orchestrator] Consensus error (non bloquant):", isAbort ? "timeout" : e.message);
