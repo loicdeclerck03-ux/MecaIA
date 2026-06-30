@@ -113,8 +113,8 @@ async function runHealthCheck() {
 // Prompts repris tels quels de NEXUS_ARCHITECTURE.md §3.
 // ──────────────────────────────────────────────────────────────
 
-const DIAGNOSIS_TIMEOUT_MS = 9000;
-const CHALLENGER_TIMEOUT_MS = 4000; // 9s+4s=13s — site confirmee Pro plan, timeout etendu 26s configure dans netlify.toml (30/06, suite a echec 502 sur tier 2 a 6s — voir LESSONS_LEARNED)
+const DIAGNOSIS_TIMEOUT_MS = 15000;
+const CHALLENGER_TIMEOUT_MS = 7000; // 15s+7s=22s — donnees reelles 30/06: budget 9s+4s encore insuffisant (4/13 diagnostic timeout, majorite challenger timeout). Plafond Pro confirme 26s actif (appels a 13.4s reussis avec le budget precedent).
 
 const NEXUS_SYSTEM_PROMPT = `Tu es Dylan, expert automobile certifié. Analyse avec rigueur causale.
 Priorise la sécurité conducteur. Indique toujours si on peut rouler et jusqu'à quand.
