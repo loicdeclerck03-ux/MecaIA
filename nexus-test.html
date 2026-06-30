@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXUS — Test connectivité</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#060809;color:#fff;padding:24px;max-width:480px;margin:0 auto}
+button{background:#e8a000;color:#060809;border:none;padding:14px 20px;border-radius:8px;font-size:16px;font-weight:600;width:100%;margin:16px 0}
+.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #222}
+.ok{color:#4ade80}.fail{color:#f87171}
+#status{color:#6b7f96;font-size:14px}
+</style>
+</head>
+<body>
+<h2>NEXUS — Test connectivité 4 IA</h2>
+<div id="status">Connecte-toi sur mecaiaauto.com d'abord si pas déjà fait.</div>
+<button id="btn">Tester les 4 IA</button>
+<div id="results"></div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const supa = createClient(
+  "https://vexxjbpbfrvgszvzpmgu.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZleHhqYnBiZnJ2Z3N6dnpwbWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NzU4NzksImV4cCI6MjA5NTU1MTg3OX0.T2owu6atANKHH7PfEUL-BG8F6MAizhsqZb3RQWJOR1U",
+  { auth: { persistSession: true, autoRefreshToken: true } }
+);
+const statusEl = document.getElementById('status');
+const resultsEl = document.getElementById('results');
+const btn = document.getElementById('btn');
+
+async function checkAuth(){
+  const { data } = await supa.auth.getSession();
+  if (data?.session) statusEl.textContent = 'Connecté: ' + data.session.user.email;
+  else statusEl.textContent = 'Pas connecté - connecte-toi sur mecaiaauto.com puis reviens ici.';
+  return data?.session;
+}
+checkAuth();
+
+btn.onclick = async () => {
+  const session = await checkAuth();
+  if (!session) return;
+  btn.disabled = true; btn.textContent = 'Test en cours...';
+  resultsEl.innerHTML = '';
+  try {
+    const r = await fetch('/.netlify/functions/nexus_orchestrator?ping=1', {
+      headers: { Authorization: 'Bearer ' + session.access_token }
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      resultsEl.innerHTML = '<div class="fail">Erreur ' + r.status + ': ' + (d.error||'') + '</div>';
+    } else {
+      resultsEl.innerHTML = Object.entries(d.results).map(([name, v]) =>
+        '<div class="row"><span>' + name + '</span><span class="' + (v.ok?'ok':'fail') + '">' +
+        (v.ok ? 'OK ' + (v.reply||'') : 'ECHEC ' + (v.error||'')) + '</span></div>'
+      ).join('');
+    }
+  } catch(e) { resultsEl.innerHTML = '<div class="fail">' + e.message + '</div>'; }
+  btn.disabled = false; btn.textContent = 'Tester les 4 IA';
+};
+</script>
+</body>
+</html>
