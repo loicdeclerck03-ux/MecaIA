@@ -1,9 +1,12 @@
 // ============================================================
 // NEXUS ORCHESTRATOR — Chef d'orchestre multi-IA (ADR-027)
-// 30/06 : healthcheck 4 IAs (scaffold initial).
-// 02/07 : Tier 1 (Haiku seul) + Tier 2 (Sonnet + Challenger
-// Haiku) implémentés ci-dessous. Tier 3 (dual Sonnet+GPT) et
-// Tier 4 (tribunal complet) restent à faire — NEXUS_ARCHITECTURE.md §4.
+// 30/06 : healthcheck 4 IAs (scaffold) + Tier 1 (Haiku seul) +
+// Tier 2 (Sonnet + Challenger Haiku) + Tier 3 (Sonnet ‖ GPT web
+// search + consensus/challenge combine Haiku) implementes.
+// Tier 4 (tribunal 4 IAs complet) reste a faire — NEXUS_ARCHITECTURE.md §4.
+// Tier 3 = appel explicite (body.forceTier:3) uniquement, jamais
+// chaine automatiquement depuis Tier 2 dans la meme requete HTTP
+// (depasserait le plafond Netlify) — voir needs_tier3_escalation.
 // dylan_agents.mjs reste le moteur d'enquête conversationnel
 // (multi-tours) ; nexus_orchestrator produit un verdict validé
 // à tier croissant pour un cas déjà formulé (codes + symptômes).
@@ -209,6 +212,76 @@ async function runChallenger(caseDescription, diagnosis, signal) {
   return parsed;
 }
 
+const GPT_DIAGNOSIS_TIMEOUT_MS = 15000; // web search peut etre plus lent qu'un appel texte simple (lecon nexus_parts_price)
+const CONSENSUS_TIMEOUT_MS = 9000; // 1 seul appel Haiku qui fait consensus + challenge combines (lecon Tier2: separer les deux aurait depasse le plafond 26s)
+// Tier 3 pire cas: max(14000 sonnet, 15000 gpt) + 9000 = 24000ms, sous le plafond Pro 26s — a valider empiriquement comme Tier 2
+
+const CONSENSUS_SYSTEM_PROMPT = `Tu es un juge impartial qui évalue deux diagnostics automobiles indépendants pour le même cas, produits par deux IA différentes (tu ne sais pas lesquelles, évite tout biais d'autorité).
+Ton travail a deux volets :
+1. Détermine si les deux diagnostics s'accordent sur la cause principale (même cause, ou causes clairement liées) ou divergent clairement.
+2. Identifie les failles ou angles morts — hypothèses manquantes, données contradictoires, conclusions trop hâtives — dans le ou les diagnostics disponibles.
+
+Si un seul diagnostic est disponible (l'autre IA a échoué), évalue celui-ci seul comme le ferait un avocat du diable classique.
+
+Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact :
+{
+  "consensus": "accord" | "accord_partiel" | "divergence" | "un_seul_avis",
+  "cause_retenue": "la cause la plus probable en tenant compte du ou des avis disponibles, 1-2 phrases",
+  "vulnerability_score": <0-100>,
+  "failles": "explication des failles ou angles morts trouvés, ou 'aucune faille majeure identifiée'"
+}`;
+
+function buildConsensusInput(caseDescription, diagSonnet, diagGPT) {
+  return `Cas : ${caseDescription}
+
+Diagnostic A (Claude Sonnet) : ${diagSonnet ? JSON.stringify(diagSonnet) : "indisponible (timeout ou erreur)"}
+
+Diagnostic B (GPT avec recherche web) : ${diagGPT ? JSON.stringify(diagGPT) : "indisponible (timeout ou erreur)"}`;
+}
+
+async function runGPTDiagnosis(caseDescription, signal) {
+  const r = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    signal,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL_OPENAI,
+      tools: [{ type: "web_search_preview" }],
+      input: `${NEXUS_SYSTEM_PROMPT}\n\nUtilise la recherche web si utile pour vérifier des bulletins constructeur (TSB), rappels, ou retours d'expérience connus pour ce véhicule et ce symptôme avant de répondre.\n\n${caseDescription}`,
+    }),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data?.error?.message || `HTTP ${r.status}`);
+  const outputText = data.output_text || (Array.isArray(data.output)
+    ? data.output
+        .filter((item) => item.type === "message")
+        .flatMap((item) => (item.content || []).filter((c) => c.type === "output_text").map((c) => c.text))
+        .join("\n")
+    : "");
+  return parseModelJSON(outputText);
+}
+
+async function runConsensus(caseDescription, diagSonnet, diagGPT, signal) {
+  const r = await anthropic.messages.create(
+    {
+      model: MODEL_HAIKU,
+      max_tokens: 600,
+      system: CONSENSUS_SYSTEM_PROMPT,
+      messages: [{ role: "user", content: buildConsensusInput(caseDescription, diagSonnet, diagGPT) }],
+    },
+    { signal }
+  );
+  const text = r?.content?.[0]?.text || "";
+  const parsed = parseModelJSON(text);
+  if (!parsed) {
+    console.error("[nexus_orchestrator] Consensus JSON non parsable. stop_reason:", r?.stop_reason, "extrait:", text.slice(0, 300));
+  }
+  return parsed;
+}
+
 export async function handler(event) {
   if (event.httpMethod === "OPTIONS") return preflight();
 
@@ -253,7 +326,68 @@ export async function handler(event) {
   }
 
   const caseDescription = buildCaseDescription({ dtcCodes, symptoms, make, model, year, fuel, mileage });
-  const { tier, reason } = decideTier({ dtcCodes, symptoms });
+
+  // Tier 3 = demande explicite uniquement (escalade depuis needs_tier3_escalation d'un
+  // appel Tier 2 precedent, ou appel direct de test). Jamais decide automatiquement ici :
+  // chainer Tier2 -> Tier3 dans la meme requete depasserait le plafond Netlify.
+  const forceTier3 = body.forceTier === 3;
+  const { tier, reason } = forceTier3
+    ? { tier: 3, reason: "Tier 3 demandé explicitement (escalade ou appel direct)" }
+    : decideTier({ dtcCodes, symptoms });
+
+  if (tier === 3) {
+    const [sonnetResult, gptResult] = await Promise.allSettled([
+      withTimeout((signal) => runDiagnosis(MODEL_SONNET, caseDescription, signal), DIAGNOSIS_TIMEOUT_MS),
+      withTimeout((signal) => runGPTDiagnosis(caseDescription, signal), GPT_DIAGNOSIS_TIMEOUT_MS),
+    ]);
+
+    const diagSonnet = sonnetResult.status === "fulfilled" ? sonnetResult.value : null;
+    const diagGPT = gptResult.status === "fulfilled" ? gptResult.value : null;
+
+    if (sonnetResult.status === "rejected") {
+      console.error("[nexus_orchestrator] Tier3 Sonnet echec:", sonnetResult.reason?.message || sonnetResult.reason);
+    }
+    if (gptResult.status === "rejected") {
+      console.error("[nexus_orchestrator] Tier3 GPT echec:", gptResult.reason?.message || gptResult.reason);
+    }
+
+    if (!diagSonnet && !diagGPT) {
+      return json(502, { error: "Service de diagnostic temporairement indisponible (Sonnet et GPT ont échoué)" });
+    }
+
+    let consensus = null;
+    try {
+      consensus = await withTimeout((signal) => runConsensus(caseDescription, diagSonnet, diagGPT, signal), CONSENSUS_TIMEOUT_MS);
+    } catch (e) {
+      const isAbort = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError";
+      console.error("[nexus_orchestrator] Consensus error (non bloquant):", isAbort ? "timeout" : e.message);
+    }
+
+    const needsTier4Escalation = !!(
+      consensus &&
+      (consensus.consensus === "divergence" ||
+        (typeof consensus.vulnerability_score === "number" && consensus.vulnerability_score > 50))
+    );
+
+    return json(200, {
+      tier: 3,
+      tier_reason: reason,
+      diagnosis: diagSonnet || diagGPT,
+      diagnosis_sonnet: diagSonnet,
+      diagnosis_gpt: diagGPT,
+      consensus,
+      challenger: {
+        active: !!consensus,
+        vulnerability_score: consensus?.vulnerability_score ?? null,
+        failles: consensus?.failles ?? null,
+      },
+      needs_tier4_escalation: needsTier4Escalation,
+      session_charged: !!session.charged,
+      unlimited: !!session.unlimited,
+      queried_at: new Date().toISOString(),
+    });
+  }
+
   const modelToUse = tier === 1 ? MODEL_HAIKU : MODEL_SONNET;
 
   let diagnosis;
