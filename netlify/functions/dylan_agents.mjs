@@ -790,7 +790,7 @@ export const handler = async (event) => {
     const isFastTrack = isFirstTurn
       && tousLesCodes.length > 0
       && vehiculeRecu.make
-      && (!user_input || user_input.trim().replace(/[PCBU][0-9]{4}/gi, '').trim().length < 15);
+      && (!user_input || user_input.trim().replace(/[PCBU][0-9]{4}/gi, '').trim().length < 40); // elargi: 'P0301 moteur tremble' = fast-track
     if (isFastTrack) {
       state.etat = "CONCLUSION";
       state.fast_track = true; // marqueur persistant pour la machine a etats
@@ -829,9 +829,14 @@ export const handler = async (event) => {
     const modelChoisi = (isConclusion && !isFastTrackActive) ? MODEL_CONCLUSION : MODEL_ENQUETE;
 
     const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction, state.vehicleCtx, state.prev_diags || []);
+    // Si forceConclusion actif : ajouter instruction directe dans le message
+    // Evite que Sonnet pose des questions a la place de conclure
+    const forceMsg = forceConclusion
+      ? ` ⚡ INSTRUCTION CRITIQUE : Tu dois CONCLURE MAINTENANT. Symptôme : "${state.contexte?.symptome || user_input || '?'}". Codes OBD : ${(state.contexte?.codes || []).join(', ') || 'aucun'}. Hypothèses actives : ${(state.hypotheses || []).filter(h => h.statut !== 'eliminee').map(h => h.libelle).join(', ') || 'à émettre'}. Génère IMMÉDIATEMENT un JSON etat=CONCLUSION avec cause précise (>10 mots), cost_min, cost_max et can_drive. Aucune question.`
+      : '';
     const userMsg = control_result
-      ? `Résultat du contrôle : ${control_result}`
-      : `Message du client : ${user_input}`;
+      ? `Résultat du contrôle : ${control_result}${forceMsg}`
+      : `Message du client : ${user_input}${forceMsg}`;
 
     console.log(`[DYLAN] tour=${state.tour} etat=${state.etat} model=${modelChoisi} dtc=${dtcContext.length} elapsed=${Date.now() - startTime}ms`);
 
