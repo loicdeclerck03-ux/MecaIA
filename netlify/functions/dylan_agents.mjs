@@ -798,7 +798,7 @@ export const handler = async (event) => {
     let completion;
     let gptOpinionThisTurn = null;
     const abortCtrl = new AbortController();
-    const killTimer = setTimeout(() => abortCtrl.abort(), 22000);
+    const killTimer = setTimeout(() => abortCtrl.abort(), 24000); // 24s — Pro plan = 26s, Sonnet cold start peut prendre 15-18s
     try {
       const tasks = [
         // Sonnet — toujours obligatoire
