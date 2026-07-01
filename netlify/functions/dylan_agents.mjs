@@ -807,7 +807,7 @@ export const handler = async (event) => {
         // Sonnet — toujours obligatoire
         anthropic.messages.create({
           model: modelChoisi,
-          max_tokens: isConclusion ? 2500 : 2400,
+          max_tokens: isConclusion ? 1800 : 1200, // 1200 = ~8-12s Sonnet. 2400 = 25-30s = timeout Pro 26s
           system,
           messages: apiMessages,
         }, { signal: abortCtrl.signal }),
