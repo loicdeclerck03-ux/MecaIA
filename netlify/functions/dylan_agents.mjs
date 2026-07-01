@@ -1037,12 +1037,16 @@ export const handler = async (event) => {
     if (state.tour >= MAX_TOURS && etat !== "CONCLUSION") { etat = "CONCLUSION"; plafondAtteint = true; }
     if (etat === "CONCLUSION" && !hypConclue) hypConclue = state.hypotheses.filter((h) => h.statut !== "eliminee")[0] || null;
 
-    // FAST TRACK FINAL GUARD : après tous les guards, forcer CONCLUSION si fast_track actif
-    // peutConclure() retourne null au tour 1 (pas d'hypothèses) → sinon etat revient à CONTROLE
-    if (state.fast_track && parsed.conclusion) {
+    // FAST TRACK FINAL GUARD : force CONCLUSION quoi qu'ait retourné le LLM
+    // Cas typique : Haiku répond sans champ "conclusion" → peutConclure retourne null → etat=CONTROLE
+    // Solution : si fast_track actif, CONCLUSION systématique + fabrication hypConclue si absent
+    if (state.fast_track) {
       etat = "CONCLUSION";
       if (!hypConclue) {
-        hypConclue = { libelle: parsed.conclusion.cause || "Diagnostic code OBD", bande: parsed.conclusion.bande || "forte" };
+        const best = state.hypotheses.filter(h => h.statut !== "eliminee")[0];
+        hypConclue = best
+          || (parsed.conclusion?.cause ? { libelle: parsed.conclusion.cause, bande: parsed.conclusion.bande || "forte" } : null)
+          || { libelle: "Diagnostic basé sur le code OBD", bande: "forte" };
       }
     }
 
