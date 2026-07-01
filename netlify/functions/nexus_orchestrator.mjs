@@ -16,6 +16,7 @@
 // ============================================================
 
 import Anthropic from "@anthropic-ai/sdk";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getUser, json, preflight, isOwner, ensureDiagSession } from "../lib/auth.mjs";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
@@ -343,6 +344,37 @@ async function runMistralDiagnosis(caseDescription, signal) {
   return parseModelJSON(text);
 }
 
+// ──────────────────────────────────────────────────────────────
+// Logging flywheel — fire-and-forget vers nexus_orchestrator_log.
+// ──────────────────────────────────────────────────────────────
+function getLogClient() {
+  return createSupabaseClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+}
+async function logToFlywheel(userId, diagSessionId, tier, caseDescription, dtcCodes, result, latencyMs) {
+  try {
+    const supa = getLogClient();
+    const consensus = result?.consensus?.consensus || null;
+    const diagFields = result?.diagnosis || {};
+    await supa.from("nexus_orchestrator_log").insert({
+      user_id: userId || null,
+      diag_session_id: diagSessionId || null,
+      tier,
+      dtc_codes: Array.isArray(dtcCodes) ? dtcCodes : [],
+      case_description: (caseDescription || "").substring(0, 500),
+      consensus,
+      vulnerability_score: result?.challenger?.vulnerability_score ?? null,
+      ia_count: tier === 4 ? (result?.ia_disponibles ?? 1) : (tier === 3 ? 2 : 1),
+      needs_escalation: !!(result?.needs_tier3_escalation || result?.needs_tier4_escalation || result?.needs_human_escalation),
+      latency_ms: latencyMs,
+      diagnosis_cause: (diagFields.cause_principale || "").substring(0, 300),
+      urgence: diagFields.urgence || null,
+      peut_rouler: diagFields.peut_rouler || null,
+    });
+  } catch (e) {
+    console.error("[nexus_orchestrator] flywheel log error (non bloquant):", e.message);
+  }
+}
+
 export async function handler(event) {
   if (event.httpMethod === "OPTIONS") return preflight();
 
@@ -528,6 +560,8 @@ export async function handler(event) {
     });
   }
 
+  const _t1t2Start = Date.now();
+
   const modelToUse = tier === 1 ? MODEL_HAIKU : MODEL_SONNET;
 
   let diagnosis;
@@ -564,15 +598,14 @@ export async function handler(event) {
     }
   }
 
-  return json(200, {
-    tier,
-    tier_reason: reason,
-    diagnosis,
-    challenger,
+  const t1t2Result = {
+    tier, tier_reason: reason, diagnosis, challenger,
     needs_tier3_escalation: needsTier3Escalation,
     model_used: modelToUse,
-    session_charged: !!session.charged,
-    unlimited: !!session.unlimited,
+    session_charged: !!session.charged, unlimited: !!session.unlimited,
     queried_at: new Date().toISOString(),
-  });
+  };
+  // Fire-and-forget flywheel log
+  logToFlywheel(auth.userId, null, tier, caseDescription, dtcCodes, t1t2Result, Date.now() - _t1t2Start).catch(() => {});
+  return json(200, t1t2Result);
 }
