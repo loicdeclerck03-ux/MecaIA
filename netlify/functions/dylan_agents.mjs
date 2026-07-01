@@ -14,7 +14,22 @@
 // ============================================================
 
 import Anthropic from "@anthropic-ai/sdk";
-import { getUser, serviceClient, json, preflight } from "../lib/auth.mjs";
+import { createClient } from "@supabase/supabase-js";
+import { getUser, json, preflight } from "../lib/auth.mjs";
+
+// Client Supabase avec timeout 4s natif sur chaque requête
+// Créé une seule fois au module-load (pas de cold-start overhead par appel)
+const _mkSupa = () => createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET, {
+  global: {
+    fetch: (url, opts) => {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 4000);
+      return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
+    }
+  }
+});
+let _supaInstance = null;
+const getSupa = () => { if (!_supaInstance) _supaInstance = _mkSupa(); return _supaInstance; };
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
 
@@ -588,7 +603,7 @@ export const handler = async (event) => {
   const auth = await getUser(event);
   if (!auth) return json(401, { error: "Unauthorized" });
   const userId = auth.userId;
-  const supabase = serviceClient();
+  const supabase = getSupa(); // client singleton avec timeout 4s intégré
   const startTime = Date.now();
 
   try {
@@ -718,50 +733,39 @@ export const handler = async (event) => {
     let ragContext = "";
     const isFirstTurn = (state.tour || 0) === 0;
 
-    // Timeout 4s sur chaque query lente — évite les 504 quand Supabase est lent
-    const st = (p, fallback) => Promise.race([p, new Promise(r => setTimeout(() => r(fallback), 4000))]);
-
+    // Timeout 4s intégré dans le client Supabase — pas besoin de wrappers st()
     const [ragResult, memoire, dtcResult, vehicleCtx, prevDiags] = await Promise.all([
-      st(
-        (!state.hypotheses.length && (state.tour || 0) < 3)
-          ? supabase.rpc("search_diagnostic_cases_text", {
-              p_marque: state.vehicule.make || "",
-              p_modele: state.vehicule.model || "",
-              p_query: user_input || state.contexte.symptome || "",
-              p_limit: 4,
-            }).then(({ data: cases }) => cases && cases.length
-              ? cases.map((c) => `- ${c.primary_diagnosis}`).join("\n")
-              : ""
-            ).catch(() => "")
-          : Promise.resolve(""),
-        ""
-      ),
-      st(lireMemoire(userId, vKey, supabase), null),
+      (!state.hypotheses.length && (state.tour || 0) < 3)
+        ? supabase.rpc("search_diagnostic_cases_text", {
+            p_marque: state.vehicule.make || "",
+            p_modele: state.vehicule.model || "",
+            p_query: user_input || state.contexte.symptome || "",
+            p_limit: 4,
+          }).then(({ data: cases }) => cases && cases.length
+            ? cases.map((c) => `- ${c.primary_diagnosis}`).join("\n")
+            : ""
+          ).catch(() => "")
+        : Promise.resolve(""),
+      lireMemoire(userId, vKey, supabase).catch(() => null),
       needsDTC
-        ? st(enrichirDTC(tousLesCodes, supabase).catch(() => []), [])
+        ? enrichirDTC(tousLesCodes, supabase).catch(() => [])
         : Promise.resolve(state.dtc_enrichi || []),
-      st(
-        (isFirstTurn && !state.vehicleCtx)
-          ? getVehicleContext(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year, supabase).catch(() => null)
-          : Promise.resolve(state.vehicleCtx || null),
-        null
-      ),
-      st(
-        isFirstTurn && vehiculeRecu.make && vehiculeRecu.model
-          ? supabase
-              .from("diag_sessions")
-              .select("maj_le, enquete_state, final_confidence_band, veh_make, veh_model")
-              .eq("user_id", userId)
-              .ilike("veh_make", vehiculeRecu.make)
-              .ilike("veh_model", `%${String(vehiculeRecu.model).split(" ")[0]}%`)
-              .eq("status", "attente_resultat")
-              .order("maj_le", { ascending: false })
-              .limit(4)
-              .then(({ data }) => (data || []).filter(d => d.enquete_state?.contexte?.symptome))
-              .catch(() => [])
-          : Promise.resolve([]),
-        []
-      ),
+      (isFirstTurn && !state.vehicleCtx)
+        ? getVehicleContext(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year, supabase).catch(() => null)
+        : Promise.resolve(state.vehicleCtx || null),
+      isFirstTurn && vehiculeRecu.make && vehiculeRecu.model
+        ? supabase
+            .from("diag_sessions")
+            .select("maj_le, enquete_state, final_confidence_band, veh_make, veh_model")
+            .eq("user_id", userId)
+            .ilike("veh_make", vehiculeRecu.make)
+            .ilike("veh_model", `%${String(vehiculeRecu.model).split(" ")[0]}%`)
+            .eq("status", "attente_resultat")
+            .order("maj_le", { ascending: false })
+            .limit(4)
+            .then(({ data }) => (data || []).filter(d => d.enquete_state?.contexte?.symptome))
+            .catch(() => [])
+        : Promise.resolve([]),
     ]);
 
     ragContext = ragResult;
