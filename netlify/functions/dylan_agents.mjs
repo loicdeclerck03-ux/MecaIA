@@ -18,10 +18,13 @@ import { getUser, serviceClient, json, preflight } from "../lib/auth.mjs";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
 
-// Haiku pour toutes les phases — Netlify free plan = 10s max, Sonnet trop lent
-// Sonnet réactivable via ANTHROPIC_CONCLUSION_MODEL env var sur plan Pro
-const MODEL_ENQUETE    = process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001";
-const MODEL_CONCLUSION = process.env.ANTHROPIC_CONCLUSION_MODEL || "claude-haiku-4-5-20251001";
+// Plan Netlify PRO (26s) — Sonnet pour TOUTES les phases (plus jamais Haiku comme cerveau principal).
+// Haiku reste pour les retries JSON et la consultation GPT-merge.
+// Avant : Haiku enquete + Sonnet conclusion. Maintenant : Sonnet partout + GPT parallele sur phases actives.
+const MODEL_ENQUETE    = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
+const MODEL_CONCLUSION = process.env.ANTHROPIC_CONCLUSION_MODEL || "claude-sonnet-4-6";
+const MODEL_HAIKU_UTIL = "claude-haiku-4-5-20251001"; // uniquement pour retry JSON et consultations légères
+const MODEL_GPT_CONSULT = "gpt-4.1-mini"; // second avis parallèle sur phases hypothèses/controle/conclusion
 
 // Plafond anti-derive de cout — 15 tours (3 contexte + 1 hyp + 4 controles + 1 conclu + marge)
 const MAX_TOURS = 15;
@@ -301,6 +304,41 @@ async function majMemoire(userId, veh, conclusion, supabase) {
   } catch (e) { console.error("[DYLAN] majMemoire:", e.message); }
 }
 
+// ──────────────────────────────────────────────────────────────
+// CONSULTATION GPT — second avis parallèle sur phases actives
+// Court et précis : GPT répond en 2-3 phrases max sur ce qu il
+// voit que Sonnet pourrait avoir manqué. Injecté au tour suivant.
+// ──────────────────────────────────────────────────────────────
+const GPT_CONSULT_SYSTEM = `Tu es un mécanicien expert qui donne un second avis rapide sur un diagnostic automobile.
+Tu reçois : le cas, l'état de l'enquête, et les hypothèses actuelles.
+Réponds en 2 phrases MAX (jamais plus) :
+- Si tu vois une hypothèse critique manquante ou un danger non mentionné : mentionne-le précisément.
+- Si l'analyse en cours est correcte : réponds uniquement "RAS".
+Ne refais pas le diagnostic complet. Uniquement ce qui manque.`;
+
+async function runGPTConsultation(caseDescription, state, signal) {
+  if (!process.env.OPENAI_API_KEY) return null;
+  try {
+    const hyps = (state.hypotheses || []).filter(h => h.statut !== "eliminee").map(h => h.libelle).join(", ");
+    const input = `Cas : ${caseDescription}\nPhase : ${state.etat}\nHypothèses en cours : ${hyps || "aucune encore"}\nRésumé enquête : ${state.resume_enquete || "début"}`;
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST", signal,
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model: MODEL_GPT_CONSULT, max_tokens: 150,
+        messages: [
+          { role: "system", content: GPT_CONSULT_SYSTEM },
+          { role: "user", content: input },
+        ],
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok) return null;
+    const text = (data?.choices?.[0]?.message?.content || "").trim();
+    return text && text !== "RAS" && text.length > 3 ? text : null;
+  } catch { return null; }
+}
+
 function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruction = "", vehicleCtx = null, prevDiags = []) {
   // Compact state allégé : symptome tronqué, hypotheses sans preuves
   const compact = JSON.stringify({
@@ -366,13 +404,18 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
     }
   }
 
-  // #9 Mémoire véhicule (known_issues sur ce véhicule — sessions precedentes)
+  // #9 Mémoire véhicule + opinion GPT du tour précédent
   const memoireLine = memoireContext && (memoireContext.known_issues || []).length
     ? `\nMÉMOIRE VÉHICULE (pannes déjà vues sur ce véhicule) :\n${
         (memoireContext.known_issues || []).slice(-5)
           .map(i => `- ${i.cause}${i.sessions_count > 1 ? ` (récurrent × ${i.sessions_count})` : ""}${i.last_seen ? ` — vu le ${new Date(i.last_seen).toLocaleDateString("fr-FR")}` : ""}`)
           .join("\n")
       }${memoireContext.last_diagnosis_summary ? `\nDernier diagnostic : ${memoireContext.last_diagnosis_summary}` : ""}\n`
+    : "";
+
+  // Opinion GPT du tour précédent — second avis IA injecté si pertinent
+  const gptOpinionLine = state.gpt_last_opinion
+    ? `\n⚡ SECOND AVIS GPT (tour précédent) : ${state.gpt_last_opinion}\nSi ce point est pertinent pour le cas actuel, intègre-le dans ta réponse. Sinon, ignore-le.\n`
     : "";
 
   // Historique inter-session : diagnostics passés sur ce vehicule (charge au 1er tour)
@@ -425,7 +468,7 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
 Chaque message doit être utile, rassurant et précis. Tu parles comme un expert mais tu restes accessible.
 
 ${blocVehicule}${SAFETY_BLOCK}
-${vehicleCtxLine}${prevDiagsLine}${ragLine}${dtcLine}${memoireLine}${toolGuideBlock}
+${vehicleCtxLine}${prevDiagsLine}${ragLine}${dtcLine}${memoireLine}${gptOpinionLine}${toolGuideBlock}
 ÉTAT D'ENQUÊTE ACTUEL (JSON) :
 ${compact}
 
@@ -738,39 +781,66 @@ export const handler = async (event) => {
 
     console.log(`[DYLAN] tour=${state.tour} etat=${state.etat} model=${modelChoisi} dtc=${dtcContext.length} elapsed=${Date.now() - startTime}ms`);
 
-    // Historique conversation — derniers 20 tours (40 messages) pour que le LLM
-    // se souvienne de toute la conversation sans limite arbitraire.
-    // Le resume_enquete dans le JSON d etat compresse le contexte structural ;
-    // l historique donne le fil narratif complet.
+    // Phases actives = hypothèses/controle/conclusion → GPT en parallèle
+    const isActivePhase = state.etat === "HYPOTHESES" || state.etat === "CONTROLE" || isConclusion
+      || (state.hypotheses && state.hypotheses.length > 0);
+
+    // Historique conversation — derniers 20 tours (40 messages)
     if (!state.conv_history) state.conv_history = [];
     const apiMessages = [
-      ...(state.conv_history).slice(-40), // 20 tours = 40 messages
+      ...(state.conv_history).slice(-40),
       { role: "user", content: userMsg },
     ];
 
+    // ── Sonnet ‖ GPT en parallèle sur phases actives ──────────────────
+    // Sonnet = réponse principale. GPT = second avis stocké pour le tour suivant.
+    // Timeout 22s couvre les deux (Pro plan = 26s). GPT non bloquant si il échoue.
     let completion;
+    let gptOpinionThisTurn = null;
+    const abortCtrl = new AbortController();
+    const killTimer = setTimeout(() => abortCtrl.abort(), 22000);
     try {
-      const abortCtrl = new AbortController();
-      const killTimer = setTimeout(() => abortCtrl.abort(), 22000);
-      try {
-        completion = await anthropic.messages.create({
+      const tasks = [
+        // Sonnet — toujours obligatoire
+        anthropic.messages.create({
           model: modelChoisi,
           max_tokens: isConclusion ? 2500 : 2400,
           system,
           messages: apiMessages,
-        }, { signal: abortCtrl.signal });
-      } finally {
-        clearTimeout(killTimer);
+        }, { signal: abortCtrl.signal }),
+        // GPT consultation — parallèle, non bloquant, phases actives seulement
+        isActivePhase
+          ? runGPTConsultation(
+              [state.vehicule?.make, state.vehicule?.model, state.vehicule?.year].filter(Boolean).join(" ")
+              + (state.contexte?.symptome ? " — " + state.contexte.symptome.slice(0, 200) : "")
+              + (state.contexte?.codes?.length ? " — codes : " + state.contexte.codes.join(", ") : ""),
+              state, abortCtrl.signal
+            )
+          : Promise.resolve(null),
+      ];
+      const [sonnetResult, gptResult] = await Promise.allSettled(tasks);
+
+      // Sonnet est obligatoire — si il échoue on lève l erreur
+      if (sonnetResult.status === "rejected") throw sonnetResult.reason;
+      completion = sonnetResult.value;
+
+      // GPT — optionnel, stocker pour le tour suivant
+      if (gptResult.status === "fulfilled" && gptResult.value) {
+        gptOpinionThisTurn = gptResult.value;
+        state.gpt_last_opinion = gptOpinionThisTurn;
+        console.log(`[DYLAN] GPT second avis: "${gptOpinionThisTurn.slice(0, 80)}"`);
+      } else if (gptResult.status === "rejected") {
+        console.warn("[DYLAN] GPT consultation echec (non bloquant):", gptResult.reason?.message);
       }
     } catch (e) {
-      const isTimeout = e.name === "AbortError" || e.message?.includes("abort");
+      const isTimeout = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError" || e.message?.includes("abort");
       console.error(`[DYLAN] appel modèle (${isTimeout ? "timeout" : "erreur"}):`, e.message);
       return json(502, {
         success: false,
-        error: isTimeout
-          ? "Dylan réfléchit encore — réessaie dans 5 secondes."
-          : "Service de diagnostic indisponible, réessayez.",
+        error: isTimeout ? "Dylan réfléchit encore — réessaie dans 5 secondes." : "Service de diagnostic indisponible, réessayez.",
       });
+    } finally {
+      clearTimeout(killTimer);
     }
 
     const text = (completion.content || []).map((b) => b.text || "").join("");
@@ -785,7 +855,7 @@ export const handler = async (event) => {
         const retryTimer = setTimeout(() => retryCtrl.abort(), 8000);
         try {
           const retryCompletion = await anthropic.messages.create({
-            model: MODEL_ENQUETE,
+            model: MODEL_HAIKU_UTIL,
             max_tokens: 1800,
             system: "Tu es un assistant JSON. Extrais et retourne UNIQUEMENT l'objet JSON valide contenu dans le message. Pas de texte avant ou après. Pas de markdown.",
             messages: [{ role: "user", content: text || "Réponse vide" }],
