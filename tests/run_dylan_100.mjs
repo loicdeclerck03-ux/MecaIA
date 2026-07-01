@@ -141,16 +141,16 @@ const SCENARIOS = [
 ];
 
 async function runToConclusion(scenario, retryOn401 = true) {
-  const client = scenario.ag === 'm' ? mc : tc;
+  const getClient = () => scenario.ag === 'm' ? mc : tc; // closure fraiche - jamais capturer mc/tc
   const startTs = Date.now();
   let session_id = null;
   let data = null;
   let tours = 0;
-  const MAX = 7;
+  const MAX = 9;
   const AUTO_CONTEXT = "Depuis hier matin. Le problème est permanent, froid et chaud. Je peux encore rouler pour l'instant.";
 
   try {
-    let r = await client.call('dylan_agents', { user_input: scenario.q, vehicle: scenario.veh });
+    let r = await getClient().call('dylan_agents', { user_input: scenario.q, vehicle: scenario.veh });
     // Retry auto sur 401 : relogin et relancer
     if (r.status === 401 && retryOn401) {
       try {
@@ -172,19 +172,24 @@ async function runToConclusion(scenario, retryOn401 = true) {
         payload.user_input = AUTO_CONTEXT;
       } else if (data?.etat === 'CONTEXTE') {
         payload.user_input = "Froid et chaud, permanent. Pas de code OBD connu.";
-      } else if (tours >= 3) {
-        // Forcer avancement après tour 3 : contrôle fictif + instruction conclusion
+      } else if (data?.etat === 'CONTROLE' && tours >= 2) {
+        // Appliquer resultat controle des que possible
         payload.control_result = 'oui';
-        payload.user_input = "Oui, confirme. Conclus avec ta meilleure hypothèse.";
+      } else if (tours >= 5) {
+        // Tour 5+ : forcer conclusion explicitement
+        payload.user_input = "Conclus maintenant avec ta meilleure hypothese. Ne pose plus de question.";
+        payload.control_result = 'oui';
+      } else if (tours >= 3) {
+        payload.user_input = "Continue vers la conclusion. Donne une hypothese principale et conclus.";
       } else {
-        payload.user_input = "Continuez avec les hypothèses les plus probables.";
+        payload.user_input = "Continue avec les hypotheses les plus probables.";
       }
-      r = await client.call('dylan_agents', payload);
+      r = await getClient().call('dylan_agents', payload);
       if (r.status === 401 && retryOn401) {
         try {
           if (scenario.ag === 'm') mc = await MecaIAClient.create(MARIE);
           else tc = await MecaIAClient.create(THOMAS);
-          r = await (scenario.ag === 'm' ? mc : tc).call('dylan_agents', payload);
+          r = await getClient().call('dylan_agents', payload); // getClient() = mc/tc frais apres relogin
         } catch { break; }
       }
       if (!r.ok) break;
@@ -220,13 +225,11 @@ for (let b = 0; b < SCENARIOS.length; b += BATCH) {
   const bn = Math.floor(b / BATCH) + 1;
 
   // Re-login entre batches pour éviter les 401 (token Supabase expire après ~60min)
-  if (b > 0 && bn % 3 === 1) {
+  if (b > 0 && bn % 2 === 1) { // refresh tous les 20 scenarios (token expire ~45min)
     try {
-      const newMc = await MecaIAClient.create(MARIE);
-      const newTc = await MecaIAClient.create(THOMAS);
-      Object.assign(mc, newMc);
-      Object.assign(tc, newTc);
-      console.log('  [refresh] tokens renouveles');
+      mc = await MecaIAClient.create(MARIE);
+      tc = await MecaIAClient.create(THOMAS);
+      console.log('  [refresh] tokens renouveles batch', bn);
     } catch(e) { console.warn('  [refresh] echec:', e.message); }
   }
 

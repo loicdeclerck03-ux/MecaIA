@@ -810,16 +810,18 @@ export const handler = async (event) => {
     // Fast-track : Haiku (prompt ultra-contraint, Sonnet cold-start timeout)
     // Force conclusion au tour 5+ — Dylan ne peut pas rester bloqué plus de 5 tours
     // Evite le scénario "Pas de CONCLUSION T7" sur des cas complexes multi-symptômes
-    const forceConclusion = (state.tour || 0) >= 5 && state.etat !== "CONCLUSION";
+    const forceConclusion = (state.tour || 0) >= 4 && state.etat !== "CONCLUSION";
     if (forceConclusion && !peutConclure(state)) {
       // Si des hypothèses existent → conclure la plus probable
       const bestHyp = state.hypotheses?.filter(h => h.statut !== "eliminee")[0];
       if (bestHyp) {
         bestHyp.statut = "confirmee"; // force peutConclure
         state.etat = "CONCLUSION";
-      } else if ((state.tour || 0) >= 6) {
-        // Pas d'hypothèses après 6 tours → forcer Sonnet à conclure quand même
+        console.log(`[DYLAN] force-conclusion tour ${state.tour} sur: ${bestHyp.libelle}`);
+      } else if ((state.tour || 0) >= 5) {
+        // Pas d'hypothèses après 5 tours → forcer Sonnet à conclure sur symptôme seul
         state.etat = "CONCLUSION";
+        console.log(`[DYLAN] force-conclusion sans hypotheses tour ${state.tour}`);
       }
     }
     const isConclusion = state.etat === "CONCLUSION" || peutConclure(state) !== null;
