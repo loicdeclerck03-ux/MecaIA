@@ -18,13 +18,24 @@ export class MecaIAClient {
     this.log       = [];
   }
 
-  static async create(agent) {
+  static async create(agent, maxRetries = 4) {
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-    const { data: signIn, error } = await sb.auth.signInWithPassword({
-      email: agent.email, password: agent.password
-    });
-    if (error || !signIn?.session) throw new Error(`Login echoue: ${error?.message || 'pas de session'}`);
-    return new MecaIAClient(agent, sb, signIn.session);
+    let lastError;
+    for (let i = 0; i < maxRetries; i++) {
+      if (i > 0) {
+        const wait = (i + 1) * 3000;
+        console.log(`  [login] retry ${i}/${maxRetries-1} dans ${wait/1000}s...`);
+        await new Promise(r => setTimeout(r, wait));
+      }
+      const { data: signIn, error } = await sb.auth.signInWithPassword({
+        email: agent.email, password: agent.password
+      });
+      if (!error && signIn?.session) return new MecaIAClient(agent, sb, signIn.session);
+      lastError = error;
+      // 522 Cloudflare = retryable, autres erreurs = abandon
+      if (error?.status !== 522 && error?.status !== 503 && error?.status !== 504) break;
+    }
+    throw new Error(`Login echoue apres ${maxRetries} essais: ${lastError?.message || 'pas de session'} (${lastError?.status})`);
   }
 
   async call(endpoint, body = {}, method = 'POST') {
