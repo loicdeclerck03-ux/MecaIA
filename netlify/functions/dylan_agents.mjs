@@ -787,8 +787,8 @@ export const handler = async (event) => {
       && vehiculeRecu.make
       && (!user_input || user_input.trim().replace(/[PCBU][0-9]{4}/gi, '').trim().length < 15);
     if (isFastTrack) {
-      // Forcer état CONCLUSION dès maintenant — injecte instruction directe dans le prompt
       state.etat = "CONCLUSION";
+      state.fast_track = true; // marqueur persistant pour la machine a etats
       console.log(`[DYLAN] fast-track: codes=${tousLesCodes.join(',')} véhicule=${vehiculeRecu.make}`);
     }
 
@@ -802,8 +802,10 @@ export const handler = async (event) => {
     // ---- 5) Choisir le modèle ───────────────────────────────────────────
     // Haiku : toutes les phases sauf conclusion (rapide, fiable, <5s)
     // Sonnet : CONCLUSION uniquement (15-18s — qualité maximale pour la décision finale)
+    // Fast-track : Haiku (prompt ultra-contraint, Sonnet cold-start timeout)
     const isConclusion = state.etat === "CONCLUSION" || peutConclure(state) !== null;
-    const modelChoisi = isConclusion ? MODEL_CONCLUSION : MODEL_ENQUETE;
+    const isFastTrackActive = !!(state.fast_track);
+    const modelChoisi = (isConclusion && !isFastTrackActive) ? MODEL_CONCLUSION : MODEL_ENQUETE;
 
     const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction, state.vehicleCtx, state.prev_diags || []);
     const userMsg = control_result
@@ -987,6 +989,11 @@ export const handler = async (event) => {
 
     const etatAvant = state.etat;
     let etat = parsed.etat;
+
+    // FAST TRACK GUARD : si fast_track actif, le LLM ne peut PAS revenir en arrière
+    if (state.fast_track) {
+      etat = "CONCLUSION";
+    }
 
     if (etat === "CONCLUSION" && etatAvant === "CONTEXTE") {
       etat = contexteSuffisant(state) ? "HYPOTHESES" : "CONTEXTE";
