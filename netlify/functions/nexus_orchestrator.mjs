@@ -348,7 +348,7 @@ async function runMistralDiagnosis(caseDescription, signal) {
 // Logging flywheel — fire-and-forget vers nexus_orchestrator_log.
 // ──────────────────────────────────────────────────────────────
 function getLogClient() {
-  return createSupabaseClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  return createSupabaseClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET);
 }
 async function logToFlywheel(userId, diagSessionId, tier, caseDescription, dtcCodes, result, latencyMs) {
   try {

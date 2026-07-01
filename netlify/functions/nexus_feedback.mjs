@@ -7,7 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 import { getUser, json, preflight } from "../lib/auth.mjs";
 
 let _s = null;
-const getSupa = () => _s || (_s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY));
+const getSupa = () => _s || (_s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET));
 
 export async function handler(event) {
   if (event.httpMethod === "OPTIONS") return preflight();
