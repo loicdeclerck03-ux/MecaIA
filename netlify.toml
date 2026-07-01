@@ -25,6 +25,9 @@
 [functions."nexus_recall_radar"]
   timeout = 20
 
+[functions."dylan_agents"]
+  timeout = 26
+
 
 [functions.scheduled_weekly_health]
   schedule = "0 8 * * 1"
