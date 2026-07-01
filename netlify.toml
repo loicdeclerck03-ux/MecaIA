@@ -44,6 +44,9 @@
 [functions.scheduled_newsletter_cold]
   schedule = "0 10 * * *"
 
+[functions.scheduled_diag_reminder]
+  schedule = "0 10 * * *"
+
 # ── Security headers — qualite Google / OWASP ──────────────────
 [[headers]]
   for = "/*"

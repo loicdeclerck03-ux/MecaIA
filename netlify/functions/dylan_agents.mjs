@@ -471,11 +471,20 @@ function buildSystem(state, ragContext, dtcContext, memoireContext, langInstruct
     }
   }
 
+  // Fast-track : premier tour, codes OBD, état forcé CONCLUSION
+  // → Sonnet doit ignorer tout le protocole et donner le diagnostic direct
+  const fastTrackBlock = (state.tour <= 1 && state.etat === "CONCLUSION" && (state.contexte?.codes || []).length > 0)
+    ? `\n⚡ MODE DIAGNOSTIC DIRECT (fast-track) — RÈGLE ABSOLUE :\nL'utilisateur a envoyé un code OBD. Tu connais le véhicule. Tu as la description du code.
+NE POSE AUCUNE QUESTION. Donne immédiatement le diagnostic complet dans "conclusion" avec cause, coût, peut-rouler, urgence.
+Dans "message" : 2-3 phrases maximum — la cause probable, si on peut rouler, le coût estimé. Pas de blabla.
+État obligatoire : "etat": "CONCLUSION". Pas de CONTEXTE, pas de HYPOTHESES, pas de CONTROLE.\n`
+    : "";
+
   return `Tu es Dylan, diagnosticien automobile et ami mécanicien. Tu ENQUÊTES méthodiquement pour trouver LA vraie cause de la panne.
 Chaque message doit être utile, rassurant et précis. Tu parles comme un expert mais tu restes accessible.
 
 ${blocVehicule}${SAFETY_BLOCK}
-${vehicleCtxLine}${prevDiagsLine}${ragLine}${dtcLine}${memoireLine}${gptOpinionLine}${toolGuideBlock}
+${vehicleCtxLine}${prevDiagsLine}${ragLine}${dtcLine}${memoireLine}${gptOpinionLine}${fastTrackBlock}${toolGuideBlock}
 ÉTAT D'ENQUÊTE ACTUEL (JSON) :
 ${compact}
 
@@ -768,6 +777,20 @@ export const handler = async (event) => {
     if (vehicleCtx) state.vehicleCtx = vehicleCtx;
     // Sauvegarder les diags précédents dans le state (chargés une seule fois au tour 0)
     if (isFirstTurn && prevDiags && prevDiags.length) state.prev_diags = prevDiags;
+
+    // ── FAST TRACK : diagnostic en un shot ─────────────────────────────────
+    // Condition : 1er message + code(s) OBD détectés + véhicule connu
+    //   → Dylan ne pose AUCUNE question. Il conclut directement.
+    // Cas typique : utilisateur envoie "P0401" ou scan OBD depuis l'appli.
+    const isFastTrack = isFirstTurn
+      && tousLesCodes.length > 0
+      && vehiculeRecu.make
+      && (!user_input || user_input.trim().replace(/[PCBU][0-9]{4}/gi, '').trim().length < 15);
+    if (isFastTrack) {
+      // Forcer état CONCLUSION dès maintenant — injecte instruction directe dans le prompt
+      state.etat = "CONCLUSION";
+      console.log(`[DYLAN] fast-track: codes=${tousLesCodes.join(',')} véhicule=${vehiculeRecu.make}`);
+    }
 
     // ---- 4) Appliquer résultat contrôle ----
     state.reexpliquer = false;
