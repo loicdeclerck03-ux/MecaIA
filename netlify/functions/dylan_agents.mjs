@@ -28,8 +28,9 @@ const MODEL_CONCLUSION = process.env.ANTHROPIC_CONCLUSION_MODEL || "claude-sonne
 const MODEL_HAIKU_UTIL = "claude-haiku-4-5-20251001"; // retry JSON + consultations légères
 const MODEL_GPT_CONSULT = "gpt-4.1-mini"; // second avis parallèle (fire-and-forget)
 
-// Plafond anti-derive de cout — 15 tours (3 contexte + 1 hyp + 4 controles + 1 conclu + marge)
-const MAX_TOURS = 15;
+// Plafond : 8 tours max. Un bon diagnostic se fait en 3-6 tours.
+// 20 tours = mémoire de la conversation, PAS la durée du diagnostic.
+const MAX_TOURS = 8;
 
 // ──────────────────────────────────────────────────────────────
 // FICHES OUTILS — mini-guides injectés quand l'outil est mentionné
@@ -150,25 +151,29 @@ function contexteSuffisant(state) {
   const c = state.contexte || {};
   const hasSymptome = !!(c.symptome && String(c.symptome).trim().length > 2);
   const hasEnv = !!(c.chaud_froid || c.permanent_intermittent || (Array.isArray(c.codes) && c.codes.length));
-  // Anti-boucle : apres 3 tours, le symptome seul suffit (le prompt vise max 3 questions de contexte).
-  return hasSymptome && (hasEnv || (state.tour || 0) >= 3);
+  // Après 2 tours, le symptôme seul suffit pour avancer (max 2 questions de contexte).
+  return hasSymptome && (hasEnv || (state.tour || 0) >= 2);
 }
 
 function peutConclure(state) {
-  // Cas 1 : hypothèse formellement confirmée (statut = confirmee)
+  // Cas 1 : hypothèse formellement confirmée → conclure immédiatement
   const conf = state.hypotheses.find((h) => h.statut === "confirmee");
   if (conf) return conf;
-  // Cas 2 : accumulation de 2+ preuves faibles "pour" sur une même hypothèse
+  // Cas 2 : 2+ preuves faibles "pour" sur une même hypothèse
   for (const h of state.hypotheses) {
     if (h.statut === "eliminee") continue;
     const pourFaibles = (h.preuves || []).filter((p) => p.sens === "pour" && p.pouvoir === "faible").length;
     if (pourFaibles >= 2) return h;
   }
-  // Cas 3 (fallback) : 3+ contrôles effectués — seuil à 3 pour éviter conclusions sur simple vérif 12V
-  // Un contrôle "alimentation présente" ne confirme pas une défaillance — il faut 3 contrôles minimum
-  if ((state.controles_faits || []).length >= 3) {
+  // Cas 3 : 2+ contrôles effectués (pas 3 — 2 suffisent pour une conclusion probable)
+  if ((state.controles_faits || []).length >= 2) {
     const actives = state.hypotheses.filter((h) => h.statut !== "eliminee");
     if (actives.length > 0) return actives[0];
+  }
+  // Cas 4 : une seule hypothèse active après le 1er contrôle → conclure directement
+  if ((state.controles_faits || []).length >= 1) {
+    const actives = state.hypotheses.filter((h) => h.statut !== "eliminee");
+    if (actives.length === 1) return actives[0];
   }
   return null;
 }
