@@ -882,7 +882,16 @@ textarea{resize:vertical;min-height:70px}
 }
 .dylan-retry-btn:hover{background:rgba(239,68,68,.16)}
 
-/* ── Health Score Gauge ── */
+/* ── NEXUS Validation Badge ── */
+.nexus-val-wrap{margin:8px 0 0 0;padding:0}
+.nexus-loading{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);padding:8px 12px;background:rgba(232,160,0,.04);border:1px solid rgba(232,160,0,.12);border-radius:8px}
+.nexus-spin{display:inline-block;animation:nexusSpin .9s linear infinite}
+@keyframes nexusSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.nexus-badge-wrap{padding:10px 13px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:8px;font-size:12px}
+.nexus-tier-badge{font-size:10px;font-weight:700;color:rgba(99,102,241,.9);letter-spacing:.5px;margin-bottom:5px;font-family:'IBM Plex Mono',monospace}
+.nexus-consensus{font-weight:600;color:var(--tx);margin-bottom:3px}
+.nexus-alt{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;border-top:1px solid var(--bd2);padding-top:5px}
+.nexus-escalade{font-size:11px;color:#f59e0b;margin-top:5px;padding:4px 8px;background:rgba(245,158,11,.08);border-radius:5px}
 .hs-gauge-wrap{
   display:flex;flex-direction:column;align-items:center;
   padding:20px 0 8px
@@ -4302,9 +4311,12 @@ window.dylanSend = async function () {
   const inp = document.getElementById('dylan-in'); if (!inp) return;
   const msg = inp.value.trim(); if (!msg) { toast('Écrivez votre message à Dylan', 'er'); return; }
   inp.value = '';
+  // Capturer codes OBD et symptomes pour validation NEXUS a la conclusion
+  const codesInMsg = (msg.match(/[PCBU][0-9]{4}/gi) || []).map(c => c.toUpperCase());
+  if (codesInMsg.length) { window._nexusCodes = [...new Set([...(window._nexusCodes||[]), ...codesInMsg])]; }
+  if (!window._nexusSymptoms && msg.length > 8) { window._nexusSymptoms = msg.slice(0, 300); }
   dylanBubble('user', msg.replace(/</g, '&lt;'));
   await dylanTurn({ user_input: msg });
-
   if(window.dprgDone)window.dprgDone();
 // ── MECAIA 3D TILT EFFECTS ──────────────────────────────────────────
 (function(){
@@ -4563,6 +4575,12 @@ window.dylanTurn = async function (payload) {
       };
     }
     dylanRender(data);
+    // Validation NEXUS automatique a la conclusion — fire-and-forget (non bloquant)
+    if (data.etat === 'CONCLUSION' && data.conclusion) {
+      triggerNexusValidation(data).catch(function(){});
+      // Reset apres conclusion pour prochaine conversation
+      window._nexusCodes = []; window._nexusSymptoms = '';
+    }
     const vehLabel = selCar ? selCar.marque + ' ' + selCar.modele + ' — ' : '';
     save('Conversation Dylan', vehLabel + (data.conclusion ? data.conclusion.cause : 'enquête en cours'), 'dylan');
     await refreshCredits();
@@ -4571,6 +4589,59 @@ window.dylanTurn = async function (payload) {
     dylanBubble('dylan', '<div class="dylan-err-wrap"><span style="color:var(--red)">⚠️ ' + e.message + '</span><button class="dylan-retry-btn" onclick="dylanRetry()">↺ Réessayer</button></div>');
   }
 };
+
+// ── NEXUS VALIDATION — déclenché automatiquement à chaque conclusion Dylan ──────
+// Appelle nexus_orchestrator en arrière-plan et affiche le résultat sous la bulle.
+// Non bloquant : si NEXUS échoue, la conclusion Dylan reste intacte.
+async function triggerNexusValidation(dylanData) {
+  if (!window.MecaIA || !window.MecaIA.authedFetch) return;
+  const veh = window.selCar ? {
+    make: window.selCar.marque || null, model: window.selCar.modele || null,
+    year: parseInt(window.selCar.annee) || null, fuel: window.selCar.carbu || null,
+  } : {};
+  const dtcCodes = window._nexusCodes || [];
+  const symptoms = window._nexusSymptoms || (dylanData.conclusion ? dylanData.conclusion.cause : '');
+  if (!dtcCodes.length && !symptoms) return;
+
+  // Trouver la dernière bulle Dylan (.d-msg.dylan > div > .d-bubble.dylan)
+  const allDylanMsgs = document.querySelectorAll('.d-msg.dylan');
+  const lastMsg = allDylanMsgs.length ? allDylanMsgs[allDylanMsgs.length - 1] : null;
+  const lastBubble = lastMsg ? lastMsg.querySelector('.d-bubble.dylan') : null;
+  if (!lastBubble) return; // Pas de bulle → abandon silencieux
+
+  // Injecter l'indicateur de chargement NEXUS dans la bulle
+  const nexusWrap = document.createElement('div');
+  nexusWrap.className = 'nexus-val-wrap';
+  nexusWrap.innerHTML = '<div class="nexus-loading"><span class="nexus-spin">⟳</span> Vérification NEXUS en cours…</div>';
+  lastBubble.appendChild(nexusWrap);
+
+  try {
+    const body = Object.assign({ dtcCodes, symptoms }, veh);
+    const r = await window.MecaIA.authedFetch('nexus_orchestrator', { method: 'POST', body });
+    if (!r.ok || !r.data) { nexusWrap.remove(); return; }
+    const d = r.data;
+    const tier = d.tier || 2;
+    const vuln = d.challenger && d.challenger.vulnerability_score !== null ? d.challenger.vulnerability_score : null;
+    const confidence = vuln !== null ? Math.round(100 - vuln) : null;
+    const consensus = (d.consensus && d.consensus.consensus) || (d.challenger && d.challenger.active ? 'accord' : null);
+    const cIcon = { accord: '✅', accord_partiel: '🟡', divergence: '🔴', un_seul_avis: '🔵' }[consensus] || '🔬';
+    const cLabel = { accord: 'Accord entre IAs', accord_partiel: 'Accord partiel', divergence: 'Divergence', un_seul_avis: 'Avis unique' }[consensus] || 'Vérifié';
+    const confTxt = confidence !== null ? ' · ' + confidence + '% confiance' : '';
+    const gptCause = d.diagnosis_gpt && d.diagnosis_gpt.cause_principale ? d.diagnosis_gpt.cause_principale.slice(0, 90) : null;
+    const sonnetCause = d.diagnosis_sonnet && d.diagnosis_sonnet.cause_principale;
+    const showAlt = gptCause && gptCause !== sonnetCause;
+    nexusWrap.innerHTML =
+      '<div class="nexus-badge-wrap">' +
+        '<div class="nexus-tier-badge">🔬 NEXUS Tier ' + tier + '</div>' +
+        '<div class="nexus-consensus">' + cIcon + ' ' + cLabel + confTxt + '</div>' +
+        (showAlt ? '<div class="nexus-alt">GPT voit : ' + gptCause + '</div>' : '') +
+        (d.needs_tier4_escalation ? '<div class="nexus-escalade">⚠️ Divergence détectée — cas complexe, envisagez un avis professionnel</div>' : '') +
+      '</div>';
+  } catch(e) {
+    console.error('[NEXUS validation]', e.message);
+    nexusWrap.remove();
+  }
+}
 
 // Retry dernière requête Dylan
 window.dylanRetry = function () {
