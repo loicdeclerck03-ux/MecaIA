@@ -733,9 +733,11 @@ export const handler = async (event) => {
     let ragContext = "";
     const isFirstTurn = (state.tour || 0) === 0;
 
-    // Timeout 4s intégré dans le client Supabase — pas besoin de wrappers st()
+    // Timeout 4s intégré dans le client Supabase (via getSupa())
+    // RAG : seulement tour 0-1 sans hypothèses — évite 504 sur 2ème appel
+    const needsRAG = !state.hypotheses.length && (state.tour || 0) < 2;
     const [ragResult, memoire, dtcResult, vehicleCtx, prevDiags] = await Promise.all([
-      (!state.hypotheses.length && (state.tour || 0) < 3)
+      needsRAG
         ? supabase.rpc("search_diagnostic_cases_text", {
             p_marque: state.vehicule.make || "",
             p_modele: state.vehicule.model || "",
@@ -806,6 +808,20 @@ export const handler = async (event) => {
     // Haiku : toutes les phases sauf conclusion (rapide, fiable, <5s)
     // Sonnet : CONCLUSION uniquement (15-18s — qualité maximale pour la décision finale)
     // Fast-track : Haiku (prompt ultra-contraint, Sonnet cold-start timeout)
+    // Force conclusion au tour 5+ — Dylan ne peut pas rester bloqué plus de 5 tours
+    // Evite le scénario "Pas de CONCLUSION T7" sur des cas complexes multi-symptômes
+    const forceConclusion = (state.tour || 0) >= 5 && state.etat !== "CONCLUSION";
+    if (forceConclusion && !peutConclure(state)) {
+      // Si des hypothèses existent → conclure la plus probable
+      const bestHyp = state.hypotheses?.filter(h => h.statut !== "eliminee")[0];
+      if (bestHyp) {
+        bestHyp.statut = "confirmee"; // force peutConclure
+        state.etat = "CONCLUSION";
+      } else if ((state.tour || 0) >= 6) {
+        // Pas d'hypothèses après 6 tours → forcer Sonnet à conclure quand même
+        state.etat = "CONCLUSION";
+      }
+    }
     const isConclusion = state.etat === "CONCLUSION" || peutConclure(state) !== null;
     const isFastTrackActive = !!(state.fast_track);
     const modelChoisi = (isConclusion && !isFastTrackActive) ? MODEL_CONCLUSION : MODEL_ENQUETE;

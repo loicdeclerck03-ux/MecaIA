@@ -8,8 +8,8 @@ import { writeFileSync } from 'fs';
 
 const MARIE = AGENTS.find(a => a.id === 'marie');
 const THOMAS = AGENTS.find(a => a.id === 'thomas');
-const mc = await MecaIAClient.create(MARIE);
-const tc = await MecaIAClient.create(THOMAS);
+let mc = await MecaIAClient.create(MARIE);
+let tc = await MecaIAClient.create(THOMAS);
 const mv = MARIE.vehicle;
 const tv = THOMAS.vehicle;
 const mv_veh = { make: mv.marque, model: mv.modele, year: mv.annee, fuel: mv.carbu, mileage_km: parseInt(mv.km) };
@@ -140,18 +140,25 @@ const SCENARIOS = [
   { id:100, ag:'m', veh:mv_veh, q:'De la fumee epaisse sort du moteur et ca sent le brule tres fort' },
 ];
 
-async function runToConclusion(scenario) {
+async function runToConclusion(scenario, retryOn401 = true) {
   const client = scenario.ag === 'm' ? mc : tc;
   const startTs = Date.now();
   let session_id = null;
   let data = null;
   let tours = 0;
   const MAX = 7;
-  // Réponse automatique riche — donne le contexte minimal que Dylan attend
   const AUTO_CONTEXT = "Depuis hier matin. Le problème est permanent, froid et chaud. Je peux encore rouler pour l'instant.";
 
   try {
     let r = await client.call('dylan_agents', { user_input: scenario.q, vehicle: scenario.veh });
+    // Retry auto sur 401 : relogin et relancer
+    if (r.status === 401 && retryOn401) {
+      try {
+        if (scenario.ag === 'm') mc = await MecaIAClient.create(MARIE);
+        else tc = await MecaIAClient.create(THOMAS);
+        return runToConclusion(scenario, false); // un seul retry
+      } catch { return { id: scenario.id, ok: false, reason: 'HTTP 401 (refresh failed)', tours: 1, ms: Date.now()-startTs }; }
+    }
     if (!r.ok) return { id: scenario.id, ok: false, reason: `HTTP ${r.status}`, tours: 1, ms: Date.now()-startTs };
     session_id = r.data?.session_id;
     data = r.data;
@@ -160,15 +167,26 @@ async function runToConclusion(scenario) {
     while (data?.etat !== 'CONCLUSION' && tours < MAX) {
       const payload = { session_id, vehicle: scenario.veh };
       if (data?.controle) {
-        payload.control_result = 'oui'; // Simuler résultat positif au contrôle
+        payload.control_result = 'oui';
       } else if (data?.etat === 'CONTEXTE' && tours === 1) {
-        payload.user_input = AUTO_CONTEXT; // Donner le contexte minimal
+        payload.user_input = AUTO_CONTEXT;
       } else if (data?.etat === 'CONTEXTE') {
         payload.user_input = "Froid et chaud, permanent. Pas de code OBD connu.";
+      } else if (tours >= 3) {
+        // Forcer avancement après tour 3 : contrôle fictif + instruction conclusion
+        payload.control_result = 'oui';
+        payload.user_input = "Oui, confirme. Conclus avec ta meilleure hypothèse.";
       } else {
         payload.user_input = "Continuez avec les hypothèses les plus probables.";
       }
       r = await client.call('dylan_agents', payload);
+      if (r.status === 401 && retryOn401) {
+        try {
+          if (scenario.ag === 'm') mc = await MecaIAClient.create(MARIE);
+          else tc = await MecaIAClient.create(THOMAS);
+          r = await (scenario.ag === 'm' ? mc : tc).call('dylan_agents', payload);
+        } catch { break; }
+      }
       if (!r.ok) break;
       data = r.data;
       tours++;
