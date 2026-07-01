@@ -738,13 +738,13 @@ export const handler = async (event) => {
 
     console.log(`[DYLAN] tour=${state.tour} etat=${state.etat} model=${modelChoisi} dtc=${dtcContext.length} elapsed=${Date.now() - startTime}ms`);
 
-    // Historique conversation — pass aux 4 derniers tours (8 messages) pour que le LLM
-    // se souvienne des echanges precedents sans reconstruire depuis le seul JSON d etat.
-    // Le JSON d etat dans le system prompt reste la source de verite structuree ;
-    // l historique donne le fil narratif. Sans ca, le LLM redemande au 3e question.
+    // Historique conversation — derniers 20 tours (40 messages) pour que le LLM
+    // se souvienne de toute la conversation sans limite arbitraire.
+    // Le resume_enquete dans le JSON d etat compresse le contexte structural ;
+    // l historique donne le fil narratif complet.
     if (!state.conv_history) state.conv_history = [];
     const apiMessages = [
-      ...(state.conv_history).slice(-8), // derniers 4 tours = 8 messages
+      ...(state.conv_history).slice(-40), // 20 tours = 40 messages
       { role: "user", content: userMsg },
     ];
 
@@ -807,7 +807,7 @@ export const handler = async (event) => {
       { role: "user", content: userMsg },
       { role: "assistant", content: parsed.message || "" }
     );
-    state.conv_history = state.conv_history.slice(-8);
+    state.conv_history = state.conv_history.slice(-40); // 20 tours max
 
     // ---- 7) Fusion état + transitions déterministes ----
     if (parsed.contexte) {
