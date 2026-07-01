@@ -769,10 +769,13 @@ export const handler = async (event) => {
     }
     state.tour = (state.tour || 0) + 1;
 
-    // ---- 5) Choisir le modèle selon la phase ----
-    // #6 : Sonnet pour CONCLUSION, Haiku pour le reste
+    // ---- 5) Choisir le modèle selon la phase ────────────────────────────
+    // Haiku : CONTEXTE (collecte d'info — question simple, pas besoin de profondeur)
+    // Sonnet : HYPOTHESES / CONTROLE / CONCLUSION (raisonnement causal approfondi)
+    // Logique : inutile de payer Sonnet pour "depuis quand ce bruit ?"
     const isConclusion = state.etat === "CONCLUSION" || peutConclure(state) !== null;
-    const modelChoisi = isConclusion ? MODEL_CONCLUSION : MODEL_ENQUETE;
+    const needsDepth = state.etat !== "CONTEXTE" || (state.hypotheses && state.hypotheses.length > 0) || isConclusion;
+    const modelChoisi = needsDepth ? MODEL_CONCLUSION : MODEL_HAIKU_UTIL;
 
     const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction, state.vehicleCtx, state.prev_diags || []);
     const userMsg = control_result
