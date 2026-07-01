@@ -788,10 +788,14 @@ export const handler = async (event) => {
     const isActivePhase = state.etat === "HYPOTHESES" || state.etat === "CONTROLE" || isConclusion
       || (state.hypotheses && state.hypotheses.length > 0);
 
-    // Historique conversation — derniers 20 tours (40 messages)
+    // Historique conversation
+    // Haiku non-conclusion : 40 messages (20 tours) — mémoire complète
+    // Sonnet conclusion : 4 messages seulement — le state JSON contient déjà tout le
+    //   contexte diagnostic (hypothèses, contrôles, symptômes). Evite ~8000 tokens d input.
     if (!state.conv_history) state.conv_history = [];
+    const historyLimit = isConclusion ? 4 : 40;
     const apiMessages = [
-      ...(state.conv_history).slice(-40),
+      ...(state.conv_history).slice(-historyLimit),
       { role: "user", content: userMsg },
     ];
 
