@@ -18,13 +18,15 @@ import { getUser, serviceClient, json, preflight } from "../lib/auth.mjs";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_KEY });
 
-// Plan Netlify PRO (26s) — Sonnet pour TOUTES les phases (plus jamais Haiku comme cerveau principal).
-// Haiku reste pour les retries JSON et la consultation GPT-merge.
-// Avant : Haiku enquete + Sonnet conclusion. Maintenant : Sonnet partout + GPT parallele sur phases actives.
-const MODEL_ENQUETE    = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
+// Architecture multi-IA validée après debug :
+// Haiku  = conversation (3-4s — tient toujours dans les 26s, quel que soit le prompt size)
+// Sonnet = conclusion uniquement (15-18s — OK car une seule fois, résultat final)
+// GPT    = fire-and-forget en fond sur phases actives, injecté au tour suivant
+// Résultat : 3 IAs collaborent à chaque conversation, chacune dans son rôle.
+const MODEL_ENQUETE    = process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001";
 const MODEL_CONCLUSION = process.env.ANTHROPIC_CONCLUSION_MODEL || "claude-sonnet-4-6";
-const MODEL_HAIKU_UTIL = "claude-haiku-4-5-20251001"; // uniquement pour retry JSON et consultations légères
-const MODEL_GPT_CONSULT = "gpt-4.1-mini"; // second avis parallèle sur phases hypothèses/controle/conclusion
+const MODEL_HAIKU_UTIL = "claude-haiku-4-5-20251001"; // retry JSON + consultations légères
+const MODEL_GPT_CONSULT = "gpt-4.1-mini"; // second avis parallèle (fire-and-forget)
 
 // Plafond anti-derive de cout — 15 tours (3 contexte + 1 hyp + 4 controles + 1 conclu + marge)
 const MAX_TOURS = 15;
@@ -769,13 +771,11 @@ export const handler = async (event) => {
     }
     state.tour = (state.tour || 0) + 1;
 
-    // ---- 5) Choisir le modèle selon la phase ────────────────────────────
-    // Haiku : CONTEXTE (collecte d'info — question simple, pas besoin de profondeur)
-    // Sonnet : HYPOTHESES / CONTROLE / CONCLUSION (raisonnement causal approfondi)
-    // Logique : inutile de payer Sonnet pour "depuis quand ce bruit ?"
+    // ---- 5) Choisir le modèle ───────────────────────────────────────────
+    // Haiku : toutes les phases sauf conclusion (rapide, fiable, <5s)
+    // Sonnet : CONCLUSION uniquement (15-18s — qualité maximale pour la décision finale)
     const isConclusion = state.etat === "CONCLUSION" || peutConclure(state) !== null;
-    const needsDepth = state.etat !== "CONTEXTE" || (state.hypotheses && state.hypotheses.length > 0) || isConclusion;
-    const modelChoisi = needsDepth ? MODEL_CONCLUSION : MODEL_HAIKU_UTIL;
+    const modelChoisi = isConclusion ? MODEL_CONCLUSION : MODEL_ENQUETE;
 
     const system = buildSystem(state, ragContext, dtcContext, memoire, langInstruction, state.vehicleCtx, state.prev_diags || []);
     const userMsg = control_result
@@ -822,7 +822,7 @@ export const handler = async (event) => {
     try {
       completion = await anthropic.messages.create({
         model: modelChoisi,
-        max_tokens: isConclusion ? 1800 : 1200,
+        max_tokens: isConclusion ? 1800 : 2400, // Haiku: 2400 en 3-5s. Sonnet conclusion: 1800 en 15-18s.
         system,
         messages: apiMessages,
       }, { signal: sonnetCtrl.signal });
