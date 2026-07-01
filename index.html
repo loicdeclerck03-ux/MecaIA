@@ -3720,7 +3720,7 @@ async function loadDiagSessions() {
         hint.innerHTML = '<div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>'
           + '<div class="empty-t">Pas encore de diagnostic</div>'
           + '<div class="empty-d">Dylan analyse vos pannes, codes DTC et symptomes avec une precision de technicien expert</div>'
-          + '<button class="btn-teal" onclick="document.getElementById(\'d-i\').focus()" style="margin-top:6px">&#x1F4AC; Demarrer un diagnostic</button>';
+          + '<button class="btn-teal" onclick="var el=document.getElementById(\'d-i\');if(el)el.focus()" style="margin-top:6px">&#x1F4AC; Demarrer un diagnostic</button>';
         cbEl.insertBefore(hint, cbEl.firstChild);
       }
     }
