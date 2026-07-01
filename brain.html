@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MecaIA Brain — Cerveau Projet</title>
+<style>
+  :root {
+    --bg: #060809;
+    --bg2: #0d1117;
+    --bg3: #161b22;
+    --border: #21262d;
+    --amber: #e8a000;
+    --amber2: #ffc53d;
+    --blue: #4488ff;
+    --green: #44cc88;
+    --red: #ff4444;
+    --orange: #ff8800;
+    --text: #e6edf3;
+    --muted: #7d8590;
+    --card: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Mono', 'Fira Code', monospace; font-size: 13px; min-height: 100vh; }
+  
+  /* LOGIN */
+  #login { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .login-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 40px; width: 320px; text-align: center; }
+  .login-card h1 { color: var(--amber); font-size: 22px; margin-bottom: 8px; letter-spacing: 2px; }
+  .login-card p { color: var(--muted); margin-bottom: 24px; font-size: 11px; }
+  .login-card input { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 10px 14px; font-family: inherit; font-size: 13px; margin-bottom: 12px; outline: none; }
+  .login-card input:focus { border-color: var(--amber); }
+  .btn { background: var(--amber); color: #000; border: none; border-radius: 6px; padding: 10px 20px; font-family: inherit; font-weight: 700; cursor: pointer; font-size: 13px; width: 100%; transition: background 0.2s; }
+  .btn:hover { background: var(--amber2); }
+  .btn-sm { width: auto; padding: 4px 12px; font-size: 11px; font-weight: 600; }
+  .btn-done { background: var(--green); color: #000; }
+  .btn-done:hover { background: #55dd99; }
+  
+  /* HEADER */
+  #app { display: none; }
+  header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { color: var(--amber); font-size: 16px; font-weight: 700; letter-spacing: 2px; }
+  .logo span { color: var(--muted); font-size: 11px; font-weight: 400; margin-left: 8px; }
+  .header-meta { display: flex; gap: 16px; align-items: center; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; font-size: 10px; color: var(--muted); }
+  .badge.green { border-color: var(--green); color: var(--green); }
+  .badge.red { border-color: var(--red); color: var(--red); }
+  .badge.amber { border-color: var(--amber); color: var(--amber); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .dot.pulse { animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .refresh-btn { background: none; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: 11px; }
+  .refresh-btn:hover { border-color: var(--amber); color: var(--amber); }
+  
+  /* LAYOUT */
+  main { max-width: 1400px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card.full { grid-column: 1 / -1; }
+  .card.half { grid-column: span 2; }
+  .card h2 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+  .card h2::before { content: ""; display: inline-block; width: 3px; height: 12px; background: var(--amber); border-radius: 2px; }
+  
+  /* METRICS */
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .metric { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .metric-val { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+  .metric-val.amber { color: var(--amber); }
+  .metric-val.green { color: var(--green); }
+  .metric-val.red { color: var(--red); }
+  .metric-label { font-size: 10px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .metric-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  
+  /* TASKS */
+  .task-list { display: flex; flex-direction: column; gap: 8px; }
+  .task-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: flex; align-items: flex-start; gap: 10px; transition: border-color 0.2s; }
+  .task-item:hover { border-color: var(--amber); }
+  .task-item.done { opacity: 0.4; border-color: var(--green); }
+  .task-item.done .task-title { text-decoration: line-through; }
+  .task-badge { flex-shrink: 0; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+  .p0 { background: rgba(255,68,68,0.15); color: var(--red); border: 1px solid rgba(255,68,68,0.3); }
+  .p1 { background: rgba(255,136,0,0.15); color: var(--orange); border: 1px solid rgba(255,136,0,0.3); }
+  .p2 { background: rgba(68,136,255,0.15); color: var(--blue); border: 1px solid rgba(68,136,255,0.3); }
+  .task-content { flex: 1; }
+  .task-title { font-size: 12px; color: var(--text); margin-bottom: 2px; }
+  .task-detail { font-size: 10px; color: var(--muted); line-height: 1.5; }
+  .task-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .tag { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-size: 9px; color: var(--muted); }
+  
+  /* DECISIONS */
+  .decision-item { background: var(--bg3); border: 1px solid var(--border); border-left: 3px solid var(--amber); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; }
+  .decision-title { font-size: 12px; color: var(--amber); margin-bottom: 4px; }
+  .decision-detail { font-size: 10px; color: var(--muted); line-height: 1.5; }
+  
+  /* ARCH */
+  .arch-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; }
+  .arch-title { font-size: 12px; color: var(--blue); margin-bottom: 6px; }
+  .arch-kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; }
+  .arch-k { font-size: 10px; color: var(--muted); }
+  .arch-v { font-size: 10px; color: var(--text); word-break: break-all; }
+  
+  /* NEXUS TIERS */
+  .tier-bars { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .tier-row { display: flex; align-items: center; gap: 8px; }
+  .tier-label { font-size: 10px; color: var(--muted); width: 45px; flex-shrink: 0; }
+  .tier-bar-wrap { flex: 1; background: var(--bg); border-radius: 3px; height: 14px; overflow: hidden; }
+  .tier-bar { height: 100%; border-radius: 3px; transition: width 0.5s; display: flex; align-items: center; justify-content: flex-end; padding-right: 4px; }
+  .tier-bar span { font-size: 9px; font-weight: 700; color: #000; }
+  .t1 { background: var(--green); }
+  .t2 { background: var(--amber); }
+  .t3 { background: var(--orange); }
+  .t4 { background: var(--red); }
+  
+  /* OBJECTIVES */
+  .obj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .obj-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+  .obj-target { font-size: 24px; font-weight: 700; color: var(--amber); }
+  .obj-current { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .obj-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .progress-wrap { background: var(--bg); border-radius: 4px; height: 6px; margin-top: 10px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 4px; background: var(--amber); transition: width 0.8s; }
+  
+  /* STACK */
+  .stack-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .stack-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .stack-name { font-size: 10px; color: var(--muted); }
+  .stack-val { font-size: 11px; color: var(--text); font-weight: 600; }
+  
+  /* LOG */
+  .log-wrap { background: var(--bg); border-radius: 6px; padding: 12px; font-size: 10px; color: var(--muted); line-height: 1.8; max-height: 200px; overflow-y: auto; }
+  .log-entry { display: flex; gap: 8px; }
+  .log-time { color: var(--muted); flex-shrink: 0; }
+  .log-msg { color: var(--text); }
+  .log-msg.ok { color: var(--green); }
+  .log-msg.warn { color: var(--orange); }
+  .log-msg.err { color: var(--red); }
+  
+  /* REGLES */
+  .rule-list { display: flex; flex-direction: column; gap: 5px; }
+  .rule-item { display: flex; gap: 8px; align-items: flex-start; }
+  .rule-icon { color: var(--red); flex-shrink: 0; font-size: 11px; margin-top: 1px; }
+  .rule-text { font-size: 11px; color: var(--text); line-height: 1.4; }
+  
+  /* LOADER */
+  .loader { display: flex; align-items: center; justify-content: center; min-height: 60px; gap: 8px; color: var(--muted); font-size: 12px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--amber); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  
+  /* RESPONSIVE */
+  @media(max-width: 900px) {
+    main { grid-template-columns: 1fr 1fr; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .card.half { grid-column: span 2; }
+  }
+  @media(max-width: 600px) {
+    main { grid-template-columns: 1fr; }
+    .card.half, .card.full { grid-column: span 1; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-card">
+    <h1>⚡ MECAIA BRAIN</h1>
+    <p>Cerveau de projet · Accès restreint</p>
+    <input type="password" id="tokenInput" placeholder="Token d'accès" />
+    <button class="btn" onclick="doLogin()">ACCÉDER AU CERVEAU</button>
+    <p id="loginErr" style="color:var(--red);font-size:10px;margin-top:10px;display:none">Token invalide</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="app">
+  <header>
+    <div>
+      <span class="logo">⚡ MECAIA BRAIN <span>v3.0 · Cerveau projet</span></span>
+    </div>
+    <div class="header-meta">
+      <span class="badge green"><span class="dot pulse"></span>PROD</span>
+      <span class="badge" id="hSentry">Sentry <span id="hSentryCount">…</span></span>
+      <span class="badge" id="hNetlify">Netlify …</span>
+      <span class="badge amber" id="hUpdate">Chargement…</span>
+      <button class="refresh-btn" onclick="loadBrain()">⟳ Refresh</button>
+    </div>
+  </header>
+
+  <main id="mainContent">
+    <div class="card full loader"><div class="spinner"></div>Chargement du cerveau…</div>
+  </main>
+</div>
+
+<script>
+const API = '/.netlify/functions/brain_api';
+let TOKEN = '';
+
+function doLogin() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t) return;
+  TOKEN = t;
+  loadBrain();
+}
+document.getElementById('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+async function loadBrain() {
+  try {
+    const r = await fetch(API + '?token=' + encodeURIComponent(TOKEN));
+    if (r.status === 401) {
+      document.getElementById('loginErr').style.display = 'block';
+      return;
+    }
+    const d = await r.json();
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    render(d);
+  } catch(e) {
+    alert('Erreur connexion : ' + e.message);
+  }
+}
+
+function ts(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+function ago(iso) {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 60000) return 'il y a < 1min';
+  if (diff < 3600000) return `il y a ${Math.floor(diff/60000)}min`;
+  if (diff < 86400000) return `il y a ${Math.floor(diff/3600000)}h`;
+  return `il y a ${Math.floor(diff/86400000)}j`;
+}
+
+function render(d) {
+  // Header
+  const sErr = d.prod?.sentry_errors || 0;
+  const sh = document.getElementById('hSentry');
+  document.getElementById('hSentryCount').textContent = sErr === 0 ? '✅ 0' : '🔴 ' + sErr;
+  sh.className = 'badge ' + (sErr > 0 ? 'red' : 'green');
+  document.getElementById('hNetlify').textContent = 'Netlify ' + (d.prod?.netlify_status === 'ready' ? '✅' : '⚠️');
+  document.getElementById('hUpdate').textContent = `MAJ ${ts(d.generated_at)}`;
+
+  const m = d.metriques || {};
+  const nx = m.nexus || {};
+  const tiers = nx.tier_distribution || {};
+  const totalTiers = Object.values(tiers).reduce((a,b) => a+(b||0), 0) || 1;
+
+  // Règles absolues depuis architecture
+  const archRules = d.architecture?.find(a => a.id === 'arch_regles');
+  const rules = archRules?.content?.jamais || [];
+
+  // Tâches
+  const p0 = d.tasks_p0 || [];
+  const p1 = d.tasks_p1 || [];
+  const p2 = d.tasks_p2 || [];
+  const done = d.tasks_done || [];
+  const decisions = d.decisions || [];
+  const arch = d.architecture?.filter(a => a.id !== 'arch_regles') || [];
+
+  // Stack
+  const stackArch = d.architecture?.find(a => a.id === 'arch_stack');
+  const stack = stackArch?.content || {};
+  const ids = d.architecture?.find(a => a.id === 'arch_ids')?.content || {};
+
+  document.getElementById('mainContent').innerHTML = `
+    <!-- MÉTRIQUES -->
+    <div class="card full">
+      <h2>Métriques temps réel</h2>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-val amber">${m.users_total || 0}</div>
+          <div class="metric-label">Utilisateurs</div>
+          <div class="metric-sub">dont ${m.abonnes_payants || 0} payants</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">${m.sessions_total || 0}</div>
+          <div class="metric-label">Sessions diag</div>
+          <div class="metric-sub">${m.sessions_24h || 0} dernières 24h</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val ${(m.mrr_eur||0) > 0 ? 'green' : ''}">${m.mrr_eur || 0}€</div>
+          <div class="metric-label">MRR</div>
+          <div class="metric-sub">Cible M+6 : 250€/mois</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">${m.beta_registrations || 0}</div>
+          <div class="metric-label">Beta inscrits</div>
+          <div class="metric-sub">Boîtiers : 0 livrés</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OBJECTIFS -->
+    <div class="card">
+      <h2>Objectifs financiers</h2>
+      <div class="obj-grid">
+        <div class="obj-card">
+          <div class="obj-label">M+6 (Jan 2027)</div>
+          <div class="obj-target">250€</div>
+          <div class="obj-current">Actuel : ${m.mrr_eur || 0}€ bénéfice/mois</div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:${Math.min(100, ((m.mrr_eur||0)/250)*100)}%"></div></div>
+        </div>
+        <div class="obj-card">
+          <div class="obj-label">M+12 (Jul 2027)</div>
+          <div class="obj-target">700€</div>
+          <div class="obj-current">Cible : 50 Pro + 20 Starter</div>
+          <div class="progress-wrap"><div class="progress-bar" style="width:${Math.min(100, ((m.mrr_eur||0)/700)*100)}%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEXUS STATS -->
+    <div class="card">
+      <h2>NEXUS Multi-IA</h2>
+      <div class="metric-val amber" style="font-size:18px;margin-bottom:4px">${nx.confidence_moyenne ? nx.confidence_moyenne+'%' : '—'}</div>
+      <div class="metric-label" style="margin-bottom:12px">Confiance moyenne</div>
+      <div class="tier-bars">
+        ${[1,2,3,4].map(t => {
+          const n = tiers[t] || 0;
+          const pct = Math.round((n/totalTiers)*100);
+          return `<div class="tier-row">
+            <div class="tier-label">Tier ${t}</div>
+            <div class="tier-bar-wrap">
+              <div class="tier-bar t${t}" style="width:${pct}%">
+                ${pct > 10 ? '<span>'+n+'</span>' : ''}
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--muted);width:30px;text-align:right">${pct}%</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- TASKS P0 -->
+    <div class="card">
+      <h2>🔴 Tâches P0 — Cette semaine</h2>
+      ${p0.length === 0 ? '<div style="color:var(--green);font-size:11px">✅ Aucune tâche P0 active</div>' : ''}
+      <div class="task-list">
+        ${p0.map(t => taskCard(t, 'p0')).join('')}
+      </div>
+    </div>
+
+    <!-- TASKS P1 -->
+    <div class="card">
+      <h2>🟠 Tâches P1 — Juillet 2026</h2>
+      ${p1.length === 0 ? '<div style="color:var(--muted);font-size:11px">Aucune tâche P1 active</div>' : ''}
+      <div class="task-list">
+        ${p1.map(t => taskCard(t, 'p1')).join('')}
+      </div>
+    </div>
+
+    <!-- TASKS P2 -->
+    <div class="card">
+      <h2>🔵 Tâches P2 — Trimestre</h2>
+      ${p2.length === 0 ? '<div style="color:var(--muted);font-size:11px">Aucune tâche P2 active</div>' : ''}
+      <div class="task-list">
+        ${p2.slice(0,6).map(t => taskCard(t, 'p2')).join('')}
+      </div>
+    </div>
+
+    <!-- DECISIONS -->
+    <div class="card half">
+      <h2>Décisions actives</h2>
+      ${decisions.map(d => `
+        <div class="decision-item">
+          <div class="decision-title">${d.title}</div>
+          <div class="decision-detail">${formatContent(d.content)}</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px">${ago(d.updated_at)}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- STACK TECHNIQUE -->
+    <div class="card">
+      <h2>Stack Technique</h2>
+      <div class="stack-list">
+        ${Object.entries({
+          'Frontend': stack.frontend ? stack.frontend.split('·')[0].trim() : '—',
+          'Backend': '39 Netlify Functions',
+          'Base de données': 'Supabase EU West',
+          'IA conversation': stack.ia_conversation || '—',
+          'IA conclusion': stack.ia_conclusion || '—',
+          'GPT': stack.ia_fond || '—',
+          'Gemini': stack.ia_gemini || '—',
+          'Mistral': stack.ia_mistral || '—',
+          'Paiement': stack.paiement || '—',
+          'Email': stack.email || '—',
+        }).map(([k,v]) => `
+          <div class="stack-item">
+            <span class="stack-name">${k}</span>
+            <span class="stack-val" style="font-size:9px">${v}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- IDs CRITIQUES -->
+    <div class="card">
+      <h2>IDs Critiques</h2>
+      <div class="arch-item">
+        <div class="arch-kv">
+          ${Object.entries(ids).map(([k,v]) => `<div class="arch-k">${k}</div><div class="arch-v">${v}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- RÈGLES ABSOLUES -->
+    <div class="card">
+      <h2>Règles absolues — JAMAIS violer</h2>
+      <div class="rule-list">
+        ${rules.map(r => `
+          <div class="rule-item">
+            <span class="rule-icon">✗</span>
+            <span class="rule-text">${r}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- TASKS DONE -->
+    <div class="card">
+      <h2>✅ Récemment terminé</h2>
+      <div class="task-list">
+        ${done.length === 0 ? '<div style="color:var(--muted);font-size:11px">Aucune tâche terminée</div>' : ''}
+        ${done.map(t => `
+          <div class="task-item done">
+            <div class="task-badge p2">DONE</div>
+            <div class="task-content">
+              <div class="task-title">${t.title}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- GRAPHIFY ARCHITECTURE -->
+    <div class="card full">
+      <h2>Architecture Code — Fichiers Netlify Functions (${d.prod?.fonctions || 47})</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+        ${[
+          'dylan_agents','nexus_orchestrator','nexus_parts_price','nexus_recall_radar',
+          'nexus_vision','nexus_voice','nexus_feedback','brain_api',
+          'stripe_checkout','stripe_webhook','stripe_verify',
+          'garage_get','garage_add_vehicle','vehicle_memory','vehicle_context',
+          'obd_store','mecaia_box','box_agent','push_notify',
+          'email_welcome','email_marketing_sequence','scheduled_onboarding',
+          'baseline_learn','photo_analyze','sound_analyse','trip_tracker',
+        ].map(f => `<span style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:9px;color:${
+          ['dylan_agents','nexus_orchestrator','brain_api','stripe_checkout','stripe_webhook'].includes(f) ? 'var(--amber)' : 'var(--muted)'
+        }">${f}.mjs</span>`).join('')}
+        <span style="color:var(--muted);font-size:9px;padding:3px 8px">…et ${(d.prod?.fonctions||47)-26} autres</span>
+      </div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Tables Supabase</div>
+          <div style="font-size:20px;font-weight:700;color:var(--amber)">${d.prod?.tables_supabase || 65}</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Pages DTC</div>
+          <div style="font-size:20px;font-weight:700;color:var(--text)">61 502</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Sentry errors</div>
+          <div style="font-size:20px;font-weight:700;color:var(--green)">${d.prod?.sentry_errors || 0}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function taskCard(t, cls) {
+  const content = t.content || {};
+  const detail = content.detail || content.steps?.join(' → ') || '';
+  const tags = (t.tags || []).slice(0, 4);
+  const taskId = t.id;
+  return `
+    <div class="task-item" id="task-${taskId}">
+      <div class="task-badge ${cls}">${cls.toUpperCase()}</div>
+      <div class="task-content">
+        <div class="task-title">${t.title}</div>
+        ${detail ? `<div class="task-detail">${detail.substring(0, 120)}${detail.length > 120 ? '…' : ''}</div>` : ''}
+        ${tags.length ? `<div class="task-tags">${tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}</div>` : ''}
+      </div>
+      <button class="btn btn-sm btn-done" onclick="markDone('${taskId}')">✓</button>
+    </div>
+  `;
+}
+
+function formatContent(content) {
+  if (!content) return '';
+  const entries = Object.entries(content).filter(([k]) => k !== 'date');
+  return entries.slice(0, 3).map(([k, v]) => {
+    const val = typeof v === 'object' ? JSON.stringify(v).substring(0, 80) : String(v).substring(0, 100);
+    return `<span style="color:var(--muted)">${k}:</span> ${val}`;
+  }).join(' · ');
+}
+
+async function markDone(id) {
+  try {
+    const r = await fetch(API + '?token=' + encodeURIComponent(TOKEN), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: 'done' }),
+    });
+    if (r.ok) {
+      const el = document.getElementById('task-' + id);
+      if (el) { el.className = 'task-item done'; el.querySelector('.btn-done').remove(); }
+    }
+  } catch(e) { console.error(e); }
+}
+
+// Auto-refresh toutes les 5 minutes
+setInterval(() => { if (TOKEN) loadBrain(); }, 300000);
+</script>
+</body>
+</html>
