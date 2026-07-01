@@ -795,56 +795,58 @@ export const handler = async (event) => {
       { role: "user", content: userMsg },
     ];
 
-    // ── Sonnet ‖ GPT en parallèle sur phases actives ──────────────────
-    // Sonnet = réponse principale. GPT = second avis stocké pour le tour suivant.
-    // Timeout 22s couvre les deux (Pro plan = 26s). GPT non bloquant si il échoue.
+    // ── Sonnet (principal) + GPT (parallele vrai fire-and-forget) ────────
+    // Sonnet = attendu — c'est la reponse qui part a l utilisateur.
+    // GPT = lance en meme temps mais on n'attend PAS sa reponse.
+    //       Si GPT finit pendant que Sonnet travaille → bonus injecte au tour suivant.
+    //       Si GPT n'est pas fini quand Sonnet termine → on continue sans lui.
+    // Avantage : latence = temps Sonnet seul (~10-14s), jamais time-out par GPT.
     let completion;
     let gptOpinionThisTurn = null;
-    const abortCtrl = new AbortController();
-    const killTimer = setTimeout(() => abortCtrl.abort(), 24000); // 24s — Pro plan = 26s, Sonnet cold start peut prendre 15-18s
+    const sonnetCtrl = new AbortController();
+    const sonnetTimer = setTimeout(() => sonnetCtrl.abort(), 24000);
+
+    // Lancer GPT en parallele (sans await)
+    let gptSettled = false;
+    let gptResultHolder = null;
+    const gptBackground = isActivePhase
+      ? runGPTConsultation(
+          [state.vehicule?.make, state.vehicule?.model, state.vehicule?.year].filter(Boolean).join(" ")
+          + (state.contexte?.symptome ? " — " + state.contexte.symptome.slice(0, 200) : "")
+          + (state.contexte?.codes?.length ? " — codes : " + state.contexte.codes.join(", ") : ""),
+          state, sonnetCtrl.signal
+        ).then(r => { gptResultHolder = r; gptSettled = true; }).catch(() => { gptSettled = true; })
+      : Promise.resolve().then(() => { gptSettled = true; });
+
+    // Attendre uniquement Sonnet
     try {
-      const tasks = [
-        // Sonnet — toujours obligatoire
-        anthropic.messages.create({
-          model: modelChoisi,
-          max_tokens: isConclusion ? 1800 : 1200, // 1200 = ~8-12s Sonnet. 2400 = 25-30s = timeout Pro 26s
-          system,
-          messages: apiMessages,
-        }, { signal: abortCtrl.signal }),
-        // GPT consultation — parallèle, non bloquant, phases actives seulement
-        isActivePhase
-          ? runGPTConsultation(
-              [state.vehicule?.make, state.vehicule?.model, state.vehicule?.year].filter(Boolean).join(" ")
-              + (state.contexte?.symptome ? " — " + state.contexte.symptome.slice(0, 200) : "")
-              + (state.contexte?.codes?.length ? " — codes : " + state.contexte.codes.join(", ") : ""),
-              state, abortCtrl.signal
-            )
-          : Promise.resolve(null),
-      ];
-      const [sonnetResult, gptResult] = await Promise.allSettled(tasks);
-
-      // Sonnet est obligatoire — si il échoue on lève l erreur
-      if (sonnetResult.status === "rejected") throw sonnetResult.reason;
-      completion = sonnetResult.value;
-
-      // GPT — optionnel, stocker pour le tour suivant
-      if (gptResult.status === "fulfilled" && gptResult.value) {
-        gptOpinionThisTurn = gptResult.value;
-        state.gpt_last_opinion = gptOpinionThisTurn;
-        console.log(`[DYLAN] GPT second avis: "${gptOpinionThisTurn.slice(0, 80)}"`);
-      } else if (gptResult.status === "rejected") {
-        console.warn("[DYLAN] GPT consultation echec (non bloquant):", gptResult.reason?.message);
-      }
+      completion = await anthropic.messages.create({
+        model: modelChoisi,
+        max_tokens: isConclusion ? 1800 : 1200,
+        system,
+        messages: apiMessages,
+      }, { signal: sonnetCtrl.signal });
     } catch (e) {
-      const isTimeout = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError" || e.message?.includes("abort");
-      console.error(`[DYLAN] appel modèle (${isTimeout ? "timeout" : "erreur"}):`, e.message);
+      const isTimeout = e.name === "AbortError" || e?.constructor?.name === "APIUserAbortError";
+      console.error(`[DYLAN] Sonnet (${isTimeout ? "timeout" : "erreur"}):`, e.message);
       return json(502, {
         success: false,
         error: isTimeout ? "Dylan réfléchit encore — réessaie dans 5 secondes." : "Service de diagnostic indisponible, réessayez.",
       });
     } finally {
-      clearTimeout(killTimer);
+      clearTimeout(sonnetTimer);
     }
+
+    // Fenetre de 300ms pour recuperer GPT s il est deja pret
+    if (isActivePhase && !gptSettled) {
+      await new Promise(res => setTimeout(res, 300));
+    }
+    if (gptSettled && gptResultHolder) {
+      gptOpinionThisTurn = gptResultHolder;
+      state.gpt_last_opinion = gptOpinionThisTurn;
+      console.log(`[DYLAN] GPT second avis: "${gptOpinionThisTurn.slice(0, 80)}"`);
+    }
+    void gptBackground; // reference pour eviter garbage collect premature
 
     const text = (completion.content || []).map((b) => b.text || "").join("");
     console.log(`[DYLAN] stop=${completion.stop_reason} tokens=${JSON.stringify(completion.usage)} model=${modelChoisi}`);
