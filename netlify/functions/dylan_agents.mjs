@@ -165,15 +165,10 @@ function peutConclure(state) {
     const pourFaibles = (h.preuves || []).filter((p) => p.sens === "pour" && p.pouvoir === "faible").length;
     if (pourFaibles >= 2) return h;
   }
-  // Cas 3 : 2+ contrôles effectués (pas 3 — 2 suffisent pour une conclusion probable)
+  // Cas 3 : 2+ contrôles effectués + au moins une hypothèse active → conclure
   if ((state.controles_faits || []).length >= 2) {
     const actives = state.hypotheses.filter((h) => h.statut !== "eliminee");
     if (actives.length > 0) return actives[0];
-  }
-  // Cas 4 : une seule hypothèse active après le 1er contrôle → conclure directement
-  if ((state.controles_faits || []).length >= 1) {
-    const actives = state.hypotheses.filter((h) => h.statut !== "eliminee");
-    if (actives.length === 1) return actives[0];
   }
   return null;
 }
@@ -715,54 +710,58 @@ export const handler = async (event) => {
     }
 
     // ---- 3) RAG + MÉMOIRE + DTC en parallèle total ----
-    // Extraire codes OBD du message avant le Promise.all
     const codesMsg  = user_input ? [...(user_input.match(/[PCBU][0-9]{4}/gi) || [])] : [];
     const codesSession = state.contexte?.codes || [];
     const tousLesCodes = [...new Set([...codesSession, ...codesMsg])];
     const needsDTC = tousLesCodes.length > 0 && !(state.dtc_enrichi?.length);
-
     const vKey = vehicleKey(state.vehicule);
     let ragContext = "";
     const isFirstTurn = (state.tour || 0) === 0;
+
+    // Timeout 4s sur chaque query lente — évite les 504 quand Supabase est lent
+    const st = (p, fallback) => Promise.race([p, new Promise(r => setTimeout(() => r(fallback), 4000))]);
+
     const [ragResult, memoire, dtcResult, vehicleCtx, prevDiags] = await Promise.all([
-      // RAG : uniquement CONTEXTE phase (tour < 3, pas encore d'hypothèses)
-      (!state.hypotheses.length && (state.tour || 0) < 3)
-        ? supabase.rpc("search_diagnostic_cases_text", {
-            p_marque: state.vehicule.make || "",
-            p_modele: state.vehicule.model || "",
-            p_query: user_input || state.contexte.symptome || "",
-            p_limit: 4,
-          }).then(({ data: cases }) => cases && cases.length
-            ? cases.map((c) => `- ${c.primary_diagnosis}`).join("\n")
-            : ""
-          ).catch(e => { console.error("[DYLAN] RAG:", e.message); return ""; })
-        : Promise.resolve(""),
-      // Mémoire véhicule (known_issues inter-session)
-      lireMemoire(userId, vKey, supabase),
-      // DTC lookup — uniquement si codes nouveaux et pas déjà enrichis
+      st(
+        (!state.hypotheses.length && (state.tour || 0) < 3)
+          ? supabase.rpc("search_diagnostic_cases_text", {
+              p_marque: state.vehicule.make || "",
+              p_modele: state.vehicule.model || "",
+              p_query: user_input || state.contexte.symptome || "",
+              p_limit: 4,
+            }).then(({ data: cases }) => cases && cases.length
+              ? cases.map((c) => `- ${c.primary_diagnosis}`).join("\n")
+              : ""
+            ).catch(() => "")
+          : Promise.resolve(""),
+        ""
+      ),
+      st(lireMemoire(userId, vKey, supabase), null),
       needsDTC
-        ? enrichirDTC(tousLesCodes, supabase)
-            .catch(e => { console.error("[DYLAN] DTC:", e.message); return []; })
+        ? enrichirDTC(tousLesCodes, supabase).catch(() => [])
         : Promise.resolve(state.dtc_enrichi || []),
-      // Specs + TSBs constructeur (uniquement au premier tour)
-      (isFirstTurn && !state.vehicleCtx)
-        ? getVehicleContext(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year, supabase)
-            .catch(() => null)
-        : Promise.resolve(state.vehicleCtx || null),
-      // Diagnostics précédents sur ce véhicule (mémoire inter-session) — premier tour uniquement
-      isFirstTurn && vehiculeRecu.make && vehiculeRecu.model
-        ? supabase
-            .from("diag_sessions")
-            .select("maj_le, enquete_state, final_confidence_band, veh_make, veh_model")
-            .eq("user_id", userId)
-            .ilike("veh_make", vehiculeRecu.make)
-            .ilike("veh_model", `%${String(vehiculeRecu.model).split(" ")[0]}%`)
-            .eq("status", "attente_resultat")
-            .order("maj_le", { ascending: false })
-            .limit(4)
-            .then(({ data }) => (data || []).filter(d => d.enquete_state?.contexte?.symptome))
-            .catch(() => [])
-        : Promise.resolve([]),
+      st(
+        (isFirstTurn && !state.vehicleCtx)
+          ? getVehicleContext(state.vehicule?.make, state.vehicule?.model, state.vehicule?.year, supabase).catch(() => null)
+          : Promise.resolve(state.vehicleCtx || null),
+        null
+      ),
+      st(
+        isFirstTurn && vehiculeRecu.make && vehiculeRecu.model
+          ? supabase
+              .from("diag_sessions")
+              .select("maj_le, enquete_state, final_confidence_band, veh_make, veh_model")
+              .eq("user_id", userId)
+              .ilike("veh_make", vehiculeRecu.make)
+              .ilike("veh_model", `%${String(vehiculeRecu.model).split(" ")[0]}%`)
+              .eq("status", "attente_resultat")
+              .order("maj_le", { ascending: false })
+              .limit(4)
+              .then(({ data }) => (data || []).filter(d => d.enquete_state?.contexte?.symptome))
+              .catch(() => [])
+          : Promise.resolve([]),
+        []
+      ),
     ]);
 
     ragContext = ragResult;
