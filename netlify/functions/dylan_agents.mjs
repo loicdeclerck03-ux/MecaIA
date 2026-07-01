@@ -738,7 +738,7 @@ export const handler = async (event) => {
       ),
       st(lireMemoire(userId, vKey, supabase), null),
       needsDTC
-        ? enrichirDTC(tousLesCodes, supabase).catch(() => [])
+        ? st(enrichirDTC(tousLesCodes, supabase).catch(() => []), [])
         : Promise.resolve(state.dtc_enrichi || []),
       st(
         (isFirstTurn && !state.vehicleCtx)
