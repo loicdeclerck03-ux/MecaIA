@@ -4655,13 +4655,19 @@ window.doPhoto = async function (event) {
   const reader = new FileReader();
   reader.onload = async e => {
     try {
-      const r = await MecaIA.authedFetch('photo_analyze', { method: 'POST', body: { media_type: file.type, image_base64: e.target.result.split(',')[1] } });
+      const r = await MecaIA.authedFetch('nexus_vision', { method: 'POST', body: { image: e.target.result.split(',')[1], mimeType: file.type || 'image/jpeg', vehicle: window.selCar ? { make: selCar.marque, model: selCar.modele, year: selCar.annee, fuel: selCar.carbu } : {} } });
       if (r.status === 402) { openM('m-pay'); toast('Plus de crédits !', 'er'); return; }
       const data = r.data;
-      if (!r.ok || !data || !data.success) throw new Error((data && data.error) || 'Erreur analyse');
-      const analyse = data.analysis;
-      save('Analyse photo', analyse.substring(0, 80), 'photo');
-      document.getElementById('zd').innerHTML = `<div class="card"><div class="ch"><div class="ct">📸 ANALYSE PHOTO IA</div></div><div class="cb"><img src="${e.target.result}" alt="Photo du problème mécanique analysée par IA" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover"><div style="font-size:13px;line-height:1.85;white-space:pre-wrap">${analyse}</div><button class="bb" style="margin-top:11px" onclick="shr('Analyse photo','?','?')">📤 PARTAGER</button></div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>ANALYSE PHOTO</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
+      if (!r.ok || !data || !data.success) throw new Error((data && data.error) || 'Erreur analyse vision');
+      const a = data.analysis || {};
+      const codes = data.codes_detected || [];
+      if (codes.length) window._nexusCodes = [...new Set([...(window._nexusCodes||[]), ...codes])];
+      save('Analyse photo NEXUS', (a.diagnostic_preliminaire || 'Analyse visuelle').substring(0, 80), 'photo');
+      const urgColor = a.urgence === 'immédiat' ? 'var(--red)' : a.urgence === 'haute' ? '#f59e0b' : 'var(--green)';
+      const canDriveIcon = a.peut_rouler === 'non' ? '🔴' : a.peut_rouler === 'avec précaution' ? '🟡' : '🟢';
+      const dylanInput = [codes.length?'Codes photo : '+codes.join(', '):'', (a.anomalies_visuelles||[]).length?'Anomalies : '+a.anomalies_visuelles.join(', '):'', a.diagnostic_preliminaire||''].filter(Boolean).join(' — ').slice(0,280);
+      const dylanBtn = data.ready_for_orchestrator ? `<button class="bb" style="margin-top:11px;width:100%" onclick="showPg('diag');setTimeout(()=>{var i=document.getElementById('dylan-in');if(i){i.value=${JSON.stringify(dylanInput)};dylanSend();}},300)">🔬 Analyser avec Dylan →</button>` : '';
+      document.getElementById('zd').innerHTML = `<div class="card"><div class="ch"><div class="ct">📸 NEXUS VISION — GPT-4o</div></div><div class="cb"><img src="${e.target.result}" alt="Photo analysée par NEXUS Vision" style="width:100%;border-radius:8px;margin-bottom:13px;border:1px solid var(--border);max-height:280px;object-fit:cover">${a.confidence_visuelle?`<div style="font-size:10px;color:var(--muted);margin-bottom:8px;font-family:IBM Plex Mono,monospace">Confiance : ${a.confidence_visuelle} · ${a.image_type||''}</div>`:''  }${codes.length?`<div style="margin-bottom:8px;padding:8px 10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:6px"><div style="font-size:11px;font-weight:700;color:rgba(99,102,241,.9);font-family:IBM Plex Mono,monospace;margin-bottom:4px">CODES OBD DÉTECTÉS</div>${codes.map(c=>'<span class="tag" style="font-family:IBM Plex Mono,monospace">'+c+'</span>').join(' ')}</div>`:''}${a.diagnostic_preliminaire?`<div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:8px">${a.diagnostic_preliminaire}</div>`:''  }${a.urgence&&a.urgence!=='aucune'?`<div style="font-size:12px;color:${urgColor};margin-bottom:6px">${canDriveIcon} ${a.peut_rouler==='non'?'Ne pas rouler':a.peut_rouler==='avec précaution'?'Rouler avec précaution':'Peut rouler'} · Urgence : ${a.urgence}</div>`:''  }${(a.anomalies_visuelles||[]).length?`<div style="font-size:12px;color:var(--tx2);margin-bottom:6px">⚠️ ${a.anomalies_visuelles.join(' · ')}</div>`:''  }${a.note?`<div style="font-size:10px;color:var(--muted);font-style:italic;margin-top:4px">${a.note}</div>`:''  }${dylanBtn}</div><div class="rfooter"><div style="display:flex;align-items:center;gap:5px"><span class="dot"></span>NEXUS VISION</div><div>${new Date().toLocaleString('fr-FR')}</div></div></div>`;
       await refreshCredits();
     } catch (err) { errB('zd', err.message); }
   };
